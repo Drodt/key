@@ -6,7 +6,7 @@ package de.uka.ilkd.key.rule;
 import javax.annotation.Nonnull;
 
 import de.uka.ilkd.key.logic.ChoiceExpr;
-import de.uka.ilkd.key.logic.Name;
+import org.key_project.logic.Name;
 
 
 /**

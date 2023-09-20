@@ -18,6 +18,7 @@ import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.logic.sort.Sort;
 
+import org.key_project.logic.Name;
 import org.key_project.util.EqualsModProofIrrelevancy;
 import org.key_project.util.EqualsModProofIrrelevancyUtil;
 import org.key_project.util.collection.DefaultImmutableSet;

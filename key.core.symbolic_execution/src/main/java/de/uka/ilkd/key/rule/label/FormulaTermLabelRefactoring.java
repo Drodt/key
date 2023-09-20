@@ -17,6 +17,7 @@ import de.uka.ilkd.key.rule.SyntacticalReplaceVisitor;
 import de.uka.ilkd.key.rule.merge.CloseAfterMerge;
 import de.uka.ilkd.key.symbolic_execution.TruthValueTracingUtil;
 
+import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.java.CollectionUtil;
 

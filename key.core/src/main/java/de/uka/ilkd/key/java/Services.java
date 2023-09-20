@@ -18,6 +18,7 @@ import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import de.uka.ilkd.key.util.Debug;
 import de.uka.ilkd.key.util.KeYRecoderExcHandler;
 
+import org.key_project.logic.Name;
 import org.key_project.util.lookup.Lookup;
 
 /**
