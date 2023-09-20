@@ -6,8 +6,8 @@ package de.uka.ilkd.key.logic.label;
 import java.util.stream.Collectors;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.Name;
-import de.uka.ilkd.key.logic.Named;
+import org.key_project.logic.Name;
+import org.key_project.logic.Named;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
