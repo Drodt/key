@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import de.uka.ilkd.key.ldt.HeapLDT;
-import de.uka.ilkd.key.logic.Name;
+import org.key_project.logic.Name;
 import de.uka.ilkd.key.speclang.njml.LabeledParserRuleContext;
 
 import org.key_project.util.collection.ImmutableList;

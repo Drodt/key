@@ -6,7 +6,7 @@ package de.uka.ilkd.key.logic.sort;
 import javax.annotation.Nullable;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.Name;
+import org.key_project.logic.Name;
 import de.uka.ilkd.key.logic.TermServices;
 import de.uka.ilkd.key.logic.op.SortDependingFunction;
 

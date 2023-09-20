@@ -7,7 +7,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 import de.uka.ilkd.key.logic.Choice;
-import de.uka.ilkd.key.logic.Name;
+import org.key_project.logic.Name;
 import de.uka.ilkd.key.logic.Namespace;
 import de.uka.ilkd.key.nparser.ChoiceInformation;
 import de.uka.ilkd.key.nparser.KeYParser;

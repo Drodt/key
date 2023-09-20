@@ -20,6 +20,7 @@ import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.mgt.SpecificationRepository;
 import de.uka.ilkd.key.rule.label.OriginTermLabelRefactoring;
 
+import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.slf4j.Logger;

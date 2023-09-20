@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nonnull;
 
-import de.uka.ilkd.key.logic.Name;
+import org.key_project.logic.Name;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.util.AssertionFailure;
