@@ -10,8 +10,8 @@ import javax.annotation.Nonnull;
 
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.Operator;
-import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 
+import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import org.key_project.util.collection.ImmutableArray;
 
 /**
@@ -54,8 +54,8 @@ public final class TermFactory {
      * entire system.
      */
     public Term createTerm(@Nonnull Operator op, ImmutableArray<Term> subs,
-            ImmutableArray<QuantifiableVariable> boundVars, JavaBlock javaBlock,
-            ImmutableArray<TermLabel> labels) {
+                           ImmutableArray<QuantifiableVariable> boundVars, JavaBlock javaBlock,
+                           ImmutableArray<TermLabel> labels) {
         if (op == null) {
             throw new TermCreationException("Given operator is null.");
         }
