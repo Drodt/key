@@ -12,9 +12,8 @@ import jakarta.annotation.Nullable;
 /**
  * Abstract base class for implementations of the Sort interface.
  */
-public abstract class AbstractSort implements Sort {
+public abstract class AbstractSort<S extends Sort<S>> implements Sort<S> {
     private final Name name;
-    private ImmutableSet<Sort> ext;
     private final boolean isAbstract;
 
     /**
@@ -22,38 +21,55 @@ public abstract class AbstractSort implements Sort {
      *
      * //@see de.uka.ilkd.key.nparser.KeYParser.One_sort_declContext#doc
      */
-    private String documentation;
+    private final String documentation;
 
-    public AbstractSort(Name name, ImmutableSet<Sort> ext, boolean isAbstract) {
+    /** Information of the origin of this sort */
+    private final String origin;
+
+    public AbstractSort(Name name, boolean isAbstract, String documentation, String origin) {
         this.name = name;
-        this.ext = ext;
         this.isAbstract = isAbstract;
+        this.documentation = documentation;
+        this.origin = origin;
     }
 
-    @Override
-    public final ImmutableSet<Sort> extendsSorts() {
-        if (this == Sort.FORMULA || this == Sort.UPDATE || this == Sort.ANY) {
-            return DefaultImmutableSet.nil();
+    public AbstractSort(Name name, boolean isAbstract) {
+        this(name, isAbstract, "", "");
+    }
+
+//    @Override
+//    public final ImmutableSet<S> extendsSorts() {
+//        if (this == Sort.FORMULA || this == Sort.UPDATE || this == Sort.ANY) {
+//            return DefaultImmutableSet.nil();
+//        } else {
+//            if (ext.isEmpty()) {
+//                ext = DefaultImmutableSet.<S>nil().add((S)ANY);
+//            }
+//            return ext;
+//        }
+//    }
+
+//    @Override
+//    public final boolean extendsTrans(S sort) {
+//        if (sort == this) {
+//            return true;
+//        } else if (this == Sort.FORMULA || this == Sort.UPDATE) {
+//            return false;
+//        } else if (sort == Sort.ANY) {
+//            return true;
+//        }
+//
+//        return extendsSorts()
+//                .exists((S superSort) -> superSort == sort || superSort.extendsTrans(sort));
+//    }
+
+    public boolean equals(Object o) {
+        if (o instanceof AbstractSort sort) {
+            // TODO: Potential bug should check for sort identity not name equality
+            return sort.name().equals(name());
         } else {
-            if (ext.isEmpty()) {
-                ext = DefaultImmutableSet.<Sort>nil().add(ANY);
-            }
-            return ext;
-        }
-    }
-
-    @Override
-    public final boolean extendsTrans(Sort sort) {
-        if (sort == this) {
-            return true;
-        } else if (this == Sort.FORMULA || this == Sort.UPDATE) {
             return false;
-        } else if (sort == Sort.ANY) {
-            return true;
         }
-
-        return extendsSorts()
-                .exists((Sort superSort) -> superSort == sort || superSort.extendsTrans(sort));
     }
 
     @Override
@@ -75,13 +91,14 @@ public abstract class AbstractSort implements Sort {
         return name.toString();
     }
 
-    public void setDocumentation(@Nullable String documentation) {
-        this.documentation = documentation;
-    }
-
     @Nullable
     @Override
     public String getDocumentation() {
         return documentation;
     }
+
+    public String getOrigin() {
+        return origin;
+    }
+
 }

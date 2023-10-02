@@ -6,6 +6,7 @@ package de.uka.ilkd.key.logic.sort;
 import java.lang.ref.WeakReference;
 
 import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.TermServices;
 import de.uka.ilkd.key.logic.op.SortDependingFunction;
 
@@ -80,39 +81,10 @@ public final class NullSort implements Sort {
         return sort == this || sort == Sort.ANY || sort.extendsTrans(objectSort);
     }
 
-
     @Override
     public boolean isAbstract() {
         return false;
     }
-
-
-    @Override
-    public SortDependingFunction getCastSymbol(TermServices services) {
-        SortDependingFunction result = SortDependingFunction.getFirstInstance(CAST_NAME, services)
-                .getInstanceFor(this, services);
-        assert result.getSortDependingOn() == this && result.sort() == this;
-        return result;
-    }
-
-
-    @Override
-    public SortDependingFunction getInstanceofSymbol(TermServices services) {
-        SortDependingFunction result = SortDependingFunction
-                .getFirstInstance(INSTANCE_NAME, services).getInstanceFor(this, services);
-        assert result.getSortDependingOn() == this;
-        return result;
-    }
-
-
-    @Override
-    public SortDependingFunction getExactInstanceofSymbol(TermServices services) {
-        SortDependingFunction result = SortDependingFunction
-                .getFirstInstance(EXACT_INSTANCE_NAME, services).getInstanceFor(this, services);
-        assert result.getSortDependingOn() == this;
-        return result;
-    }
-
 
     @Override
     public String toString() {
