@@ -5,6 +5,7 @@ package de.uka.ilkd.key.logic;
 
 import javax.annotation.Nullable;
 
+import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
@@ -22,7 +23,7 @@ import org.key_project.util.collection.ImmutableSet;
  * done for implementation reasons, as their structure is quite similar and there are good reasons
  * concerning the software's design/architecture (for example using same visitors, reduction of case
  * distinction, unified interfaces etc.). However, they are strictly separated by their sorts. A
- * formula (and just a formula) must have the sort {@link Sort#FORMULA}. Terms of a different sort
+ * formula (and just a formula) must have the sort {@link JavaDLTheory#FORMULA}. Terms of a different sort
  * are terms in the customary logic sense. A term of sort formula is allowed exact there, where a
  * formuala in logic is allowed to appear, same for terms of different sorts. Some words about other
  * design decisions:
