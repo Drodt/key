@@ -66,12 +66,12 @@ public class TacletMatchProgram {
     /**
      * returns the instruction for the specified variable
      *
-     * @param sv the {@link SchemaVariable} for which to get the instruction
+     * @param op the {@link SchemaVariable} for which to get the instruction
      * @return the instruction for the specified variable
      */
     public static MatchSchemaVariableInstruction<? extends SchemaVariable> getMatchInstructionForSV(
             SchemaVariable op) {
-        MatchSchemaVariableInstruction<? extends SchemaVariable> instruction = null;
+        MatchSchemaVariableInstruction<? extends SchemaVariable> instruction;
 
         if (op instanceof ModalOperatorSV) {
             instruction = Instruction.matchModalOperatorSV((ModalOperatorSV) op);
