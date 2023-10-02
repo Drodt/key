@@ -27,7 +27,7 @@ public abstract class AbstractSort extends org.key_project.logic.sort.AbstractSo
             String origin) {
         super(name, isAbstract, documentation, origin);
         if (extendedSorts != null && extendedSorts.isEmpty()) {
-            this.ext = DefaultImmutableSet.<Sort>nil().add(ANY);
+            this.ext = DefaultImmutableSet.<Sort>nil().add(Sort.ANY);
         } else {
             this.ext = extendedSorts == null ? DefaultImmutableSet.<Sort>nil() : extendedSorts;
         }
