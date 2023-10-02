@@ -10,20 +10,20 @@ import org.key_project.util.collection.ImmutableSet;
 import jakarta.annotation.Nullable;
 
 public interface Sort<S extends Sort> extends Named {
-    /**
-     * Formulas are represented as "terms" of this sort.
-     */
-    Sort FORMULA = new SortImpl(new Name("Formula"));
-
-    /**
-     * Updates are represented as "terms" of this sort.
-     */
-    Sort UPDATE = new SortImpl(new Name("Update"));
-
-    /**
-     * Any is a supersort of all sorts.
-     */
-    Sort ANY = new SortImpl(new Name("any"));
+//    /**
+//     * Formulas are represented as "terms" of this sort.
+//     */
+//    Sort FORMULA = new SortImpl(new Name("Formula"));
+//
+//    /**
+//     * Updates are represented as "terms" of this sort.
+//     */
+//    Sort UPDATE = new SortImpl(new Name("Update"));
+//
+//    /**
+//     * Any is a supersort of all sorts.
+//     */
+//    Sort ANY = new SortImpl(new Name("any"));
 
     /**
      * @return the direct supersorts of this sort. Not supported by {@code NullSort}.
