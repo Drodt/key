@@ -6,9 +6,6 @@ package de.uka.ilkd.key.logic.sort;
 import java.lang.ref.WeakReference;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.ldt.JavaDLTheory;
-import de.uka.ilkd.key.logic.TermServices;
-import de.uka.ilkd.key.logic.op.SortDependingFunction;
 
 import org.key_project.logic.Name;
 import org.key_project.util.collection.DefaultImmutableSet;
@@ -62,9 +59,8 @@ public final class NullSort implements Sort {
             result = DefaultImmutableSet.nil();
 
             for (Sort n : services.getNamespaces().sorts().allElements()) {
-                Sort s = n;
-                if (s != this && s.extendsTrans(objectSort)) {
-                    result = result.add(s);
+                if (n != this && n.extendsTrans(objectSort)) {
+                    result = result.add(n);
                 }
             }
 

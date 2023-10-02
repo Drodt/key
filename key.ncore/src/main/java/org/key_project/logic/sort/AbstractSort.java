@@ -4,8 +4,6 @@
 package org.key_project.logic.sort;
 
 import org.key_project.logic.Name;
-import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableSet;
 
 import jakarta.annotation.Nullable;
 
@@ -18,7 +16,6 @@ public abstract class AbstractSort<S extends Sort<S>> implements Sort<S> {
 
     /**
      * Documentation for this sort given by the associated documentation comment.
-     *
      * //@see de.uka.ilkd.key.nparser.KeYParser.One_sort_declContext#doc
      */
     private String documentation;
@@ -28,31 +25,31 @@ public abstract class AbstractSort<S extends Sort<S>> implements Sort<S> {
         this.isAbstract = isAbstract;
     }
 
-//    @Override
-//    public final ImmutableSet<S> extendsSorts() {
-//        if (this == Sort.FORMULA || this == Sort.UPDATE || this == Sort.ANY) {
-//            return DefaultImmutableSet.nil();
-//        } else {
-//            if (ext.isEmpty()) {
-//                ext = DefaultImmutableSet.<S>nil().add((S)ANY);
-//            }
-//            return ext;
-//        }
-//    }
+    // @Override
+    // public final ImmutableSet<S> extendsSorts() {
+    // if (this == Sort.FORMULA || this == Sort.UPDATE || this == Sort.ANY) {
+    // return DefaultImmutableSet.nil();
+    // } else {
+    // if (ext.isEmpty()) {
+    // ext = DefaultImmutableSet.<S>nil().add((S)ANY);
+    // }
+    // return ext;
+    // }
+    // }
 
-//    @Override
-//    public final boolean extendsTrans(S sort) {
-//        if (sort == this) {
-//            return true;
-//        } else if (this == Sort.FORMULA || this == Sort.UPDATE) {
-//            return false;
-//        } else if (sort == Sort.ANY) {
-//            return true;
-//        }
-//
-//        return extendsSorts()
-//                .exists((S superSort) -> superSort == sort || superSort.extendsTrans(sort));
-//    }
+    // @Override
+    // public final boolean extendsTrans(S sort) {
+    // if (sort == this) {
+    // return true;
+    // } else if (this == Sort.FORMULA || this == Sort.UPDATE) {
+    // return false;
+    // } else if (sort == Sort.ANY) {
+    // return true;
+    // }
+    //
+    // return extendsSorts()
+    // .exists((S superSort) -> superSort == sort || superSort.extendsTrans(sort));
+    // }
 
     public boolean equals(Object o) {
         if (o instanceof AbstractSort sort) {

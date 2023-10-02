@@ -50,7 +50,8 @@ public class HeuristicInstantiation implements TermGenerator {
             this.quantifiedVar = var;
             this.services = services;
             quantifiedVarSort = quantifiedVar.sort();
-            quantifiedVarSortCast = services.getJavaDLTheory().getCastSymbol(quantifiedVarSort, services);
+            quantifiedVarSortCast =
+                services.getJavaDLTheory().getCastSymbol(quantifiedVarSort, services);
             findNextInst();
         }
 

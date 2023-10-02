@@ -782,7 +782,8 @@ public class TermBuilder {
     }
 
     public Term exactInstance(Sort s, Term t) {
-        return equals(func(services.getJavaDLTheory().getExactInstanceofSymbol(s, services), t), TRUE());
+        return equals(func(services.getJavaDLTheory().getExactInstanceofSymbol(s, services), t),
+            TRUE());
     }
 
     // Functions for wellfoundedness
