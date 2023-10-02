@@ -7,7 +7,6 @@ import java.util.Set;
 
 import de.uka.ilkd.key.informationflow.po.AbstractInfFlowPO;
 import de.uka.ilkd.key.java.Services;
-import org.key_project.logic.Name;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.op.UpdateApplication;
 import de.uka.ilkd.key.macros.AbstractPropositionalExpansionMacro;
@@ -23,6 +22,7 @@ import de.uka.ilkd.key.strategy.Strategy;
 import de.uka.ilkd.key.strategy.StrategyProperties;
 import de.uka.ilkd.key.strategy.TopRuleAppCost;
 
+import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableList;
 
 /**
