@@ -291,7 +291,8 @@ public final class TypeConverter {
     private Term convertToInstanceofTerm(Instanceof io, ExecutionContext ec) {
         final KeYJavaType type = ((TypeReference) io.getChildAt(1)).getKeYJavaType();
         final Term obj = convertToLogicElement(io.getChildAt(0), ec);
-        final Function instanceOfSymbol = getJavaDLTheory().getInstanceofSymbol(type.getSort(), services);
+        final Function instanceOfSymbol =
+            getJavaDLTheory().getInstanceofSymbol(type.getSort(), services);
 
         // in JavaDL S::instance(o) is also true if o (for reference types S)
         // is null in opposite to Java
