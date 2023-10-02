@@ -463,7 +463,7 @@ public class TermBuilder {
     }
 
     public Term cast(Sort s, Term t) {
-        return tf.createTerm(s.getCastSymbol(services), t);
+        return tf.createTerm(services.getJavaDLTheory().getCastSymbol(s, services), t);
     }
 
     public Term tt() {
@@ -778,11 +778,11 @@ public class TermBuilder {
     }
 
     public Term instance(Sort s, Term t) {
-        return equals(func(s.getInstanceofSymbol(services), t), TRUE());
+        return equals(func(services.getJavaDLTheory().getInstanceofSymbol(s, services), t), TRUE());
     }
 
     public Term exactInstance(Sort s, Term t) {
-        return equals(func(s.getExactInstanceofSymbol(services), t), TRUE());
+        return equals(func(services.getJavaDLTheory().getExactInstanceofSymbol(s, services), t), TRUE());
     }
 
     // Functions for wellfoundedness

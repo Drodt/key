@@ -34,41 +34,9 @@ public interface Sort extends org.key_project.logic.sort.Sort<Sort>, HasOrigin {
     Sort ANY = new SortImpl(new Name("any"));
 
     /**
-     * Name of {@link #getCastSymbol(TermServices)}.
-     */
-    Name CAST_NAME = new Name("cast");
-
-    /**
-     * Name of {@link #getInstanceofSymbol(TermServices)}.
-     */
-    Name INSTANCE_NAME = new Name("instance");
-
-    /**
-     * Name of {@link #getExactInstanceofSymbol(TermServices)}.
-     */
-    Name EXACT_INSTANCE_NAME = new Name("exactInstance");
-
-    /**
      * @param services services.
      * @return the direct supersorts of this sort.
      */
     ImmutableSet<Sort> extendsSorts(Services services);
 
-    /**
-     * @param services services.
-     * @return the cast symbol of this sort.
-     */
-    SortDependingFunction getCastSymbol(TermServices services);
-
-    /**
-     * @param services services.
-     * @return the {@code instanceof} symbol of this sort.
-     */
-    SortDependingFunction getInstanceofSymbol(TermServices services);
-
-    /**
-     * @param services services.
-     * @return the {@code exactinstanceof} symbol of this sort.
-     */
-    SortDependingFunction getExactInstanceofSymbol(TermServices services);
 }
