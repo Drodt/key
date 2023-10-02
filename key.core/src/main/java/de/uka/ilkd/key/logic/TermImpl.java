@@ -76,6 +76,8 @@ class TermImpl implements Term, EqualsModProofIrrelevancy {
      */
     private int hashcode2 = -1;
 
+    private Sort sort;
+
     /**
      * This flag indicates that the {@link Term} itself or one of its children contains a non empty
      * {@link JavaBlock}. {@link Term}s which provides a {@link JavaBlock} directly or indirectly
@@ -104,7 +106,7 @@ class TermImpl implements Term, EqualsModProofIrrelevancy {
         assert op != null;
         assert subs != null;
         this.op = op;
-        this.subs = subs.size() == 0 ? EMPTY_TERM_LIST : subs;
+        this.subs = subs.isEmpty() ? EMPTY_TERM_LIST : subs;
         this.boundVars = boundVars == null ? EMPTY_VAR_LIST : boundVars;
         this.javaBlock = javaBlock == null ? JavaBlock.EMPTY_JAVABLOCK : javaBlock;
         this.origin = origin;
@@ -220,7 +222,14 @@ class TermImpl implements Term, EqualsModProofIrrelevancy {
 
     @Override
     public Sort sort() {
-        return op.sort(subs);
+        if (sort == null) {
+            Sort[] sorts = new Sort[subs.size()];
+            for (int i = 0; i < sorts.length; i++) {
+                sorts[i] = subs.get(i).sort();
+            }
+            sort = op.sort(sorts);
+        }
+        return sort;
     }
 
 
