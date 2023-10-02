@@ -6,9 +6,6 @@ package de.uka.ilkd.key.logic.sort;
 import javax.annotation.Nullable;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.ldt.JavaDLTheory;
-import de.uka.ilkd.key.logic.TermServices;
-import de.uka.ilkd.key.logic.op.SortDependingFunction;
 
 import org.key_project.logic.Name;
 import org.key_project.util.collection.DefaultImmutableSet;
@@ -17,7 +14,8 @@ import org.key_project.util.collection.ImmutableSet;
 /**
  * Abstract base class for implementations of the Sort interface.
  */
-public abstract class AbstractSort extends org.key_project.logic.sort.AbstractSort<Sort> implements Sort {
+public abstract class AbstractSort extends org.key_project.logic.sort.AbstractSort<Sort>
+        implements Sort {
 
     private final ImmutableSet<Sort> ext;
 
@@ -59,7 +57,7 @@ public abstract class AbstractSort extends org.key_project.logic.sort.AbstractSo
         return extendsSorts()
                 .exists((Sort superSort) -> superSort == sort || superSort.extendsTrans(sort));
     }
-    
+
     public String declarationString() {
         return name().toString();
     }

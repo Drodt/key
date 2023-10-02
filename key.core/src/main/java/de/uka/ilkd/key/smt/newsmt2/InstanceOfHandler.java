@@ -28,7 +28,8 @@ public class InstanceOfHandler implements SMTHandler {
     public void init(MasterHandler masterHandler, Services services, Properties handlerSnippets,
             String[] handlerOptions) {
         this.instanceOfOp = services.getJavaDLTheory().getInstanceofSymbol(Sort.ANY, services);
-        this.exactInstanceOfOp = services.getJavaDLTheory().getExactInstanceofSymbol(Sort.ANY, services);
+        this.exactInstanceOfOp =
+            services.getJavaDLTheory().getExactInstanceofSymbol(Sort.ANY, services);
     }
 
     @Override

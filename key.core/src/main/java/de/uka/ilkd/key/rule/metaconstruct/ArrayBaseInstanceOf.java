@@ -47,7 +47,8 @@ public final class ArrayBaseInstanceOf extends AbstractTermTransformer {
 
         final Sort arrayElementSort = ((ArraySort) arraySort).elementSort();
 
-        Function instanceofSymbol = services.getJavaDLTheory().getInstanceofSymbol(arrayElementSort, services);
+        Function instanceofSymbol =
+            services.getJavaDLTheory().getInstanceofSymbol(arrayElementSort, services);
         Debug.assertTrue(instanceofSymbol != null, "Instanceof symbol not found for ",
             arrayElementSort);
 

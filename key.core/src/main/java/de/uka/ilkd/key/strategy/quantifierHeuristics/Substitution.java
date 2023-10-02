@@ -55,7 +55,7 @@ public class Substitution {
         final Iterator<QuantifiableVariable> it = varMap.keyIterator();
         while (it.hasNext()) {
             final Term t = getSubstitutedTerm(it.next());
-            if (t.freeVars().size() != 0) {
+            if (!t.freeVars().isEmpty()) {
                 LOGGER.debug("evil free vars in term: " + t);
                 return false;
             }
@@ -71,7 +71,8 @@ public class Substitution {
         while (it.hasNext()) {
             final QuantifiableVariable var = it.next();
             final Sort quantifiedVarSort = var.sort();
-            final Function quantifiedVarSortCast = services.getJavaDLTheory().getCastSymbol(quantifiedVarSort, services);
+            final Function quantifiedVarSortCast =
+                services.getJavaDLTheory().getCastSymbol(quantifiedVarSort, services);
             Term instance = getSubstitutedTerm(var);
             if (!instance.sort().extendsTrans(quantifiedVarSort)) {
                 instance = tb.func(quantifiedVarSortCast, instance);

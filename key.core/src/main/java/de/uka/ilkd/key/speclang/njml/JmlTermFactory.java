@@ -1001,7 +1001,8 @@ public final class JmlTermFactory {
     public Term signalsOnly(ImmutableList<KeYJavaType> signalsonly, ProgramVariable excVar) {
         Term result = tb.ff();
         for (KeYJavaType kjt : signalsonly) {
-            Function instance = services.getJavaDLTheory().getInstanceofSymbol(kjt.getSort(), services);
+            Function instance =
+                services.getJavaDLTheory().getInstanceofSymbol(kjt.getSort(), services);
             result = tb.or(result, tb.equals(tb.func(instance, tb.var(excVar)), tb.TRUE()));
         }
 
