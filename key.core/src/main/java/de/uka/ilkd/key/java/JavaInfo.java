@@ -11,6 +11,7 @@ import de.uka.ilkd.key.java.declaration.modifier.VisibilityModifier;
 import de.uka.ilkd.key.java.reference.ExecutionContext;
 import de.uka.ilkd.key.java.reference.TypeRef;
 import de.uka.ilkd.key.java.reference.TypeReference;
+import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.logic.sort.Sort;
@@ -1388,7 +1389,7 @@ public final class JavaInfo {
             inv = (ObserverFunction) services.getNamespaces().functions()
                     .lookup(ObserverFunction.createName("<inv>", getJavaLangObject()));
             if (inv == null) {
-                inv = new ObserverFunction("<inv>", Sort.FORMULA, null,
+                inv = new ObserverFunction("<inv>", JavaDLTheory.FORMULA, null,
                     services.getTypeConverter().getHeapLDT().targetSort(), getJavaLangObject(),
                     false, new ImmutableArray<>(), HeapContext.getModHeaps(services, false).size(),
                     1);
@@ -1426,7 +1427,7 @@ public final class JavaInfo {
             invFree = (ObserverFunction) services.getNamespaces().functions()
                     .lookup(ObserverFunction.createName("<inv_free>", getJavaLangObject()));
             if (invFree == null) {
-                invFree = new ObserverFunction("<inv_free>", Sort.FORMULA, null,
+                invFree = new ObserverFunction("<inv_free>", JavaDLTheory.FORMULA, null,
                     services.getTypeConverter().getHeapLDT().targetSort(), getJavaLangObject(),
                     false, new ImmutableArray<>(), HeapContext.getModHeaps(services, false).size(),
                     1);
@@ -1466,7 +1467,7 @@ public final class JavaInfo {
             inv = (ObserverFunction) services.getNamespaces().functions()
                     .lookup(ObserverFunction.createName("<$inv>", target));
             if (inv == null) {
-                inv = new ObserverFunction("<$inv>", Sort.FORMULA, null,
+                inv = new ObserverFunction("<$inv>", JavaDLTheory.FORMULA, null,
                     services.getTypeConverter().getHeapLDT().targetSort(), target, true,
                     new ImmutableArray<>(), HeapContext.getModHeaps(services, false).size(), 1);
                 services.getNamespaces().functions().add(inv);
@@ -1486,7 +1487,7 @@ public final class JavaInfo {
             inv = (ObserverFunction) services.getNamespaces().functions()
                     .lookup(ObserverFunction.createName("<$inv_free>", target));
             if (inv == null) {
-                inv = new ObserverFunction("<$inv_free>", Sort.FORMULA, null,
+                inv = new ObserverFunction("<$inv_free>", JavaDLTheory.FORMULA, null,
                     services.getTypeConverter().getHeapLDT().targetSort(), target, true,
                     new ImmutableArray<>(), HeapContext.getModHeaps(services, false).size(), 1);
                 services.getNamespaces().functions().add(inv);

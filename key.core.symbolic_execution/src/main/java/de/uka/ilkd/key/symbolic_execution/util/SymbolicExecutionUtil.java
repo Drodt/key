@@ -20,6 +20,7 @@ import de.uka.ilkd.key.java.visitor.ContainsStatementVisitor;
 import de.uka.ilkd.key.ldt.BooleanLDT;
 import de.uka.ilkd.key.ldt.HeapLDT;
 import de.uka.ilkd.key.ldt.IntegerLDT;
+import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.label.*;
 import de.uka.ilkd.key.logic.op.*;
@@ -474,7 +475,7 @@ public final class SymbolicExecutionUtil {
         // Create predicate which will be used in formulas to store the value interested in.
         Function newPredicate =
             new Function(new Name(services.getTermBuilder().newName("ResultPredicate")),
-                Sort.FORMULA, variable.sort());
+                JavaDLTheory.FORMULA, variable.sort());
         // Create formula which contains the value interested in.
         Term newTerm = services.getTermBuilder().func(newPredicate,
             services.getTermBuilder().var((ProgramVariable) variable));
@@ -512,7 +513,7 @@ public final class SymbolicExecutionUtil {
         // Create predicate which will be used in formulas to store the value interested in.
         Function newPredicate =
             new Function(new Name(services.getTermBuilder().newName("ResultPredicate")),
-                Sort.FORMULA, variable.sort());
+                JavaDLTheory.FORMULA, variable.sort());
         // Create formula which contains the value interested in.
         Term newTerm = services.getTermBuilder().func(newPredicate,
             services.getTermBuilder().var((ProgramVariable) variable));
@@ -545,7 +546,7 @@ public final class SymbolicExecutionUtil {
         // Create predicate which will be used in formulas to store the value interested in.
         Function newPredicate =
             new Function(new Name(sideProofServices.getTermBuilder().newName("ResultPredicate")),
-                Sort.FORMULA, term.sort());
+                JavaDLTheory.FORMULA, term.sort());
         // Create formula which contains the value interested in.
         Term newTerm = sideProofServices.getTermBuilder().func(newPredicate, term);
         // Create Sequent to prove with new succedent.
