@@ -6,7 +6,6 @@ package de.uka.ilkd.key.macros;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.key_project.logic.Name;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
@@ -17,6 +16,8 @@ import de.uka.ilkd.key.settings.TestGenerationSettings;
 import de.uka.ilkd.key.strategy.NumberRuleAppCost;
 import de.uka.ilkd.key.strategy.RuleAppCost;
 import de.uka.ilkd.key.strategy.Strategy;
+
+import org.key_project.logic.Name;
 
 public class TestGenMacro extends StrategyProofMacro {
     @Override
