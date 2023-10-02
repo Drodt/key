@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.Operator;
-
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
+
 import org.key_project.logic.Name;
 import org.key_project.util.EqualsModProofIrrelevancy;
 import org.key_project.util.collection.ImmutableArray;

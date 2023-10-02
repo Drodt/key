@@ -6,10 +6,10 @@ package de.uka.ilkd.key.speclang.njml;
 import javax.annotation.Nullable;
 
 import de.uka.ilkd.key.ldt.HeapLDT;
-import org.key_project.logic.Name;
 import de.uka.ilkd.key.logic.label.OriginTermLabel;
 import de.uka.ilkd.key.speclang.jml.pretranslation.*;
 
+import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
