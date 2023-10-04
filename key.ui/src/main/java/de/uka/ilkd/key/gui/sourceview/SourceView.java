@@ -42,6 +42,7 @@ import de.uka.ilkd.key.java.statement.Then;
 import de.uka.ilkd.key.java.visitor.JavaASTVisitor;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
+import de.uka.ilkd.key.logic.sort.Sort;
 import de.uka.ilkd.key.pp.Range;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.NodeInfo;
@@ -51,6 +52,7 @@ import de.uka.ilkd.key.proof.io.consistency.FileRepo;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import de.uka.ilkd.key.util.Pair;
 
+import org.key_project.logic.Visitor;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.java.IOUtil;
 import org.key_project.util.java.IOUtil.LineInformation;
@@ -695,21 +697,22 @@ public final class SourceView extends JComponent {
             // proof obligation belongs to is always loaded.
 
             node.sequent().forEach(
-                formula -> formula.formula().execPostOrder(new de.uka.ilkd.key.logic.Visitor() {
+                formula -> formula.formula().execPostOrder(new Visitor<Sort>() {
 
                     @Override
-                    public boolean visitSubtree(Term visited) {
-                        return visited.containsJavaBlockRecursive();
+                    public boolean visitSubtree(org.key_project.logic.Term<Sort> visited) {
+                        return ((Term) visited).containsJavaBlockRecursive();
                     }
 
                     @Override
-                    public void visit(Term visited) {}
+                    public void visit(org.key_project.logic.Term<Sort> visited) {}
 
                     @Override
-                    public void subtreeLeft(Term subtreeRoot) {}
+                    public void subtreeLeft(org.key_project.logic.Term<Sort> subtreeRoot) {}
 
                     @Override
-                    public void subtreeEntered(Term subtreeRoot) {
+                    public void subtreeEntered(org.key_project.logic.Term<Sort> sr) {
+                        var subtreeRoot = (Term) sr;
                         if (subtreeRoot.javaBlock() != null) {
                             JavaASTVisitor visitor =
                                 new JavaASTVisitor(subtreeRoot.javaBlock().program(),
