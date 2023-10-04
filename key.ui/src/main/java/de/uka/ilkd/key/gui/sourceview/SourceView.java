@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
  * highlighting the lines which were symbolically executed in the path from the root node down to
  * the current node. In addition, by clicking on such a highlighted line the user can jump to the
  * first node in the proof tree where a statement from this line is symbolically executed.
- *
+ * <br>
  * Editing the source code in the tabs is currently not implemented (not supported by
  * {@link JavaDocument}).
  *
@@ -534,7 +534,7 @@ public final class SourceView extends JComponent {
     /**
      * Adds all files relevant to the currently selected node, closing all others
      *
-     * @see NodeInfo#getRelevantFiles()
+     * @see NodeInfo
      */
     private void addFiles() {
         ImmutableSet<URI> fileURIs = mainWindow.getMediator().getSelectedProof()
@@ -701,7 +701,7 @@ public final class SourceView extends JComponent {
 
                     @Override
                     public boolean visitSubtree(Term visited) {
-                        return ((Term) visited).containsJavaBlockRecursive();
+                        return visited.containsJavaBlockRecursive();
                     }
 
                     @Override
@@ -711,8 +711,7 @@ public final class SourceView extends JComponent {
                     public void subtreeLeft(Term subtreeRoot) {}
 
                     @Override
-                    public void subtreeEntered(Term sr) {
-                        var subtreeRoot = (Term) sr;
+                    public void subtreeEntered(Term subtreeRoot) {
                         if (subtreeRoot.javaBlock() != null) {
                             JavaASTVisitor visitor =
                                 new JavaASTVisitor(subtreeRoot.javaBlock().program(),

@@ -23,9 +23,9 @@ public class OpCollector extends DefaultVisitor {
     }
 
     public void visit(Term t) {
-        ops.add((Operator) t.op());
-        if (t.op() instanceof ElementaryUpdate) {
-            ops.add(((ElementaryUpdate) t.op()).lhs());
+        ops.add(t.op());
+        if (t.op() instanceof ElementaryUpdate update) {
+            ops.add(update.lhs());
         }
     }
 

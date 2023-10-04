@@ -388,8 +388,7 @@ public final class SymbolicExecutionSideProofUtil {
         for (SequentFormula sf : sequentToProve) {
             sf.formula().execPreOrder(new DefaultVisitor() {
                 @Override
-                public void visit(Term v) {
-                    var visited = (Term) v;
+                public void visit(Term visited) {
                     if (isRelevantThing(services, visited)) {
                         result.add(visited.op());
                     }
@@ -527,8 +526,7 @@ public final class SymbolicExecutionSideProofUtil {
          * {@inheritDoc}
          */
         @Override
-        public void visit(Term v) {
-            var visited = (Term) v;
+        public void visit(Term visited) {
             if (isRelevantThing(services, visited)) {
                 if (!SymbolicExecutionUtil.isSelect(services, visited)
                         && !SymbolicExecutionUtil.isBoolean(services, visited.op())
