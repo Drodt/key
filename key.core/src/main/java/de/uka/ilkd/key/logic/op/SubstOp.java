@@ -54,7 +54,6 @@ public abstract class SubstOp extends AbstractOperator {
         }
     }
 
-
     /**
      * Apply this substitution operator to <code>term</code>, which has this operator as top-level
      * operator
