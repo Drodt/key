@@ -65,6 +65,7 @@ import de.uka.ilkd.key.util.KeYTypeUtil;
 import de.uka.ilkd.key.util.MiscTools;
 import de.uka.ilkd.key.util.Pair;
 
+import org.key_project.logic.DefaultVisitor;
 import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -1461,7 +1462,7 @@ public final class SymbolicExecutionUtil {
      *
      * @author Martin Hentschel
      */
-    private static final class FindModalityWithSymbolicExecutionLabelId extends DefaultVisitor {
+    private static final class FindModalityWithSymbolicExecutionLabelId extends DefaultVisitor<Sort> {
         /**
          * The modality {@link PosInTerm} with the maximal ID.
          */
@@ -1497,8 +1498,8 @@ public final class SymbolicExecutionUtil {
          * {@inheritDoc}
          */
         @Override
-        public void visit(Term visited) {
-            SymbolicExecutionTermLabel label = getSymbolicExecutionLabel(visited);
+        public void visit(org.key_project.logic.Term<Sort> visited) {
+            SymbolicExecutionTermLabel label = getSymbolicExecutionLabel((Term) visited);
             if (label != null) {
                 if (posInTerm == null
                         || (maximum ? label.id() > maxId : label.id() < maxId)) {
@@ -1512,7 +1513,7 @@ public final class SymbolicExecutionUtil {
          * {@inheritDoc}
          */
         @Override
-        public void subtreeEntered(Term subtreeRoot) {
+        public void subtreeEntered(org.key_project.logic.Term<Sort> subtreeRoot) {
             if (currentPosInTerm == null) {
                 currentPosInTerm = PosInTerm.getTopLevel();
             } else {
@@ -1526,7 +1527,7 @@ public final class SymbolicExecutionUtil {
          * {@inheritDoc}
          */
         @Override
-        public void subtreeLeft(Term subtreeRoot) {
+        public void subtreeLeft(org.key_project.logic.Term<Sort> subtreeRoot) {
             currentPosInTerm = currentPosInTerm.up();
             indexStack.removeFirst();
             if (!indexStack.isEmpty()) {
@@ -3180,9 +3181,10 @@ public final class SymbolicExecutionUtil {
      */
     private static Set<Term> collectSkolemConstantsNonRecursive(Term term) {
         final Set<Term> result = new HashSet<>();
-        term.execPreOrder(new DefaultVisitor() {
+        term.execPreOrder(new DefaultVisitor<Sort>() {
             @Override
-            public void visit(Term visited) {
+            public void visit(org.key_project.logic.Term<Sort> v) {
+                var visited = (Term) v;
                 if (isSkolemConstant(visited)) {
                     result.add(visited);
                 }
