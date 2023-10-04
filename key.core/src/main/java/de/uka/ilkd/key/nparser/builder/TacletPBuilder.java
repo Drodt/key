@@ -369,7 +369,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         if (t != null) {
             return t;
         }
-        return new KeYJavaType((Sort) visitSortId(sortId, ctx));
+        return new KeYJavaType(visitSortId(sortId, ctx));
     }
 
 
