@@ -43,38 +43,22 @@ import org.key_project.util.collection.ImmutableSet;
  * supported: {@link Term#execPostOrder(Visitor)} and {@link Term#execPreOrder(Visitor)}.
  */
 public interface Term
-        extends SVSubstitute, Sorted, EqualsModProofIrrelevancy, org.key_project.logic.Term {
-
-    /**
-     * The top operator (e.g., in "A and B" this is "and", in f(x,y) it is "f").
-     */
+        extends SVSubstitute, Sorted, EqualsModProofIrrelevancy, org.key_project.logic.Term<Sort> {
+    @Override
     Operator op();
 
-    /**
-     * The top operator (e.g., in "A and B" this is "and", in f(x,y) it is "f") cast to the passed
-     * type.
-     */
-    <T> T op(Class<T> opClass) throws IllegalArgumentException;
-
-    /**
-     * The subterms.
-     */
+    @Override
     ImmutableArray<Term> subs();
 
-    /**
-     * The <code>n</code>-th direct subterm.
-     */
-    Term sub(int n);
+    @Override
+            Term sub(int n);
 
-    /**
-     * The logical variables bound by the top level operator.
-     */
-    ImmutableArray<QuantifiableVariable> boundVars();
+    @Override ImmutableArray<QuantifiableVariable> boundVars();
 
-    /**
-     * The logical variables bound by the top level operator for the nth subterm.
-     */
-    ImmutableArray<QuantifiableVariable> varsBoundHere(int n);
+    @Override ImmutableArray<QuantifiableVariable> varsBoundHere(int n);
+
+    @Override
+    ImmutableSet<QuantifiableVariable> freeVars();
 
     /**
      * The Java block at top level.
@@ -83,34 +67,8 @@ public interface Term
     JavaBlock javaBlock();
 
     /**
-     * The arity of the term.
-     */
-    int arity();
-
-    /**
-     * The sort of the term.
-     */
-    @Override
-    Sort sort();
-
-    /**
-     * The nesting depth of this term.
-     */
-    int depth();
-
-    /**
-     * Whether all operators in this term are rigid.
-     */
-    boolean isRigid();
-
-    /**
-     * The set of free quantifiable variables occurring in this term.
-     */
-    ImmutableSet<QuantifiableVariable> freeVars();
-
-    /**
-     * The visitor is handed through till the bottom of the tree, and then it walks upwards, while
-     * at each upstep the method visit of the visitor is called.
+     * The visitor is handed through till the bottom of the tree and then it walks upwards, while at
+     * each upstep the method visit of the visitor is called.
      *
      * @param visitor the Visitor
      */
@@ -160,10 +118,7 @@ public interface Term
      */
     TermLabel getLabel(Name termLabelName);
 
-    /**
-     * Returns a serial number for a term. The serial number is not persistent.
-     */
-    int serialNumber();
+
 
 
     /**
