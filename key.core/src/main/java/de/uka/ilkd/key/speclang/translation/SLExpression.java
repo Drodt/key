@@ -6,8 +6,8 @@ package de.uka.ilkd.key.speclang.translation;
 import javax.annotation.Nonnull;
 
 import de.uka.ilkd.key.java.abstraction.KeYJavaType;
+import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.Term;
-import de.uka.ilkd.key.logic.sort.Sort;
 
 /**
  * This class represents the translation of an expression of an arbitrary specification language,
@@ -20,7 +20,7 @@ public final class SLExpression {
 
 
     public SLExpression(@Nonnull Term term, @Nonnull KeYJavaType type, boolean isTerm) {
-        if (term.sort() != Sort.ANY && term.sort() != type.getSort()) {
+        if (term.sort() != JavaDLTheory.ANY && term.sort() != type.getSort()) {
             throw new IllegalArgumentException(
                 String.format("term has sort: %s; type has sort: %s", term.sort(), type.getSort()));
         }
