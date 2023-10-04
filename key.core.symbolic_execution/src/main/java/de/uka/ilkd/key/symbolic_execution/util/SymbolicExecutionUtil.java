@@ -1499,7 +1499,7 @@ public final class SymbolicExecutionUtil {
          */
         @Override
         public void visit(Term visited) {
-            SymbolicExecutionTermLabel label = getSymbolicExecutionLabel((Term) visited);
+            SymbolicExecutionTermLabel label = getSymbolicExecutionLabel(visited);
             if (label != null) {
                 if (posInTerm == null
                         || (maximum ? label.id() > maxId : label.id() < maxId)) {
@@ -3183,8 +3183,7 @@ public final class SymbolicExecutionUtil {
         final Set<Term> result = new HashSet<>();
         term.execPreOrder(new DefaultVisitor() {
             @Override
-            public void visit(Term v) {
-                var visited = (Term) v;
+            public void visit(Term visited) {
                 if (isSkolemConstant(visited)) {
                     result.add(visited);
                 }

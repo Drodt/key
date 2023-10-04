@@ -968,13 +968,12 @@ public class TermLabelManager {
         applicationTerm.execPreOrder(new DefaultVisitor() {
             @Override
             public void visit(Term visited) {
-                var term = (Term) visited;
-                if (term != applicationTerm) {
-                    for (TermLabel label : term.getLabels()) {
+                if (visited != applicationTerm) {
+                    for (TermLabel label : visited.getLabels()) {
                         ChildTermLabelPolicy policy = policies.get(label.name());
                         if (policy != null && policy.addLabel(services, applicationPosInOccurrence,
                             applicationTerm, rule, goal, hint, tacletTerm, newTermOp, newTermSubs,
-                            newTermBoundVars, newTermJavaBlock, term, label)) {
+                            newTermBoundVars, newTermJavaBlock, visited, label)) {
                             newLabels.add(label);
                         }
                     }
