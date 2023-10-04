@@ -1227,7 +1227,8 @@ public class SMTObjTranslator implements SMTTranslator {
             return;
         }
         // Do not specify constraint for these sorts:
-        if (s == JavaDLTheory.ANY || s.equals(objectSort) || s.name().toString().equalsIgnoreCase("Null")) {
+        if (s == JavaDLTheory.ANY || s.equals(objectSort)
+                || s.name().toString().equalsIgnoreCase("Null")) {
             return;
         }
         /*
