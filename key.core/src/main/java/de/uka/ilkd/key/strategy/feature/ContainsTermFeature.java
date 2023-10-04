@@ -66,7 +66,7 @@ public class ContainsTermFeature implements Feature {
     }
 
 
-    private static class ContainsTermVisitor implements Visitor<Sort,Term> {
+    private static class ContainsTermVisitor implements Visitor<Sort, Term> {
         boolean found = false;
         final Term term;
 
