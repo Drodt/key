@@ -52,11 +52,13 @@ public interface Term
     ImmutableArray<Term> subs();
 
     @Override
-            Term sub(int n);
+    Term sub(int n);
 
-    @Override ImmutableArray<QuantifiableVariable> boundVars();
+    @Override
+    ImmutableArray<QuantifiableVariable> boundVars();
 
-    @Override ImmutableArray<QuantifiableVariable> varsBoundHere(int n);
+    @Override
+    ImmutableArray<QuantifiableVariable> varsBoundHere(int n);
 
     @Override
     ImmutableSet<QuantifiableVariable> freeVars();
