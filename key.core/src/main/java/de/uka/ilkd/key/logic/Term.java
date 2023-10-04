@@ -116,9 +116,6 @@ public interface Term
      */
     TermLabel getLabel(Name termLabelName);
 
-
-
-
     /**
      * Checks if the {@link Term} or one of its direct or indirect children contains a non-empty
      * {@link JavaBlock}.
