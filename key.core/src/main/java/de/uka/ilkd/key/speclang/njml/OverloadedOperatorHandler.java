@@ -211,7 +211,8 @@ public class OverloadedOperatorHandler {
         @Override
         public SLExpression build(JMLOperator op, SLExpression left, SLExpression right)
                 throws SLTranslationException {
-            if ((left.getTerm().sort() == sortBoolean || left.getTerm().sort() == JavaDLTheory.FORMULA)
+            if ((left.getTerm().sort() == sortBoolean
+                    || left.getTerm().sort() == JavaDLTheory.FORMULA)
                     && (right.getTerm().sort() == sortBoolean
                             || right.getTerm().sort() == JavaDLTheory.FORMULA)) {
                 final var t1 = tb.convertToFormula(left.getTerm());
