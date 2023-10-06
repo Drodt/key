@@ -24,9 +24,9 @@ import de.uka.ilkd.key.strategy.feature.AbstractBetaFeature.TermInfo;
 import de.uka.ilkd.key.strategy.feature.AppliedRuleAppsNameCache;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.ClausesGraph;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.TriggersSet;
-import de.uka.ilkd.key.util.Pair;
 
 import org.key_project.util.LRUCache;
+import org.key_project.util.collection.Pair;
 
 /**
  * <p>

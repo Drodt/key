@@ -67,7 +67,6 @@ import de.uka.ilkd.key.rule.inst.ContextStatementBlockInstantiation;
 import de.uka.ilkd.key.rule.inst.SVInstantiations;
 import de.uka.ilkd.key.speclang.FunctionalOperationContract;
 import de.uka.ilkd.key.speclang.HeapContext;
-import de.uka.ilkd.key.util.Pair;
 
 import org.key_project.logic.Name;
 import org.key_project.util.collection.DefaultImmutableSet;
@@ -75,6 +74,7 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
+import org.key_project.util.collection.Pair;
 
 /**
  * Implements the rule which inserts operation contracts for a method call.
@@ -237,7 +237,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         }
 
         // there must be applicable contracts for the operation
-        return getApplicableContracts(services, inst.pm, inst.staticType, inst.mod);
+        return getApplicableContracts(services, inst.pm, inst.staticType, inst.mod.kind());
     }
 
     /**
@@ -247,19 +247,20 @@ public final class UseOperationContractRule implements BuiltInRule {
      * @param services the services object
      * @param pm the program method
      * @param kjt the KeYJavaType of the class
-     * @param modality the modality
+     * @param modalityKind the modality
      * @return all applicable contracts
      */
     private static ImmutableSet<FunctionalOperationContract> getApplicableContracts(
-            Services services, IProgramMethod pm, KeYJavaType kjt, Modality modality) {
+            Services services, IProgramMethod pm, KeYJavaType kjt,
+            Modality.JavaModalityKind modalityKind) {
         ImmutableSet<FunctionalOperationContract> result =
-            services.getSpecificationRepository().getOperationContracts(kjt, pm, modality);
+            services.getSpecificationRepository().getOperationContracts(kjt, pm, modalityKind);
 
         // in box modalities, diamond contracts may be applied as well
-        if (modality == Modality.BOX) {
+        if (modalityKind == Modality.BOX) {
             result = result.union(
                 services.getSpecificationRepository().getOperationContracts(kjt, pm, Modality.DIA));
-        } else if (modality == Modality.BOX_TRANSACTION) {
+        } else if (modalityKind == Modality.BOX_TRANSACTION) {
             result = result.union(services.getSpecificationRepository().getOperationContracts(kjt,
                 pm, Modality.DIA_TRANSACTION));
         }
@@ -504,7 +505,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         // cache and return result
         final Instantiation result =
             new Instantiation(u, progPost, mod, actualResult, actualSelf, staticType, mr, pm,
-                actualParams, mod == Modality.DIA_TRANSACTION || mod == Modality.BOX_TRANSACTION);
+                actualParams, mod.<Modality.JavaModalityKind>kind().transaction());
         return result;
     }
 
@@ -533,7 +534,8 @@ public final class UseOperationContractRule implements BuiltInRule {
 
         // there must be applicable contracts for the operation
         final ImmutableSet<FunctionalOperationContract> contracts =
-            getApplicableContracts(goal.proof().getServices(), inst.pm, inst.staticType, inst.mod);
+            getApplicableContracts(goal.proof().getServices(), inst.pm, inst.staticType,
+                inst.mod.kind());
         if (contracts.isEmpty()) {
             return false;
         }
@@ -541,7 +543,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         // contract can be applied if modality is box and needs no termination
         // argument
         // see #1417, BOX_TRANSACTION added according to Wojciech's proposal.
-        if (inst.mod == Modality.BOX || inst.mod == Modality.BOX_TRANSACTION) {
+        if (inst.mod.kind() == Modality.BOX || inst.mod.kind() == Modality.BOX_TRANSACTION) {
             return true;
         }
 
@@ -727,7 +729,8 @@ public final class UseOperationContractRule implements BuiltInRule {
 
             final Term mbyOk;
             // see #1417
-            if (inst.mod != Modality.BOX && inst.mod != Modality.BOX_TRANSACTION && po != null
+            if (inst.mod.kind() != Modality.BOX && inst.mod.kind() != Modality.BOX_TRANSACTION
+                    && po != null
                     && mby != null) {
                 // mbyOk = TB.and(TB.leq(TB.zero(services), mby, services),
                 // TB.lt(mby, po.getMbyAtPre(), services));
@@ -763,7 +766,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         final StatementBlock postSB = replaceStatement(jb, resultAssign);
         JavaBlock postJavaBlock = JavaBlock.createJavaBlock(postSB);
         final Term normalPost = tb.apply(anonUpdate,
-            tb.prog(inst.mod, postJavaBlock, inst.progPost.sub(0),
+            tb.prog(inst.mod, inst.progPost.sub(0),
                 TermLabelManager.instantiateLabels(termLabelState, services,
                     ruleApp.posInOccurrence(), this, ruleApp, postGoal, "PostModality", null,
                     inst.mod, new ImmutableArray<>(inst.progPost.sub(0)), null, postJavaBlock,
@@ -781,7 +784,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         final StatementBlock excPostSB =
             replaceStatement(jb, new StatementBlock(new Throw(excVar)));
         JavaBlock excJavaBlock = JavaBlock.createJavaBlock(excPostSB);
-        final Term originalExcPost = tb.apply(anonUpdate, tb.prog(inst.mod, excJavaBlock,
+        final Term originalExcPost = tb.apply(anonUpdate, tb.prog(inst.mod,
             inst.progPost.sub(0),
             TermLabelManager.instantiateLabels(termLabelState, services, ruleApp.posInOccurrence(),
                 this, ruleApp, excPostGoal, "ExceptionalPostModality", null, inst.mod,

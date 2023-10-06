@@ -23,7 +23,7 @@ import org.key_project.logic.Name;
 import org.key_project.util.lookup.Lookup;
 
 /**
- * this is a collection of common services to the KeY prover. Services include information on the
+ * This is a collection of common services to the KeY prover. Services include information on the
  * underlying Java model and a converter to transform Java program elements to logic (where
  * possible) and back.
  */
@@ -417,7 +417,7 @@ public class Services implements TermServices {
 
     /**
      * Returns the {@link TermBuilder} used to create {@link Term}s. Same as
-     * {@link #getTermBuilder(true).
+     * {@link #getTermBuilder(boolean)} with a cache.
      *
      * @return The {@link TermBuilder} used to create {@link Term}s.
      */
