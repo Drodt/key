@@ -86,10 +86,9 @@ public interface AuxiliaryContract extends SpecificationElement {
     IProgramMethod getMethod();
 
     /**
-     *
      * @return this contract's modality.
      */
-    Modality getModality();
+    Modality.JavaModalityKind getModalityKind();
 
     /**
      * Returns the set of placeholder variables created during this contract's instantiation. These
@@ -679,7 +678,7 @@ public interface AuxiliaryContract extends SpecificationElement {
         private final TermServices services;
 
         /**
-         * You should use {@link #create()} instead of this constructor.
+         * You should use the suitable `create` method instead of this constructor.
          *
          * @param self {@code self}
          * @param breakFlags boolean flags that are set to {@code true} when the block terminates by

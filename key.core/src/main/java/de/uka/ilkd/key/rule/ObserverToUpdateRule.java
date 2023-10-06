@@ -205,7 +205,7 @@ public final class ObserverToUpdateRule implements BuiltInRule {
         StatementBlock postSB = UseOperationContractRule.replaceStatement(jb, new StatementBlock());
         JavaBlock postJavaBlock = JavaBlock.createJavaBlock(postSB);
         Term modTerm =
-            tb.prog((Modality) inst.modality.op(), postJavaBlock, inst.modality.sub(0),
+            tb.prog((Modality) inst.modality.op(), inst.modality.sub(0),
                 TermLabelManager.instantiateLabels(termLabelState, services,
                     ruleApp.posInOccurrence(), this, ruleApp, contGoal, "PostModality", null,
                     inst.modality.op(), inst.modality.subs(), null, postJavaBlock,
@@ -263,7 +263,7 @@ public final class ObserverToUpdateRule implements BuiltInRule {
         StatementBlock postSB = UseOperationContractRule.replaceStatement(jb, new StatementBlock());
         JavaBlock postJavaBlock = JavaBlock.createJavaBlock(postSB);
         Term modTerm =
-            tb.prog(inst.mod, postJavaBlock, inst.progPost.sub(0),
+            tb.prog(inst.mod, inst.progPost.sub(0),
                 TermLabelManager.instantiateLabels(termLabelState, services,
                     ruleApp.posInOccurrence(), this, ruleApp, contGoal, "PostModality", null,
                     inst.mod, new ImmutableArray<>(inst.progPost.sub(0)), null, postJavaBlock,

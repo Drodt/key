@@ -11,7 +11,6 @@ import de.uka.ilkd.key.logic.op.AbstractTermTransformer;
 import de.uka.ilkd.key.logic.op.Modality;
 import de.uka.ilkd.key.logic.op.UpdateableOperator;
 import de.uka.ilkd.key.rule.inst.SVInstantiations;
-import de.uka.ilkd.key.speclang.LoopSpecification;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
@@ -46,7 +45,7 @@ public final class CreateBeforeLoopUpdate extends AbstractTermTransformer {
         final Term anonSavedHeapTerm = term.sub(2);
         final Term anonPermissionsHeapTerm = term.sub(3);
 
-        return createBeforeLoopUpdate(MiscTools.isTransaction((Modality) loopTerm.op()),
+        return createBeforeLoopUpdate(MiscTools.isTransaction(((Modality) loopTerm.op()).kind()),
             MiscTools.isPermissions(services), anonHeapTerm, anonSavedHeapTerm,
             anonPermissionsHeapTerm, services);
     }
@@ -54,7 +53,6 @@ public final class CreateBeforeLoopUpdate extends AbstractTermTransformer {
     /**
      * Creates the anonymizing update for the given loop specification.
      *
-     * @param loopSpec The {@link LoopSpecification}.
      * @param isTransaction set to true iff we're in a transaction modality (then, there are more
      *        heaps available).
      * @param isPermissions set to true if the permissions profile is active (then, the permissions
