@@ -763,7 +763,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         final StatementBlock postSB = replaceStatement(jb, resultAssign);
         JavaBlock postJavaBlock = JavaBlock.createJavaBlock(postSB);
         final Term normalPost = tb.apply(anonUpdate,
-            tb.prog(inst.mod, inst.progPost.sub(0),
+            tb.prog(inst.mod.kind(), postJavaBlock, inst.progPost.sub(0),
                 TermLabelManager.instantiateLabels(termLabelState, services,
                     ruleApp.posInOccurrence(), this, ruleApp, postGoal, "PostModality", null,
                     inst.mod, new ImmutableArray<>(inst.progPost.sub(0)), null, postJavaBlock,
@@ -781,7 +781,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         final StatementBlock excPostSB =
             replaceStatement(jb, new StatementBlock(new Throw(excVar)));
         JavaBlock excJavaBlock = JavaBlock.createJavaBlock(excPostSB);
-        final Term originalExcPost = tb.apply(anonUpdate, tb.prog(inst.mod,
+        final Term originalExcPost = tb.apply(anonUpdate, tb.prog(inst.mod.kind(), excJavaBlock,
             inst.progPost.sub(0),
             TermLabelManager.instantiateLabels(termLabelState, services, ruleApp.posInOccurrence(),
                 this, ruleApp, excPostGoal, "ExceptionalPostModality", null, inst.mod,
