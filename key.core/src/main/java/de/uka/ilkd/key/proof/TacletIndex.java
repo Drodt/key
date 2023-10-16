@@ -97,6 +97,8 @@ public abstract class TacletIndex {
                 indexObj = ((SortDependingFunction) indexObj).getKind();
             } else if (indexObj instanceof ElementaryUpdate) {
                 indexObj = ElementaryUpdate.class;
+            } else if (indexObj instanceof Modality) {
+                indexObj = Modality.class;
             }
         }
 
@@ -350,6 +352,8 @@ public abstract class TacletIndex {
             inMap = map.get(((SortDependingFunction) op).getKind());
         } else if (op instanceof ElementaryUpdate) {
             inMap = map.get(ElementaryUpdate.class);
+        } else if (op instanceof Modality) {
+            inMap = map.get(Modality.class);
         } else {
             inMap = map.get(op);
         }
