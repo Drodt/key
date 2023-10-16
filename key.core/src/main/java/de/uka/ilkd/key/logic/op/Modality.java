@@ -61,6 +61,7 @@ public class Modality extends org.key_project.logic.op.Modality<Sort> implements
     public static final JavaModalityKind TOUT_TRANSACTION =
         new JavaModalityKind(new Name("throughout_transaction"));
 
+    public static final JavaModalityKind MOD_SV = new JavaModalityKind(new Name("mod_sv"));
 
     /**
      * creates a modal operator with the given name
@@ -140,7 +141,7 @@ public class Modality extends org.key_project.logic.op.Modality<Sort> implements
         additionalValidTopLevel(term);
     }
 
-    public static class JavaModalityKind extends Kind {
+    public static class JavaModalityKind extends Kind implements SVSubstitute {
         private static final Map<String, JavaModalityKind> kinds = new HashMap<>();
 
         public JavaModalityKind(Name name) {
