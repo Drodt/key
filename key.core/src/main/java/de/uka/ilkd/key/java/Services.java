@@ -148,7 +148,6 @@ public class Services implements TermServices {
         return result;
     }
 
-
     /**
      * Returns the TypeConverter associated with this Services object.
      */
