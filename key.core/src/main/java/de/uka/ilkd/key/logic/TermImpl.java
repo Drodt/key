@@ -362,6 +362,10 @@ public class TermImpl implements Term, EqualsModProofIrrelevancy {
             return true;
         }
 
+        if (t0.sort() != t1.sort() || t0.arity() != t1.arity()) {
+            return false;
+        }
+
         final Operator op0 = t0.op();
 
         if (op0 instanceof QuantifiableVariable) {
@@ -374,7 +378,7 @@ public class TermImpl implements Term, EqualsModProofIrrelevancy {
             if (mod0.kind() != mod1.kind()) {
                 return false;
             }
-            nat = handleJava(t0, t1, nat);
+            nat = handleJava(mod0.program(), mod1.program(), nat);
             if (nat == FAILED) {
                 return false;
             }
@@ -382,16 +386,13 @@ public class TermImpl implements Term, EqualsModProofIrrelevancy {
             return false;
         }
 
-        if (t0.sort() != t1.sort() || t0.arity() != t1.arity()) {
-            return false;
-        }
-
-        if (!(t0.op() instanceof SchemaVariable) && t0.op() instanceof ProgramVariable) {
-            if (!(t1.op() instanceof ProgramVariable)) {
-                return false;
-            }
-            nat = checkNat(nat);
-            if (!((ProgramVariable) t0.op()).equalsModRenaming((ProgramVariable) t1.op(), nat)) {
+        if (!(op0 instanceof SchemaVariable) && op0 instanceof ProgramVariable pv0) {
+            if (op1 instanceof ProgramVariable pv1) {
+                nat = checkNat(nat);
+                if (!pv0.equalsModRenaming(pv1, nat)) {
+                    return false;
+                }
+            } else {
                 return false;
             }
         }
@@ -413,15 +414,13 @@ public class TermImpl implements Term, EqualsModProofIrrelevancy {
      */
     private static final NameAbstractionTable FAILED = new NameAbstractionTable();
 
-    private static NameAbstractionTable handleJava(Term t0, Term t1, NameAbstractionTable nat) {
-
-        if (!t0.javaBlock().isEmpty() || !t1.javaBlock().isEmpty()) {
+    private static NameAbstractionTable handleJava(JavaBlock jb0, JavaBlock jb1, NameAbstractionTable nat) {
+        if (!jb0.isEmpty() || !jb1.isEmpty()) {
             nat = checkNat(nat);
-            if (!t0.javaBlock().equalsModRenaming(t1.javaBlock(), nat)) {
+            if (!jb0.equalsModRenaming(jb1, nat)) {
                 return FAILED;
             }
         }
-
         return nat;
     }
 
@@ -484,7 +483,9 @@ public class TermImpl implements Term, EqualsModProofIrrelevancy {
         final TermImpl t = (TermImpl) o;
 
         return op.equals(t.op) && t.hasLabels() == hasLabels() && subs.equals(t.subs)
-                && boundVars.equals(t.boundVars) && javaBlock().equals(t.javaBlock());
+                && boundVars.equals(t.boundVars)
+                // TODO (DD): below is no longer necessary
+                && javaBlock().equals(t.javaBlock());
     }
 
     @Override
@@ -709,7 +710,7 @@ public class TermImpl implements Term, EqualsModProofIrrelevancy {
     public boolean containsJavaBlockRecursive() {
         if (containsJavaBlockRecursive == ThreeValuedTruth.UNKNOWN) {
             ThreeValuedTruth result = ThreeValuedTruth.FALSE;
-            if (javaBlock() != null && !javaBlock().isEmpty()) {
+            if (!javaBlock().isEmpty()) {
                 result = ThreeValuedTruth.TRUE;
             } else {
                 for (int i = 0, arity = subs.size(); i < arity; i++) {
