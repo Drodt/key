@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.logic.sort;
 
-import javax.annotation.Nullable;
-
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.rule.HasOrigin;
@@ -13,30 +11,28 @@ import org.key_project.logic.Name;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableSet;
 
+import javax.annotation.Nonnull;
+
 /**
  * Abstract base class for implementations of the Sort interface.
  */
 public abstract class Sort extends org.key_project.logic.sort.AbstractSort<Sort>
         implements HasOrigin {
 
-    private ImmutableSet<Sort> ext;
+    private final ImmutableSet<Sort> ext;
 
-    public Sort(Name name, ImmutableSet<Sort> ext, boolean isAbstract, String origin, String documentation) {
+    public Sort(@Nonnull  Name name, ImmutableSet<Sort> extendedSorts, boolean isAbstract, String origin, String documentation) {
         super(name, isAbstract, documentation, origin);
-        this.ext = ext;
+        if (extendedSorts != null && extendedSorts.isEmpty()) {
+            this.ext = DefaultImmutableSet.<Sort>nil().add(JavaDLTheory.ANY);
+        } else {
+            this.ext = extendedSorts == null ? DefaultImmutableSet.<Sort>nil() : extendedSorts;
+        }
     }
 
     @Override
     public ImmutableSet<Sort> extendsSorts() {
-        if (this == JavaDLTheory.FORMULA || this == JavaDLTheory.UPDATE
-                || this == JavaDLTheory.ANY) {
-            return DefaultImmutableSet.nil();
-        } else {
-            if (ext.isEmpty()) {
-                ext = DefaultImmutableSet.<Sort>nil().add(JavaDLTheory.ANY);
-            }
-            return ext;
-        }
+        return ext;
     }
 
     public ImmutableSet<Sort> extendsSorts(Services services) {

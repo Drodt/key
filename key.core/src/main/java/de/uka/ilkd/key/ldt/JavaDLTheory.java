@@ -56,6 +56,7 @@ public class JavaDLTheory extends LDT {
     public static final Sort TERMLABEL = new SortImpl(new Name("TermLabel"), null, "", "");
     /**
      * Any is a supersort of all sorts.
+     * Important that is declared as last
      */
     public static final Sort ANY = new SortImpl(new Name("any"), null, "", "");
 
