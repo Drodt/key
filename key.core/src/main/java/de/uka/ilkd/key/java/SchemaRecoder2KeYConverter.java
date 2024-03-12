@@ -202,6 +202,11 @@ public class SchemaRecoder2KeYConverter extends Recoder2KeYConverter {
         return new MethodBodyStatement(tr, resVar, convert(l.getMethodReference()));
     }
 
+    public ActiveCase convert(de.uka.ilkd.key.java.recoderext.ActiveCase ac) {
+        ExtList children = collectChildren(ac);
+        return new ActiveCase(children, positionInfo(ac));
+    }
+
     /**
      * translate Context statement blocks
      */

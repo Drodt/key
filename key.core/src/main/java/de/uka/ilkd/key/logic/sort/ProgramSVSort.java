@@ -31,14 +31,7 @@ import de.uka.ilkd.key.java.expression.operator.New;
 import de.uka.ilkd.key.java.expression.operator.NewArray;
 import de.uka.ilkd.key.java.expression.operator.adt.*;
 import de.uka.ilkd.key.java.reference.*;
-import de.uka.ilkd.key.java.statement.Catch;
-import de.uka.ilkd.key.java.statement.Ccatch;
-import de.uka.ilkd.key.java.statement.For;
-import de.uka.ilkd.key.java.statement.ForUpdates;
-import de.uka.ilkd.key.java.statement.Guard;
-import de.uka.ilkd.key.java.statement.LoopInit;
-import de.uka.ilkd.key.java.statement.MethodBodyStatement;
-import de.uka.ilkd.key.java.statement.Switch;
+import de.uka.ilkd.key.java.statement.*;
 import de.uka.ilkd.key.logic.Namespace;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.Term;
@@ -252,6 +245,8 @@ public abstract class ProgramSVSort extends SortImpl {
     public static final ProgramSVSort ARRAYPOSTDECL = new ArrayPostDeclarationSort();
 
     public static final ProgramSVSort SWITCH = new SwitchSVSort();
+
+    public static final ProgramSVSort SWITCH_CASE = new SwitchCaseSVSort();
 
     public static final ProgramSVSort CONSTANT_PRIMITIVE_TYPE_VARIABLE =
         new ConstantProgramVariableSort(new Name("ConstantPrimitiveTypeVariable"), false);
@@ -1230,6 +1225,15 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         protected boolean canStandFor(ProgramElement pe, Services services) {
             return (pe instanceof Switch);
+        }
+    }
+
+    private static final class SwitchCaseSVSort extends ProgramSVSort {
+        public SwitchCaseSVSort() { super(new Name("SwitchCase"));}
+
+        @Override
+        protected boolean canStandFor(ProgramElement pe, Services services) {
+            return (pe instanceof Case) || (pe instanceof Default);
         }
     }
 

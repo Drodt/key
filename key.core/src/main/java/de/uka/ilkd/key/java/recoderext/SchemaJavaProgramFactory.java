@@ -121,6 +121,10 @@ public class SchemaJavaProgramFactory extends JavaProgramFactory {
         return new MergePointStatement(e);
     }
 
+    public ActiveCase createActiveCase() {
+        return new ActiveCase();
+    }
+
     /**
      * Create a {@link PassiveExpression}.
      */
