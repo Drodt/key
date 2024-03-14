@@ -1,3 +1,6 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.java.recoderext;
 
 import recoder.java.*;
@@ -9,7 +12,7 @@ public class ActiveCase extends SwitchBranch {
     /**
      * serialization id
      */
-    private static final long serialVersionID = /*TODO*/ 0;
+    private static final long serialVersionID = /* TODO */ 0;
 
     /**
      * Body.
@@ -193,7 +196,7 @@ public class ActiveCase extends SwitchBranch {
             e.visitActiveCase(this);
         } else {
             throw new IllegalStateException(
-                    "Method 'accept' not implemented in " + "ActiveCase");
+                "Method 'accept' not implemented in " + "ActiveCase");
         }
     }
 

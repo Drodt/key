@@ -127,7 +127,7 @@ public class Try extends BranchStatement implements StatementContainer, ProgramP
 
     @Override
     public ImmutableArray<ProgramPrefix> getPrefixElements() {
-        return StatementBlock.computePrefixElements(body.getBody(), this);
+        return StatementBlock.computePrefixElements(this);
     }
 
 

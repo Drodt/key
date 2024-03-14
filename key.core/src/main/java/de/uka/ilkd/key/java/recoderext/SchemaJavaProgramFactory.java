@@ -244,6 +244,14 @@ public class SchemaJavaProgramFactory extends JavaProgramFactory {
         return new CcatchSVWrapper(sv);
     }
 
+    public SwitchBranchSVWrapper getSwitchBranchSV(String s) throws ParseException {
+        SchemaVariable sv = lookupSchemaVariable(s);
+        if (!(sv instanceof ProgramSV)) {
+            throwSortInvalid(sv, "SwitchCase");
+        }
+        return new SwitchBranchSVWrapper(sv);
+    }
+
     /**
      * For internal reuse and synchronization.
      */

@@ -270,12 +270,15 @@ public class SchemaRecoder2KeYConverter extends Recoder2KeYConverter {
     }
 
     public SchemaVariable convert(de.uka.ilkd.key.java.recoderext.ProgramVariableSVWrapper svw) {
+        return svw.getSV();
+    }
 
+    public SchemaVariable convert(de.uka.ilkd.key.java.recoderext.SwitchBranchSVWrapper svw) {
         return svw.getSV();
     }
 
     /**
-     * for some reason the this and super references have to be treated differently here.
+     * for some reason the {@code this} and {@code super} references have to be treated differently here.
      */
 
     @Override

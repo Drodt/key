@@ -86,7 +86,7 @@ public class StatementBlock extends JavaStatement implements StatementContainer,
 
     /** computes the prefix elements for the given array of statment block */
     public static ImmutableArray<ProgramPrefix> computePrefixElements(
-            ImmutableArray<? extends Statement> b, ProgramPrefix current) {
+            ProgramPrefix current) {
         final ArrayList<ProgramPrefix> prefix = new ArrayList<>();
         prefix.add(current);
 
@@ -272,7 +272,7 @@ public class StatementBlock extends JavaStatement implements StatementContainer,
 
     @Override
     public ImmutableArray<ProgramPrefix> getPrefixElements() {
-        return computePrefixElements(body, this);
+        return computePrefixElements(this);
     }
 
     @Override
