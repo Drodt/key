@@ -278,7 +278,8 @@ public class SchemaRecoder2KeYConverter extends Recoder2KeYConverter {
     }
 
     /**
-     * for some reason the {@code this} and {@code super} references have to be treated differently here.
+     * for some reason the {@code this} and {@code super} references have to be treated differently
+     * here.
      */
 
     @Override
