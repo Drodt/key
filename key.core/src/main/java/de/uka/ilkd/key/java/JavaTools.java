@@ -4,7 +4,6 @@
 package de.uka.ilkd.key.java;
 
 import de.uka.ilkd.key.java.reference.ExecutionContext;
-import de.uka.ilkd.key.java.statement.ActiveCase;
 import de.uka.ilkd.key.java.statement.CatchAllStatement;
 import de.uka.ilkd.key.java.statement.LabeledStatement;
 import de.uka.ilkd.key.java.statement.MethodFrame;
@@ -31,14 +30,16 @@ public final class JavaTools {
         assert jb.program() != null;
 
         SourceElement result = jb.program().getFirstElement();
-        while ((result instanceof PossibleProgramPrefix pre && pre.isPrefix()) || result instanceof CatchAllStatement) {
+        while ((result instanceof PossibleProgramPrefix pre && pre.isPrefix())
+                || result instanceof CatchAllStatement) {
             if (result instanceof LabeledStatement) {
                 result = ((LabeledStatement) result).getChildAt(1);
             } else if (result instanceof CatchAllStatement) {
                 result = ((CatchAllStatement) result).getBody();
-            } else if (result == result.getFirstElement() && ((PossibleProgramPrefix) result).isPrefix()) {
+            } else if (result == result.getFirstElement()
+                    && ((PossibleProgramPrefix) result).isPrefix()) {
                 System.out.println(result);
-            }else {
+            } else {
                 result = result.getFirstElement();
             }
         }

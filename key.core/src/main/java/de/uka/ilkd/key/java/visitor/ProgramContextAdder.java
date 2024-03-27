@@ -81,8 +81,7 @@ public class ProgramContextAdder {
                 return createSwitchWrapper(sw, (ActiveCase) body);
             } else if (context instanceof ActiveCase ac) {
                 return createActiveCaseWrapper(ac, (Statement) body);
-            }
-            else {
+            } else {
                 throw new RuntimeException(
                     new UnexpectedException("Unexpected block type: " + context.getClass()));
             }

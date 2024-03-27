@@ -198,8 +198,9 @@ public class ContextStatementBlock extends StatementBlock {
 
                 start = relPos.get(relPos.depth() - 1);
                 if (relPos.depth() > 1) {
-                    firstActiveStatement = (PossibleProgramPrefix) PosInProgram.getProgramAt(relPos.up(),
-                        firstActiveStatement);
+                    firstActiveStatement =
+                        (PossibleProgramPrefix) PosInProgram.getProgramAt(relPos.up(),
+                            firstActiveStatement);
                 }
             }
             newSource = new SourceData(firstActiveStatement, start, services);
@@ -235,8 +236,8 @@ public class ContextStatementBlock extends StatementBlock {
      * position
      */
     private MatchConditions makeContextInfoComplete(MatchConditions matchCond, SourceData newSource,
-                                                    PossibleProgramPrefix prefix, int pos, PosInProgram relPos, ProgramElement src,
-                                                    Services services) {
+            PossibleProgramPrefix prefix, int pos, PosInProgram relPos, ProgramElement src,
+            Services services) {
 
         final SVInstantiations instantiations = matchCond.getInstantiations();
         final ExecutionContext lastExecutionContext = instantiations.getExecutionContext();
@@ -266,8 +267,8 @@ public class ContextStatementBlock extends StatementBlock {
      * @return the inner most execution context
      */
     private MatchConditions matchInnerExecutionContext(MatchConditions matchCond,
-                                                       final Services services, ExecutionContext lastExecutionContext,
-                                                       final PossibleProgramPrefix prefix, int pos, final ProgramElement src) {
+            final Services services, ExecutionContext lastExecutionContext,
+            final PossibleProgramPrefix prefix, int pos, final ProgramElement src) {
 
         // partial context instantiation
 
@@ -305,7 +306,8 @@ public class ContextStatementBlock extends StatementBlock {
      *        prefix.getPrefixElementAt(pos);
      * @return the PosInProgram of the first element, which is not part of the prefix
      */
-    private PosInProgram matchPrefixEnd(final PossibleProgramPrefix prefix, int pos, PosInProgram relPos) {
+    private PosInProgram matchPrefixEnd(final PossibleProgramPrefix prefix, int pos,
+            PosInProgram relPos) {
         PosInProgram prefixEnd = PosInProgram.TOP;
         if (prefix != null) {
             PossibleProgramPrefix currentPrefix = prefix;
