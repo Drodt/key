@@ -17,7 +17,7 @@ import de.uka.ilkd.key.java.reference.*;
 import de.uka.ilkd.key.java.statement.*;
 import de.uka.ilkd.key.java.visitor.Visitor;
 import de.uka.ilkd.key.logic.ProgramElementName;
-import de.uka.ilkd.key.logic.ProgramPrefix;
+import de.uka.ilkd.key.logic.PossibleProgramPrefix;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.rule.AbstractProgramElement;
@@ -824,7 +824,7 @@ public class PrettyPrinter implements Visitor {
 
     protected void performActionOnStatement(SourceElement s) {
         l.beginRelativeC(0);
-        boolean validStatement = !(s instanceof CatchAllStatement || s instanceof ProgramPrefix);
+        boolean validStatement = !(s instanceof CatchAllStatement || (s instanceof PossibleProgramPrefix pre && pre.isPrefix()));
         if (validStatement) {
             markStart(s);
         }
@@ -1687,7 +1687,7 @@ public class PrettyPrinter implements Visitor {
         }
     }
 
-    private void printCaseBody(ImmutableArray<Statement> body) {
+    private void printCaseBody(ImmutableArray<? extends Statement> body) {
         if (body != null && !body.isEmpty()) {
             for (int i = 0; i < body.size(); i++) {
                 Statement statement = body.get(i);
@@ -1743,8 +1743,10 @@ public class PrettyPrinter implements Visitor {
 
     @Override
     public void performActionOnActiveCase(ActiveCase x) {
+        if (!x.isPrefix()) markStart(x);
         l.keyWord("active-case").print(":");
         printCaseBody(x.getBody());
+        if (!x.isPrefix()) markEnd(x);
     }
 
     @Override

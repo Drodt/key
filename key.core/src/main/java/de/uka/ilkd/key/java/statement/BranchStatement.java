@@ -5,6 +5,7 @@ package de.uka.ilkd.key.java.statement;
 
 import de.uka.ilkd.key.java.NonTerminalProgramElement;
 
+import de.uka.ilkd.key.java.PositionInfo;
 import org.key_project.util.ExtList;
 
 /**
@@ -19,6 +20,11 @@ public abstract class BranchStatement extends JavaStatement implements NonTermin
     public BranchStatement() {
 
     }
+
+    public BranchStatement(PositionInfo pos) {
+        super(pos);
+    }
+
 
 
     /**

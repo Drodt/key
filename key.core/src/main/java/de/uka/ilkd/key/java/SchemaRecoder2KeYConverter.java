@@ -273,8 +273,8 @@ public class SchemaRecoder2KeYConverter extends Recoder2KeYConverter {
         return svw.getSV();
     }
 
-    public SwitchBranchSVWrapper convert(de.uka.ilkd.key.java.recoderext.SwitchBranchSVWrapper svw) {
-        return new SwitchBranchSVWrapper(svw.getSV());
+    public SchemaVariable convert(de.uka.ilkd.key.java.recoderext.SwitchBranchSVWrapper svw) {
+        return svw.getSV();
     }
 
     /**

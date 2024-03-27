@@ -39,7 +39,7 @@ import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.JavaBlock;
 import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.PosInProgram;
-import de.uka.ilkd.key.logic.ProgramPrefix;
+import de.uka.ilkd.key.logic.PossibleProgramPrefix;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
@@ -335,9 +335,9 @@ public final class UseOperationContractRule implements BuiltInRule {
 
         PosInProgram result = PosInProgram.TOP;
 
-        if (pe instanceof ProgramPrefix curPrefix) {
+        if (pe instanceof PossibleProgramPrefix curPrefix) {
 
-            final ImmutableArray<ProgramPrefix> prefix = curPrefix.getPrefixElements();
+            final ImmutableArray<PossibleProgramPrefix> prefix = curPrefix.getPrefixElements();
             final int length = prefix.size();
 
             // fail fast check

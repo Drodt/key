@@ -4,6 +4,7 @@
 package de.uka.ilkd.key.java.statement;
 
 import de.uka.ilkd.key.java.ProgramElement;
+import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.java.Statement;
 import de.uka.ilkd.key.java.visitor.Visitor;
 
@@ -60,6 +61,11 @@ public class Default extends SwitchBranch {
             result += body.size();
         }
         return result;
+    }
+
+    @Override
+    public SourceElement getFirstElement() {
+        return body.get(0);
     }
 
     /**

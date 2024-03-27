@@ -20,7 +20,7 @@ import de.uka.ilkd.key.java.statement.While;
 import de.uka.ilkd.key.java.visitor.ProgramElementReplacer;
 import de.uka.ilkd.key.logic.JavaBlock;
 import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.ProgramPrefix;
+import de.uka.ilkd.key.logic.PossibleProgramPrefix;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
@@ -416,7 +416,7 @@ public class LoopScopeInvariantRule extends AbstractLoopInvariantRule {
         Optional<Label> loopLabel = Optional.empty();
         Statement stmtToRepl = whileLoop;
 
-        ImmutableArray<ProgramPrefix> prefixElems =
+        ImmutableArray<PossibleProgramPrefix> prefixElems =
             ((StatementBlock) TermBuilder.goBelowUpdates(ruleApp.posInOccurrence().subTerm())
                     .javaBlock().program()).getPrefixElements();
 

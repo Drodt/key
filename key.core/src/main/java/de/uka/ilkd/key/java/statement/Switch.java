@@ -4,32 +4,29 @@
 package de.uka.ilkd.key.java.statement;
 
 import de.uka.ilkd.key.java.*;
+import de.uka.ilkd.key.java.expression.Literal;
 import de.uka.ilkd.key.java.reference.ExecutionContext;
 import de.uka.ilkd.key.java.reference.MetaClassReference;
 import de.uka.ilkd.key.java.visitor.Visitor;
 import de.uka.ilkd.key.logic.PosInProgram;
-import de.uka.ilkd.key.logic.ProgramPrefix;
+import de.uka.ilkd.key.logic.PossibleProgramPrefix;
 
-import de.uka.ilkd.key.logic.op.ProgramSV;
 import de.uka.ilkd.key.logic.op.ProgramVariable;
-import de.uka.ilkd.key.logic.sort.ProgramSVSort;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
-
-import java.util.LinkedList;
 
 /**
  * Switch.
  */
 
 public class Switch extends BranchStatement
-        implements ExpressionContainer, VariableScope, TypeScope, ProgramPrefix {
+        implements ExpressionContainer, VariableScope, TypeScope, PossibleProgramPrefix {
 
     /**
      * Branches.
      */
 
-    protected final ImmutableArray<SwitchBranch> branches;
+    protected final ImmutableArray<Branch> branches;
 
     /**
      * Expression.
@@ -72,7 +69,24 @@ public class Switch extends BranchStatement
      * @param branches a branch array
      */
 
-    public Switch(Expression e, SwitchBranch[] branches) {
+    public Switch(Expression e, Branch[] branches) {
+        this.branches = new ImmutableArray<>(branches);
+        this.expression = e;
+        ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
+        prefixLength = info.getLength();
+        innerMostMethodFrame = info.getInnerMostMethodFrame();
+    }
+
+    public Switch(Expression e, ImmutableArray<Branch> branches) {
+        this.branches = branches;
+        this.expression = e;
+        ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
+        prefixLength = info.getLength();
+        innerMostMethodFrame = info.getInnerMostMethodFrame();
+    }
+
+    public Switch(PositionInfo pos, Expression e, Branch[] branches) {
+        super(pos);
         this.branches = new ImmutableArray<>(branches);
         this.expression = e;
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
@@ -88,8 +102,8 @@ public class Switch extends BranchStatement
 
     public Switch(ExtList children) {
         super(children);
-        this.expression = children.get(Expression.class);
-        this.branches = new ImmutableArray<>(children.collect(SwitchBranch.class));
+        this.expression = children.removeFirstOccurrence(Expression.class);
+        this.branches = new ImmutableArray<>(children.collect(Branch.class));
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.getLength();
         innerMostMethodFrame = info.getInnerMostMethodFrame();
@@ -192,7 +206,7 @@ public class Switch extends BranchStatement
      * @exception ArrayIndexOutOfBoundsException if <tt>index</tt> is out of bounds.
      */
 
-    public SwitchBranch getBranchAt(int index) {
+    public Branch getBranchAt(int index) {
         if (branches != null) {
             return branches.get(index);
         }
@@ -205,7 +219,7 @@ public class Switch extends BranchStatement
      *
      * @return the array wrapper of the branches
      */
-    public ImmutableArray<SwitchBranch> getBranchList() {
+    public ImmutableArray<Branch> getBranchList() {
         return branches;
     }
 
@@ -226,22 +240,29 @@ public class Switch extends BranchStatement
     }
 
     @Override
-    public boolean hasNextPrefixElement() {
-        return !branches.isEmpty() && branches.get(0) instanceof ProgramPrefix;
+    public boolean isPrefix() {
+        if (branches.isEmpty())
+            System.err.println("Error: empty switch " + expression);
+        return !branches.isEmpty() && expressionWithoutSideffects();
     }
 
     @Override
-    public ProgramPrefix getNextPrefixElement() {
+    public boolean hasNextPrefixElement() {
+        return !branches.isEmpty() && branches.get(0) instanceof PossibleProgramPrefix;
+    }
+
+    @Override
+    public PossibleProgramPrefix getNextPrefixElement() {
         if (hasNextPrefixElement()) {
-            return (ProgramPrefix) branches.get(0);
+            return (PossibleProgramPrefix) branches.get(0);
         } else {
             throw new IndexOutOfBoundsException("No next prefix element " + this);
         }
     }
 
     @Override
-    public ProgramPrefix getLastPrefixElement() {
-        return hasNextPrefixElement() ? ((ProgramPrefix) branches.get(0)).getLastPrefixElement()
+    public PossibleProgramPrefix getLastPrefixElement() {
+        return hasNextPrefixElement() ? ((PossibleProgramPrefix) branches.get(0)).getLastPrefixElement()
                 : this;
     }
 
@@ -256,7 +277,7 @@ public class Switch extends BranchStatement
     }
 
     @Override
-    public ImmutableArray<ProgramPrefix> getPrefixElements() {
+    public ImmutableArray<PossibleProgramPrefix> getPrefixElements() {
         return StatementBlock.computePrefixElements(this);
     }
 
@@ -269,7 +290,7 @@ public class Switch extends BranchStatement
      */
     private boolean expressionWithoutSideffects() {
         return (expression instanceof ProgramVariable && !((ProgramVariable) expression).isMember())
-                || (expression instanceof MetaClassReference);
+                || (expression instanceof MetaClassReference) || expression instanceof Literal;
     }
 
     @Override
