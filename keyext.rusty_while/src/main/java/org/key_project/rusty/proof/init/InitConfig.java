@@ -20,6 +20,8 @@ import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
+import org.jspecify.annotations.NonNull;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -135,7 +137,7 @@ public class InitConfig {
      *
      * @return a non-null namespace
      */
-    public Namespace<Function> funcNS() {
+    public Namespace<@NonNull Function> funcNS() {
         return namespaces().functions();
     }
 
@@ -143,7 +145,7 @@ public class InitConfig {
     /**
      * returns the sort namespace of this initial configuration
      */
-    public Namespace<Sort> sortNS() {
+    public Namespace<@NonNull Sort> sortNS() {
         return namespaces().sorts();
     }
 
@@ -159,7 +161,7 @@ public class InitConfig {
     /**
      * returns the variable namespace of this initial configuration
      */
-    public Namespace<QuantifiableVariable> varNS() {
+    public Namespace<@NonNull QuantifiableVariable> varNS() {
         return namespaces().variables();
     }
 
@@ -167,7 +169,7 @@ public class InitConfig {
     /**
      * returns the program variable namespace of this initial configuration
      */
-    public Namespace<ProgramVariable> progVarNS() {
+    public Namespace<@NonNull ProgramVariable> progVarNS() {
         return namespaces().programVariables();
     }
 
