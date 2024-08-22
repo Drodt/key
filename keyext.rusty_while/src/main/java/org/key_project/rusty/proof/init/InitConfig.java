@@ -190,7 +190,7 @@ public class InitConfig {
         }
 
         ic.setTaclet2Builder(
-                (HashMap<Taclet, TacletBuilder<? extends Taclet>>) taclet2Builder.clone());
+            (HashMap<Taclet, TacletBuilder<? extends Taclet>>) taclet2Builder.clone());
         ic.taclets = taclets;
         ic.fileRepo = fileRepo; // TODO: copy instead? delete via dispose method?
         return ic;
