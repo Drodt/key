@@ -12,10 +12,10 @@ import org.jspecify.annotations.NonNull;
 /**
  * Subclasses must add {@code create} methods
  */
-public abstract class Sequent<SF extends SequentFormula> implements Iterable<SF> {
-    private final Semisequent<SF> antecedent;
+public abstract class Sequent implements Iterable<SequentFormula> {
 
-    private final Semisequent<SF> succedent;
+    private final Semisequent antecedent;
+    private final Semisequent succedent;
 
     /** used by NILSequent implementations */
     protected Sequent(Semisequent emptySemisequent) {
