@@ -5,7 +5,7 @@ package de.uka.ilkd.key.logic;
 
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.op.AbstractTermTransformer;
-import org.jspecify.annotations.Nullable;
+
 import org.key_project.util.EqualsModProofIrrelevancy;
 
 import org.jspecify.annotations.Nullable;
