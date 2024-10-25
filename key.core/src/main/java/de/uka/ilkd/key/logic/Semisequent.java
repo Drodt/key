@@ -18,7 +18,8 @@ import static de.uka.ilkd.key.logic.equality.RenamingTermProperty.RENAMING_TERM_
  * future versions it can be enhanced to do other simplifications. A sequent and so a semisequent
  * has to be immutable.
  */
-public class Semisequent extends org.key_project.ncore.sequent.Semisequent<SequentFormula> {
+public class Semisequent extends org.key_project.ncore.sequent.Semisequent {
+
     /** the empty semisequent (using singleton pattern) */
     public static final Semisequent EMPTY_SEMISEQUENT = new Empty();
 
@@ -34,7 +35,7 @@ public class Semisequent extends org.key_project.ncore.sequent.Semisequent<Seque
      *
      * @param seqList list of sequent formulas
      */
-    public Semisequent(ImmutableList<SequentFormula> seqList) {
+    public Semisequent(ImmutableList<org.key_project.ncore.sequent.SequentFormula> seqList) {
         super(seqList);
     }
 
@@ -46,37 +47,43 @@ public class Semisequent extends org.key_project.ncore.sequent.Semisequent<Seque
      * @param seqList list of sequent formulas
      */
     public Semisequent(Collection<SequentFormula> seqList) {
-        super(seqList);
+        this(ImmutableList.fromList(seqList));
     }
+
+
+    @Override
+    protected boolean equalsModRenaming(org.key_project.ncore.sequent.SequentFormula sf1,
+                                        org.key_project.ncore.sequent.SequentFormula sf2) {
+        return RENAMING_TERM_PROPERTY.equalsModThisProperty(sf1.formula(), sf2.formula());
+    }
+
+    @Override
+    protected SemisequentChangeInfo createSemisequentChangeInfo(ImmutableList<org.key_project.ncore.sequent.SequentFormula> seqList) {
+        return null;
+    }
+
+
+    /**
+     * Create a new Semisequent from an ordered collection of formulas (possibly empty).
+     * The provided collection must be redundancy free, i.e., the created sequent must be exactly
+     * the same as when creating the
+     * sequent by subsequently inserting all formulas.
+     *
+     * @param seqList list of sequent formulas
+     */
+    public static Semisequent create(Collection<SequentFormula> seqList) {
+        if (seqList.isEmpty()) {
+            return EMPTY_SEMISEQUENT;
+        }
+        return new Semisequent(seqList);
+    }
+
 
     /**
      * creates a new Semisequent with the Semisequent elements in seqList
      */
     public Semisequent(SequentFormula seqFormula) {
-        super(ImmutableSLList.<SequentFormula>nil().append(seqFormula));
-    }
-
-
-    @Override
-    protected boolean equalsModRenaming(SequentFormula sf1, SequentFormula sf2) {
-        return RENAMING_TERM_PROPERTY.equalsModThisProperty((Term) sf1.formula(),
-            (Term) sf2.formula());
-    }
-
-    @Override
-    protected SemisequentChangeInfo createSemisequentChangeInfo(
-            ImmutableList<SequentFormula> seqList) {
-        return new SemisequentChangeInfo(seqList);
-    }
-
-    @Override
-    public SemisequentChangeInfo insert(int idx, ImmutableList<SequentFormula> insertionList) {
-        return (SemisequentChangeInfo) super.insert(idx, insertionList);
-    }
-
-    @Override
-    public SemisequentChangeInfo insert(int idx, SequentFormula sequentFormula) {
-        return (SemisequentChangeInfo) super.insert(idx, sequentFormula);
+        super(ImmutableSLList.<org.key_project.ncore.sequent.SequentFormula>nil().append(seqFormula));
     }
 
     // inner class used to represent an empty semisequent

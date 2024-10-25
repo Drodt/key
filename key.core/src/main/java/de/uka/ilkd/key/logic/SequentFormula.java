@@ -5,7 +5,7 @@ package de.uka.ilkd.key.logic;
 
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.op.AbstractTermTransformer;
-
+import org.jspecify.annotations.Nullable;
 import org.key_project.util.EqualsModProofIrrelevancy;
 
 import org.jspecify.annotations.Nullable;
@@ -23,6 +23,7 @@ import static de.uka.ilkd.key.logic.equality.ProofIrrelevancyProperty.PROOF_IRRE
  */
 public class SequentFormula extends org.key_project.ncore.sequent.SequentFormula
         implements EqualsModProofIrrelevancy {
+
     /**
      * Cached value for {@link #hashCodeModProofIrrelevancy()}.
      */
@@ -44,6 +45,17 @@ public class SequentFormula extends org.key_project.ncore.sequent.SequentFormula
 
     public Term formula() {
         return (Term) super.formula();
+    }
+
+    /** equal if terms and constraints are equal */
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof SequentFormula cmp) {
+            return formula().equals(cmp.formula());
+        }
+        return false;
     }
 
     @Override
