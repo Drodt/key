@@ -72,6 +72,7 @@ public class Sequent extends org.key_project.ncore.sequent.Sequent {
         }
         return new Sequent(Semisequent.EMPTY_SEMISEQUENT, succ);
     }
+
     /**
      * must only be called by NILSequent
      *
@@ -103,7 +104,8 @@ public class Sequent extends org.key_project.ncore.sequent.Sequent {
      * @param p_semiSeq the {@link Semisequent} to use
      * @return the resulting sequent
      */
-    private Sequent composeSequent(boolean antec, org.key_project.ncore.sequent.Semisequent semiSeq) {
+    private Sequent composeSequent(boolean antec,
+            org.key_project.ncore.sequent.Semisequent semiSeq) {
         final var antecedent = antecedent();
         final var succedent = succedent();
         if (semiSeq.isEmpty()) {
