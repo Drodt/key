@@ -96,6 +96,11 @@ public class Sequent extends org.key_project.ncore.sequent.Sequent {
         return (Semisequent) super.antecedent();
     }
 
+    @Override
+    public SequentChangeInfo<SequentFormula> removeFormula(PosInOccurrence p) {
+        return super.removeFormula(p);
+    }
+
     /**
      * replaces the antecedent ({@code antec} is true) of this sequent by the given
      * {@link Semisequent} similar for the succedent if {@code antec} is false.
@@ -284,6 +289,8 @@ public class Sequent extends org.key_project.ncore.sequent.Sequent {
     }
 
     private static final class NILSequent extends Sequent {
+        private static final NILSequent INSTANCE = new NILSequent();
+
         private NILSequent() {
         }
 
