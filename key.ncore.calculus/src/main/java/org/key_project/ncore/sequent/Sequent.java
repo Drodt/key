@@ -14,14 +14,7 @@ import org.jspecify.annotations.NonNull;
  */
 public abstract class Sequent implements Iterable<SequentFormula> {
 
-    private final Semisequent antecedent;
-    private final Semisequent succedent;
-
-    /** used by NILSequent implementations */
-    protected Sequent(Semisequent emptySemisequent) {
-        this.antecedent = emptySemisequent;
-        this.succedent = emptySemisequent;
-    }
+    private final Semisequent<SF> succedent;
 
     /** creates new Sequent with antecedence and succedence */
     protected Sequent(Semisequent<SF> antecedent, Semisequent<SF> succedent) {
@@ -30,6 +23,7 @@ public abstract class Sequent implements Iterable<SequentFormula> {
         this.succedent = succedent;
     }
 
+    /** used by NILSequent implementations */
     protected Sequent(Semisequent<SF> emptySeq) {
         assert emptySeq.isEmpty();
         this.antecedent = emptySeq;
