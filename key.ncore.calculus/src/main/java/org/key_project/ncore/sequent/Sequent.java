@@ -329,7 +329,6 @@ public abstract class Sequent implements Iterable<SequentFormula> {
     }
 
     static class SequentIterator<SF extends SequentFormula> implements Iterator<SF> {
-
         /**
          * The iterator over the ancedent of the proof sequent.
          */
