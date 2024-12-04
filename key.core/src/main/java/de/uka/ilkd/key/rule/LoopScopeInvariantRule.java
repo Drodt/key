@@ -19,7 +19,6 @@ import de.uka.ilkd.key.java.statement.LoopScopeBlock;
 import de.uka.ilkd.key.java.statement.While;
 import de.uka.ilkd.key.java.visitor.ProgramElementReplacer;
 import de.uka.ilkd.key.logic.JavaBlock;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.ProgramPrefix;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
@@ -33,6 +32,8 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.speclang.WellDefinednessCheck;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.Pair;
@@ -125,7 +126,7 @@ public class LoopScopeInvariantRule extends AbstractLoopInvariantRule {
             return false;
         }
 
-        final Term progPost = splitUpdates(pio.subTerm(), goal.proof().getServices()).second;
+        final Term progPost = splitUpdates((Term) pio.subTerm(), goal.proof().getServices()).second;
         final var kind = ((Modality) progPost.op()).<Modality.JavaModalityKind>kind();
 
         return !InfFlowCheckInfo.isInfFlow(goal) && !WellDefinednessCheck.isOn() // TODO: Remove
@@ -140,12 +141,12 @@ public class LoopScopeInvariantRule extends AbstractLoopInvariantRule {
     }
 
     @Override
-    public @NonNull ImmutableList<Goal> apply(Goal goal, Services services, RuleApp ruleApp)
+    public @NonNull ImmutableList<Goal> apply(Goal goal, RuleApp ruleApp)
             throws RuleAbortException {
         // Initial assertions
         assert ruleApp instanceof LoopInvariantBuiltInRuleApp;
 
-        LoopInvariantInformation loopInvInfo = doPreparations(goal, services, ruleApp);
+        LoopInvariantInformation loopInvInfo = doPreparations(goal, ruleApp);
 
         ImmutableList<Goal> goals = loopInvInfo.goals();
         Goal initiallyGoal = goals.tail().head();

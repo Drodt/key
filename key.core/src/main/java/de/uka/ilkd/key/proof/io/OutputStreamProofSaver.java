@@ -48,7 +48,9 @@ import de.uka.ilkd.key.util.KeYConstants;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMapEntry;
 
@@ -696,11 +698,13 @@ public class OutputStreamProofSaver {
         ps.append(")\n");
     }
 
-    public static String posInOccurrence2Proof(Sequent seq, PosInOccurrence pos) {
+    public static String posInOccurrence2Proof(Sequent seq,
+            PosInOccurrence pos) {
         if (pos == null) {
             return "";
         }
-        return " (formula \"" + seq.formulaNumberInSequent(pos.isInAntec(), pos.sequentFormula())
+        return " (formula \""
+            + seq.formulaNumberInSequent(pos.isInAntec(), (SequentFormula) pos.sequentFormula())
             + "\")" + posInTerm2Proof(pos.posInTerm());
     }
 
@@ -780,7 +784,8 @@ public class OutputStreamProofSaver {
         return s.toString();
     }
 
-    public String builtinRuleIfInsts(Node node, ImmutableList<PosInOccurrence> ifInsts) {
+    public String builtinRuleIfInsts(Node node,
+            ImmutableList<PosInOccurrence> ifInsts) {
         StringBuilder s = new StringBuilder();
         for (final PosInOccurrence ifInst : ifInsts) {
             s.append(" (ifInst \"\" ");

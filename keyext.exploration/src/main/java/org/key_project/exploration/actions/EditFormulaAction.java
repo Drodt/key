@@ -6,7 +6,6 @@ package org.key_project.exploration.actions;
 import java.awt.event.ActionEvent;
 
 import de.uka.ilkd.key.gui.MainWindow;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
@@ -15,6 +14,7 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 
 import org.key_project.exploration.ProofExplorationService;
+import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
  * Action to edit formulas in the actions mode
@@ -49,8 +49,8 @@ public class EditFormulaAction extends ExplorationAction {
 
         TermBuilder tb = getMediator().getServices().getTermBuilder();
         PosInOccurrence pio = posInSeq.getPosInOccurrence();
-        Term term = pio.subTerm();
-        SequentFormula sf = pio.sequentFormula();
+        Term term = (Term) pio.subTerm();
+        SequentFormula sf = (SequentFormula) pio.sequentFormula();
         Goal g = getMediator().getSelectedGoal();
         Term newTerm = promptForTerm(mainWindow, term);
 

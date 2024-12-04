@@ -53,7 +53,10 @@ import de.uka.ilkd.key.util.mergerule.MergeRuleUtils;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
+import org.key_project.logic.Namespace;
+import org.key_project.logic.PosInTerm;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -333,7 +336,8 @@ public class IntermediateProofReplayer {
 
                             partnerNodeInfo.add(new Triple<>(
                                 currNode,
-                                PosInOccurrence.findInSequent(currGoal.sequent(),
+                                PosInOccurrence.findInSequent(
+                                    currGoal.sequent(),
                                     appInterm.getPosInfo().first, appInterm.getPosInfo().second),
                                 currNodeInterm));
                         } else {
@@ -457,7 +461,8 @@ public class IntermediateProofReplayer {
 
         if (currFormula != 0) { // otherwise we have no pos
             try {
-                pos = PosInOccurrence.findInSequent(currGoal.sequent(), currFormula, currPosInTerm);
+                pos = PosInOccurrence
+                        .findInSequent(currGoal.sequent(), currFormula, currPosInTerm);
 
                 /*
                  * part of the fix for #1716: ensure that position of find term
@@ -567,8 +572,10 @@ public class IntermediateProofReplayer {
                 final PosInTerm currIfInstPosInTerm = ifInstP.second;
 
                 try {
-                    final PosInOccurrence ifInst = PosInOccurrence.findInSequent(currGoal.sequent(),
-                        currIfInstFormula, currIfInstPosInTerm);
+                    final PosInOccurrence ifInst =
+                        PosInOccurrence.findInSequent(
+                            currGoal.sequent(),
+                            currIfInstFormula, currIfInstPosInTerm);
                     builtinIfInsts = builtinIfInsts.append(ifInst);
                 } catch (RuntimeException | AssertionError e) {
                     reportError(
@@ -623,7 +630,8 @@ public class IntermediateProofReplayer {
                 throw new SkipSMTRuleException();
             } else {
                 String name = smtProblem.getSuccessfulSolver().name();
-                ImmutableList<PosInOccurrence> unsatCore = SMTFocusResults.getUnsatCore(smtProblem);
+                ImmutableList<PosInOccurrence> unsatCore =
+                    SMTFocusResults.getUnsatCore(smtProblem);
                 if (unsatCore != null) {
                     return SMTRuleApp.RULE.createApp(name, unsatCore);
                 } else {
@@ -637,7 +645,8 @@ public class IntermediateProofReplayer {
 
         if (currFormula != 0) { // otherwise we have no pos
             try {
-                pos = PosInOccurrence.findInSequent(currGoal.sequent(), currFormula, currPosInTerm);
+                pos = PosInOccurrence
+                        .findInSequent(currGoal.sequent(), currFormula, currPosInTerm);
             } catch (RuntimeException e) {
                 throw new BuiltInConstructionException("Wrong position information.", e);
             }

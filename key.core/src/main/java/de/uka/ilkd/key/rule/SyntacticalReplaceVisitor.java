@@ -28,6 +28,7 @@ import de.uka.ilkd.key.rule.inst.SVInstantiations;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.ConstraintAwareSyntacticalReplaceVisitor;
 
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableArray;
 
 /**
@@ -72,21 +73,53 @@ public class SyntacticalReplaceVisitor implements DefaultVisitor {
      * @param goal the current goal
      * @param rule the applied rule
      * @param ruleApp the rule application
-     * @param services the Services
-     * @param termBuilder the TermBuilder to use (allows to use the non cached version)
+     * @param useTermCache the TermBuilder to use (allows to use the non cached version)
      */
     private SyntacticalReplaceVisitor(TermLabelState termLabelState, TacletLabelHint labelHint,
-            PosInOccurrence applicationPosInOccurrence, SVInstantiations svInst, Goal goal,
-            Rule rule, RuleApp ruleApp, Services services, TermBuilder termBuilder) {
+            PosInOccurrence applicationPosInOccurrence,
+            SVInstantiations svInst, Goal goal,
+            Rule rule, RuleApp ruleApp, boolean useTermCache) {
         this.termLabelState = termLabelState;
-        this.services = services;
-        this.tb = termBuilder;
+        this.services = goal.getOverlayServices();
+        this.tb = services.getTermBuilder(useTermCache);
         this.svInst = svInst;
         this.applicationPosInOccurrence = applicationPosInOccurrence;
         this.rule = rule;
         this.ruleApp = ruleApp;
         this.labelHint = labelHint;
         this.goal = goal;
+        subStack = new Stack<>(); // of Term
+        if (labelHint instanceof TacletLabelHint) {
+            labelHint.setTacletTermStack(tacletTermStack);
+        }
+    }
+
+    /**
+     * ONLY TO BE USED BZ ConstraintAwareSyntacticalReplaceVisitor (HACK)
+     * constructs a term visitor replacing any occurrence of a schemavariable found in
+     * {@code svInst} by its instantiation
+     *
+     * @param termLabelState the termlabel state
+     * @param labelHint hints about how to deal with labels
+     * @param applicationPosInOccurrence the application position
+     * @param services the services
+     * @param rule the applied rule
+     * @param ruleApp the rule application
+     * @param useTermCache the TermBuilder to use (allows to use the non cached version)
+     */
+    protected SyntacticalReplaceVisitor(TermLabelState termLabelState, TacletLabelHint labelHint,
+            PosInOccurrence applicationPosInOccurrence,
+            Services services,
+            Rule rule, RuleApp ruleApp, boolean useTermCache) {
+        this.termLabelState = termLabelState;
+        this.services = services;
+        this.tb = this.services.getTermBuilder(useTermCache);
+        this.svInst = SVInstantiations.EMPTY_SVINSTANTIATIONS;
+        this.applicationPosInOccurrence = applicationPosInOccurrence;
+        this.rule = rule;
+        this.ruleApp = ruleApp;
+        this.labelHint = labelHint;
+        this.goal = null;
         subStack = new Stack<>(); // of Term
         if (labelHint instanceof TacletLabelHint) {
             labelHint.setTacletTermStack(tacletTermStack);
@@ -104,20 +137,41 @@ public class SyntacticalReplaceVisitor implements DefaultVisitor {
      * @param goal the current goal
      * @param rule the applied rule
      * @param ruleApp the rule application
-     * @param services the Services
      */
     public SyntacticalReplaceVisitor(TermLabelState termLabelState, TacletLabelHint labelHint,
-            PosInOccurrence applicationPosInOccurrence, SVInstantiations svInst, Goal goal,
-            Rule rule, RuleApp ruleApp, Services services) {
+            PosInOccurrence applicationPosInOccurrence,
+            SVInstantiations svInst, Goal goal,
+            Rule rule, RuleApp ruleApp) {
         this(termLabelState, labelHint, applicationPosInOccurrence, svInst, goal, rule, ruleApp,
-            services, services.getTermBuilder());
+            true);
     }
 
     public SyntacticalReplaceVisitor(TermLabelState termLabelState, TacletLabelHint labelHint,
             PosInOccurrence applicationPosInOccurrence, Goal goal, Rule rule, RuleApp ruleApp,
-            Services services, TermBuilder termBuilder) {
+            boolean useTermCache) {
         this(termLabelState, labelHint, applicationPosInOccurrence,
-            SVInstantiations.EMPTY_SVINSTANTIATIONS, goal, rule, ruleApp, services);
+            SVInstantiations.EMPTY_SVINSTANTIATIONS, goal, rule, ruleApp, useTermCache);
+    }
+
+    /**
+     * ONLY used by {@link de.uka.ilkd.key.strategy.termgenerator.TriggeredInstantiations}
+     *
+     * @param termLabelState
+     * @param svInst
+     * @param services
+     */
+    public SyntacticalReplaceVisitor(TermLabelState termLabelState, SVInstantiations svInst,
+            Services services) {
+        this.termLabelState = termLabelState;
+        this.svInst = svInst;
+        this.services = services;
+        this.tb = services.getTermBuilder();
+        this.applicationPosInOccurrence = null;
+        this.rule = null;
+        this.goal = null;
+        this.ruleApp = null;
+        this.labelHint = null;
+        subStack = new Stack<>();
     }
 
     private JavaProgramElement addContext(StatementBlock pe) {

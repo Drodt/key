@@ -22,7 +22,6 @@ import de.uka.ilkd.key.java.StatementBlock;
 import de.uka.ilkd.key.java.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.reference.ExecutionContext;
 import de.uka.ilkd.key.java.statement.JavaStatement;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
@@ -43,6 +42,7 @@ import de.uka.ilkd.key.speclang.BlockContract;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -363,7 +363,7 @@ public abstract class AbstractBlockContractRule extends AbstractAuxiliaryContrac
             return false;
         }
         final Instantiation instantiation =
-            instantiate(occurrence.subTerm(), goal, goal.proof().getServices());
+            instantiate((Term) occurrence.subTerm(), goal);
         if (instantiation == null) {
             return false;
         }
@@ -373,17 +373,15 @@ public abstract class AbstractBlockContractRule extends AbstractAuxiliaryContrac
     }
 
     /**
-     *
      * @param formula the formula on which the rule is to be applied.
      * @param goal the current goal.
-     * @param services services.
      * @return a new instantiation.
      */
-    public Instantiation instantiate(final Term formula, final Goal goal, final Services services) {
+    public Instantiation instantiate(final Term formula, final Goal goal) {
         if (formula == getLastFocusTerm()) {
             return getLastInstantiation();
         } else {
-            final Instantiation result = new Instantiator(formula, goal, services).instantiate();
+            final Instantiation result = new Instantiator(formula, goal).instantiate();
             setLastFocusTerm(formula);
             setLastInstantiation(result);
             return result;
@@ -482,10 +480,9 @@ public abstract class AbstractBlockContractRule extends AbstractAuxiliaryContrac
          *
          * @param formula the formula on which the rule is to be applied.
          * @param goal the current goal.
-         * @param services services.
          */
-        public Instantiator(final Term formula, final Goal goal, final Services services) {
-            super(formula, goal, services);
+        public Instantiator(final Term formula, final Goal goal) {
+            super(formula, goal);
         }
 
         @Override

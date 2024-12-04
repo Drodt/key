@@ -18,6 +18,8 @@ import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
 import de.uka.ilkd.key.rule.*;
 import de.uka.ilkd.key.rule.inst.SVInstantiations;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -164,7 +166,8 @@ public class DelayedCutProcessor implements Runnable {
         return goal.apply(app);
     }
 
-    private ImmutableList<Goal> apply(final String tacletName, Goal goal, PosInOccurrence pio) {
+    private ImmutableList<Goal> apply(final String tacletName, Goal goal,
+            PosInOccurrence pio) {
         TacletFilter filter = new TacletFilter() {
             @Override
             protected boolean filter(Taclet taclet) {
@@ -335,7 +338,8 @@ public class DelayedCutProcessor implements Runnable {
 
     }
 
-    private void check(Goal goal, final RuleApp app, PosInOccurrence newPos, Services services) {
+    private void check(Goal goal, final RuleApp app,
+            PosInOccurrence newPos, Services services) {
         if (newPos == null) {
             return;
         }
@@ -391,7 +395,8 @@ public class DelayedCutProcessor implements Runnable {
         int formulaNumber =
             pair.node.sequent().formulaNumberInSequent(oldRuleApp.posInOccurrence().isInAntec(),
                 oldRuleApp.posInOccurrence().sequentFormula());
-        return PosInOccurrence.findInSequent(pair.goal.sequent(), formulaNumber,
+        return PosInOccurrence.findInSequent(pair.goal.sequent(),
+            formulaNumber,
             oldRuleApp.posInOccurrence().posInTerm());
     }
 

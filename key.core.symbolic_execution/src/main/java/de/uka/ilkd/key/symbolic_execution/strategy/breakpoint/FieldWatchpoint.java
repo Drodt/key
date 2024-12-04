@@ -8,13 +8,14 @@ import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.java.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.expression.Assignment;
 import de.uka.ilkd.key.java.reference.FieldReference;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.op.ProgramVariable;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.rule.RuleApp;
+
+import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
  * This{@link FieldWatchpoint} represents a Java watchpoint and is responsible to tell the debugger
@@ -58,9 +59,9 @@ public class FieldWatchpoint extends AbstractHitCountBreakpoint {
             SourceElement firstElement = assignment.getChildAt(0);
             if (firstElement instanceof FieldReference) {
                 PosInOccurrence pio = ruleApp.posInOccurrence();
-                Term term = pio.subTerm();
+                var t = pio.subTerm();
                 getProof().getServices().getTermBuilder();
-                term = TermBuilder.goBelowUpdates(term);
+                Term term = TermBuilder.goBelowUpdates(t);
                 if (((FieldReference) firstElement).getProgramVariable().name().toString()
                         .equals(fullFieldName) && isModification && hitcountExceeded(node)) {
                     return super.isBreakpointHit(activeStatement, ruleApp, proof, node);

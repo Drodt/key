@@ -20,6 +20,8 @@ import de.uka.ilkd.key.rule.NoPosTacletApp;
 import de.uka.ilkd.key.rule.PosTacletApp;
 import de.uka.ilkd.key.rule.Taclet;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -116,7 +118,8 @@ public class JoinProcessor implements Runnable {
 
     private void orRight(Goal goal) {
         SequentFormula sf = goal.sequent().succedent().get(0);
-        PosInOccurrence pio = new PosInOccurrence(sf, PosInTerm.getTopLevel(), false);
+        PosInOccurrence pio =
+            new PosInOccurrence(sf, PosInTerm.getTopLevel(), false);
         apply(new String[] { OR_RIGHT_TACLET }, goal, pio);
 
     }
@@ -134,7 +137,8 @@ public class JoinProcessor implements Runnable {
 
         SequentFormula sf = findFormula(goal.sequent(), cut.getFormula(), false);
 
-        PosInOccurrence pio = new PosInOccurrence(sf, PosInTerm.getTopLevel().down(0), false);
+        PosInOccurrence pio =
+            new PosInOccurrence(sf, PosInTerm.getTopLevel().down(0), false);
         Goal result = apply(SIMPLIFY_UPDATE, goal, pio).head();
 
         return result == null ? goal : result;
@@ -143,7 +147,8 @@ public class JoinProcessor implements Runnable {
     /**
      * Applies one of the given taclets if this possible otherwise an exception is thrown.
      */
-    private ImmutableList<Goal> apply(final String[] tacletNames, Goal goal, PosInOccurrence pio) {
+    private ImmutableList<Goal> apply(final String[] tacletNames, Goal goal,
+            PosInOccurrence pio) {
 
         TacletFilter filter = new TacletFilter() {
 
@@ -177,7 +182,8 @@ public class JoinProcessor implements Runnable {
         }
         int index = goal.sequent().formulaNumberInSequent(false, partner.getFormulaForHiding());
         PosInOccurrence pio =
-            PosInOccurrence.findInSequent(goal.sequent(), index, PosInTerm.getTopLevel());
+            PosInOccurrence.findInSequent(goal.sequent(), index,
+                PosInTerm.getTopLevel());
         return apply(new String[] { HIDE_RIGHT_TACLET }, goal, pio).head();
 
     }

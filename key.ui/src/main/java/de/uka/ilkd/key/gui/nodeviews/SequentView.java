@@ -28,6 +28,9 @@ import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import de.uka.ilkd.key.settings.ViewSettings;
 import de.uka.ilkd.key.util.DoNothingCaret;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.FormulaChangeInfo;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -210,7 +213,7 @@ public abstract class SequentView extends JEditorPane {
         String text = "";
 
         if (pis != null && !pis.isSequent()) {
-            Term term = pis.getPosInOccurrence().subTerm();
+            var term = pis.getPosInOccurrence().subTerm();
             text +=
                 "<b>Operator:</b> " + term.op().getClass().getSimpleName() + " (" + term.op() + ")";
             text += "<br><b>Sort</b>: " + term.sort();
@@ -825,10 +828,11 @@ public abstract class SequentView extends JEditorPane {
                     pio_age_list.add(
                         new PIO_age(new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), age));
                 }
-                ImmutableList<FormulaChangeInfo> modified =
+                ImmutableList<FormulaChangeInfo<SequentFormula>> modified =
                     node.getNodeInfo().getSequentChangeInfo().modifiedFormulas();
-                for (FormulaChangeInfo fci : modified) {
-                    PosInOccurrence positionOfMod = fci.positionOfModification();
+                for (FormulaChangeInfo<SequentFormula> fci : modified) {
+                    PosInOccurrence positionOfMod =
+                        fci.positionOfModification();
                     pio_age_list.add(new PIO_age(positionOfMod, age));
                     for (PIO_age pair : pio_age_list) {
                         if (pair.get_pio().sequentFormula().equals(fci.getOriginalFormula())) {

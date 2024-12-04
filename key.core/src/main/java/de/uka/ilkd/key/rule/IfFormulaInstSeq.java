@@ -4,13 +4,13 @@
 package de.uka.ilkd.key.rule;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.PosInTerm;
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.proof.io.OutputStreamProofSaver;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableArray;
 
 
@@ -121,7 +121,8 @@ public class IfFormulaInstSeq implements IfFormulaInstantiation {
 
     public PosInOccurrence toPosInOccurrence() {
         if (pioCache == null) {
-            PosInOccurrence localPioCache = new PosInOccurrence(cf, PosInTerm.getTopLevel(), antec);
+            PosInOccurrence localPioCache =
+                new PosInOccurrence(cf, PosInTerm.getTopLevel(), antec);
             pioCache = localPioCache;
         }
         return pioCache;

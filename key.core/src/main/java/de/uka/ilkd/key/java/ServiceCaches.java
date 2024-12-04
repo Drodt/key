@@ -6,7 +6,6 @@ package de.uka.ilkd.key.java;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.proof.Node;
@@ -26,6 +25,7 @@ import de.uka.ilkd.key.strategy.quantifierHeuristics.Metavariable;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.TriggersSet;
 
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.LRUCache;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;

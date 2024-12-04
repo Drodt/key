@@ -37,6 +37,7 @@ import de.uka.ilkd.key.util.SideProofUtil;
 import de.uka.ilkd.key.util.Triple;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Namespace;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
@@ -70,14 +71,15 @@ public final class SymbolicExecutionSideProofUtil {
         for (SequentFormula sf : goalSequent.antecedent()) {
             if (sf != currentSF) {
                 if (!containsModalityOrQuery(sf)) {
-                    sequentToProve = sequentToProve.addFormula(sf, true, false).sequent();
+                    sequentToProve = (Sequent) sequentToProve.addFormula(sf, true, false).sequent();
                 }
             }
         }
         for (SequentFormula sf : goalSequent.succedent()) {
             if (sf != currentSF) {
                 if (!containsModalityOrQuery(sf)) {
-                    sequentToProve = sequentToProve.addFormula(sf, false, false).sequent();
+                    sequentToProve =
+                        (Sequent) sequentToProve.addFormula(sf, false, false).sequent();
                 }
             }
         }

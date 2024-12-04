@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy.quantifierHeuristics;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.Equality;
 import de.uka.ilkd.key.logic.op.Junctor;
 import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import de.uka.ilkd.key.logic.op.Quantifier;
+
+import org.key_project.prover.sequent.PosInOccurrence;
 
 public class QuanEliminationAnalyser {
 
@@ -19,16 +20,17 @@ public class QuanEliminationAnalyser {
      * @return the distance to the quantifier that can be eliminated; <code>Integer.MAX_VALUE</code>
      *         if the subformula is not an eliminable definition
      */
-    public int eliminableDefinition(Term definition, PosInOccurrence envPIO) {
+    public int eliminableDefinition(Term definition,
+            PosInOccurrence envPIO) {
         final PosInOccurrence matrixPIO = walkUpMatrix(envPIO);
-        final Term matrix = matrixPIO.subTerm();
+        final Term matrix = (Term) matrixPIO.subTerm();
 
         if (matrixPIO.isTopLevel()) {
             return Integer.MAX_VALUE;
         }
 
         PosInOccurrence quantPIO = matrixPIO.up();
-        Term quantTerm = quantPIO.subTerm();
+        Term quantTerm = (Term) quantPIO.subTerm();
         final boolean ex;
         if (quantTerm.op() == Quantifier.EX) {
             ex = true;
@@ -38,7 +40,7 @@ public class QuanEliminationAnalyser {
             return Integer.MAX_VALUE;
         }
 
-        if (!isDefinitionCandidate(definition, envPIO.subTerm(), ex)) {
+        if (!isDefinitionCandidate(definition, (Term) envPIO.subTerm(), ex)) {
             return Integer.MAX_VALUE;
         }
 
@@ -55,7 +57,7 @@ public class QuanEliminationAnalyser {
                 return Integer.MAX_VALUE;
             }
             quantPIO = quantPIO.up();
-            quantTerm = quantPIO.subTerm();
+            quantTerm = (Term) quantPIO.subTerm();
 
             if (quantTerm.op() != (ex ? Quantifier.EX : Quantifier.ALL)) {
                 return Integer.MAX_VALUE;
@@ -92,10 +94,11 @@ public class QuanEliminationAnalyser {
         return false;
     }
 
-    private PosInOccurrence walkUpMatrix(PosInOccurrence pio) {
+    private PosInOccurrence walkUpMatrix(
+            PosInOccurrence pio) {
         while (!pio.isTopLevel()) {
             final PosInOccurrence parent = pio.up();
-            final Operator parentOp = parent.subTerm().op();
+            final var parentOp = parent.subTerm().op();
             if (parentOp != Junctor.AND && parentOp != Junctor.OR) {
                 return pio;
             }

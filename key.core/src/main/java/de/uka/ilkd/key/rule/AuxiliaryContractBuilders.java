@@ -41,11 +41,15 @@ import de.uka.ilkd.key.util.LinkedHashMap;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Namespace;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
+
+import org.jspecify.annotations.NonNull;
 
 import static de.uka.ilkd.key.logic.equality.IrrelevantTermLabelsProperty.IRRELEVANT_TERM_LABELS_PROPERTY;
 
@@ -312,15 +316,24 @@ public final class AuxiliaryContractBuilders {
         private final Services services;
 
         /**
-         *
          * @param goal If this is not null, all created variables are added to it. If it is null,
          *        the variables are instead added to the {@code services}' namespace.
          * @param placeholderVariables the placeholders from which to create the variables.
-         * @param services services.
          */
-        public VariablesCreatorAndRegistrar(final Goal goal,
-                final BlockContract.Variables placeholderVariables, final Services services) {
+        public VariablesCreatorAndRegistrar(final @NonNull Goal goal,
+                final Variables placeholderVariables) {
             this.goal = goal;
+            this.placeholderVariables = placeholderVariables;
+            this.services = goal.getOverlayServices();
+        }
+
+        /**
+         * @param services services.
+         * @param placeholderVariables the placeholders from which to create the variables.
+         */
+        public VariablesCreatorAndRegistrar(final @NonNull Services services,
+                final Variables placeholderVariables) {
+            this.goal = null;
             this.placeholderVariables = placeholderVariables;
             this.services = services;
         }
@@ -1152,7 +1165,8 @@ public final class AuxiliaryContractBuilders {
         public GoalsConfigurator(final AbstractAuxiliaryContractBuiltInRuleApp application,
                 final TermLabelState termLabelState, final Instantiation instantiation,
                 final List<Label> labels, final AuxiliaryContract.Variables variables,
-                final PosInOccurrence occurrence, final Services services,
+                final PosInOccurrence occurrence,
+                final Services services,
                 final AbstractAuxiliaryContractRule rule) {
             this.application = application;
             this.termLabelState = termLabelState;

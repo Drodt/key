@@ -8,7 +8,6 @@ import java.util.Map;
 
 import de.uka.ilkd.key.informationflow.proof.InfFlowCheckInfo;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermServices;
 import de.uka.ilkd.key.logic.label.TermLabelState;
@@ -27,6 +26,8 @@ import de.uka.ilkd.key.speclang.Contract;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.java.ArrayUtil;
@@ -182,12 +183,13 @@ public final class BlockContractExternalRule extends AbstractBlockContractRule {
     }
 
     @Override
-    public boolean isApplicable(final Goal goal, final PosInOccurrence occurrence) {
+    public boolean isApplicable(final Goal goal,
+            final PosInOccurrence occurrence) {
         return !InfFlowCheckInfo.isInfFlow(goal) && super.isApplicable(goal, occurrence);
     }
 
     @Override
-    public @NonNull ImmutableList<Goal> apply(final Goal goal, final Services services,
+    public @NonNull ImmutableList<Goal> apply(final Goal goal,
             final RuleApp ruleApp) throws RuleAbortException {
         assert ruleApp instanceof BlockContractExternalBuiltInRuleApp;
         BlockContractExternalBuiltInRuleApp application =
@@ -199,11 +201,12 @@ public final class BlockContractExternalRule extends AbstractBlockContractRule {
         }
 
         final Instantiation instantiation =
-            instantiate(application.posInOccurrence().subTerm(), goal, services);
+            instantiate((Term) application.posInOccurrence().subTerm(), goal);
         final BlockContract contract = application.getContract();
         contract.setInstantiationSelf(instantiation.self());
         assert contract.getBlock().equals(instantiation.statement());
 
+        final var services = goal.getOverlayServices();
         final List<LocationVariable> heaps = application.getHeapContext();
         final ImmutableSet<LocationVariable> localInVariables =
             MiscTools.getLocalIns(instantiation.statement(), services);
@@ -212,7 +215,7 @@ public final class BlockContractExternalRule extends AbstractBlockContractRule {
         final Map<LocationVariable, JFunction> anonymisationHeaps =
             createAndRegisterAnonymisationVariables(heaps, contract, services);
         final BlockContract.Variables variables =
-            new VariablesCreatorAndRegistrar(goal, contract.getPlaceholderVariables(), services)
+            new VariablesCreatorAndRegistrar(goal, contract.getPlaceholderVariables())
                     .createAndRegister(instantiation.self(), true);
 
         final ConditionsAndClausesBuilder conditionsAndClausesBuilder =

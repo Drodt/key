@@ -4,7 +4,6 @@
 package de.uka.ilkd.key.informationflow.rule.executor;
 
 import de.uka.ilkd.key.informationflow.rule.InfFlowContractAppTaclet;
-import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.label.TermLabelState;
 import de.uka.ilkd.key.proof.Goal;
@@ -15,6 +14,8 @@ import de.uka.ilkd.key.rule.Taclet.TacletLabelHint;
 import de.uka.ilkd.key.rule.executor.javadl.RewriteTacletExecutor;
 import de.uka.ilkd.key.util.properties.Properties;
 
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -40,17 +41,19 @@ public class InfFlowContractAppTacletExecutor
 
     @Override
     protected void addToAntec(Semisequent semi, TermLabelState termLabelState,
-            TacletLabelHint labelHint, SequentChangeInfo currentSequent, PosInOccurrence pos,
-            PosInOccurrence applicationPosInOccurrence, MatchConditions matchCond, Goal goal,
-            RuleApp tacletApp, Services services) {
+            TacletLabelHint labelHint, SequentChangeInfo<SequentFormula> currentSequent,
+            PosInOccurrence pos,
+            PosInOccurrence applicationPosInOccurrence,
+            MatchConditions matchCond, Goal goal,
+            RuleApp tacletApp) {
         final ImmutableList<SequentFormula> replacements = instantiateSemisequent(semi,
-            termLabelState, labelHint, pos, matchCond, goal, tacletApp, services);
+            termLabelState, labelHint, pos, matchCond, goal, tacletApp);
         assert replacements.size() == 1
                 : "information flow taclets must have " + "exactly one add!";
-        updateStrategyInfo(services.getProof().openEnabledGoals().head(),
+        updateStrategyInfo(goal.proof().openEnabledGoals().head(),
             replacements.iterator().next().formula());
         super.addToAntec(semi, termLabelState, labelHint, currentSequent, pos,
-            applicationPosInOccurrence, matchCond, goal, tacletApp, services);
+            applicationPosInOccurrence, matchCond, goal, tacletApp);
     }
 
     /**

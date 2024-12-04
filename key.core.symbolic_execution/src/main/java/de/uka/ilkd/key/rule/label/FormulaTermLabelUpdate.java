@@ -24,6 +24,7 @@ import de.uka.ilkd.key.rule.TacletApp;
 import de.uka.ilkd.key.symbolic_execution.TruthValueTracingUtil;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.java.CollectionUtil;
 
@@ -46,7 +47,8 @@ public class FormulaTermLabelUpdate implements TermLabelUpdate {
      * {@inheritDoc}
      */
     public void updateLabels(TermLabelState state, Services services,
-            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Term modalityTerm,
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Term modalityTerm,
             Rule rule, RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
             Set<TermLabel> labels) {
         if (hint instanceof TacletLabelHint tacletHint) {

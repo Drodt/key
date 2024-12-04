@@ -9,7 +9,6 @@ import java.util.Set;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.ldt.IntegerLDT;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
@@ -35,6 +34,7 @@ import de.uka.ilkd.key.strategy.quantifierHeuristics.Substitution;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
@@ -100,7 +100,7 @@ public class TriggeredInstantiations implements TermGenerator {
 
             if (taclet.hasTrigger()) {
 
-                final Term comprehension = pos.subTerm();
+                final Term comprehension = (Term) pos.subTerm();
 
                 if (tapp.uninstantiatedVars().size() <= 1) {
                     SVInstantiations svInst = tapp.instantiations();
@@ -140,7 +140,7 @@ public class TriggeredInstantiations implements TermGenerator {
     private Term instantiateTerm(final Term term, final Services services,
             SVInstantiations svInst) {
         final SyntacticalReplaceVisitor syn = new SyntacticalReplaceVisitor(new TermLabelState(),
-            null, null, svInst, null, null, null, services);
+            svInst, services);
         term.execPostOrder(syn);
         return syn.getTerm();
     }

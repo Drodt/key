@@ -20,9 +20,9 @@ import javax.swing.*;
 import de.uka.ilkd.key.core.KeYMediator;
 import de.uka.ilkd.key.gui.MainWindow;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.PosInTerm;
 import de.uka.ilkd.key.logic.Sequent;
+import de.uka.ilkd.key.logic.SequentFormula;
+import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.pp.PosInSequent;
 import de.uka.ilkd.key.rule.*;
@@ -30,6 +30,8 @@ import de.uka.ilkd.key.rule.inst.IllegalInstantiationException;
 import de.uka.ilkd.key.rule.tacletbuilder.TacletGoalTemplate;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -351,7 +353,8 @@ public class DragNDropInstantiator extends DropTargetAdapter {
             ifFmlInst = null;
         } else {
             final IfFormulaInstSeq ifInst =
-                new IfFormulaInstSeq(seq, ifPIO.isInAntec(), ifPIO.sequentFormula());
+                new IfFormulaInstSeq(seq, ifPIO.isInAntec(),
+                    (SequentFormula) ifPIO.sequentFormula());
             ifFmlInst = ImmutableSLList.<IfFormulaInstantiation>nil().prepend(ifInst);
         }
 
@@ -372,7 +375,7 @@ public class DragNDropInstantiator extends DropTargetAdapter {
                     // the right side is not checked in tacletapp
                     // not sure where to incorporate the check...
                     if (((IfFormulaInstSeq) ifFmlInst.head())
-                            .inAntec() == (ifSequent.succedent().size() == 0)) {
+                            .inAntec() == (ifSequent.succedent().isEmpty())) {
                         app = (PosTacletApp) app.setIfFormulaInstantiations(ifFmlInst, services);
                     }
                 }
@@ -422,7 +425,7 @@ public class DragNDropInstantiator extends DropTargetAdapter {
             if (app.isInstantiationRequired(missingSV)) {
                 try {
                     app = (PosTacletApp) app.addCheckedInstantiation(missingSV,
-                        missingSVPIO.subTerm(), services, true);
+                        (Term) missingSVPIO.subTerm(), services, true);
                 } catch (IllegalInstantiationException ie) {
                     app = null;
                 }
