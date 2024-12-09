@@ -10,9 +10,6 @@ import java.util.LinkedHashSet;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
-import de.uka.ilkd.key.logic.JavaBlock;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.PosInTerm;
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
@@ -24,7 +21,6 @@ import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.rule.BuiltInRule;
 import de.uka.ilkd.key.rule.IBuiltInRuleApp;
 import de.uka.ilkd.key.rule.NoPosTacletApp;
-import de.uka.ilkd.key.rule.RuleAbortException;
 import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.rule.merge.MergeProcedure.ValuesMergeResult;
 import de.uka.ilkd.key.rule.merge.procedures.MergeByIfThenElse;
@@ -38,8 +34,11 @@ import de.uka.ilkd.key.util.mergerule.SymbolicExecutionState;
 import de.uka.ilkd.key.util.mergerule.SymbolicExecutionStateWithProgCnt;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -131,7 +130,7 @@ public class MergeRule implements BuiltInRule {
     }
 
     @Override
-    public final @NonNull ImmutableList<Goal> apply(Goal goal, final Services services,
+    public final @NonNull ImmutableList<Goal> apply(Goal goal,
             RuleApp ruleApp)
             throws RuleAbortException {
 
@@ -153,6 +152,7 @@ public class MergeRule implements BuiltInRule {
         // order expected by the user.
         final ImmutableList<Goal> newGoals = goal.split(1 + numSideConditionsToProve).reverse();
         final Goal newGoal = newGoals.head();
+        var services = goal.getOverlayServices();
 
         final TermBuilder tb = services.getTermBuilder();
         final MergeProcedure mergeRule = mergeRuleApp.getConcreteRule();
@@ -605,7 +605,8 @@ public class MergeRule implements BuiltInRule {
      * @param doMergePartnerCheck Checks for available merge partners iff this flag is set to true.
      * @return true iff a suitable top level formula for merging.
      */
-    public static boolean isOfAdmissibleForm(Goal goal, PosInOccurrence pio,
+    public static boolean isOfAdmissibleForm(Goal goal,
+            PosInOccurrence pio,
             boolean doMergePartnerCheck) {
         // We admit top level formulas of the form \<{ ... }\> phi
         // and U \<{ ... }\> phi, where U must be an update
@@ -616,12 +617,12 @@ public class MergeRule implements BuiltInRule {
             return false;
         }
 
-        Term selected = pio.subTerm();
+        var selected = pio.subTerm();
 
-        Term termAfterUpdate = selected;
+        org.key_project.logic.Term termAfterUpdate = selected;
 
         if (selected.op() instanceof UpdateApplication) {
-            Term update = selected.sub(0);
+            var update = selected.sub(0);
 
             if (isUpdateNormalForm(update) && selected.subs().size() > 1) {
                 termAfterUpdate = selected.sub(1);
@@ -640,9 +641,9 @@ public class MergeRule implements BuiltInRule {
         }
 
         // Term after update must have the form "phi" or "\<{...}\> phi" or
-        // "\[{...}\]", where phi must not contain a Java block.
+        // "\[{...}\] phi", where phi must not contain a Java block.
         if (termAfterUpdate.op() instanceof Modality
-                && !termAfterUpdate.sub(0).javaBlock().equals(JavaBlock.EMPTY_JAVABLOCK)) {
+                && termAfterUpdate.sub(0).op() instanceof Modality) {
             return false;
         } else if (termAfterUpdate.op() instanceof UpdateApplication) {
             return false;

@@ -18,7 +18,6 @@ import de.uka.ilkd.key.logic.sort.ProgramSVSort;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.Name;
-import org.key_project.util.EqualsModProofIrrelevancy;
 import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -27,7 +26,6 @@ import org.key_project.util.collection.ImmutableMapEntry;
 import org.key_project.util.collection.ImmutableSLList;
 
 import static de.uka.ilkd.key.logic.equality.IrrelevantTermLabelsProperty.IRRELEVANT_TERM_LABELS_PROPERTY;
-import static de.uka.ilkd.key.logic.equality.ProofIrrelevancyProperty.PROOF_IRRELEVANCY_PROPERTY;
 
 /**
  * This class wraps an {@link ImmutableMap} from {@link SchemaVariable} to
@@ -35,7 +33,7 @@ import static de.uka.ilkd.key.logic.equality.ProofIrrelevancyProperty.PROOF_IRRE
  * and is used to store instantiations of schemavariables. The class is immutable,
  * this means changing its content results in creating a new object.
  */
-public class SVInstantiations implements EqualsModProofIrrelevancy {
+public class SVInstantiations {
     /** the empty instantiation */
     public static final SVInstantiations EMPTY_SVINSTANTIATIONS = new SVInstantiations();
 
@@ -561,37 +559,6 @@ public class SVInstantiations implements EqualsModProofIrrelevancy {
 
     }
 
-    @Override
-    public boolean equalsModProofIrrelevancy(Object obj) {
-        final SVInstantiations cmp;
-        if (!(obj instanceof SVInstantiations)) {
-            return false;
-        } else {
-            cmp = (SVInstantiations) obj;
-        }
-        if (size() != cmp.size() || !getUpdateContext().equals(cmp.getUpdateContext())) {
-            return false;
-        }
-
-        final Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> it =
-            pairIterator();
-        while (it.hasNext()) {
-            final ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> e = it.next();
-            final Object inst = e.value().getInstantiation();
-            assert inst != null : "Illegal null instantiation.";
-            if (inst instanceof Term instAsTerm) {
-                if (!instAsTerm.equalsModProperty(
-                    cmp.getInstantiation(e.key()), PROOF_IRRELEVANCY_PROPERTY)) {
-                    return false;
-                }
-            } else if (!inst.equals(cmp.getInstantiation(e.key()))) {
-                return false;
-            }
-        }
-        return true;
-
-    }
-
     public int hashCode() {
         int result = 37 * getUpdateContext().hashCode() + size();
         final Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> it =
@@ -606,11 +573,6 @@ public class SVInstantiations implements EqualsModProofIrrelevancy {
             result = 37 * result + e.value().getInstantiation().hashCode() + e.key().hashCode();
         }
         return result;
-    }
-
-    @Override
-    public int hashCodeModProofIrrelevancy() {
-        return this.size(); // not used currently
     }
 
     public SVInstantiations union(SVInstantiations other, Services services) {

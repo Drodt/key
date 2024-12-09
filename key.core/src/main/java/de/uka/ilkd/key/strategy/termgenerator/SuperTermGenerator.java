@@ -8,7 +8,6 @@ import java.util.Iterator;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.ldt.IntegerLDT;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.proof.Goal;
@@ -23,6 +22,7 @@ import org.key_project.logic.TerminalSyntaxElement;
 import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.SortedOperator;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableArray;
 
 public abstract class SuperTermGenerator implements TermGenerator {
@@ -36,7 +36,8 @@ public abstract class SuperTermGenerator implements TermGenerator {
     public static TermGenerator upwards(TermFeature cond, final Services services) {
         return new SuperTermGenerator(cond) {
             @Override
-            protected Iterator<Term> createIterator(PosInOccurrence focus, MutableState mState) {
+            protected Iterator<Term> createIterator(
+                    PosInOccurrence focus, MutableState mState) {
                 return new UpwardsIterator(focus, mState, services);
             }
         };
@@ -45,18 +46,21 @@ public abstract class SuperTermGenerator implements TermGenerator {
     public static TermGenerator upwardsWithIndex(TermFeature cond, final Services services) {
         return new SuperTermWithIndexGenerator(cond) {
             @Override
-            protected Iterator<Term> createIterator(PosInOccurrence focus, MutableState mState) {
+            protected Iterator<Term> createIterator(
+                    PosInOccurrence focus, MutableState mState) {
                 return new UpwardsIterator(focus, mState, services);
             }
         };
     }
 
-    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
+    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos,
+            Goal goal,
             MutableState mState) {
         return createIterator(pos, mState);
     }
 
-    protected abstract Iterator<Term> createIterator(PosInOccurrence focus, MutableState mState);
+    protected abstract Iterator<Term> createIterator(
+            PosInOccurrence focus, MutableState mState);
 
     protected Term generateOneTerm(Term superterm, int child) {
         return superterm;
@@ -75,7 +79,8 @@ public abstract class SuperTermGenerator implements TermGenerator {
         }
 
         @Override
-        public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
+        public Iterator<Term> generate(RuleApp app,
+                PosInOccurrence pos, Goal goal,
                 MutableState mState) {
             if (services == null) {
                 services = goal.proof().getServices();
@@ -174,7 +179,7 @@ public abstract class SuperTermGenerator implements TermGenerator {
         public Term next() {
             final int child = currentPos.getIndex();
             currentPos = currentPos.up();
-            final Term res = generateOneTerm(currentPos.subTerm(), child);
+            final Term res = generateOneTerm((Term) currentPos.subTerm(), child);
             if (!generateFurther(res, mState, services)) {
                 currentPos = null;
             }

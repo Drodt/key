@@ -7,7 +7,6 @@ import java.util.*;
 
 import de.uka.ilkd.key.java.*;
 import de.uka.ilkd.key.java.statement.*;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.ProgramPrefix;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.*;
@@ -18,6 +17,7 @@ import de.uka.ilkd.key.rule.inst.SVInstantiations;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -286,7 +286,8 @@ public abstract class TacletIndex {
      *        like (static)types etc.
      */
     private ImmutableList<NoPosTacletApp> getFindTaclet(ImmutableList<NoPosTacletApp> taclets,
-            RuleFilter filter, PosInOccurrence pos, Services services) {
+            RuleFilter filter, PosInOccurrence pos,
+            Services services) {
         return matchTaclets(taclets, filter, pos, services);
     }
 
@@ -428,7 +429,8 @@ public abstract class TacletIndex {
      * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
      *         instantiations to get the rule fit.
      */
-    public ImmutableList<NoPosTacletApp> getAntecedentTaclet(PosInOccurrence pos, RuleFilter filter,
+    public ImmutableList<NoPosTacletApp> getAntecedentTaclet(
+            PosInOccurrence pos, RuleFilter filter,
             Services services) {
         return getTopLevelTaclets(antecList, filter, pos, services);
     }
@@ -443,7 +445,8 @@ public abstract class TacletIndex {
      * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
      *         instantiations to get the rule fit.
      */
-    public ImmutableList<NoPosTacletApp> getSuccedentTaclet(PosInOccurrence pos, RuleFilter filter,
+    public ImmutableList<NoPosTacletApp> getSuccedentTaclet(
+            PosInOccurrence pos, RuleFilter filter,
             Services services) {
 
         return getTopLevelTaclets(succList, filter, pos, services);
@@ -456,9 +459,9 @@ public abstract class TacletIndex {
         assert pos.isTopLevel();
 
         final ImmutableList<NoPosTacletApp> rwTaclets =
-            getFindTaclet(getList(rwList, pos.subTerm(), true), filter, pos, services);
+            getFindTaclet(getList(rwList, (Term) pos.subTerm(), true), filter, pos, services);
         final ImmutableList<NoPosTacletApp> seqTaclets =
-            getFindTaclet(getList(findTaclets, pos.subTerm(), true), filter, pos, services);
+            getFindTaclet(getList(findTaclets, (Term) pos.subTerm(), true), filter, pos, services);
         return rwTaclets.size() > 0 ? rwTaclets.prependReverse(seqTaclets)
                 : seqTaclets.prependReverse(rwTaclets);
     }
@@ -476,7 +479,7 @@ public abstract class TacletIndex {
     public ImmutableList<NoPosTacletApp> getRewriteTaclet(PosInOccurrence pos, RuleFilter filter,
             Services services) {
         ImmutableList<NoPosTacletApp> result =
-            matchTaclets(getList(rwList, pos.subTerm(), false), filter, pos, services);
+            matchTaclets(getList(rwList, (Term) pos.subTerm(), false), filter, pos, services);
         return result;
     }
 

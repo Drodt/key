@@ -8,7 +8,6 @@ import java.util.Map;
 
 import de.uka.ilkd.key.informationflow.proof.InfFlowCheckInfo;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
@@ -29,6 +28,8 @@ import de.uka.ilkd.key.speclang.WellDefinednessCheck;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.java.ArrayUtil;
@@ -215,19 +216,20 @@ public final class BlockContractInternalRule extends AbstractBlockContractRule {
     }
 
     @Override
-    public @NonNull ImmutableList<Goal> apply(final Goal goal, final Services services,
+    public @NonNull ImmutableList<Goal> apply(final Goal goal,
             final RuleApp ruleApp) throws RuleAbortException {
         assert ruleApp instanceof BlockContractInternalBuiltInRuleApp;
         BlockContractInternalBuiltInRuleApp application =
             (BlockContractInternalBuiltInRuleApp) ruleApp;
 
         final Instantiation instantiation =
-            instantiate(application.posInOccurrence().subTerm(), goal, services);
+            instantiate((Term) application.posInOccurrence().subTerm(), goal);
         final BlockContract contract = application.getContract();
         contract.setInstantiationSelf(instantiation.self());
         assert contract.getBlock().equals(instantiation.statement());
         final Term contextUpdate = instantiation.update();
 
+        final var services = goal.getOverlayServices();
         final List<LocationVariable> heaps = application.getHeapContext();
         final ImmutableSet<LocationVariable> localInVariables =
             MiscTools.getLocalIns(instantiation.statement(), services);
@@ -236,7 +238,7 @@ public final class BlockContractInternalRule extends AbstractBlockContractRule {
         final Map<LocationVariable, JFunction> anonymisationHeaps =
             createAndRegisterAnonymisationVariables(heaps, contract, services);
         final BlockContract.Variables variables =
-            new VariablesCreatorAndRegistrar(goal, contract.getPlaceholderVariables(), services)
+            new VariablesCreatorAndRegistrar(goal, contract.getPlaceholderVariables())
                     .createAndRegister(instantiation.self(), true);
 
         final ConditionsAndClausesBuilder conditionsAndClausesBuilder =
@@ -277,7 +279,8 @@ public final class BlockContractInternalRule extends AbstractBlockContractRule {
     }
 
     @Override
-    public boolean isApplicable(Goal goal, PosInOccurrence occurrence) {
+    public boolean isApplicable(Goal goal,
+            PosInOccurrence occurrence) {
         if (occursNotAtTopLevelInSuccedent(occurrence)) {
             return false;
         }
@@ -286,7 +289,7 @@ public final class BlockContractInternalRule extends AbstractBlockContractRule {
             return false;
         }
         final Instantiation instantiation =
-            instantiate(occurrence.subTerm(), goal, goal.proof().getServices());
+            instantiate((Term) occurrence.subTerm(), goal);
         if (instantiation == null) {
             return false;
         }

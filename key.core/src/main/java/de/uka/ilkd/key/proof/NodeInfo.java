@@ -14,7 +14,7 @@ import de.uka.ilkd.key.java.ProgramElement;
 import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.java.StatementBlock;
 import de.uka.ilkd.key.logic.ProgramPrefix;
-import de.uka.ilkd.key.logic.SequentChangeInfo;
+import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.label.TermLabelManager;
@@ -32,6 +32,7 @@ import de.uka.ilkd.key.rule.inst.TermInstantiation;
 
 import org.key_project.logic.Name;
 import org.key_project.proof.LocationVariableTracker;
+import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.util.collection.ImmutableList;
 
 import org.slf4j.Logger;
@@ -78,7 +79,7 @@ public class NodeInfo {
     private String notes;
 
     /** Information about changes respective to the parent of this node. */
-    private SequentChangeInfo sequentChangeInfo;
+    private SequentChangeInfo<SequentFormula> sequentChangeInfo;
 
     public NodeInfo(Node node) {
         this.node = node;
@@ -165,7 +166,7 @@ public class NodeInfo {
             if (!isSymbolicExecution(pta.taclet())) {
                 return null;
             }
-            Term t = TermBuilder.goBelowUpdates(pta.posInOccurrence().subTerm());
+            Term t = TermBuilder.goBelowUpdates((Term) pta.posInOccurrence().subTerm());
             final ProgramElement pe = t.javaBlock().program();
             if (pe != null) {
                 firstStatement = pe.getFirstElement();
@@ -423,11 +424,11 @@ public class NodeInfo {
         return notes;
     }
 
-    public SequentChangeInfo getSequentChangeInfo() {
+    public SequentChangeInfo<SequentFormula> getSequentChangeInfo() {
         return sequentChangeInfo;
     }
 
-    public void setSequentChangeInfo(SequentChangeInfo sequentChangeInfo) {
+    public void setSequentChangeInfo(SequentChangeInfo<SequentFormula> sequentChangeInfo) {
         this.sequentChangeInfo = sequentChangeInfo;
     }
 

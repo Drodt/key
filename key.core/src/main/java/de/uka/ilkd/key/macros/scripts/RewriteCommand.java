@@ -19,6 +19,8 @@ import de.uka.ilkd.key.rule.PosTacletApp;
 import de.uka.ilkd.key.rule.RewriteTaclet;
 import de.uka.ilkd.key.rule.TacletApp;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -47,12 +49,14 @@ public class RewriteCommand extends AbstractCommand<RewriteCommand.Parameters> {
     /**
      * List of PosInOcc that haven't been successfully replaced
      */
-    private final List<PosInOccurrence> failposInOccs = new ArrayList<>();
+    private final List<PosInOccurrence> failposInOccs =
+        new ArrayList<>();
 
     /**
      * List of PosInOcc that successfully replaced
      */
-    private final List<PosInOccurrence> succposInOccs = new ArrayList<>();
+    private final List<PosInOccurrence> succposInOccs =
+        new ArrayList<>();
 
     /**
      * Constructs this rewrite command.
@@ -82,7 +86,8 @@ public class RewriteCommand extends AbstractCommand<RewriteCommand.Parameters> {
         ImmutableList<TacletApp> allApps = findAllTacletApps(args, state);
 
         // filter all taclets for being applicable on the find term
-        List<PosInOccurrence> failposInOccs = findAndExecReplacement(args, allApps, state);
+        List<PosInOccurrence> failposInOccs =
+            findAndExecReplacement(args, allApps, state);
 
         // if not all find terms successfully replaced, apply cut
         if (failposInOccs.size() >= 1) {
@@ -225,7 +230,7 @@ public class RewriteCommand extends AbstractCommand<RewriteCommand.Parameters> {
      * @param pit
      * @return subterm
      */
-    private Term getSubTerm(Term t, IntIterator pit) {
+    private Term getSubTerm(Term t, org.key_project.logic.IntIterator pit) {
         if (pit.hasNext()) {
             int i = pit.next();
             return getSubTerm(t.sub(i), pit);

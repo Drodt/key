@@ -16,6 +16,7 @@ import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.rule.*;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -142,7 +143,8 @@ public class ProofExplorationService {
         return toBeSelected;
     }
 
-    public Node applyChangeFormula(@NonNull Goal g, @NonNull PosInOccurrence pio,
+    public Node applyChangeFormula(@NonNull Goal g,
+            @NonNull PosInOccurrence pio,
             @NonNull Term term, @NonNull Term newTerm) {
         TacletApp app = soundChange(pio, term, newTerm);
 
@@ -166,7 +168,8 @@ public class ProofExplorationService {
         // region hide
         FindTaclet tap = getHideTaclet(pio.isInAntec());
         TacletApp weakening = PosTacletApp.createPosTacletApp(tap,
-            tap.getMatcher().matchFind(pio.subTerm(), MatchConditions.EMPTY_MATCHCONDITIONS, null),
+            tap.getMatcher().matchFind((Term) pio.subTerm(), MatchConditions.EMPTY_MATCHCONDITIONS,
+                null),
             pio, services);
         String posToWeakening = pio.isInAntec() ? "TRUE" : "FALSE";
 
@@ -183,7 +186,8 @@ public class ProofExplorationService {
         return toBeSelected;
     }
 
-    private TacletApp soundChange(@NonNull PosInOccurrence pio, @NonNull Term term,
+    private TacletApp soundChange(@NonNull PosInOccurrence pio,
+            @NonNull Term term,
             @NonNull Term newTerm) {
         Taclet cut = getCutTaclet();
         Semisequent semisequent = new Semisequent(new SequentFormula(newTerm));
@@ -203,7 +207,7 @@ public class ProofExplorationService {
 
     private TacletApp createHideTerm(PosInOccurrence pio) {
         FindTaclet tap = getHideTaclet(pio.isInAntec());
-        MatchConditions match = tap.getMatcher().matchFind(pio.subTerm(),
+        MatchConditions match = tap.getMatcher().matchFind((Term) pio.subTerm(),
             MatchConditions.EMPTY_MATCHCONDITIONS, services);
         return PosTacletApp.createPosTacletApp(tap, match, pio, services);
     }

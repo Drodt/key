@@ -19,6 +19,7 @@ import de.uka.ilkd.key.rule.merge.CloseAfterMerge;
 import de.uka.ilkd.key.symbolic_execution.TruthValueTracingUtil;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.java.CollectionUtil;
 
@@ -110,7 +111,8 @@ public class FormulaTermLabelRefactoring implements TermLabelRefactoring {
      */
     @Override
     public RefactoringScope defineRefactoringScope(TermLabelState state, Services services,
-            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Rule rule, Goal goal,
             Object hint, Term tacletTerm) {
         if (shouldRefactorSpecificationApplication(rule, goal, hint)) {
             return RefactoringScope.APPLICATION_CHILDREN_AND_GRANDCHILDREN_SUBTREE;
@@ -144,7 +146,8 @@ public class FormulaTermLabelRefactoring implements TermLabelRefactoring {
      */
     @Override
     public void refactorLabels(TermLabelState state, Services services,
-            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Rule rule, Goal goal,
             Object hint, Term tacletTerm, Term term, LabelCollection labels) {
         if (shouldRefactorSpecificationApplication(rule, goal, hint)) {
             refactorSpecificationApplication(term, services, labels, hint);
@@ -215,10 +218,11 @@ public class FormulaTermLabelRefactoring implements TermLabelRefactoring {
      * @param term The {@link Term} which is now refactored.
      * @param labels The new labels the {@link Term} will have after the refactoring.
      */
-    private void refactorBelowUpdates(PosInOccurrence applicationPosInOccurrence, Term term,
+    private void refactorBelowUpdates(
+            PosInOccurrence applicationPosInOccurrence, Term term,
             LabelCollection labels) {
         Term applicationTerm =
-            applicationPosInOccurrence != null ? applicationPosInOccurrence.subTerm() : null;
+            applicationPosInOccurrence != null ? (Term) applicationPosInOccurrence.subTerm() : null;
         FormulaTermLabel applicationLabel = applicationTerm != null
                 ? (FormulaTermLabel) applicationTerm.getLabel(FormulaTermLabel.NAME)
                 : null;

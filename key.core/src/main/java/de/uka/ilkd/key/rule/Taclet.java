@@ -11,7 +11,6 @@ import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
-import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.mgt.AxiomJustification;
 import de.uka.ilkd.key.proof.mgt.LemmaJustification;
 import de.uka.ilkd.key.proof.mgt.RuleJustification;
@@ -23,13 +22,12 @@ import de.uka.ilkd.key.rule.tacletbuilder.TacletGoalTemplate;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
-import org.key_project.util.EqualsModProofIrrelevancy;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableSet;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import static org.key_project.util.Strings.formatAsList;
@@ -77,7 +75,7 @@ import static org.key_project.util.Strings.formatAsList;
  * {@link de.uka.ilkd.key.rule.TacletApp TacletApp}
  * </p>
  */
-public abstract class Taclet implements Rule, Named, EqualsModProofIrrelevancy {
+public abstract class Taclet implements Rule, Named {
 
     protected final ImmutableSet<TacletAnnotation> tacletAnnotations;
 
@@ -160,8 +158,6 @@ public abstract class Taclet implements Rule, Named, EqualsModProofIrrelevancy {
 
     /** Integer to cache the hashcode */
     private int hashcode = 0;
-    /** Integer to cache the hashcode */
-    private int hashcode2 = 0;
 
     private final Trigger trigger;
 
@@ -477,43 +473,6 @@ public abstract class Taclet implements Rule, Named, EqualsModProofIrrelevancy {
         return goalTemplates.equals(t2.goalTemplates);
     }
 
-    @Override
-    public boolean equalsModProofIrrelevancy(Object o) {
-        if (o == this)
-            return true;
-
-        if (o == null || o.getClass() != this.getClass()) {
-            return false;
-        }
-
-        final Taclet t2 = (Taclet) o;
-
-        if ((ifSequent == null && t2.ifSequent != null)
-                || (ifSequent != null && t2.ifSequent == null)) {
-            return false;
-        } else {
-            ImmutableList<SequentFormula> if1 = ifSequent.asList();
-            ImmutableList<SequentFormula> if2 = t2.ifSequent.asList();
-            while (!if1.isEmpty() && !if2.isEmpty()
-                    && if1.head().equalsModProofIrrelevancy(if2.head())) {
-                if1 = if1.tail();
-                if2 = if2.tail();
-            }
-            if (!if1.isEmpty() || !if2.isEmpty()) {
-                return false;
-            }
-        }
-
-        if (!choices.equals(t2.choices)) {
-            return false;
-        }
-
-        if (!goalTemplates.equals(t2.goalTemplates)) {
-            return false;
-        }
-
-        return true;
-    }
 
     @Override
     public int hashCode() {
@@ -524,17 +483,6 @@ public abstract class Taclet implements Rule, Named, EqualsModProofIrrelevancy {
             }
         }
         return hashcode;
-    }
-
-    @Override
-    public int hashCodeModProofIrrelevancy() {
-        if (hashcode2 == 0) {
-            hashcode2 = ifSequent.getFormulabyNr(1).hashCodeModProofIrrelevancy();
-            if (hashcode2 == 0) {
-                hashcode2 = -1;
-            }
-        }
-        return hashcode2;
     }
 
     /**
@@ -943,23 +891,8 @@ public abstract class Taclet implements Rule, Named, EqualsModProofIrrelevancy {
         }
     }
 
-    /**
-     * applies the given rule application to the specified goal
-     *
-     * @param goal the goal that the rule application should refer to.
-     * @param services the Services encapsulating all java information
-     * @param tacletApp the rule application that is executed.
-     * @return List of the goals created by the rule which have to be proved. If this is a
-     *         close-goal-taclet ( this.closeGoal () ), the first goal of the return list is the
-     *         goal that should be closed (with the constraint this taclet is applied under).
-     */
-    @Override
-    public @NonNull ImmutableList<Goal> apply(Goal goal, Services services, RuleApp tacletApp) {
-        return getExecutor().apply(goal, services, tacletApp);
-    }
-
-    public TacletExecutor<? extends Taclet> getExecutor() {
-        return executor;
+    public TacletExecutor<?> getExecutor() {
+        return (TacletExecutor<? extends Taclet>) executor;
     }
 
     public abstract Taclet setName(String s);

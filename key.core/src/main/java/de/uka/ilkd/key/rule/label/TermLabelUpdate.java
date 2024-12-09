@@ -6,7 +6,6 @@ package de.uka.ilkd.key.rule.label;
 import java.util.Set;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.label.TermLabel;
@@ -16,6 +15,8 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.rule.Rule;
 import de.uka.ilkd.key.rule.RuleApp;
+
+import org.key_project.prover.sequent.PosInOccurrence;
 
 
 /**
@@ -58,7 +59,8 @@ public interface TermLabelUpdate extends RuleSpecificTask {
      * @param labels The {@link Set} of {@link TermLabel}s to modify.
      */
     void updateLabels(TermLabelState state, Services services,
-            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Term modalityTerm,
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Term modalityTerm,
             Rule rule, RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
             Set<TermLabel> labels);
 }

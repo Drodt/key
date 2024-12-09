@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.pp;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.SequentFormula;
+import de.uka.ilkd.key.logic.Term;
 
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -73,8 +74,8 @@ public class ShowSelectedSequentPrintFilter extends SequentPrintFilter {
         private final SequentFormula original;
 
         private Entry(PosInOccurrence pos) {
-            filtered = new SequentFormula(pos.subTerm());
-            original = pos.sequentFormula();
+            filtered = new SequentFormula((Term) pos.subTerm());
+            original = (SequentFormula) pos.sequentFormula();
         }
 
         @Override

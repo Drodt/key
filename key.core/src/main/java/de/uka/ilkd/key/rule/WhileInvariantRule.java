@@ -30,8 +30,6 @@ import de.uka.ilkd.key.java.statement.While;
 import de.uka.ilkd.key.ldt.HeapLDT;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.JavaBlock;
-import de.uka.ilkd.key.logic.Namespace;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.SequentFormula;
@@ -55,6 +53,9 @@ import de.uka.ilkd.key.util.MiscTools;
 import de.uka.ilkd.key.util.Triple;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Namespace;
+import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -184,8 +185,7 @@ public final class WhileInvariantRule implements BuiltInRule {
 
     private static Instantiation instantiate(final LoopInvariantBuiltInRuleApp app,
             Services services) throws RuleAbortException {
-        final Term focusTerm = app.posInOccurrence().subTerm();
-
+        final Term focusTerm = (Term) app.posInOccurrence().subTerm();
 
         // leading update?
         final Pair<Term, Term> update = applyUpdates(focusTerm, services);
@@ -661,7 +661,7 @@ public final class WhileInvariantRule implements BuiltInRule {
         if (Transformer.inTransformer(pio)) {
             return false;
         }
-        Pair<Term, Term> up = applyUpdates(pio.subTerm(), g.proof().getServices());
+        Pair<Term, Term> up = applyUpdates((Term) pio.subTerm(), g.proof().getServices());
         final Term progPost = up.second;
         if (!checkFocus(progPost)) {
             return false;
@@ -703,12 +703,13 @@ public final class WhileInvariantRule implements BuiltInRule {
 
 
     @Override
-    public @NonNull ImmutableList<Goal> apply(Goal goal, Services services, final RuleApp ruleApp)
+    public @NonNull ImmutableList<Goal> apply(Goal goal, final RuleApp ruleApp)
             throws RuleAbortException {
         final TermLabelState termLabelState = new TermLabelState();
         assert ruleApp instanceof LoopInvariantBuiltInRuleApp;
         LoopInvariantBuiltInRuleApp loopRuleApp = (LoopInvariantBuiltInRuleApp) ruleApp;
         final Sequent applicationSequent = goal.sequent();
+        final var services = goal.getOverlayServices();
         final KeYJavaType booleanKJT = services.getTypeConverter().getBooleanType();
         final TermBuilder tb = services.getTermBuilder();
 

@@ -7,13 +7,14 @@ import java.util.List;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.statement.JavaStatement;
-import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.LocationVariable;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.speclang.HeapContext;
 import de.uka.ilkd.key.speclang.LoopContract;
 import de.uka.ilkd.key.speclang.LoopContractImpl;
 
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
@@ -60,7 +61,7 @@ public abstract class AbstractLoopContractBuiltInRuleApp
         }
         final Services services = goal.proof().getServices();
         final AbstractLoopContractRule.Instantiation instantiation =
-            rule.instantiate(posInOccurrence().subTerm(), goal, services);
+            rule.instantiate((Term) posInOccurrence().subTerm(), goal);
         final ImmutableSet<LoopContract> contracts =
             AbstractLoopContractRule.getApplicableContracts(instantiation, goal, services);
         setStatement(instantiation.statement());

@@ -20,8 +20,11 @@ import de.uka.ilkd.key.proof.mgt.SpecificationRepository;
 import de.uka.ilkd.key.rule.label.OriginTermLabelRefactoring;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.Nullable;
@@ -90,7 +93,7 @@ public class OriginTermLabel implements TermLabel {
             return null;
         }
 
-        Term term = pio.subTerm();
+        Term term = (Term) pio.subTerm();
 
         OriginTermLabel originLabel = (OriginTermLabel) term.getLabel(OriginTermLabel.NAME);
 
@@ -99,7 +102,7 @@ public class OriginTermLabel implements TermLabel {
         // then show that term's origin.
         while (originLabel == null && !pio.isTopLevel()) {
             pio = pio.up();
-            term = pio.subTerm();
+            term = (Term) pio.subTerm();
 
             originLabel = (OriginTermLabel) term.getLabel(OriginTermLabel.NAME);
         }
@@ -247,15 +250,17 @@ public class OriginTermLabel implements TermLabel {
      * @param services services.
      * @return the resulting sequent change info.
      */
-    public static SequentChangeInfo removeOriginLabels(Sequent seq, Services services) {
-        SequentChangeInfo changes = null;
+    public static SequentChangeInfo<SequentFormula> removeOriginLabels(Sequent seq,
+            Services services) {
+        SequentChangeInfo<SequentFormula> changes = null;
 
         for (int i = 1; i <= seq.size(); ++i) {
             SequentFormula oldFormula = seq.getFormulabyNr(i);
             SequentFormula newFormula = new SequentFormula(
                 OriginTermLabel.removeOriginLabels(oldFormula.formula(), services));
-            SequentChangeInfo change = seq.changeFormula(newFormula,
-                PosInOccurrence.findInSequent(seq, i, PosInTerm.getTopLevel()));
+            SequentChangeInfo<SequentFormula> change = seq.changeFormula(newFormula,
+                PosInOccurrence.findInSequent(seq, i,
+                    PosInTerm.getTopLevel()));
 
             if (changes == null) {
                 changes = change;

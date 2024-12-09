@@ -8,13 +8,14 @@ import java.util.Objects;
 
 import de.uka.ilkd.key.java.ProgramElement;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
 import de.uka.ilkd.key.logic.op.SchemaVariable;
 import de.uka.ilkd.key.rule.inst.SVInstantiations;
 import de.uka.ilkd.key.util.Debug;
 
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
@@ -300,9 +301,10 @@ public class PosTacletApp extends TacletApp {
         return super.hashCode() + 13 * posInOccurrence().hashCode();
     }
 
-    @Override
     public boolean equalsModProofIrrelevancy(Object o) {
-        if (!super.equalsModProofIrrelevancy(o) || !(o instanceof PosTacletApp)) {
+        if (!(o instanceof TacletApp cmp
+                ? EqualityModuloProofIrrelevancy.equalsModProofIrrelevancy(this, cmp)
+                : false) || !(o instanceof PosTacletApp)) {
             return false;
         }
         PosInOccurrence posA = ((PosTacletApp) o).pos;
@@ -316,10 +318,10 @@ public class PosTacletApp extends TacletApp {
         }
     }
 
-    @Override
     public int hashCodeModProofIrrelevancy() {
-        return Objects.hash(super.hashCodeModProofIrrelevancy(),
-            pos.sequentFormula().hashCodeModProofIrrelevancy(),
+        SequentFormula sf = (SequentFormula) pos.sequentFormula();
+        return Objects.hash(EqualityModuloProofIrrelevancy.hashCodeModProofIrrelevancy(this),
+            EqualityModuloProofIrrelevancy.hashCodeModProofIrrelevancy(sf),
             pos.posInTerm());
     }
 

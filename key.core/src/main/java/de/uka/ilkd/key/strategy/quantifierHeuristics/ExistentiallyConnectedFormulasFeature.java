@@ -3,13 +3,15 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy.quantifierHeuristics;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
+import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.TacletApp;
 import de.uka.ilkd.key.strategy.feature.BinaryTacletAppFeature;
 import de.uka.ilkd.key.strategy.feature.Feature;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 import de.uka.ilkd.key.strategy.termProjection.ProjectionToTerm;
+
+import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
  * Binary feature that return zero if two given projection term is CS-Releated.
@@ -30,7 +32,7 @@ public class ExistentiallyConnectedFormulasFeature extends BinaryTacletAppFeatur
     protected boolean filter(TacletApp app, PosInOccurrence pos, Goal goal, MutableState mState) {
         assert pos != null : "Feature is only applicable to rules with find";
 
-        final ClausesGraph graph = ClausesGraph.create(pos.sequentFormula().formula(),
+        final ClausesGraph graph = ClausesGraph.create((Term) pos.sequentFormula().formula(),
             goal.proof().getServices().getCaches());
 
         return graph.connected(for0.toTerm(app, pos, goal, mState),

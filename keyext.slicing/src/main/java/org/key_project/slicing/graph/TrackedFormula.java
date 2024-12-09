@@ -9,8 +9,7 @@ import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.proof.BranchLocation;
-
-import org.key_project.util.EqualsModProofIrrelevancy;
+import de.uka.ilkd.key.rule.EqualityModuloProofIrrelevancy;
 
 /**
  * A sequent formula tracked by the dependency graph.
@@ -19,7 +18,7 @@ import org.key_project.util.EqualsModProofIrrelevancy;
  *
  * @author Arne Keller
  */
-public class TrackedFormula extends GraphNode implements EqualsModProofIrrelevancy {
+public class TrackedFormula extends GraphNode {
     /**
      * Symbol used to indicate the position of the formula in the sequent.
      *
@@ -100,7 +99,6 @@ public class TrackedFormula extends GraphNode implements EqualsModProofIrrelevan
         return Objects.hash(System.identityHashCode(formula), branchLocation, inAntec);
     }
 
-    @Override
     public boolean equalsModProofIrrelevancy(Object o) {
         if (this == o) {
             return true;
@@ -109,13 +107,16 @@ public class TrackedFormula extends GraphNode implements EqualsModProofIrrelevan
             return false;
         }
         TrackedFormula that = (TrackedFormula) o;
-        return inAntec == that.inAntec
-                && formula.equalsModProofIrrelevancy(that.formula)
+        boolean b = inAntec == that.inAntec
+                && (that.formula instanceof SequentFormula that1
+                        && EqualityModuloProofIrrelevancy.equalsModProofIrrelevancy(formula, that1))
                 && Objects.equals(branchLocation, that.branchLocation);
+        System.out.println(b);
+        return b;
     }
 
-    @Override
     public int hashCodeModProofIrrelevancy() {
-        return Objects.hash(inAntec, formula.hashCodeModProofIrrelevancy(), branchLocation);
+        return Objects.hash(inAntec,
+            EqualityModuloProofIrrelevancy.hashCodeModProofIrrelevancy(formula), branchLocation);
     }
 }
