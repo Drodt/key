@@ -33,6 +33,7 @@ import de.uka.ilkd.key.util.MiscTools;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 
 import org.slf4j.Logger;
@@ -149,7 +150,7 @@ public abstract class VariableNamer implements InstantiationProposer {
      */
     protected ProgramElement getProgramFromPIO(PosInOccurrence pio) {
         Term progTerm;
-        if (pio != null && (progTerm = findProgramInTerm(pio.subTerm())) != null) {
+        if (pio != null && (progTerm = findProgramInTerm((Term) pio.subTerm())) != null) {
             return progTerm.javaBlock().program();
         } else {
             return new EmptyStatement();
@@ -348,7 +349,8 @@ public abstract class VariableNamer implements InstantiationProposer {
      * @return the name proposal, or null if no proposal is available
      */
     protected ProgramElementName getNameProposalForSchemaVariable(String basename,
-            SchemaVariable sv, PosInOccurrence posOfFind, PosInProgram posOfDeclaration,
+            SchemaVariable sv, PosInOccurrence posOfFind,
+            PosInProgram posOfDeclaration,
             ImmutableList<String> previousProposals, Services services) {
         ProgramElementName result = null;
 

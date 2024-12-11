@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy.feature;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.IfFormulaInstantiation;
 import de.uka.ilkd.key.rule.TacletApp;
 import de.uka.ilkd.key.util.Debug;
 
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 
 /**
@@ -38,7 +38,7 @@ public class NoSelfApplicationFeature extends BinaryTacletAppFeature {
         boolean noSelfApplication = true;
         for (IfFormulaInstantiation ifInst : ifInsts) {
             noSelfApplication =
-                noSelfApplication && (ifInst.getConstrainedFormula() != pos.sequentFormula());
+                noSelfApplication && (ifInst.getSequentFormula() != pos.sequentFormula());
         }
         return noSelfApplication;
     }

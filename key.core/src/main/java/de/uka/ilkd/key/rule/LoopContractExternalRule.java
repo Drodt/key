@@ -8,7 +8,6 @@ import java.util.Map;
 
 import de.uka.ilkd.key.informationflow.proof.InfFlowCheckInfo;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermServices;
 import de.uka.ilkd.key.logic.label.TermLabelState;
@@ -28,6 +27,8 @@ import de.uka.ilkd.key.speclang.LoopContract;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.java.ArrayUtil;
@@ -182,7 +183,8 @@ public final class LoopContractExternalRule extends AbstractLoopContractRule {
     }
 
     @Override
-    public boolean isApplicable(final Goal goal, final PosInOccurrence occurrence) {
+    public boolean isApplicable(final Goal goal,
+            final PosInOccurrence occurrence) {
         if (InfFlowCheckInfo.isInfFlow(goal)) {
             return false;
         } else if (occursNotAtTopLevelInSuccedent(occurrence)) {
@@ -191,7 +193,7 @@ public final class LoopContractExternalRule extends AbstractLoopContractRule {
             return false;
         } else {
             final Instantiation instantiation =
-                instantiate(occurrence.subTerm(), goal, goal.proof().getServices());
+                instantiate((Term) occurrence.subTerm(), goal);
 
             if (instantiation == null) {
                 return false;
@@ -210,20 +212,21 @@ public final class LoopContractExternalRule extends AbstractLoopContractRule {
     }
 
     @Override
-    public @NonNull ImmutableList<Goal> apply(final Goal goal, final Services services,
+    public @NonNull ImmutableList<Goal> apply(final Goal goal,
             final RuleApp ruleApp) throws RuleAbortException {
         assert ruleApp instanceof LoopContractExternalBuiltInRuleApp;
         LoopContractExternalBuiltInRuleApp application =
             (LoopContractExternalBuiltInRuleApp) ruleApp;
 
         final Instantiation instantiation =
-            instantiate(application.posInOccurrence().subTerm(), goal, services);
+            instantiate((Term) application.posInOccurrence().subTerm(), goal);
         final LoopContract contract = application.getContract();
         contract.setInstantiationSelf(instantiation.self());
 
         assert contract.isOnBlock() && contract.getBlock().equals(instantiation.statement())
                 || !contract.isOnBlock() && contract.getLoop().equals(instantiation.statement());
 
+        final var services = goal.getOverlayServices();
         final List<LocationVariable> heaps = application.getHeapContext();
         final ImmutableSet<LocationVariable> localInVariables =
             MiscTools.getLocalIns(instantiation.statement(), services);
@@ -232,7 +235,7 @@ public final class LoopContractExternalRule extends AbstractLoopContractRule {
         final Map<LocationVariable, JFunction> anonymisationHeaps =
             createAndRegisterAnonymisationVariables(heaps, contract, services);
         final LoopContract.Variables variables =
-            new VariablesCreatorAndRegistrar(goal, contract.getPlaceholderVariables(), services)
+            new VariablesCreatorAndRegistrar(goal, contract.getPlaceholderVariables())
                     .createAndRegister(instantiation.self(), true);
 
         final ConditionsAndClausesBuilder conditionsAndClausesBuilder =

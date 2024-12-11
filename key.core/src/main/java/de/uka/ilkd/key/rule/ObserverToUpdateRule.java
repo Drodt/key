@@ -17,8 +17,6 @@ import de.uka.ilkd.key.java.reference.SuperReference;
 import de.uka.ilkd.key.java.reference.ThisReference;
 import de.uka.ilkd.key.java.reference.TypeReference;
 import de.uka.ilkd.key.logic.JavaBlock;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.TermServices;
@@ -36,6 +34,8 @@ import de.uka.ilkd.key.rule.UseOperationContractRule.Instantiation;
 import de.uka.ilkd.key.util.Union;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
@@ -130,7 +130,7 @@ public final class ObserverToUpdateRule implements BuiltInRule {
 
         // instantiation must succeed
         Union<Instantiation, ModelFieldInstantiation> inst =
-            instantiate(pio.subTerm(), goal.proof().getServices());
+            instantiate((Term) pio.subTerm(), goal.proof().getServices());
         if (inst == null) {
             return false;
         }
@@ -151,12 +151,13 @@ public final class ObserverToUpdateRule implements BuiltInRule {
     }
 
     @Override
-    public @NonNull ImmutableList<Goal> apply(Goal goal, Services services, RuleApp ruleApp) {
+    public @NonNull ImmutableList<Goal> apply(Goal goal, RuleApp ruleApp) {
+        final var services = goal.getOverlayServices();
         Union<Instantiation, ModelFieldInstantiation> inst =
-            instantiate(ruleApp.posInOccurrence().subTerm(), services);
+            instantiate((Term) ruleApp.posInOccurrence().subTerm(), services);
         assert inst != null : "If isApplicable has been checked, this must not be null";
         if (inst.isFirst()) {
-            return applyForMethods(goal, inst.getFirst(), services, ruleApp);
+            return applyForMethods(goal, inst.getFirst(), ruleApp);
         } else {
             return applyForModelFields(goal, inst.getSecond(), services, ruleApp);
         }
@@ -230,10 +231,11 @@ public final class ObserverToUpdateRule implements BuiltInRule {
      * Turn an assignment {U}[ x = obj.modelMethod(params); ... ]post into
      * {U}{ x := modelMethod(heap, obj, params) }[...]post.
      */
-    private ImmutableList<Goal> applyForMethods(Goal goal, Instantiation inst, Services services,
+    private ImmutableList<Goal> applyForMethods(Goal goal, Instantiation inst,
             RuleApp ruleApp) {
         final TermLabelState termLabelState = new TermLabelState();
         final JavaBlock jb = inst.progPost.javaBlock();
+        final var services = goal.getOverlayServices();
         final TermBuilder tb = services.getTermBuilder();
 
         // split goal into branches

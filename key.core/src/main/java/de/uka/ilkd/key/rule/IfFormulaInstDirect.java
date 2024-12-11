@@ -4,8 +4,9 @@
 package de.uka.ilkd.key.rule;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.proof.io.ProofSaver;
+
+import org.key_project.prover.sequent.SequentFormula;
 
 
 /**
@@ -26,7 +27,7 @@ public class IfFormulaInstDirect implements IfFormulaInstantiation {
     /**
      * @return the cf this is pointing to
      */
-    public SequentFormula getConstrainedFormula() {
+    public SequentFormula getSequentFormula() {
         return cf;
     }
 

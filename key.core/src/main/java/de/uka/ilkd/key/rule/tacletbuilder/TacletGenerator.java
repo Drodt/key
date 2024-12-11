@@ -24,6 +24,7 @@ import de.uka.ilkd.key.speclang.HeapContext;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -149,7 +150,8 @@ public class TacletGenerator {
         SequentFormula guardedSchemaAxiom = generateGuard(kjt, target, services, selfSV, heapSVs,
             paramSVs, schemaAxiom.term, tacletBuilder, satisfiabilityGuard);
         final Sequent addedSeq = Sequent.createAnteSequent(
-            Semisequent.EMPTY_SEMISEQUENT.insertFirst(guardedSchemaAxiom).semisequent());
+            Semisequent.EMPTY_SEMISEQUENT.insertFirst(guardedSchemaAxiom)
+                    .semisequent());
         ImmutableList<Term> vars = ImmutableSLList.nil();
         for (TermSV heapSV : heapSVs) {
             vars = vars.append(tb.var(heapSV));

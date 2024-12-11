@@ -13,7 +13,10 @@ import de.uka.ilkd.key.proof.init.AbstractProfile;
 import de.uka.ilkd.key.rule.inst.SVInstantiations;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentFormula;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -220,7 +223,8 @@ public class TestCollisionResolving {
                 .insert(1, new SequentFormula(TacletForTests.parseTerm("\\exists s x; p(x)")))
                 .semisequent();
         Sequent seq = Sequent.createSuccSequent(semiseq);
-        PosInOccurrence pos = new PosInOccurrence(semiseq.get(0), PosInTerm.getTopLevel(), false);
+        PosInOccurrence pos =
+            new PosInOccurrence(semiseq.get(0), PosInTerm.getTopLevel(), false);
 
         NoPosTacletApp app0 = NoPosTacletApp.createNoPosTacletApp(taclet);
         app0 = app0.matchFind(pos, services);

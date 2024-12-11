@@ -4,9 +4,7 @@
 package de.uka.ilkd.key.rule.executor.javadl;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Sequent;
-import de.uka.ilkd.key.logic.SequentChangeInfo;
 import de.uka.ilkd.key.logic.label.TermLabelState;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.MatchConditions;
@@ -16,6 +14,9 @@ import de.uka.ilkd.key.rule.Taclet.TacletLabelHint;
 import de.uka.ilkd.key.rule.Taclet.TacletLabelHint.TacletOperation;
 import de.uka.ilkd.key.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
 import de.uka.ilkd.key.rule.tacletbuilder.TacletGoalTemplate;
+
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentChangeInfo;
 
 public class SuccTacletExecutor<TacletKind extends SuccTaclet>
         extends FindTacletExecutor<TacletKind> {
@@ -29,7 +30,8 @@ public class SuccTacletExecutor<TacletKind extends SuccTaclet>
      */
     @Override
     protected void applyReplacewith(TacletGoalTemplate gt, TermLabelState termLabelState,
-            SequentChangeInfo currentSequent, PosInOccurrence posOfFind, MatchConditions matchCond,
+            SequentChangeInfo currentSequent,
+            PosInOccurrence posOfFind, MatchConditions matchCond,
             Goal goal, RuleApp ruleApp, Services services) {
         if (gt instanceof AntecSuccTacletGoalTemplate) {
             final Sequent replWith = ((AntecSuccTacletGoalTemplate) gt).replaceWith();
@@ -40,7 +42,7 @@ public class SuccTacletExecutor<TacletKind extends SuccTaclet>
             if (!replWith.antecedent().isEmpty()) {
                 addToAntec(replWith.antecedent(), termLabelState,
                     new TacletLabelHint(TacletOperation.REPLACE_TO_ANTECEDENT, replWith),
-                    currentSequent, null, posOfFind, matchCond, goal, ruleApp, services);
+                    currentSequent, null, posOfFind, matchCond, goal, ruleApp);
             }
         }
     }
@@ -50,13 +52,14 @@ public class SuccTacletExecutor<TacletKind extends SuccTaclet>
      */
     @Override
     protected void applyAdd(Sequent add, TermLabelState termLabelState,
-            SequentChangeInfo currentSequent, PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
+            SequentChangeInfo currentSequent,
+            PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
             MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services) {
         addToAntec(add.antecedent(), termLabelState,
             new TacletLabelHint(TacletOperation.ADD_ANTECEDENT, add), currentSequent, null,
-            posOfFind, matchCond, goal, ruleApp, services);
+            posOfFind, matchCond, goal, ruleApp);
         addToSucc(add.succedent(), termLabelState,
             new TacletLabelHint(TacletOperation.ADD_SUCCEDENT, add), currentSequent, whereToAdd,
-            posOfFind, matchCond, goal, ruleApp, services);
+            posOfFind, matchCond, goal, ruleApp);
     }
 }

@@ -9,8 +9,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
 import de.uka.ilkd.key.control.KeYEnvironment;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.PosInTerm;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.init.JavaProfile;
@@ -18,6 +16,8 @@ import de.uka.ilkd.key.settings.GeneralSettings;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import de.uka.ilkd.key.smt.SMTRuleApp;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.slicing.analysis.AnalysisResults;
 import org.key_project.slicing.analysis.DependencyAnalyzer;
 import org.key_project.util.collection.Pair;
@@ -42,7 +42,9 @@ class EndToEndTests {
 
     /**
      * Load and slice a proof after analyzing it using the dependency analysis algorithm.
-     * Also checks that {@link DependencyTracker#getNodeThatProduced(Node, PosInOccurrence)} works
+     * Also checks that
+     * {@link DependencyTracker#getNodeThatProduced(Node, PosInOccurrence)}
+     * works
      * as expected.
      *
      * @throws Exception on error

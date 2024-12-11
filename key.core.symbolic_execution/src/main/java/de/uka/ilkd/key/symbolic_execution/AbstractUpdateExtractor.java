@@ -27,6 +27,7 @@ import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionUtil;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -59,7 +60,8 @@ public abstract class AbstractUpdateExtractor {
      * @param node The {@link Node} of KeY's proof tree to compute memory layouts for.
      * @param modalityPio The {@link PosInOccurrence} of the modality or its updates.
      */
-    public AbstractUpdateExtractor(Node node, PosInOccurrence modalityPio) {
+    public AbstractUpdateExtractor(Node node,
+            PosInOccurrence modalityPio) {
         assert node != null;
         assert modalityPio != null;
         this.node = node;
@@ -212,7 +214,7 @@ public abstract class AbstractUpdateExtractor {
         // Go up in parent hierarchy and collect updates on all update applications
         PosInOccurrence pio = modalityPio;
         while (pio != null) {
-            Term updateApplication = pio.subTerm();
+            Term updateApplication = (Term) pio.subTerm();
             if (updateApplication.op() == UpdateApplication.UPDATE_APPLICATION) {
                 Term topUpdate = UpdateApplication.getUpdate(updateApplication);
                 collectLocationsFromTerm(topUpdate, locationsToFill, updateCreatedObjectsToFill,
@@ -1255,7 +1257,8 @@ public abstract class AbstractUpdateExtractor {
      * @param currentLayout Is current layout?
      * @return The original updates.
      */
-    protected ImmutableList<Term> computeOriginalUpdates(PosInOccurrence pio,
+    protected ImmutableList<Term> computeOriginalUpdates(
+            PosInOccurrence pio,
             boolean currentLayout) {
         ImmutableList<Term> originalUpdates;
         if (!currentLayout) {
@@ -1264,7 +1267,7 @@ public abstract class AbstractUpdateExtractor {
             if (node.proof().root() == node) {
                 originalUpdates = SymbolicExecutionUtil.computeRootElementaryUpdates(node);
             } else {
-                Term originalModifiedFormula = pio.subTerm();
+                Term originalModifiedFormula = (Term) pio.subTerm();
                 originalUpdates = TermBuilder.goBelowUpdates2(originalModifiedFormula).first;
             }
         }

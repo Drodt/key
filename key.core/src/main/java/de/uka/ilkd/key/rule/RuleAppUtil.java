@@ -6,12 +6,13 @@ package de.uka.ilkd.key.rule;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.PosInTerm;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.rule.merge.CloseAfterMergeRuleBuiltInRuleApp;
 import de.uka.ilkd.key.rule.merge.MergeRuleBuiltInRuleApp;
 import de.uka.ilkd.key.smt.SMTRuleApp;
+
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
  * Utilities for working with rule applications.
@@ -30,7 +31,8 @@ public final class RuleAppUtil {
      * @param node proof node which contains that rule application
      * @return sequent formulas used
      */
-    public static Set<PosInOccurrence> ifInstsOfRuleApp(RuleApp ruleApp, Node node) {
+    public static Set<PosInOccurrence> ifInstsOfRuleApp(
+            RuleApp ruleApp, Node node) {
         // replayer requires that ifInsts are provided in order (!)
         Set<PosInOccurrence> inputs = new LinkedHashSet<>();
         // taclets with \find or similar
@@ -41,7 +43,7 @@ public final class RuleAppUtil {
 
                     if (x instanceof IfFormulaInstSeq) {
                         boolean antec = ((IfFormulaInstSeq) x).inAntec();
-                        inputs.add(new PosInOccurrence(x.getConstrainedFormula(),
+                        inputs.add(new PosInOccurrence(x.getSequentFormula(),
                             PosInTerm.getTopLevel(), antec));
                     }
                 }

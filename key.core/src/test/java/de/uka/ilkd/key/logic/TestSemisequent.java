@@ -13,6 +13,7 @@ import de.uka.ilkd.key.rule.TacletForTests;
 import org.key_project.logic.Name;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -75,7 +76,8 @@ public class TestSemisequent {
         Semisequent seq = Semisequent.EMPTY_SEMISEQUENT;
         seq = extract(seq.insert(0, con[0]));
         seq = extract(seq.insert(1, con[1]));
-        SequentFormula eq2con0 = new SequentFormula(con[0].formula());
+        SequentFormula eq2con0 =
+            new SequentFormula(con[0].formula());
         assertFalse(seq.contains(eq2con0), "Contains should test of identity and not equality.");
     }
 
@@ -84,7 +86,8 @@ public class TestSemisequent {
         Semisequent seq = Semisequent.EMPTY_SEMISEQUENT;
         seq = extract(seq.insert(0, con[0]));
         seq = extract(seq.insert(1, con[1]));
-        SequentFormula eq2con0 = new SequentFormula(con[0].formula());
+        SequentFormula eq2con0 =
+            new SequentFormula(con[0].formula());
         assertTrue(seq.containsEqual(eq2con0),
             "Contains tests of equality and should find the formula.");
     }
@@ -238,7 +241,8 @@ public class TestSemisequent {
 
         Semisequent expected = extract(
             extract(extract(origin.insertLast(con[4])).insertLast(con[5])).insertLast(con[6]));
-        ImmutableList<SequentFormula> insertionList = ImmutableSLList.<SequentFormula>nil()
+        ImmutableList<org.key_project.prover.sequent.SequentFormula> insertionList = ImmutableSLList
+                .<SequentFormula>nil()
                 .prepend(con[0]).prepend(con[1]).prepend(con[6]).prepend(con[5]).prepend(con[4]);
         Semisequent result = extract(origin.insert(origin.size(), insertionList));
         assertEquals(expected, result, "Both semisequents should be equal.");
@@ -252,7 +256,8 @@ public class TestSemisequent {
                     .insertLast(con[2]));
         Semisequent expected =
             extract(extract(extract(origin.insert(2, con[4])).insert(3, con[5])).insert(4, con[6]));
-        ImmutableList<SequentFormula> insertionList = ImmutableSLList.<SequentFormula>nil()
+        ImmutableList<org.key_project.prover.sequent.SequentFormula> insertionList = ImmutableSLList
+                .<SequentFormula>nil()
                 .prepend(con[0]).prepend(con[1]).prepend(con[6]).prepend(con[5]).prepend(con[4]);
         Semisequent result = extract(origin.insert(origin.size() - 1, insertionList));
         assertEquals(expected, result, "Both semisequents should be equal.");
@@ -270,7 +275,8 @@ public class TestSemisequent {
             extract(extract(extract(origin.remove(2)).insertLast(con[4])).insertLast(con[5]))
                     .insertLast(con[6]));
         // insert: [a,b,c,q,p]
-        ImmutableList<SequentFormula> insertionList = ImmutableSLList.<SequentFormula>nil()
+        ImmutableList<org.key_project.prover.sequent.SequentFormula> insertionList = ImmutableSLList
+                .<SequentFormula>nil()
                 .prepend(con[0]).prepend(con[1]).prepend(con[6]).prepend(con[5]).prepend(con[4]);
 
         SemisequentChangeInfo result = origin.replace(origin.size() - 1, insertionList);
@@ -296,7 +302,7 @@ public class TestSemisequent {
             extract(extract(origin.insertLast(con[4])).insertLast(con[5])).insertLast(con[6]))
                     .insertLast(con[2]));
         // insert:[a,b,c,r,r,q,p]
-        ImmutableList<SequentFormula> insertionList =
+        ImmutableList<org.key_project.prover.sequent.SequentFormula> insertionList =
             ImmutableSLList.<SequentFormula>nil().prepend(con[0]).prepend(con[1]).prepend(con[2])
                     .prepend(con[3]).prepend(con[6]).prepend(con[5]).prepend(con[4]);
 

@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy;
 
-import de.uka.ilkd.key.logic.Namespace;
 import de.uka.ilkd.key.logic.NamespaceSet;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.rulefilter.IHTacletFilter;
@@ -25,6 +23,8 @@ import de.uka.ilkd.key.strategy.termProjection.TermBuffer;
 import de.uka.ilkd.key.strategy.termgenerator.TermGenerator;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Namespace;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -108,7 +108,8 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection im
     }
 
 
-    public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+    public void instantiateApp(RuleApp app, PosInOccurrence pio,
+            Goal goal,
             RuleAppCostCollector collector) {
         final MutableState mState = new MutableState();
         final BackTrackingManager btManager = mState.getBacktrackingManager();

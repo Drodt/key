@@ -22,6 +22,9 @@ import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.rule.TacletApp;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -111,7 +114,7 @@ public class InstantiateCommand extends AbstractCommand<InstantiateCommand.Param
         ImmutableList<TacletApp> allApps = ImmutableSLList.nil();
         for (SequentFormula sf : g.node().sequent().antecedent()) {
             if (p.formula != null
-                    && !sf.formula().equalsModProperty(p.formula, RENAMING_TERM_PROPERTY)) {
+                    && !(RENAMING_TERM_PROPERTY.equalsModThisProperty(sf.formula(), p.formula))) {
                 continue;
             }
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
@@ -120,7 +123,7 @@ public class InstantiateCommand extends AbstractCommand<InstantiateCommand.Param
 
         for (SequentFormula sf : g.node().sequent().succedent()) {
             if (p.formula != null
-                    && !sf.formula().equalsModProperty(p.formula, RENAMING_TERM_PROPERTY)) {
+                    && !(RENAMING_TERM_PROPERTY.equalsModThisProperty(sf.formula(), p.formula))) {
                 continue;
             }
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
@@ -136,8 +139,8 @@ public class InstantiateCommand extends AbstractCommand<InstantiateCommand.Param
     private TacletApp filterList(Parameters p, ImmutableList<TacletApp> list) {
         for (TacletApp tacletApp : list) {
             if (tacletApp instanceof PosTacletApp pta) {
-                if (pta.posInOccurrence().subTerm().equalsModProperty(p.formula,
-                    RENAMING_TERM_PROPERTY)) {
+                Term term = (Term) pta.posInOccurrence().subTerm();
+                if (RENAMING_TERM_PROPERTY.equalsModThisProperty(term, p.formula)) {
                     return pta;
                 }
             }
@@ -150,14 +153,14 @@ public class InstantiateCommand extends AbstractCommand<InstantiateCommand.Param
         Sequent seq = n.sequent();
         int occ = params.occ;
         for (SequentFormula form : seq.antecedent().asList()) {
-            Term term = form.formula();
-            Term stripped = stripUpdates(term);
+            var term = form.formula();
+            var stripped = stripUpdates(term);
             if (stripped.op() == Quantifier.ALL) {
                 String varName = stripped.boundVars().get(0).name().toString();
                 if (params.var.equals(varName)) {
                     occ--;
                     if (occ == 0) {
-                        params.formula = term;
+                        params.formula = (Term) term;
                         return;
                     }
                 }
@@ -165,14 +168,14 @@ public class InstantiateCommand extends AbstractCommand<InstantiateCommand.Param
         }
 
         for (SequentFormula form : seq.succedent().asList()) {
-            Term term = form.formula();
-            Term stripped = stripUpdates(term);
+            var term = form.formula();
+            var stripped = stripUpdates(term);
             if (stripped.op() == Quantifier.EX) {
                 String varName = stripped.boundVars().get(0).name().toString();
                 if (params.var.equals(varName)) {
                     occ--;
                     if (occ == 0) {
-                        params.formula = term;
+                        params.formula = (Term) term;
                         return;
                     }
                 }
@@ -183,7 +186,7 @@ public class InstantiateCommand extends AbstractCommand<InstantiateCommand.Param
             "Variable '" + params.var + "' has no occurrence no. '" + params.occ + "'.");
     }
 
-    private Term stripUpdates(Term term) {
+    private org.key_project.logic.Term stripUpdates(org.key_project.logic.Term term) {
         while (term.op() == UpdateApplication.UPDATE_APPLICATION) {
             term = term.sub(1);
         }

@@ -15,10 +15,7 @@ import de.uka.ilkd.key.java.declaration.ClassDeclaration;
 import de.uka.ilkd.key.java.declaration.InterfaceDeclaration;
 import de.uka.ilkd.key.java.declaration.TypeDeclaration;
 import de.uka.ilkd.key.ldt.HeapLDT;
-import de.uka.ilkd.key.logic.Namespace;
 import de.uka.ilkd.key.logic.NamespaceSet;
-import de.uka.ilkd.key.logic.SequentFormula;
-import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.label.OriginTermLabelFactory;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
@@ -41,7 +38,9 @@ import de.uka.ilkd.key.util.Debug;
 import de.uka.ilkd.key.util.MiscTools;
 import de.uka.ilkd.key.util.ProgressMonitor;
 
+import org.key_project.logic.Namespace;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
@@ -340,25 +339,26 @@ public final class ProblemInitializer {
         }
     }
 
-    private void populateNamespaces(Term term, NamespaceSet namespaces, Goal rootGoal) {
+    private void populateNamespaces(org.key_project.logic.Term term, NamespaceSet namespaces,
+            Goal rootGoal) {
         for (int i = 0; i < term.arity(); i++) {
             populateNamespaces(term.sub(i), namespaces, rootGoal);
         }
 
-        if (term.op() instanceof JFunction) {
-            namespaces.functions().add((JFunction) term.op());
+        if (term.op() instanceof JFunction fn) {
+            namespaces.functions().add(fn);
         } else if (term.op() instanceof ProgramVariable) {
             final ProgramVariable pv = (ProgramVariable) term.op();
             if (namespaces.programVariables().lookup(pv.name()) == null) {
                 rootGoal.addProgramVariable((ProgramVariable) term.op());
             }
-        } else if (term.op() instanceof ElementaryUpdate) {
-            final ProgramVariable pv = (ProgramVariable) ((ElementaryUpdate) term.op()).lhs();
+        } else if (term.op() instanceof ElementaryUpdate eu) {
+            final ProgramVariable pv = (ProgramVariable) eu.lhs();
             if (namespaces.programVariables().lookup(pv.name()) == null) {
                 rootGoal.addProgramVariable(pv);
             }
-        } else if (term.javaBlock() != null && !term.javaBlock().isEmpty()) {
-            final ProgramElement pe = term.javaBlock().program();
+        } else if (term.op() instanceof Modality mod) {
+            final ProgramElement pe = mod.program().program();
             final Services serv = rootGoal.proof().getServices();
             final ImmutableSet<LocationVariable> freeProgVars =
                 MiscTools.getLocalIns(pe, serv).union(MiscTools.getLocalOuts(pe, serv));

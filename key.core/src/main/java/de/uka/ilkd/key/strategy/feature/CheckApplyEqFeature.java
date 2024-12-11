@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy.feature;
 
-import de.uka.ilkd.key.logic.PIOPathIterator;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.op.Equality;
 import de.uka.ilkd.key.logic.op.UpdateApplication;
 import de.uka.ilkd.key.proof.Goal;
@@ -12,6 +10,9 @@ import de.uka.ilkd.key.rule.IfFormulaInstSeq;
 import de.uka.ilkd.key.rule.IfFormulaInstantiation;
 import de.uka.ilkd.key.rule.TacletApp;
 import de.uka.ilkd.key.util.Debug;
+
+import org.key_project.prover.sequent.PIOPathIterator;
+import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
  * This feature checks that an equation is not applied to itself. This means that the focus of the
@@ -37,9 +38,10 @@ public class CheckApplyEqFeature extends BinaryTacletAppFeature {
         ;
     }
 
-    private boolean isNotSelfApplication(PosInOccurrence pos, IfFormulaInstantiation ifInst) {
+    private boolean isNotSelfApplication(PosInOccurrence pos,
+            IfFormulaInstantiation ifInst) {
         if (!(ifInst instanceof IfFormulaInstSeq)
-                || ifInst.getConstrainedFormula() != pos.sequentFormula()
+                || ifInst.getSequentFormula() != pos.sequentFormula()
                 || ((IfFormulaInstSeq) ifInst).inAntec() != pos.isInAntec()) {
             return true;
         }

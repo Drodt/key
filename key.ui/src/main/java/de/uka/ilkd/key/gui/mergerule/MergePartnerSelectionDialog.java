@@ -27,6 +27,7 @@ import de.uka.ilkd.key.rule.merge.MergeRule;
 import de.uka.ilkd.key.rule.merge.MergeRuleBuiltInRuleApp;
 import de.uka.ilkd.key.util.mergerule.MergeRuleUtils;
 
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.Pair;
@@ -299,7 +300,8 @@ public class MergePartnerSelectionDialog extends JDialog {
      * @param candidates Potential merge candidates.
      * @param services The services object.
      */
-    public MergePartnerSelectionDialog(Goal mergeGoal, PosInOccurrence pio,
+    public MergePartnerSelectionDialog(Goal mergeGoal,
+            PosInOccurrence pio,
             ImmutableList<MergePartner> candidates, Services services) {
 
         this();
@@ -434,7 +436,8 @@ public class MergePartnerSelectionDialog extends JDialog {
         for (SequentFormula succedentFormula : seq.succedent()) {
             if (!succedentFormula.formula().containsJavaBlockRecursive()) {
                 antecedent =
-                    antecedent.insertFirst(new SequentFormula(tb.not(succedentFormula.formula())))
+                    antecedent
+                            .insertFirst(new SequentFormula(tb.not(succedentFormula.formula())))
                             .semisequent();
             }
         }
@@ -508,9 +511,10 @@ public class MergePartnerSelectionDialog extends JDialog {
      * @param pio Position indicating subterm to highlight.
      * @param area The editor pane to add the highlighted goal to.
      */
-    private void setHighlightedSequentForArea(Goal goal, PosInOccurrence pio, JEditorPane area) {
+    private void setHighlightedSequentForArea(Goal goal,
+            PosInOccurrence pio, JEditorPane area) {
 
-        String subterm = LogicPrinter.quickPrintTerm(pio.subTerm(), services);
+        String subterm = LogicPrinter.quickPrintTerm((Term) pio.subTerm(), services);
 
         // Render subterm to highlight as a regular expression.
         // Note: Four backslashs in replacement expression will result in

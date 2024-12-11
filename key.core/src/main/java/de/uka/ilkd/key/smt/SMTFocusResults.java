@@ -18,6 +18,9 @@ import de.uka.ilkd.key.rule.TacletApp;
 import de.uka.ilkd.key.smt.SMTSolverResult.ThreeValuedTruth;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -51,7 +54,8 @@ public final class SMTFocusResults {
      */
     public static boolean focus(SMTProblem smtProblem, Services services) {
 
-        ImmutableList<PosInOccurrence> unsatCore = getUnsatCore(smtProblem);
+        ImmutableList<PosInOccurrence> unsatCore =
+            getUnsatCore(smtProblem);
         if (unsatCore == null) {
             return false;
         }
@@ -73,14 +77,15 @@ public final class SMTFocusResults {
         int i = 1;
         for (SequentFormula sf : antecedent) {
             PosInOccurrence pio =
-                PosInOccurrence.findInSequent(goalNode.sequent(), i, PosInTerm.getTopLevel());
+                PosInOccurrence.findInSequent(goalNode.sequent(), i,
+                    PosInTerm.getTopLevel());
             if (!unsatCore.contains(pio)) {
                 // TODO: ugly way of acessing. Can be done better?!
                 SchemaVariable schema = hideLeft.collectSchemaVars().iterator().next();
                 TacletApp app = PosTacletApp.createPosTacletApp(hideLeft, new MatchConditions(),
                     new PosInOccurrence(sf, PosInTerm.getTopLevel(), true),
                     services);
-                app = app.addCheckedInstantiation(schema, sf.formula(), services, true);
+                app = app.addCheckedInstantiation(schema, (Term) sf.formula(), services, true);
                 goal = goal.apply(app).iterator().next();
             }
             i++;
@@ -88,7 +93,8 @@ public final class SMTFocusResults {
 
         for (SequentFormula sf : succedent) {
             PosInOccurrence pio =
-                PosInOccurrence.findInSequent(goalNode.sequent(), i, PosInTerm.getTopLevel());
+                PosInOccurrence.findInSequent(goalNode.sequent(), i,
+                    PosInTerm.getTopLevel());
             if (!unsatCore.contains(pio)) {
                 // TODO: ugly way of acessing. Can be done better?!
                 SchemaVariable schema = hideRight.collectSchemaVars().iterator().next();
@@ -96,7 +102,7 @@ public final class SMTFocusResults {
                     PosTacletApp.createPosTacletApp(hideRight, new MatchConditions(),
                         new PosInOccurrence(sf, PosInTerm.getTopLevel(), false),
                         services);
-                app = app.addCheckedInstantiation(schema, sf.formula(), services, true);
+                app = app.addCheckedInstantiation(schema, (Term) sf.formula(), services, true);
                 goal = goal.apply(app).iterator().next();
             }
             i++;
@@ -114,7 +120,8 @@ public final class SMTFocusResults {
      * @param problem SMT solver results
      * @return formula collection or null if the solver did not produce an unsat core
      */
-    public static ImmutableList<PosInOccurrence> getUnsatCore(SMTProblem problem) {
+    public static ImmutableList<PosInOccurrence> getUnsatCore(
+            SMTProblem problem) {
 
         SMTSolver solver = problem.getSuccessfulSolver();
 
@@ -142,14 +149,16 @@ public final class SMTFocusResults {
         Node goalNode = problem.getNode();
 
         HashSet<Integer> unsatCore = new HashSet<>(Arrays.asList(numbers));
-        ImmutableList<PosInOccurrence> unsatCoreFormulas = ImmutableSLList.nil();
+        ImmutableList<PosInOccurrence> unsatCoreFormulas =
+            ImmutableSLList.nil();
 
         Semisequent antecedent = goalNode.sequent().antecedent();
         int i = 1;
         for (SequentFormula sf : antecedent) {
             if (unsatCore.contains(i)) {
-                unsatCoreFormulas = unsatCoreFormulas.prepend(PosInOccurrence
-                        .findInSequent(goalNode.sequent(), i, PosInTerm.getTopLevel()));
+                unsatCoreFormulas =
+                    unsatCoreFormulas.prepend(PosInOccurrence
+                            .findInSequent(goalNode.sequent(), i, PosInTerm.getTopLevel()));
             }
             i++;
         }
@@ -157,8 +166,9 @@ public final class SMTFocusResults {
         Semisequent succedent = goalNode.sequent().succedent();
         for (SequentFormula sf : succedent) {
             if (unsatCore.contains(i)) {
-                unsatCoreFormulas = unsatCoreFormulas.prepend(PosInOccurrence
-                        .findInSequent(goalNode.sequent(), i, PosInTerm.getTopLevel()));
+                unsatCoreFormulas =
+                    unsatCoreFormulas.prepend(PosInOccurrence
+                            .findInSequent(goalNode.sequent(), i, PosInTerm.getTopLevel()));
             }
             i++;
         }

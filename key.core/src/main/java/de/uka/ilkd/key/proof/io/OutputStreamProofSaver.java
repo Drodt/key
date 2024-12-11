@@ -48,7 +48,10 @@ import de.uka.ilkd.key.util.KeYConstants;
 import de.uka.ilkd.key.util.MiscTools;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMapEntry;
 
@@ -172,8 +175,9 @@ public class OutputStreamProofSaver {
                 strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
                     StrategyProperties.INF_FLOW_CHECK_TRUE);
                 strategySettings.setActiveStrategyProperties(strategyProperties);
-                for (final SequentFormula s : proof.root().sequent().succedent().asList()) {
-                    ((InfFlowProof) proof).addLabeledTotalTerm(s.formula());
+                for (final SequentFormula s : proof.root().sequent()
+                        .succedent().asList()) {
+                    ((InfFlowProof) proof).addLabeledTotalTerm((Term) s.formula());
                 }
             } else {
                 strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
@@ -696,11 +700,13 @@ public class OutputStreamProofSaver {
         ps.append(")\n");
     }
 
-    public static String posInOccurrence2Proof(Sequent seq, PosInOccurrence pos) {
+    public static String posInOccurrence2Proof(Sequent seq,
+            PosInOccurrence pos) {
         if (pos == null) {
             return "";
         }
-        return " (formula \"" + seq.formulaNumberInSequent(pos.isInAntec(), pos.sequentFormula())
+        return " (formula \""
+            + seq.formulaNumberInSequent(pos.isInAntec(), pos.sequentFormula())
             + "\")" + posInTerm2Proof(pos.posInTerm());
     }
 
@@ -760,7 +766,7 @@ public class OutputStreamProofSaver {
         StringBuilder s = new StringBuilder();
         for (final IfFormulaInstantiation aL : l) {
             if (aL instanceof IfFormulaInstSeq) {
-                final SequentFormula f = aL.getConstrainedFormula();
+                final SequentFormula f = aL.getSequentFormula();
                 s.append(" (ifseqformula \"")
                         .append(node.sequent()
                                 .formulaNumberInSequent(((IfFormulaInstSeq) aL).inAntec(), f))
@@ -768,7 +774,7 @@ public class OutputStreamProofSaver {
             } else if (aL instanceof IfFormulaInstDirect) {
 
                 final String directInstantiation =
-                    printTerm(aL.getConstrainedFormula().formula(), node.proof().getServices());
+                    printTerm((Term) aL.getSequentFormula().formula(), node.proof().getServices());
 
                 s.append(" (ifdirectformula \"").append(escapeCharacters(directInstantiation))
                         .append("\")");
@@ -780,7 +786,8 @@ public class OutputStreamProofSaver {
         return s.toString();
     }
 
-    public String builtinRuleIfInsts(Node node, ImmutableList<PosInOccurrence> ifInsts) {
+    public String builtinRuleIfInsts(Node node,
+            ImmutableList<PosInOccurrence> ifInsts) {
         StringBuilder s = new StringBuilder();
         for (final PosInOccurrence ifInst : ifInsts) {
             s.append(" (ifInst \"\" ");

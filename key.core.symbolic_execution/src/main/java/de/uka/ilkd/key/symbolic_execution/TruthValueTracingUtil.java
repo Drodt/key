@@ -14,9 +14,7 @@ import java.util.Map.Entry;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.DefaultVisitor;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Sequent;
-import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.label.FormulaTermLabel;
@@ -44,6 +42,8 @@ import de.uka.ilkd.key.util.NodePreorderIterator;
 import org.key_project.logic.Name;
 import org.key_project.logic.op.SortedOperator;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.java.ArrayUtil;
 
@@ -65,7 +65,8 @@ public final class TruthValueTracingUtil {
      * @param sequentFormula The {@link SequentFormula} to check.
      * @return {@code true} is predicate, {@code false} is something else.
      */
-    public static boolean isPredicate(SequentFormula sequentFormula) {
+    public static boolean isPredicate(
+            SequentFormula sequentFormula) {
         return sequentFormula != null && isPredicate(sequentFormula.formula());
     }
 
@@ -282,8 +283,9 @@ public final class TruthValueTracingUtil {
                 if (parentPio != null) {
                     assert 1 == parent.childrenCount()
                             : "Implementaton of the OneStepSimplifierRule has changed.";
-                    PosInOccurrence childPio = SymbolicExecutionUtil.posInOccurrenceToOtherSequent(
-                        parent, parent.getAppliedRuleApp().posInOccurrence(), parent.child(0));
+                    PosInOccurrence childPio =
+                        SymbolicExecutionUtil.posInOccurrenceToOtherSequent(
+                            parent, parent.getAppliedRuleApp().posInOccurrence(), parent.child(0));
                     updatePredicateResultBasedOnNewMinorIdsOSS(childPio, parentPio, termLabelName,
                         services.getTermBuilder(), nodeResult);
                 }
@@ -329,7 +331,7 @@ public final class TruthValueTracingUtil {
         // Search for labels in find part
         PosInOccurrence pio = tacletApp.posInOccurrence();
         if (pio != null) {
-            Term term = pio.subTerm();
+            Term term = (Term) pio.subTerm();
             if (term != null) {
                 // Check for evaluated truth values
                 TermLabel label = term.getLabel(termLabelName);
@@ -342,7 +344,7 @@ public final class TruthValueTracingUtil {
             if (tacletApp.ifInstsComplete() && tacletApp.ifFormulaInstantiations() != null) {
                 for (IfFormulaInstantiation ifInst : tacletApp.ifFormulaInstantiations()) {
                     assert ifInst instanceof IfFormulaInstSeq;
-                    Term term = ifInst.getConstrainedFormula().formula();
+                    Term term = ifInst.getSequentFormula().formula();
                     TermLabel label = term.getLabel(termLabelName);
                     if (label instanceof FormulaTermLabel) {
                         result.add(new LabelOccurrence((FormulaTermLabel) label,
@@ -444,14 +446,16 @@ public final class TruthValueTracingUtil {
      */
     private static void updatePredicateResultBasedOnNewMinorIdsOSS(
             final PosInOccurrence childPio,
-            final PosInOccurrence parentPio, final Name termLabelName, final TermBuilder tb,
+            final PosInOccurrence parentPio, final Name termLabelName,
+            final TermBuilder tb,
             final Map<String, MultiEvaluationResult> results) {
         if (parentPio != null) {
             // Check application term and all of its children and grand children
             parentPio.subTerm().execPreOrder(new DefaultVisitor() {
                 @Override
                 public void visit(Term visited) {
-                    checkForNewMinorIdsOSS(childPio.sequentFormula(), visited, termLabelName,
+                    checkForNewMinorIdsOSS(childPio.sequentFormula(), visited,
+                        termLabelName,
                         parentPio, tb, results);
                 }
             });
@@ -459,7 +463,8 @@ public final class TruthValueTracingUtil {
             PosInOccurrence currentPio = parentPio;
             while (!currentPio.isTopLevel()) {
                 currentPio = currentPio.up();
-                checkForNewMinorIdsOSS(childPio.sequentFormula(), currentPio.subTerm(),
+                checkForNewMinorIdsOSS(childPio.sequentFormula(),
+                    (Term) currentPio.subTerm(),
                     termLabelName, parentPio, tb, results);
             }
         }
@@ -477,7 +482,8 @@ public final class TruthValueTracingUtil {
      */
     private static void checkForNewMinorIdsOSS(
             SequentFormula onlyChangedChildSF, Term term,
-            Name termLabelName, PosInOccurrence parentPio, TermBuilder tb,
+            Name termLabelName, PosInOccurrence parentPio,
+            TermBuilder tb,
             Map<String, MultiEvaluationResult> results) {
         TermLabel label = term.getLabel(termLabelName);
         if (label instanceof FormulaTermLabel) {
@@ -532,7 +538,8 @@ public final class TruthValueTracingUtil {
         final Node parentNode = childNode.parent();
         if (parentNode != null) {
             final RuleApp parentRuleApp = parentNode.getAppliedRuleApp();
-            final PosInOccurrence parentPio = parentRuleApp.posInOccurrence();
+            final PosInOccurrence parentPio =
+                parentRuleApp.posInOccurrence();
             if (parentPio != null) {
                 // Check application term and all of its children and grand children
                 parentPio.subTerm().execPreOrder(new DefaultVisitor() {
@@ -546,14 +553,15 @@ public final class TruthValueTracingUtil {
                 PosInOccurrence currentPio = parentPio;
                 while (!currentPio.isTopLevel()) {
                     currentPio = currentPio.up();
-                    checkForNewMinorIds(childNode, currentPio.subTerm(), termLabelName, parentPio,
+                    checkForNewMinorIds(childNode, (Term) currentPio.subTerm(), termLabelName,
+                        parentPio,
                         tb, results);
                 }
                 // Check if instantiations
                 if (parentRuleApp instanceof TacletApp ta) {
                     if (ta.ifInstsComplete() && ta.ifFormulaInstantiations() != null) {
                         for (IfFormulaInstantiation ifInst : ta.ifFormulaInstantiations()) {
-                            checkForNewMinorIds(childNode, ifInst.getConstrainedFormula().formula(),
+                            checkForNewMinorIds(childNode, ifInst.getSequentFormula().formula(),
                                 termLabelName, parentPio, tb, results);
                         }
                     }
@@ -574,7 +582,8 @@ public final class TruthValueTracingUtil {
      */
     private static void checkForNewMinorIds(
             Node childNode, Term term, Name termLabelName,
-            PosInOccurrence parentPio, TermBuilder tb, Map<String, MultiEvaluationResult> results) {
+            PosInOccurrence parentPio, TermBuilder tb,
+            Map<String, MultiEvaluationResult> results) {
         TermLabel label = term.getLabel(termLabelName);
         if (label instanceof FormulaTermLabel) {
             Term replacement =

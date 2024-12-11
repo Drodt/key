@@ -37,6 +37,7 @@ import de.uka.ilkd.key.util.SideProofUtil;
 import de.uka.ilkd.key.util.Triple;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Namespace;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
@@ -70,14 +71,15 @@ public final class SymbolicExecutionSideProofUtil {
         for (SequentFormula sf : goalSequent.antecedent()) {
             if (sf != currentSF) {
                 if (!containsModalityOrQuery(sf)) {
-                    sequentToProve = sequentToProve.addFormula(sf, true, false).sequent();
+                    sequentToProve = (Sequent) sequentToProve.addFormula(sf, true, false).sequent();
                 }
             }
         }
         for (SequentFormula sf : goalSequent.succedent()) {
             if (sf != currentSF) {
                 if (!containsModalityOrQuery(sf)) {
-                    sequentToProve = sequentToProve.addFormula(sf, false, false).sequent();
+                    sequentToProve =
+                        (Sequent) sequentToProve.addFormula(sf, false, false).sequent();
                 }
             }
         }
@@ -254,7 +256,8 @@ public final class SymbolicExecutionSideProofUtil {
         }
     }
 
-    private static Term constructResultIfContained(Services services, SequentFormula sf,
+    private static Term constructResultIfContained(Services services,
+            SequentFormula sf,
             Operator operator) {
         return constructResultIfContained(services, sf.formula(), operator);
     }
@@ -322,7 +325,8 @@ public final class SymbolicExecutionSideProofUtil {
      * @return {@code true} contains at least one modality or query, {@code false} contains no
      *         modalities and no queries.
      */
-    public static boolean containsModalityOrQuery(SequentFormula sf) {
+    public static boolean containsModalityOrQuery(
+            SequentFormula sf) {
         return containsModalityOrQuery(sf.formula());
     }
 
@@ -437,7 +441,8 @@ public final class SymbolicExecutionSideProofUtil {
      *         {@link SequentFormula} is not a relevant condition.
      */
     public static boolean isIrrelevantCondition(Services services, Sequent initialSequent,
-            Set<Operator> relevantThingsInSequentToProve, SequentFormula sf) {
+            Set<Operator> relevantThingsInSequentToProve,
+            SequentFormula sf) {
         return initialSequent.antecedent().contains(sf) || initialSequent.succedent().contains(sf)
                 || containsModalityOrQuery(sf) // isInOrOfAntecedent(initialSequent, sf) ||
                 || containsIrrelevantThings(services, sf, relevantThingsInSequentToProve);
@@ -480,7 +485,8 @@ public final class SymbolicExecutionSideProofUtil {
      * @return {@code true} The {@link SequentFormula} contains irrelevant things, {@code false} the
      *         {@link SequentFormula} contains no irrelevant things.
      */
-    public static boolean containsIrrelevantThings(Services services, SequentFormula sf,
+    public static boolean containsIrrelevantThings(Services services,
+            SequentFormula sf,
             Set<Operator> relevantThings) {
         ContainsIrrelevantThingsVisitor visitor =
             new ContainsIrrelevantThingsVisitor(services, relevantThings);
@@ -490,7 +496,7 @@ public final class SymbolicExecutionSideProofUtil {
 
     /**
      * Utility class used by
-     * {@link #containsIrrelevantThings(Services, SequentFormula, Set)}.
+     * {@link #containsIrrelevantThings(Services, org.key_project.prover.sequent.SequentFormula, Set)}.
      *
      * @author Martin Hentschel
      */
@@ -699,11 +705,12 @@ public final class SymbolicExecutionSideProofUtil {
     public static Term extractOperatorTerm(Node node, final Operator operator) {
         assert node != null;
         // Search formula with the given operator in sequent (or in some cases below the updates)
-        SequentFormula sf = CollectionUtil.search(node.sequent(), element -> {
-            Term term = element.formula();
-            term = TermBuilder.goBelowUpdates(term);
-            return Objects.equals(term.op(), operator);
-        });
+        SequentFormula sf =
+            CollectionUtil.search(node.sequent(), element -> {
+                Term term = element.formula();
+                term = TermBuilder.goBelowUpdates(term);
+                return Objects.equals(term.op(), operator);
+            });
         if (sf != null) {
             Term term = sf.formula();
             term = TermBuilder.goBelowUpdates(term);

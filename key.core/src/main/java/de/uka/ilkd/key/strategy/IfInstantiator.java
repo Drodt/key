@@ -6,10 +6,8 @@ package de.uka.ilkd.key.strategy;
 import java.util.Iterator;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.PosInTerm;
 import de.uka.ilkd.key.logic.Sequent;
-import de.uka.ilkd.key.logic.SequentFormula;
+import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.proof.FormulaTag;
 import de.uka.ilkd.key.proof.FormulaTagManager;
 import de.uka.ilkd.key.proof.Goal;
@@ -22,6 +20,9 @@ import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.strategy.IfInstantiationCachePool.IfInstantiationCache;
 import de.uka.ilkd.key.util.Debug;
 
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -159,8 +160,10 @@ public class IfInstantiator {
     private boolean isNewFormulaDirect(IfFormulaInstSeq p_ifInstantiation) {
         final boolean antec = p_ifInstantiation.inAntec();
 
-        final SequentFormula cfma = p_ifInstantiation.getConstrainedFormula();
-        final PosInOccurrence pio = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
+        final SequentFormula cfma =
+            p_ifInstantiation.getSequentFormula();
+        final PosInOccurrence pio =
+            new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
 
         final FormulaTagManager tagManager = goal.getFormulaTagManager();
 
@@ -197,7 +200,8 @@ public class IfInstantiator {
      * @param p_alreadyMatchedNewFor at least one new formula has already been matched, i.e. a
      *        formula that has been modified recently
      */
-    private void findIfFormulaInstantiationsHelp(ImmutableList<SequentFormula> p_ifSeqTail,
+    private void findIfFormulaInstantiationsHelp(
+            ImmutableList<org.key_project.prover.sequent.SequentFormula> p_ifSeqTail,
             ImmutableList<SequentFormula> p_ifSeqTail2nd,
             ImmutableList<IfFormulaInstantiation> p_alreadyMatched,
             MatchConditions p_matchCond, boolean p_alreadyMatchedNewFor) {
@@ -221,7 +225,7 @@ public class IfInstantiator {
         final ImmutableArray<IfFormulaInstantiation> formulas =
             getSequentFormulas(antec, !lastIfFormula || p_alreadyMatchedNewFor);
         final IfMatchResult mr = getTaclet().getMatcher().matchIf(formulas,
-            p_ifSeqTail.head().formula(), p_matchCond, getServices());
+            (Term) p_ifSeqTail.head().formula(), p_matchCond, getServices());
 
         // For each matching formula call the method again to match
         // the remaining terms

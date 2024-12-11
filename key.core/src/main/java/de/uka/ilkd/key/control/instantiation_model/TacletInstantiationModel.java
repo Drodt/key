@@ -15,6 +15,7 @@ import de.uka.ilkd.key.proof.*;
 import de.uka.ilkd.key.rule.*;
 import de.uka.ilkd.key.rule.inst.SortException;
 
+import org.key_project.logic.Namespace;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -125,14 +126,14 @@ public class TacletInstantiationModel {
             ImmutableArray<IfFormulaInstantiation> succCand =
                 IfFormulaInstSeq.createList(seq, false, services);
 
-            Iterator<SequentFormula> it = ifseq.iterator();
+            Iterator<org.key_project.prover.sequent.SequentFormula> it = ifseq.iterator();
             Term ifFma;
             MatchConditions matchCond = app.matchConditions();
 
             ifChoiceModel = new TacletAssumesModel[size];
 
             for (int i = 0; i < size; i++) {
-                ifFma = it.next().formula();
+                ifFma = (Term) it.next().formula();
                 ifChoiceModel[i] =
                     new TacletAssumesModel(
                         ifFma, taclet().getMatcher().matchIf((i < asize ? antecCand : succCand),

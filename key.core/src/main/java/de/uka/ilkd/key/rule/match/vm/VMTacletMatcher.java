@@ -9,7 +9,6 @@ import java.util.Iterator;
 import de.uka.ilkd.key.java.ProgramElement;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Sequent;
-import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.logic.op.QuantifiableVariable;
@@ -30,6 +29,7 @@ import de.uka.ilkd.key.rule.match.TacletMatcherKit;
 import de.uka.ilkd.key.rule.match.vm.instructions.MatchSchemaVariableInstruction;
 
 import org.key_project.logic.SyntaxElement;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
@@ -102,7 +102,8 @@ public class VMTacletMatcher implements TacletMatcher {
         }
 
         for (SequentFormula sf : assumesSequent) {
-            assumesMatchPrograms.put(sf.formula(), TacletMatchProgram.createProgram(sf.formula()));
+            assumesMatchPrograms.put((Term) sf.formula(),
+                TacletMatchProgram.createProgram((Term) sf.formula()));
         }
     }
 
@@ -132,7 +133,7 @@ public class VMTacletMatcher implements TacletMatcher {
         }
 
         for (var cf : p_toMatch) {
-            Term formula = cf.getConstrainedFormula().formula();
+            Term formula = (Term) cf.getSequentFormula().formula();
 
             if (updateContextPresent) {
                 formula = matchUpdateContext(context, formula);
@@ -167,7 +168,7 @@ public class VMTacletMatcher implements TacletMatcher {
             if (formula.op() instanceof UpdateApplication) {
                 final Term update = UpdateApplication.getUpdate(formula);
                 final UpdateLabelPair ulp = curContext.head();
-                if (ulp.update().equalsModProperty(update, RENAMING_TERM_PROPERTY)
+                if (RENAMING_TERM_PROPERTY.equalsModThisProperty(ulp.update(), update)
                         && ulp.updateApplicationlabels().equals(update.getLabels())) {
                     curContext = curContext.tail();
                     formula = UpdateApplication.getTarget(formula);
@@ -189,8 +190,10 @@ public class VMTacletMatcher implements TacletMatcher {
     public final MatchConditions matchIf(Iterable<IfFormulaInstantiation> p_toMatch,
             MatchConditions p_matchCond, Services p_services) {
 
-        final Iterator<SequentFormula> anteIterator = assumesSequent.antecedent().iterator();
-        final Iterator<SequentFormula> succIterator = assumesSequent.succedent().iterator();
+        final Iterator<org.key_project.prover.sequent.SequentFormula> anteIterator =
+            assumesSequent.antecedent().iterator();
+        final Iterator<org.key_project.prover.sequent.SequentFormula> succIterator =
+            assumesSequent.succedent().iterator();
 
         ImmutableList<MatchConditions> newMC;
 
@@ -210,7 +213,7 @@ public class VMTacletMatcher implements TacletMatcher {
             assert itIfSequent.hasNext()
                     : "p_toMatch and assumes sequent must have same number of elements";
             newMC = matchIf(ImmutableSLList.<IfFormulaInstantiation>nil().prepend(candidateInst),
-                itIfSequent.next().formula(), p_matchCond, p_services).getMatchConditions();
+                (Term) itIfSequent.next().formula(), p_matchCond, p_services).getMatchConditions();
 
             if (newMC.isEmpty()) {
                 return null;

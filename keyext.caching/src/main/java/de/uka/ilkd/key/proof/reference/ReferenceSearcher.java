@@ -5,17 +5,17 @@ package de.uka.ilkd.key.proof.reference;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.swing.*;
 
 import de.uka.ilkd.key.logic.Semisequent;
 import de.uka.ilkd.key.logic.Sequent;
-import de.uka.ilkd.key.logic.SequentFormula;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.rule.EqualityModuloProofIrrelevancy;
 import de.uka.ilkd.key.rule.NoPosTacletApp;
 import de.uka.ilkd.key.rule.merge.CloseAfterMerge;
 
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.slicing.DependencyTracker;
 import org.key_project.slicing.analysis.AnalysisResults;
 
@@ -149,7 +149,9 @@ public final class ReferenceSearcher {
         for (SequentFormula sf : subset) {
             boolean found = false;
             for (SequentFormula sf2 : superset) {
-                if (sf2.equalsModProofIrrelevancy(sf)) {
+                if ((Object) sf instanceof SequentFormula that
+                        ? EqualityModuloProofIrrelevancy.equalsModProofIrrelevancy(sf2, that)
+                        : false) {
                     found = true;
                     break;
                 }
