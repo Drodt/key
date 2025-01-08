@@ -72,7 +72,8 @@ public class ForEachCP implements Feature {
 
             private final MutableState mState;
 
-            private BranchIterator(Iterator<Term> terms, org.key_project.prover.rules.RuleApp oldApp, MutableState mState) {
+            private BranchIterator(Iterator<Term> terms,
+                    org.key_project.prover.rules.RuleApp oldApp, MutableState mState) {
                 this.terms = terms;
                 this.oldApp = oldApp;
                 this.mState = mState;
@@ -105,7 +106,8 @@ public class ForEachCP implements Feature {
         private final Goal goal;
         private final MutableState mState;
 
-        private CP(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos, Goal goal, MutableState mState) {
+        private CP(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos, Goal goal,
+                MutableState mState) {
             this.pos = pos;
             this.app = app;
             this.goal = goal;

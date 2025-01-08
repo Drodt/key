@@ -53,7 +53,7 @@ public class MultiplesModEquationsGenerator implements TermGenerator {
     }
 
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         final Services services = goal.proof().getServices();
 
         final Monomial sourceM = Monomial.create(source.toTerm(app, pos, goal, mState), services);

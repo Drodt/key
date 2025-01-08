@@ -42,7 +42,7 @@ public class ComprehendedSumFeature implements Feature {
 
     @Override
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         final Term outerVarContent = var.getContent(mState);
 
         final var it = generator.generate(app, pos, goal, mState);

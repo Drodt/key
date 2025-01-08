@@ -8,6 +8,7 @@ import java.util.Map;
 
 import de.uka.ilkd.key.informationflow.rule.InfFlowContractAppTaclet;
 import de.uka.ilkd.key.rule.RuleKey;
+
 import org.key_project.logic.LogicServices;
 import org.key_project.prover.rules.Rule;
 import org.key_project.prover.rules.RuleApp;

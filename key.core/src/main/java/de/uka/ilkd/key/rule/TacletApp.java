@@ -194,7 +194,8 @@ public abstract class TacletApp implements RuleApp {
      * @param insts the original SVInstantiations
      * @return the resolved SVInstantiations
      */
-    protected static SVInstantiations resolveCollisionVarSV(org.key_project.prover.rules.Taclet taclet, SVInstantiations insts,
+    protected static SVInstantiations resolveCollisionVarSV(
+            org.key_project.prover.rules.Taclet taclet, SVInstantiations insts,
             Services services) {
 
         HashMap<LogicVariable, SchemaVariable> collMap = new LinkedHashMap<>();
@@ -284,7 +285,8 @@ public abstract class TacletApp implements RuleApp {
      * returns a new SVInstantiations that modifies the given SVInstantiations insts at the bound
      * SchemaVariable varSV to a new LogicVariable.
      */
-    protected static SVInstantiations replaceInstantiation(org.key_project.prover.rules.Taclet taclet, SVInstantiations insts,
+    protected static SVInstantiations replaceInstantiation(
+            org.key_project.prover.rules.Taclet taclet, SVInstantiations insts,
             org.key_project.logic.op.sv.SchemaVariable varSV,
             Services services) {
         Term term = getTermBelowQuantifier(taclet, varSV);
@@ -1068,7 +1070,8 @@ public abstract class TacletApp implements RuleApp {
      * @param func_ns the original function namespace, not <code>null</code>
      * @return the new function namespace that bases on the original one
      */
-    public Namespace<@NonNull Function> extendedFunctionNameSpace(Namespace<@NonNull Function> func_ns) {
+    public Namespace<@NonNull Function> extendedFunctionNameSpace(
+            Namespace<@NonNull Function> func_ns) {
         Namespace<@NonNull Function> ns = new Namespace<>(func_ns);
         for (var pair : instantiations.getInstantiationMap()) {
             if (pair.key() instanceof SkolemTermSV skolemSV) {
@@ -1145,7 +1148,7 @@ public abstract class TacletApp implements RuleApp {
      *         activated rule sets)
      */
     public boolean admissible(boolean interactive, ImmutableList<RuleSet> ruleSets) {
-        return ((Taclet)taclet()).admissible(interactive, ruleSets);
+        return ((Taclet) taclet()).admissible(interactive, ruleSets);
     }
 
     public ProgramElement getProgramElement(String instantiation, ProgramSV sv,

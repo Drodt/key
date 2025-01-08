@@ -31,8 +31,8 @@ public class FIFOStrategy implements Strategy {
      *         all (it is discarded by the strategy).
      */
     public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                   Goal goal,
-                                   MutableState mState) {
+            Goal goal,
+            MutableState mState) {
         return NumberRuleAppCost.create(goal.getTime());
     }
 
@@ -43,12 +43,12 @@ public class FIFOStrategy implements Strategy {
      * @return true iff the rule should be applied, false otherwise
      */
     public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                 Goal goal) {
+            Goal goal) {
         return true;
     }
 
     public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                               RuleAppCostCollector collector) {}
+            RuleAppCostCollector collector) {}
 
     public Name name() {
         return NAME;

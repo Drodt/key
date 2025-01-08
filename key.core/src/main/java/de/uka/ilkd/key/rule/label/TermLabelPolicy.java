@@ -56,8 +56,8 @@ public interface TermLabelPolicy {
      *         parameters) or {@code null} if the {@link TermLabel} should be dropped.
      */
     TermLabel keepLabel(TermLabelState state, Services services,
-                        PosInOccurrence applicationPosInOccurrence,
-                        Term applicationTerm, Rule rule, Goal goal,
-                        Object hint, Term tacletTerm,
-                        Term newTerm, TermLabel label);
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Rule rule, Goal goal,
+            Object hint, Term tacletTerm,
+            Term newTerm, TermLabel label);
 }

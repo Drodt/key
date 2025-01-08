@@ -90,7 +90,8 @@ public class NoPosTacletApp extends TacletApp {
      * to decide about introduction of metavariables. Immutable instantiations are important for the
      * "addrules" part of taclets.
      */
-    public static NoPosTacletApp createFixedNoPosTacletApp(org.key_project.prover.rules.Taclet taclet,
+    public static NoPosTacletApp createFixedNoPosTacletApp(
+            org.key_project.prover.rules.Taclet taclet,
             SVInstantiations instantiations, Services services) {
         NoPosTacletApp res = createNoPosTacletApp(taclet, instantiations, null, services);
         // Make the given SVs fixed
@@ -116,7 +117,8 @@ public class NoPosTacletApp extends TacletApp {
      * @param taclet the Taclet
      * @param instantiations the SVInstantiations
      */
-    private NoPosTacletApp(org.key_project.prover.rules.Taclet taclet, SVInstantiations instantiations,
+    private NoPosTacletApp(org.key_project.prover.rules.Taclet taclet,
+            SVInstantiations instantiations,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations) {
         super(taclet, instantiations, ifInstantiations);
     }
@@ -132,7 +134,8 @@ public class NoPosTacletApp extends TacletApp {
      * @param instantiations the SVInstantiations so that the find(if) matches
      * @return true iff all variable conditions x not free in y are hold
      */
-    protected static boolean checkVarCondNotFreeIn(org.key_project.prover.rules.Taclet taclet, SVInstantiations instantiations) {
+    protected static boolean checkVarCondNotFreeIn(org.key_project.prover.rules.Taclet taclet,
+            SVInstantiations instantiations) {
         for (var pair : ((de.uka.ilkd.key.rule.inst.SVInstantiations) instantiations)
                 .getInstantiationMap()) {
             final var sv = pair.key();

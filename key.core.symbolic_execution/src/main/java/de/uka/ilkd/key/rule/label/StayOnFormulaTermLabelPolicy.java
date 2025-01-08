@@ -34,9 +34,9 @@ public class StayOnFormulaTermLabelPolicy implements TermLabelPolicy {
      */
     @Override
     public TermLabel keepLabel(TermLabelState state, Services services,
-                               PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
-                               Object hint, Term tacletTerm,
-                               Term newTerm, TermLabel label) {
+            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
+            Object hint, Term tacletTerm,
+            Term newTerm, TermLabel label) {
         // Maintain label if new Term is a predicate
         if (TruthValueTracingUtil.isPredicate(newTerm.op())
                 || TruthValueTracingUtil.isLogicOperator(newTerm.op(), newTerm.subs())) {

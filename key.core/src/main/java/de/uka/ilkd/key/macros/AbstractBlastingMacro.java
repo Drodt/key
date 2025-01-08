@@ -35,7 +35,6 @@ import de.uka.ilkd.key.strategy.Strategy;
 import de.uka.ilkd.key.strategy.TopRuleAppCost;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.Rule;
@@ -45,6 +44,8 @@ import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
+
+import org.jspecify.annotations.NonNull;
 
 public abstract class AbstractBlastingMacro extends StrategyProofMacro {
 
@@ -210,8 +211,8 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
 
         @Override
         public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app,
-                                       PosInOccurrence pio, Goal goal,
-                                       MutableState mState) {
+                PosInOccurrence pio, Goal goal,
+                MutableState mState) {
 
             if (app.rule() instanceof OneStepSimplifier) {
                 return NumberRuleAppCost.getZeroCost();
@@ -238,7 +239,7 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
 
         @Override
         public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                     Goal goal) {
+                Goal goal) {
 
             if (app.rule() instanceof OneStepSimplifier) {
                 return true;
@@ -258,7 +259,7 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
 
         @Override
         public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                                   RuleAppCostCollector collector) {
+                RuleAppCostCollector collector) {
         }
 
         @Override

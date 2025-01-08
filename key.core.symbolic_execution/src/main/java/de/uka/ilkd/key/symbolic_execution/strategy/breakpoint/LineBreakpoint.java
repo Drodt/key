@@ -117,7 +117,7 @@ public class LineBreakpoint extends AbstractConditionalBreakpoint {
 
     @Override
     public boolean isBreakpointHit(SourceElement activeStatement, RuleApp ruleApp, Proof proof,
-                                   Node node) {
+            Node node) {
         if (ruleApp instanceof LoopInvariantBuiltInRuleApp) {
             activeStatement = ((LoopInvariantBuiltInRuleApp) ruleApp).getLoopStatement();
         }

@@ -403,8 +403,9 @@ public final class OneStepSimplifier implements BuiltInRule {
         }
     }
 
-    private org.key_project.prover.rules.RuleApp makeReplaceKnownTacletApp(Term formula, boolean inAntecedent,
-                                                                           PosInOccurrence pio) {
+    private org.key_project.prover.rules.RuleApp makeReplaceKnownTacletApp(Term formula,
+            boolean inAntecedent,
+            PosInOccurrence pio) {
         FindTaclet taclet;
         if (pio.isInAntec()) {
             taclet = (FindTaclet) lastProof.getInitConfig()
@@ -471,7 +472,8 @@ public final class OneStepSimplifier implements BuiltInRule {
      * @param protocol
      */
     private Instantiation computeInstantiation(PosInOccurrence ossPIO,
-            Sequent seq, Protocol protocol, Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
+            Sequent seq, Protocol protocol, Goal goal,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         // collect context formulas (potential if-insts for replace-known)
         final Map<TermReplacementKey, PosInOccurrence> context =
             new LinkedHashMap<>();

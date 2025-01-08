@@ -155,7 +155,8 @@ public class NamespaceSet {
     }
 
     /**
-     * retrieves an object of the given name from the namespaces; the first object found in order of the
+     * retrieves an object of the given name from the namespaces; the first object found in order of
+     * the
      * specified namespaces
      *
      * @param name the Name to look up

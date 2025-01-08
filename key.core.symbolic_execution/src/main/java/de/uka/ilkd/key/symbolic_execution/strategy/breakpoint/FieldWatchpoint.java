@@ -54,7 +54,7 @@ public class FieldWatchpoint extends AbstractHitCountBreakpoint {
      */
     @Override
     public boolean isBreakpointHit(SourceElement activeStatement, RuleApp ruleApp, Proof proof,
-                                   Node node) {
+            Node node) {
         if (activeStatement instanceof Assignment assignment) {
             SourceElement firstElement = assignment.getChildAt(0);
             if (firstElement instanceof FieldReference) {

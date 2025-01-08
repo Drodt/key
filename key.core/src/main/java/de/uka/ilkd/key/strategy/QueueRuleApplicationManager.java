@@ -130,7 +130,8 @@ public class QueueRuleApplicationManager implements AutomatedRuleApplicationMana
      * the heap
      */
     @Override
-    public void rulesAdded(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules, PosInOccurrence pos) {
+    public void rulesAdded(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules,
+            PosInOccurrence pos) {
         if (queue == null) {
             // then the heap has to be rebuilt completely anyway, and the new
             // rule app is not of interest for us

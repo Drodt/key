@@ -19,5 +19,5 @@ import org.key_project.prover.sequent.PosInOccurrence;
  */
 public interface TermGenerator {
     Iterator<org.key_project.logic.Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
-                                                  MutableState mState);
+            MutableState mState);
 }

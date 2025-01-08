@@ -14,7 +14,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
  */
 public class ConstFeature implements Feature {
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         return val;
     }
 

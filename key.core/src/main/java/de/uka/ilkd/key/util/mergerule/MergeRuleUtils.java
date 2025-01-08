@@ -1164,9 +1164,10 @@ public class MergeRuleUtils {
             // Loop over all problematic operators and rename them in the
             // partner state.
             for (org.key_project.logic.op.Operator partnerStateOp : problematicOps) {
-                final org.key_project.logic.op.Operator mergeStateOp = thisGoalSymbols.parallelStream()
-                        .filter(s -> s.name().equals(partnerStateOp.name()))
-                        .toList().get(0);
+                final org.key_project.logic.op.Operator mergeStateOp =
+                    thisGoalSymbols.parallelStream()
+                            .filter(s -> s.name().equals(partnerStateOp.name()))
+                            .toList().get(0);
 
                 Operator newOp1;
                 Operator newOp2;

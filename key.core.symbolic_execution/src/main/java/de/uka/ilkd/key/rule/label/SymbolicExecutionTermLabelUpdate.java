@@ -10,8 +10,8 @@ import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.label.SymbolicExecutionTermLabel;
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.label.TermLabelState;
-
 import de.uka.ilkd.key.rule.*;
+
 import org.key_project.logic.Name;
 import org.key_project.prover.rules.Rule;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -43,9 +43,10 @@ public class SymbolicExecutionTermLabelUpdate implements TermLabelUpdate {
      */
     @Override
     public void updateLabels(TermLabelState state, Services services,
-                             PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Term modalityTerm,
-                             Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
-                             Set<TermLabel> labels) {
+            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Term modalityTerm,
+            Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Object hint, Term tacletTerm,
+            Term newTerm,
+            Set<TermLabel> labels) {
         if (rule instanceof WhileInvariantRule && "LoopBodyModality".equals(hint)
                 || (rule instanceof AbstractAuxiliaryContractRule
                         && ((AbstractBlockContractRule.BlockContractHint) hint)

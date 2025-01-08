@@ -241,9 +241,9 @@ public abstract class LDT implements Named {
      * For example: "+" may map to "add" for integers, and to "addFloat" for floats.
      *
      * @param operationName non-null operationName for a generic function
-     * @param services      services to use
+     * @param services services to use
      * @return reference to the respective LDT-specific function for the operation, null if not
-     * available
+     *         available
      */
     public @Nullable Function getFunctionFor(String operationName, Services services) {
         // by default an LDT does not support overloaded symbols

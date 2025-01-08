@@ -470,7 +470,8 @@ public class TermTacletAppIndex {
         return descend(pos).collectTacletApps(pos, filter, services);
     }
 
-    private ImmutableList<TacletApp> convert(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules,
+    private ImmutableList<TacletApp> convert(
+            ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules,
             PosInOccurrence pos, RuleFilter filter,
             ImmutableList<TacletApp> convertedApps,
             Services services) {

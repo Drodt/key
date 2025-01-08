@@ -186,7 +186,8 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param ruleApp
      * @param inScope
      */
-    private void freeVariablesAfterReturn(Node node, org.key_project.prover.rules.RuleApp ruleApp, boolean inScope) {
+    private void freeVariablesAfterReturn(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            boolean inScope) {
         if ((SymbolicExecutionUtil.isMethodReturnNode(node, ruleApp)
                 || SymbolicExecutionUtil.isExceptionalMethodReturnNode(node, ruleApp)) && inScope) {
             toKeep.clear();
@@ -203,7 +204,8 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param oldMap the oldMap variableNamings
      */
     private void putValuesFromRenamings(ProgramVariable varForCondition, Node node, boolean inScope,
-            Map<SyntaxElement, SyntaxElement> oldMap, org.key_project.prover.rules.RuleApp ruleApp) {
+            Map<SyntaxElement, SyntaxElement> oldMap,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         // look for renamings KeY did
         boolean found = false;
         // get current renaming tables
@@ -351,7 +353,8 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param node the current {@link Node}
      * @return true if the condition evaluates to true
      */
-    protected boolean conditionMet(org.key_project.prover.rules.RuleApp ruleApp, Proof proof, Node node) {
+    protected boolean conditionMet(org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
+            Node node) {
         ApplyStrategyInfo info = null;
         try {
             // initialize values
@@ -394,8 +397,9 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * {@inheritDoc}
      */
     @Override
-    public boolean isBreakpointHit(SourceElement activeStatement, org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
-                                   Node node) {
+    public boolean isBreakpointHit(SourceElement activeStatement,
+            org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
+            Node node) {
         return (!conditionEnabled || conditionMet(ruleApp, proof, node))
                 && super.isBreakpointHit(activeStatement, ruleApp, proof, node);
     }

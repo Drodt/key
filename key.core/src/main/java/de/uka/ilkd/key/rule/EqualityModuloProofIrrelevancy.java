@@ -204,7 +204,8 @@ public class EqualityModuloProofIrrelevancy {
      * @param that the second RuleApp
      * @return true if both arguments are equal modulo proof irrelevancy
      */
-    public static boolean equalsModProofIrrelevancy(org.key_project.prover.rules.RuleApp _this, org.key_project.prover.rules.RuleApp that) {
+    public static boolean equalsModProofIrrelevancy(org.key_project.prover.rules.RuleApp _this,
+            org.key_project.prover.rules.RuleApp that) {
         if (_this == that) {
             return true;
         } else if (_this == null || that == null) {

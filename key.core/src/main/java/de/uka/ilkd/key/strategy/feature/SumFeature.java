@@ -21,7 +21,7 @@ public class SumFeature implements Feature {
 
     @Override
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         // We require that there is at least one feature (in method
         // <code>createSum</code>)
         RuleAppCost res = features[0].computeCost(app, pos, goal, mState);

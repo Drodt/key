@@ -77,9 +77,9 @@ public class SyntacticalReplaceVisitor implements DefaultVisitor {
      * @param useTermCache the TermBuilder to use (allows to use the non cached version)
      */
     private SyntacticalReplaceVisitor(TermLabelState termLabelState, TacletLabelHint labelHint,
-                                      PosInOccurrence applicationPosInOccurrence,
-                                      SVInstantiations svInst, Goal goal,
-                                      Rule rule, org.key_project.prover.rules.RuleApp ruleApp, boolean useTermCache) {
+            PosInOccurrence applicationPosInOccurrence,
+            SVInstantiations svInst, Goal goal,
+            Rule rule, org.key_project.prover.rules.RuleApp ruleApp, boolean useTermCache) {
         this.termLabelState = termLabelState;
         this.services = goal.getOverlayServices();
         this.tb = services.getTermBuilder(useTermCache);
@@ -109,9 +109,9 @@ public class SyntacticalReplaceVisitor implements DefaultVisitor {
      * @param useTermCache the TermBuilder to use (allows to use the non cached version)
      */
     public SyntacticalReplaceVisitor(TermLabelState termLabelState, TacletLabelHint labelHint,
-                                     PosInOccurrence applicationPosInOccurrence,
-                                     Services services,
-                                     Rule rule, org.key_project.prover.rules.RuleApp ruleApp, boolean useTermCache) {
+            PosInOccurrence applicationPosInOccurrence,
+            Services services,
+            Rule rule, org.key_project.prover.rules.RuleApp ruleApp, boolean useTermCache) {
         this.termLabelState = termLabelState;
         this.services = services;
         this.tb = this.services.getTermBuilder(useTermCache);
