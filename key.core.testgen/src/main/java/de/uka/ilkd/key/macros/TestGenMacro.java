@@ -82,8 +82,8 @@ class TestGenStrategy extends FilterStrategy {
 
     @Override
     public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                   Goal goal,
-                                   MutableState mState) {
+            Goal goal,
+            MutableState mState) {
         if (isUnwindRule(app.rule())) {
             return NumberRuleAppCost.create(UNWIND_COST);
         }

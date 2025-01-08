@@ -120,7 +120,7 @@ public class SymbolicExecutionStrategy extends JavaCardDLStrategy {
         globalF = add(globalF, ifZero(not(new BinaryFeature() {
             @Override
             protected boolean filter(RuleApp app, PosInOccurrence pos, Goal goal,
-                                     MutableState mState) {
+                    MutableState mState) {
                 return pos != null
                         && SymbolicExecutionUtil.hasSymbolicExecutionLabel((Term) pos.subTerm());
             }

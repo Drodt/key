@@ -29,7 +29,7 @@ public interface Strategy extends Named, Feature {
      *         the strategy).
      */
     default RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
-                                    Goal goal) {
+            Goal goal) {
         return computeCost(app, pos, goal, new MutableState());
     }
 
@@ -47,7 +47,7 @@ public interface Strategy extends Named, Feature {
      * @return true iff the rule should be applied, false otherwise
      */
     boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                          Goal goal);
+            Goal goal);
 
     /**
      * Instantiate an incomplete <code>RuleApp</code>. This method is called when the
@@ -57,7 +57,7 @@ public interface Strategy extends Named, Feature {
      * applications by feeding them into the provided <code>RuleAppCostCollector</code>.
      */
     void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                        RuleAppCostCollector collector);
+            RuleAppCostCollector collector);
 
     /**
      * Updates the {@link Strategy} for the given {@link Proof} by setting the {@link Strategy}'s

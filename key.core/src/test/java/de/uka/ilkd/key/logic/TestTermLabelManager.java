@@ -771,11 +771,11 @@ public class TestTermLabelManager {
 
         @Override
         public void updateLabels(TermLabelState state, Services services,
-                                 PosInOccurrence applicationPosInOccurrence,
-                                 Term applicationTerm, Term modalityTerm,
-                                 org.key_project.prover.rules.Rule rule,
-                                 RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
-                                 Set<TermLabel> labels) {
+                PosInOccurrence applicationPosInOccurrence,
+                Term applicationTerm, Term modalityTerm,
+                org.key_project.prover.rules.Rule rule,
+                RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
+                Set<TermLabel> labels) {
             labels.add(toAdd);
         }
     }

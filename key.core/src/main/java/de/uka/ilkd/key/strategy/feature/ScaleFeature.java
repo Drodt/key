@@ -161,7 +161,7 @@ public abstract class ScaleFeature implements Feature {
         }
 
         public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                       MutableState mState) {
+                MutableState mState) {
             final RuleAppCost cost = getFeature().computeCost(app, pos, goal, mState);
             long costVal;
 

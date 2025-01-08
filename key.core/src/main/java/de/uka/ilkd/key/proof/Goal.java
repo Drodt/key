@@ -78,7 +78,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /**
      * list of all applied rule applications at this branch
      */
-    private ImmutableList<org.key_project.prover.rules.RuleApp> appliedRuleApps = ImmutableSLList.nil();
+    private ImmutableList<org.key_project.prover.rules.RuleApp> appliedRuleApps =
+        ImmutableSLList.nil();
     /**
      * this object manages the tags for all formulas of the sequent
      */
@@ -111,7 +112,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /**
      * copy constructor
      */
-    private Goal(Node node, RuleAppIndex ruleAppIndex, ImmutableList<org.key_project.prover.rules.RuleApp> appliedRuleApps,
+    private Goal(Node node, RuleAppIndex ruleAppIndex,
+            ImmutableList<org.key_project.prover.rules.RuleApp> appliedRuleApps,
             FormulaTagManager tagManager, AutomatedRuleApplicationManager ruleAppManager,
             Properties strategyInfos, NamespaceSet localNamespace) {
         this.node = node;

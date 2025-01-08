@@ -187,7 +187,7 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
 
         @Override
         public boolean isApprovedApp(RuleApp app, PosInOccurrence pio,
-                                     Goal goal) {
+                Goal goal) {
             if (!modalityCache.hasModality(goal.node().sequent())) {
                 return false;
             }

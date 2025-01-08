@@ -59,8 +59,9 @@ public interface TermLabelUpdate extends RuleSpecificTask {
      * @param labels The {@link Set} of {@link TermLabel}s to modify.
      */
     void updateLabels(TermLabelState state, Services services,
-                      PosInOccurrence applicationPosInOccurrence,
-                      Term applicationTerm, Term modalityTerm,
-                      Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
-                      Set<TermLabel> labels);
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Term modalityTerm,
+            Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Object hint, Term tacletTerm,
+            Term newTerm,
+            Set<TermLabel> labels);
 }

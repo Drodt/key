@@ -355,7 +355,8 @@ public class SymbolicExecutionTreeBuilder {
      * @return The method call stack of the ID of the modified modality {@link Term} with a
      *         {@link SymbolicExecutionTermLabel}.
      */
-    protected Map<Node, ImmutableList<Node>> getMethodCallStack(org.key_project.prover.rules.RuleApp ruleApp) {
+    protected Map<Node, ImmutableList<Node>> getMethodCallStack(
+            org.key_project.prover.rules.RuleApp ruleApp) {
         SymbolicExecutionTermLabel label = SymbolicExecutionUtil.getSymbolicExecutionLabel(ruleApp);
         return getMethodCallStack(label);
     }
@@ -888,7 +889,8 @@ public class SymbolicExecutionTreeBuilder {
             // Update call stack
             updateCallStack(node, statement);
             // Update block map
-            org.key_project.prover.rules.RuleApp currentOrFutureRuleApplication = node.getAppliedRuleApp();
+            org.key_project.prover.rules.RuleApp currentOrFutureRuleApplication =
+                node.getAppliedRuleApp();
             if (currentOrFutureRuleApplication == null && node != proof.root()) { // Executing
                                                                                   // peekNext() on
                                                                                   // the root
@@ -1705,7 +1707,8 @@ public class SymbolicExecutionTreeBuilder {
      * @param currentNode The {@link Node} for that the method call {@link Node} is needed.
      * @return The found call {@link Node} or {@code null} if no one was found.
      */
-    protected Node findMethodCallNode(Node currentNode, org.key_project.prover.rules.RuleApp ruleApp) {
+    protected Node findMethodCallNode(Node currentNode,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         // Compute the stack frame size before the method is called
         int returnStackSize = SymbolicExecutionUtil.computeStackSize(ruleApp);
         // Return the method from the call stack

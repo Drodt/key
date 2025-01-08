@@ -51,7 +51,7 @@ public class RootsGenerator implements TermGenerator {
 
     @Override
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         final Services services = goal.proof().getServices();
         final IntegerLDT numbers = services.getTypeConverter().getIntegerLDT();
 

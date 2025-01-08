@@ -69,8 +69,8 @@ public class SelfcompositionStateExpansionMacro extends AbstractPropositionalExp
 
     @Override
     protected boolean ruleApplicationInContextAllowed(org.key_project.prover.rules.RuleApp ruleApp,
-                                                      PosInOccurrence pio,
-                                                      Goal goal) {
+            PosInOccurrence pio,
+            Goal goal) {
         String ruleName = ruleApp.rule().name().toString();
         return !"andLeft".equals(ruleName)
                 || !(pio.sequentFormula().formula().op() instanceof UpdateApplication);
@@ -128,8 +128,8 @@ public class SelfcompositionStateExpansionMacro extends AbstractPropositionalExp
 
         @Override
         public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp ruleApp,
-                                       PosInOccurrence pio, Goal goal,
-                                       MutableState mState) {
+                PosInOccurrence pio, Goal goal,
+                MutableState mState) {
             String name = ruleApp.rule().name().toString();
             if ((admittedRuleNames.contains(name) || name.startsWith(INF_FLOW_UNFOLD_PREFIX))
                     && ruleApplicationInContextAllowed(ruleApp, pio, goal)) {
@@ -148,13 +148,13 @@ public class SelfcompositionStateExpansionMacro extends AbstractPropositionalExp
 
         @Override
         public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                     Goal goal) {
+                Goal goal) {
             return true;
         }
 
         @Override
         public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                                   RuleAppCostCollector collector) {
+                RuleAppCostCollector collector) {
         }
 
         @Override

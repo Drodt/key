@@ -40,9 +40,9 @@ public class AntecTacletExecutor<TacletKind extends AntecTaclet>
      */
     @Override
     protected void applyReplacewith(TacletGoalTemplate gt, TermLabelState termLabelState,
-                                    SequentChangeInfo currentSequent,
-                                    PosInOccurrence posOfFind, MatchConditions matchCond,
-                                    Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services) {
+            SequentChangeInfo currentSequent,
+            PosInOccurrence posOfFind, MatchConditions matchCond,
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services) {
         if (gt instanceof AntecSuccTacletGoalTemplate) {
             final Sequent replWith = ((AntecSuccTacletGoalTemplate) gt).replaceWith();
             replaceAtPos(replWith.antecedent(), currentSequent, posOfFind, matchCond, goal, ruleApp,
@@ -79,10 +79,10 @@ public class AntecTacletExecutor<TacletKind extends AntecTaclet>
      */
     @Override
     protected void applyAdd(Sequent add, TermLabelState termLabelState,
-                            SequentChangeInfo currentSequent,
-                            PosInOccurrence whereToAdd,
-                            PosInOccurrence posOfFind,
-                            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services) {
+            SequentChangeInfo currentSequent,
+            PosInOccurrence whereToAdd,
+            PosInOccurrence posOfFind,
+            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services) {
         addToAntec(add.antecedent(), currentSequent, whereToAdd, posOfFind, matchCond, goal,
             ruleApp, services, termLabelState,
             new TacletLabelHint(TacletOperation.ADD_ANTECEDENT, add));

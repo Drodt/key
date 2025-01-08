@@ -39,7 +39,8 @@ public class RewriteTacletExecutor<TacletKind extends RewriteTaclet>
     private Term replace(Term term, Term with, TermLabelState termLabelState,
             TacletLabelHint labelHint, PosInOccurrence posOfFind,
             org.key_project.logic.IntIterator it,
-            MatchConditions mc, Sort maxSort, Goal goal, Services services, org.key_project.prover.rules.RuleApp ruleApp) {
+            MatchConditions mc, Sort maxSort, Goal goal, Services services,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         if (it.hasNext()) {
             final int indexOfNextSubTerm = it.next();
 
@@ -105,9 +106,9 @@ public class RewriteTacletExecutor<TacletKind extends RewriteTaclet>
      */
     @Override
     protected void applyReplacewith(TacletGoalTemplate gt, TermLabelState termLabelState,
-                                    SequentChangeInfo currentSequent,
-                                    PosInOccurrence posOfFind, MatchConditions matchCond,
-                                    Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services) {
+            SequentChangeInfo currentSequent,
+            PosInOccurrence posOfFind, MatchConditions matchCond,
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services) {
         if (gt instanceof RewriteTacletGoalTemplate) {
             final SequentFormula cf =
                 applyReplacewithHelper(goal, termLabelState,
@@ -144,9 +145,9 @@ public class RewriteTacletExecutor<TacletKind extends RewriteTaclet>
      */
     @Override
     protected void applyAdd(Sequent add, TermLabelState termLabelState,
-                            SequentChangeInfo currentSequent,
-                            PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
-                            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services) {
+            SequentChangeInfo currentSequent,
+            PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
+            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services) {
         if (posOfFind.isInAntec()) {
             addToAntec(add.antecedent(), currentSequent, whereToAdd, posOfFind, matchCond, goal,
                 ruleApp, services, termLabelState,

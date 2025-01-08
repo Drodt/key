@@ -24,8 +24,8 @@ public abstract class BinaryFeature implements Feature {
     public static final RuleAppCost TOP_COST = TopRuleAppCost.INSTANCE;
 
     public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
-                                   Goal goal,
-                                   MutableState mState) {
+            Goal goal,
+            MutableState mState) {
         return filter(app, pos, goal, mState) ? ZERO_COST : TOP_COST;
     }
 
@@ -40,6 +40,6 @@ public abstract class BinaryFeature implements Feature {
      * @return true iff the result of the feature is supposed to be zero.
      */
     protected abstract boolean filter(RuleApp app, PosInOccurrence pos, Goal goal,
-                                      MutableState mState);
+            MutableState mState);
 
 }

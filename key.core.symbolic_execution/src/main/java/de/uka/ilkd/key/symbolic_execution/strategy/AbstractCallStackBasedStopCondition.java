@@ -13,6 +13,7 @@ import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.prover.StopCondition;
 import de.uka.ilkd.key.prover.impl.SingleRuleApplicationInfo;
 import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionUtil;
+
 import org.key_project.prover.rules.RuleApp;
 
 /**

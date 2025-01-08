@@ -25,9 +25,9 @@ public class StayOnOperatorTermLabelPolicy implements TermLabelPolicy {
      */
     @Override
     public TermLabel keepLabel(TermLabelState state, Services services,
-                               PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
-                               Object hint, Term tacletTerm,
-                               Term newTerm, TermLabel label) {
+            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
+            Object hint, Term tacletTerm,
+            Term newTerm, TermLabel label) {
         return applicationTerm != null && Operator.opEquals(newTerm.op(), applicationTerm.op())
                 ? label
                 : null;

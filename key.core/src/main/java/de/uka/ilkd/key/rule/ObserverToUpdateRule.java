@@ -150,7 +150,8 @@ public final class ObserverToUpdateRule implements BuiltInRule {
     }
 
     @Override
-    public @NonNull ImmutableList<Goal> apply(Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
+    public @NonNull ImmutableList<Goal> apply(Goal goal,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         final var services = goal.getOverlayServices();
         Union<Instantiation, ModelFieldInstantiation> inst =
             instantiate((Term) ruleApp.posInOccurrence().subTerm(), services);

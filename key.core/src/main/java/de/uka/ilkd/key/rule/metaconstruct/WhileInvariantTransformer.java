@@ -94,10 +94,11 @@ public final class WhileInvariantTransformer {
     }
 
     /** calculates the resulting term. */
-    public Term transform(TermLabelState termLabelState, Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Goal goal,
-                          Sequent applicationSequent,
-                          PosInOccurrence applicationPos, Term initialPost,
-                          Term invariantFramingTermination, SVInstantiations svInst, Services services) {
+    public Term transform(TermLabelState termLabelState, Rule rule,
+            org.key_project.prover.rules.RuleApp ruleApp, Goal goal,
+            Sequent applicationSequent,
+            PosInOccurrence applicationPos, Term initialPost,
+            Term invariantFramingTermination, SVInstantiations svInst, Services services) {
 
         // global initialisation
         init(initialPost, invariantFramingTermination, services);
@@ -326,9 +327,9 @@ public final class WhileInvariantTransformer {
     }
 
     private Term returnCase(TermLabelState termLabelState, ProgramVariable returnFlag,
-                            KeYJavaType returnType, ProgramVariable returnExpression, Term post, Rule rule,
-                            org.key_project.prover.rules.RuleApp ruleApp, Goal goal,
-                            PosInOccurrence applicationPos, Services services) {
+            KeYJavaType returnType, ProgramVariable returnExpression, Term post, Rule rule,
+            org.key_project.prover.rules.RuleApp ruleApp, Goal goal,
+            PosInOccurrence applicationPos, Services services) {
         JavaBlock returnJavaBlock =
             addContext(root, new StatementBlock(KeYJavaASTFactory.returnClause(returnExpression)));
         Term executeReturn = services.getTermBuilder().prog(modality.kind(), returnJavaBlock, post,
@@ -354,8 +355,9 @@ public final class WhileInvariantTransformer {
     }
 
     private Term breakCase(TermLabelState termLabelState, ProgramVariable breakFlag, Term post,
-                           ArrayList<If> breakIfCascade, Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Goal goal,
-                           PosInOccurrence applicationPos, Services services) {
+            ArrayList<If> breakIfCascade, Rule rule, org.key_project.prover.rules.RuleApp ruleApp,
+            Goal goal,
+            PosInOccurrence applicationPos, Services services) {
         JavaBlock executeJavaBlock = addContext(root,
             new StatementBlock(breakIfCascade.toArray(new Statement[0])));
         Term executeBreak = services.getTermBuilder().prog(modality.kind(), executeJavaBlock, post,
@@ -370,10 +372,10 @@ public final class WhileInvariantTransformer {
     }
 
     private Term normalCaseAndContinue(TermLabelState termLabelState, Services services,
-                                       PosInOccurrence applicationPos, Rule rule,
-                                       org.key_project.prover.rules.RuleApp ruleApp, Goal goal,
-                                       Sequent applicationSequent, Term contFlagTerm, Term returnFlagTerm, Term breakFlagTerm,
-                                       Term excFlagTerm, Term inv) {
+            PosInOccurrence applicationPos, Rule rule,
+            org.key_project.prover.rules.RuleApp ruleApp, Goal goal,
+            Sequent applicationSequent, Term contFlagTerm, Term returnFlagTerm, Term breakFlagTerm,
+            Term excFlagTerm, Term inv) {
 
         final TermBuilder TB = services.getTermBuilder();
         final Term TRUE_TERM = typeConv.getBooleanLDT().getTrueTerm();
@@ -439,8 +441,8 @@ public final class WhileInvariantTransformer {
     }
 
     private Term throwCase(TermLabelState termLabelState, ProgramVariable excFlag,
-                           ProgramVariable thrownException, Term post, Rule rule, RuleApp ruleApp, Goal goal,
-                           PosInOccurrence applicationPos, Services services) {
+            ProgramVariable thrownException, Term post, Rule rule, RuleApp ruleApp, Goal goal,
+            PosInOccurrence applicationPos, Services services) {
         final TermBuilder TB = services.getTermBuilder();
         JavaBlock throwJavaBlock =
             addContext(root, new StatementBlock(KeYJavaASTFactory.throwClause(thrownException)));

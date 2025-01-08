@@ -49,7 +49,7 @@ public class ApplyTFFeature implements Feature {
     }
 
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         final Term te = proj.toTerm(app, pos, goal, mState);
         if (te == null) {
             Debug.assertFalse(demandInst, "ApplyTFFeature: got undefined argument (null)");

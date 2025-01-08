@@ -147,7 +147,7 @@ public class SymbolicExecutionExceptionBreakpoint extends AbstractHitCountBreakp
      */
     @Override
     public boolean isBreakpointHit(SourceElement activeStatement, RuleApp ruleApp, Proof proof,
-                                   Node node) {
+            Node node) {
         Node parent = null;
         for (Node parents : exceptionNodes) {
             if (isParentNode(node, parents)) {

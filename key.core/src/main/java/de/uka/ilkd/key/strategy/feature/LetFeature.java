@@ -34,7 +34,7 @@ public class LetFeature implements Feature {
     }
 
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         final var outerVarContent = var.getContent(mState);
 
         var.setContent(value.toTerm(app, pos, goal, mState), mState);

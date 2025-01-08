@@ -16,8 +16,8 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.RuleAppIndex;
 import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
-
 import de.uka.ilkd.key.rule.*;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
 import org.key_project.logic.op.sv.SchemaVariable;
@@ -78,7 +78,8 @@ public class RuleCommand extends AbstractCommand<RuleCommand.Parameters> {
                 }
             }
 
-            org.key_project.prover.rules.RuleApp completeApp = tacletApp.tryToInstantiate(g.proof().getServices());
+            org.key_project.prover.rules.RuleApp completeApp =
+                tacletApp.tryToInstantiate(g.proof().getServices());
             theApp = completeApp == null ? theApp : completeApp;
         }
         assert theApp != null;
@@ -86,7 +87,8 @@ public class RuleCommand extends AbstractCommand<RuleCommand.Parameters> {
         g.apply(theApp);
     }
 
-    private org.key_project.prover.rules.RuleApp makeRuleApp(Parameters p, EngineState state) throws ScriptException {
+    private org.key_project.prover.rules.RuleApp makeRuleApp(Parameters p, EngineState state)
+            throws ScriptException {
 
         final Proof proof = state.getProof();
         final Optional<BuiltInRule> maybeBuiltInRule =

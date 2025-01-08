@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy.feature.instantiator;
 
-import org.key_project.prover.rules.RuleApp;
-
 import java.util.Iterator;
+
+import org.key_project.prover.rules.RuleApp;
 
 /**
  * Interface encapsulating points during the evaluation of a feature term where it is either

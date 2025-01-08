@@ -101,8 +101,9 @@ public class BreakpointStopCondition implements IBreakpointStopCondition {
      * @return {@code true} at least one breakpoint is hit, {@code false} all breakpoints are not
      *         hit.
      */
-    protected boolean isBreakpointHit(SourceElement activeStatement, org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
-                                      Node node) {
+    protected boolean isBreakpointHit(SourceElement activeStatement,
+            org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
+            Node node) {
         boolean result = false;
         Iterator<IBreakpoint> iter = breakpoints.iterator();
         while (!result && iter.hasNext()) {

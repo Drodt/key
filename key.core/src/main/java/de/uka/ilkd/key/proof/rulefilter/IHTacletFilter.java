@@ -36,7 +36,7 @@ public class IHTacletFilter extends TacletFilter {
      * @return true iff <code>taclet</code> should be included in the result
      */
     public boolean filter(Taclet p_taclet) {
-        var taclet = (de.uka.ilkd.key.rule.Taclet)p_taclet;
+        var taclet = (de.uka.ilkd.key.rule.Taclet) p_taclet;
         if (!interactive) {
             Boolean b = filterCache.get(taclet);
             if (b == null) {

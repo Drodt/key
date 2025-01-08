@@ -1443,7 +1443,7 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy {
             }
 
             public Term toTerm(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
-                               Goal goal, MutableState mState) {
+                    Goal goal, MutableState mState) {
                 return tOne;
             }
         };
@@ -1457,7 +1457,7 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy {
             }
 
             public Term toTerm(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
-                               Goal goal, MutableState mState) {
+                    Goal goal, MutableState mState) {
                 return tTwo;
             }
         };
@@ -2055,8 +2055,8 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy {
      */
     @Override
     public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                   Goal goal,
-                                   MutableState mState) {
+            Goal goal,
+            MutableState mState) {
         var time = System.nanoTime();
         try {
             return costComputationF.computeCost(app, pio, goal, mState);
@@ -2076,7 +2076,7 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy {
      */
     @Override
     public final boolean isApprovedApp(org.key_project.prover.rules.RuleApp app,
-                                       PosInOccurrence pio, Goal goal) {
+            PosInOccurrence pio, Goal goal) {
         var time = System.nanoTime();
         try {
             return !(approvalF.computeCost(app, pio, goal,
@@ -2088,8 +2088,8 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy {
 
     @Override
     protected RuleAppCost instantiateApp(RuleApp app,
-                                         PosInOccurrence pio, Goal goal,
-                                         MutableState mState) {
+            PosInOccurrence pio, Goal goal,
+            MutableState mState) {
         var time = System.nanoTime();
         try {
             return instantiationF.computeCost(app, pio, goal, mState);

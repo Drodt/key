@@ -20,6 +20,7 @@ import de.uka.ilkd.key.speclang.Contract;
 import de.uka.ilkd.key.speclang.FunctionalOperationContract;
 import de.uka.ilkd.key.speclang.translation.SLTranslationException;
 import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionUtil;
+
 import org.key_project.prover.rules.RuleApp;
 
 public class MethodBreakpoint extends AbstractConditionalBreakpoint {
@@ -81,8 +82,9 @@ public class MethodBreakpoint extends AbstractConditionalBreakpoint {
     }
 
     @Override
-    public boolean isBreakpointHit(SourceElement activeStatement, org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
-                                   Node node) {
+    public boolean isBreakpointHit(SourceElement activeStatement,
+            org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
+            Node node) {
         return !proof.isDisposed()
                 && ((isEntry && isMethodCallNode(node, ruleApp))
                         || (isExit && isMethodReturnNode(node, ruleApp)))

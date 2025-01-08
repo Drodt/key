@@ -109,8 +109,8 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection im
 
 
     public void instantiateApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                               Goal goal,
-                               RuleAppCostCollector collector) {
+            Goal goal,
+            RuleAppCostCollector collector) {
         final MutableState mState = new MutableState();
         final BackTrackingManager btManager = mState.getBacktrackingManager();
         btManager.setup(app);
@@ -128,7 +128,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection im
     }
 
     protected abstract RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                                                  MutableState mState);
+            MutableState mState);
 
     protected Feature forEach(TermBuffer x, TermGenerator gen, Feature body) {
         return ForEachCP.create(x, gen, body);

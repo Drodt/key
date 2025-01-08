@@ -21,7 +21,6 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.AssumesFormulaInstDirect;
 import org.key_project.prover.rules.AssumesFormulaInstantiation;
-import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.*;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;

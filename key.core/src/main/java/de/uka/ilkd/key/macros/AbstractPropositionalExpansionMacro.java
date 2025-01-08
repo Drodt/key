@@ -70,8 +70,8 @@ public abstract class AbstractPropositionalExpansionMacro extends StrategyProofM
      * @return true if rule may be applied
      */
     protected boolean ruleApplicationInContextAllowed(org.key_project.prover.rules.RuleApp ruleApp,
-                                                      PosInOccurrence pio,
-                                                      Goal goal) {
+            PosInOccurrence pio,
+            Goal goal) {
         return true;
     }
 
@@ -101,8 +101,8 @@ public abstract class AbstractPropositionalExpansionMacro extends StrategyProofM
 
         @Override
         public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp ruleApp,
-                                       PosInOccurrence pio, Goal goal,
-                                       MutableState mState) {
+                PosInOccurrence pio, Goal goal,
+                MutableState mState) {
             String name = ruleApp.rule().name().toString();
             if (ruleApp instanceof OneStepSimplifierRuleApp && allowOSS) {
                 return delegate.computeCost(ruleApp, pio, goal, mState);
@@ -122,13 +122,13 @@ public abstract class AbstractPropositionalExpansionMacro extends StrategyProofM
 
         @Override
         public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                     Goal goal) {
+                Goal goal) {
             return delegate.isApprovedApp(app, pio, goal);
         }
 
         @Override
         public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                                   RuleAppCostCollector collector) {
+                RuleAppCostCollector collector) {
         }
 
         @Override

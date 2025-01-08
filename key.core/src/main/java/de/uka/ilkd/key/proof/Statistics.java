@@ -411,7 +411,8 @@ public class Statistics {
          * @param ruleApp The {@link RuleApp} to check.
          * @return 1 or 0.
          */
-        private int tmpLoopScopeInvTacletRuleApps(final org.key_project.prover.rules.RuleApp ruleApp) {
+        private int tmpLoopScopeInvTacletRuleApps(
+                final org.key_project.prover.rules.RuleApp ruleApp) {
             return tacletHasRuleSet(ruleApp, "loop_scope_inv_taclet");
         }
 
@@ -421,7 +422,8 @@ public class Statistics {
          * @param ruleApp The {@link RuleApp} to check.
          * @return 1 or 0.
          */
-        private int tacletHasRuleSet(final org.key_project.prover.rules.RuleApp ruleApp, final String ruleSet) {
+        private int tacletHasRuleSet(final org.key_project.prover.rules.RuleApp ruleApp,
+                final String ruleSet) {
             return ((TacletApp) ruleApp).taclet().getRuleSets().stream()
                     .map(rs -> rs.name().toString()).anyMatch(n -> n.equals(ruleSet)) ? 1 : 0;
         }

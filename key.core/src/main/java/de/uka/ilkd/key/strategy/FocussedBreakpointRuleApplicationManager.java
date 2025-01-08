@@ -83,7 +83,8 @@ public class FocussedBreakpointRuleApplicationManager
     }
 
     @Override
-    public void rulesAdded(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules, PosInOccurrence pos) {
+    public void rulesAdded(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules,
+            PosInOccurrence pos) {
         ImmutableList<org.key_project.prover.rules.RuleApp> applicableRules = //
             ImmutableSLList.nil();
         for (org.key_project.prover.rules.RuleApp r : rules) {

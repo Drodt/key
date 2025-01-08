@@ -82,7 +82,7 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
 
         @Override
         public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                     Goal goal) {
+                Goal goal) {
             return computeCost(app, pio, goal, new MutableState()) != TopRuleAppCost.INSTANCE &&
             // Assumptions are normally not considered by the cost
             // computation, because they are normally not yet
@@ -99,8 +99,8 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
 
         @Override
         public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app,
-                                       PosInOccurrence pio, Goal goal,
-                                       MutableState mState) {
+                PosInOccurrence pio, Goal goal,
+                MutableState mState) {
 
             Rule rule = app.rule();
             if (FinishSymbolicExecutionMacro.isForbiddenRule(rule)) {
@@ -130,8 +130,9 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
         }
 
         @Override
-        public void instantiateApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio, Goal goal,
-                                   RuleAppCostCollector collector) {
+        public void instantiateApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                Goal goal,
+                RuleAppCostCollector collector) {
             delegate.instantiateApp(app, pio, goal, collector);
         }
 

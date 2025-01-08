@@ -5,9 +5,9 @@ package org.key_project.prover.rules;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
+import org.key_project.prover.proof.ProofGoal;
 
 import org.jspecify.annotations.NonNull;
-import org.key_project.prover.proof.ProofGoal;
 
 public interface Rule extends Named {
     /**
