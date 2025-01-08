@@ -12,7 +12,6 @@ import de.uka.ilkd.key.macros.StrategyProofMacro;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.NumberRuleAppCost;
 import de.uka.ilkd.key.strategy.RuleAppCost;
 import de.uka.ilkd.key.strategy.RuleAppCostCollector;
@@ -23,6 +22,7 @@ import de.uka.ilkd.key.strategy.feature.InfFlowContractAppFeature;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
@@ -101,9 +101,9 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
      * @param goal context
      * @return true if rule may be applied
      */
-    protected boolean ruleApplicationInContextAllowed(RuleApp ruleApp,
-            PosInOccurrence pio,
-            Goal goal) {
+    protected boolean ruleApplicationInContextAllowed(org.key_project.prover.rules.RuleApp ruleApp,
+                                                      PosInOccurrence pio,
+                                                      Goal goal) {
         return true;
     }
 
@@ -153,7 +153,7 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
 
 
     private String getAppRuleName(Node parent) {
-        RuleApp parentRuleApp = parent.getAppliedRuleApp();
+        org.key_project.prover.rules.RuleApp parentRuleApp = parent.getAppliedRuleApp();
         String parentRuleName = parentRuleApp.rule().name().toString();
         return parentRuleName;
     }
@@ -183,9 +183,9 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
 
 
         @Override
-        public RuleAppCost computeCost(RuleApp ruleApp,
-                PosInOccurrence pio, Goal goal,
-                MutableState mState) {
+        public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp ruleApp,
+                                       PosInOccurrence pio, Goal goal,
+                                       MutableState mState) {
             // first try to apply
             // - impLeft on previous information flow contract application
             // formula, else
@@ -213,8 +213,8 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
 
 
         @Override
-        public boolean isApprovedApp(RuleApp app, PosInOccurrence pio,
-                Goal goal) {
+        public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                                     Goal goal) {
             // abort if
             // - the parent.parent rule application is an information
             // flow contract rule application,
@@ -250,7 +250,7 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
 
         @Override
         public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                RuleAppCostCollector collector) {
+                                   RuleAppCostCollector collector) {
         }
 
         @Override

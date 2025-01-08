@@ -5,7 +5,7 @@ package de.uka.ilkd.key.proof.proofevent;
 
 
 import de.uka.ilkd.key.proof.Node;
-import de.uka.ilkd.key.rule.RuleApp;
+import org.key_project.prover.rules.RuleApp;
 
 import org.key_project.util.collection.ImmutableList;
 

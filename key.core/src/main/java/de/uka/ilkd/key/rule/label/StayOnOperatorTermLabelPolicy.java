@@ -9,8 +9,8 @@ import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.label.TermLabelState;
 import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.Rule;
 
+import org.key_project.prover.rules.Rule;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -25,9 +25,9 @@ public class StayOnOperatorTermLabelPolicy implements TermLabelPolicy {
      */
     @Override
     public TermLabel keepLabel(TermLabelState state, Services services,
-            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
-            Object hint, Term tacletTerm,
-            Term newTerm, TermLabel label) {
+                               PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Rule rule, Goal goal,
+                               Object hint, Term tacletTerm,
+                               Term newTerm, TermLabel label) {
         return applicationTerm != null && Operator.opEquals(newTerm.op(), applicationTerm.op())
                 ? label
                 : null;

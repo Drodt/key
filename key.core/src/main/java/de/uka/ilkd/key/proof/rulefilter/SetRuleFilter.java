@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.proof.rulefilter;
 
+import org.key_project.prover.rules.Rule;
+
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-
-import de.uka.ilkd.key.rule.Rule;
 
 /**
  * Rule filter that selects taclets which are members of a given explicit set

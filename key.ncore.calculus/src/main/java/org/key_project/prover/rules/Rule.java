@@ -7,6 +7,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 
 import org.jspecify.annotations.NonNull;
+import org.key_project.prover.proof.ProofGoal;
 
 public interface Rule extends Named {
     /**
@@ -22,5 +23,5 @@ public interface Rule extends Named {
         return name().toString();
     }
 
-    RuleExecutor getExecutor();
+    <G extends ProofGoal<G>> RuleExecutor<G> getExecutor();
 }

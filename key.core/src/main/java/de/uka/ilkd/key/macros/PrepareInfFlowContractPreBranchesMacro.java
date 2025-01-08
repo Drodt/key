@@ -6,7 +6,6 @@ package de.uka.ilkd.key.macros;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.AbstractFeatureStrategy;
 import de.uka.ilkd.key.strategy.NumberRuleAppCost;
 import de.uka.ilkd.key.strategy.RuleAppCost;
@@ -17,6 +16,7 @@ import de.uka.ilkd.key.strategy.feature.MutableState;
 import de.uka.ilkd.key.strategy.termfeature.IsPostConditionTermFeature;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 
@@ -80,9 +80,9 @@ public class PrepareInfFlowContractPreBranchesMacro extends StrategyProofMacro {
 
 
         @Override
-        public RuleAppCost computeCost(RuleApp ruleApp,
-                PosInOccurrence pio, Goal goal,
-                MutableState mState) {
+        public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp ruleApp,
+                                       PosInOccurrence pio, Goal goal,
+                                       MutableState mState) {
             String name = ruleApp.rule().name().toString();
             if (name.equals("hide_right")) {
                 return applyTF("b", IsPostConditionTermFeature.INSTANCE).computeCost(ruleApp, pio,
@@ -98,8 +98,8 @@ public class PrepareInfFlowContractPreBranchesMacro extends StrategyProofMacro {
 
 
         @Override
-        public boolean isApprovedApp(RuleApp app, PosInOccurrence pio,
-                Goal goal) {
+        public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                                     Goal goal) {
             String name = app.rule().name().toString();
             if (!name.equals("hide_right")) {
                 return true;
@@ -127,7 +127,7 @@ public class PrepareInfFlowContractPreBranchesMacro extends StrategyProofMacro {
 
 
         private String getAppRuleName(Node parent) {
-            RuleApp parentRuleApp = parent.getAppliedRuleApp();
+            org.key_project.prover.rules.RuleApp parentRuleApp = parent.getAppliedRuleApp();
             String parentRuleName = parentRuleApp.rule().name().toString();
             return parentRuleName;
         }
@@ -135,7 +135,7 @@ public class PrepareInfFlowContractPreBranchesMacro extends StrategyProofMacro {
 
         @Override
         protected RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                MutableState mState) {
+                                             MutableState mState) {
             return computeCost(app, pio, goal, mState);
         }
 
