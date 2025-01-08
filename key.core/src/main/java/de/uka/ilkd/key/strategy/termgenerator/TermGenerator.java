@@ -6,9 +6,9 @@ package de.uka.ilkd.key.strategy.termgenerator;
 import java.util.Iterator;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 
@@ -19,5 +19,5 @@ import org.key_project.prover.sequent.PosInOccurrence;
  */
 public interface TermGenerator {
     Iterator<org.key_project.logic.Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
-            MutableState mState);
+                                                  MutableState mState);
 }

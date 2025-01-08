@@ -114,7 +114,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         addAppliedRuleApp(ruleApp);
 
         try {
-            goalList = ruleApp.rule().getExecutor().apply(this, ruleApp);
+            goalList = ruleApp.rule().<Goal>getExecutor().apply(this, ruleApp);
         } catch (RuleAbortException rae) {
             removeLastAppliedRuleApp();
             getNode().setAppliedRuleApp(null);

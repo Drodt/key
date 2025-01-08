@@ -15,8 +15,6 @@ import de.uka.ilkd.key.logic.label.FormulaTermLabel;
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.label.TermLabelManager;
 import de.uka.ilkd.key.logic.label.TermLabelState;
-import de.uka.ilkd.key.rule.Rule;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.rule.Taclet.TacletLabelHint;
 import de.uka.ilkd.key.rule.Taclet.TacletLabelHint.TacletOperation;
 import de.uka.ilkd.key.rule.TacletApp;
@@ -24,6 +22,8 @@ import de.uka.ilkd.key.symbolic_execution.TruthValueTracingUtil;
 
 import org.key_project.logic.Name;
 import org.key_project.prover.rules.AssumesFormulaInstantiation;
+import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
@@ -47,11 +47,12 @@ public class FormulaTermLabelUpdate implements TermLabelUpdate {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void updateLabels(TermLabelState state, Services services,
-            PosInOccurrence applicationPosInOccurrence,
-            Term applicationTerm, Term modalityTerm,
-            Rule rule, RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
-            Set<TermLabel> labels) {
+                             PosInOccurrence applicationPosInOccurrence,
+                             Term applicationTerm, Term modalityTerm,
+                             Rule rule, RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
+                             Set<TermLabel> labels) {
         if (hint instanceof TacletLabelHint tacletHint) {
             if ((TacletOperation.ADD_ANTECEDENT.equals(tacletHint.getTacletOperation())
                     || TacletOperation.ADD_SUCCEDENT.equals(tacletHint.getTacletOperation()))

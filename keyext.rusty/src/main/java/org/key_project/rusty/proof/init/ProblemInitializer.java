@@ -94,7 +94,7 @@ public final class ProblemInitializer {
          *
          * // register function and predicate symbols defined by Java program
          * final JavaInfo javaInfo = initConfig.getServices().getJavaInfo();
-         * final Namespace<JFunction> functions =
+         * final Namespace<Function> functions =
          * initConfig.getServices().getNamespaces().functions();
          * final HeapLDT heapLDT = initConfig.getServices().getTypeConverter().getHeapLDT();
          * assert heapLDT != null;

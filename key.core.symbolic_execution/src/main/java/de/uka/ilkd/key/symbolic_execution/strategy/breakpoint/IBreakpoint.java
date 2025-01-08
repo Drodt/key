@@ -52,6 +52,6 @@ public interface IBreakpoint {
      * @param node the current node
      * @return true if execution should hold
      */
-    boolean isBreakpointHit(SourceElement activeStatement, RuleApp ruleApp, Proof proof,
-            Node node);
+    boolean isBreakpointHit(SourceElement activeStatement, org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
+                            Node node);
 }

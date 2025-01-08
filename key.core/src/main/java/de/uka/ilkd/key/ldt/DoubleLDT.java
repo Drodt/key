@@ -14,7 +14,9 @@ import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermServices;
 import de.uka.ilkd.key.logic.op.JFunction;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
+import org.key_project.logic.op.Function;
 import org.key_project.util.ExtList;
 
 public final class DoubleLDT extends LDT implements FloatingPointLDT {
@@ -154,7 +156,7 @@ public final class DoubleLDT extends LDT implements FloatingPointLDT {
     }
 
     @Override
-    public JFunction getFunctionFor(String op, Services services) {
+    public @Nullable Function getFunctionFor(String op, Services services) {
         return switch (op) {
         case "gt" -> getGreaterThan();
         case "geq" -> getGreaterOrEquals();

@@ -12,11 +12,11 @@ import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.label.TermLabelState;
 import de.uka.ilkd.key.rule.BlockContractInternalRule;
 import de.uka.ilkd.key.rule.LoopContractInternalRule;
-import de.uka.ilkd.key.rule.Rule;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionUtil;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -42,9 +42,9 @@ public class BlockContractValidityTermLabelUpdate implements TermLabelUpdate {
      */
     @Override
     public void updateLabels(TermLabelState state, Services services,
-            PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Term modalityTerm,
-            Rule rule, RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
-            Set<TermLabel> labels) {
+                             PosInOccurrence applicationPosInOccurrence, Term applicationTerm, Term modalityTerm,
+                             Rule rule, RuleApp ruleApp, Object hint, Term tacletTerm, Term newTerm,
+                             Set<TermLabel> labels) {
         if ((rule instanceof BlockContractInternalRule || rule instanceof LoopContractInternalRule)
                 && ((BlockContractInternalRule.BlockContractHint) hint)
                         .getExceptionalVariable() != null

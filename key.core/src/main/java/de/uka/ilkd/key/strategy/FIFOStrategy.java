@@ -5,11 +5,11 @@ package de.uka.ilkd.key.strategy;
 
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.definition.StrategySettingsDefinition;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -30,9 +30,9 @@ public class FIFOStrategy implements Strategy {
      *         <code>TopRuleAppCost.INSTANCE</code> indicates that the rule shall not be applied at
      *         all (it is discarded by the strategy).
      */
-    public RuleAppCost computeCost(RuleApp app, PosInOccurrence pio,
-            Goal goal,
-            MutableState mState) {
+    public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                                   Goal goal,
+                                   MutableState mState) {
         return NumberRuleAppCost.create(goal.getTime());
     }
 
@@ -42,13 +42,13 @@ public class FIFOStrategy implements Strategy {
      *
      * @return true iff the rule should be applied, false otherwise
      */
-    public boolean isApprovedApp(RuleApp app, PosInOccurrence pio,
-            Goal goal) {
+    public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                                 Goal goal) {
         return true;
     }
 
     public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-            RuleAppCostCollector collector) {}
+                               RuleAppCostCollector collector) {}
 
     public Name name() {
         return NAME;

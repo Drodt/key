@@ -6,10 +6,10 @@ package de.uka.ilkd.key.strategy.termgenerator;
 import java.util.Iterator;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
 import org.key_project.logic.Term;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 
@@ -51,7 +51,7 @@ public abstract class SequentFormulasGenerator implements TermGenerator {
             Goal goal);
 
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
-            MutableState mState) {
+                                   MutableState mState) {
         return new SFIterator(generateForIt(goal));
     }
 

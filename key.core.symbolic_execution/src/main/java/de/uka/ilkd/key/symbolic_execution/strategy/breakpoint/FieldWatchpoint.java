@@ -13,8 +13,8 @@ import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.op.ProgramVariable;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.rule.RuleApp;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -54,7 +54,7 @@ public class FieldWatchpoint extends AbstractHitCountBreakpoint {
      */
     @Override
     public boolean isBreakpointHit(SourceElement activeStatement, RuleApp ruleApp, Proof proof,
-            Node node) {
+                                   Node node) {
         if (activeStatement instanceof Assignment assignment) {
             SourceElement firstElement = assignment.getChildAt(0);
             if (firstElement instanceof FieldReference) {

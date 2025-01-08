@@ -26,8 +26,6 @@ import de.uka.ilkd.key.proof.mgt.SpecificationRepository;
 import de.uka.ilkd.key.proof.rulefilter.RuleFilter;
 import de.uka.ilkd.key.prover.ProverTaskListener;
 import de.uka.ilkd.key.rule.OneStepSimplifier;
-import de.uka.ilkd.key.rule.Rule;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.speclang.ClassAxiom;
 import de.uka.ilkd.key.speclang.RepresentsAxiom;
 import de.uka.ilkd.key.strategy.NumberRuleAppCost;
@@ -37,8 +35,11 @@ import de.uka.ilkd.key.strategy.Strategy;
 import de.uka.ilkd.key.strategy.TopRuleAppCost;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
+import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.Sequent;
@@ -149,7 +150,6 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
                 Term left = t.sub(0);
                 Term right = t.sub(1);
 
-                Term equivalence = t;
                 Term implication;
 
                 Term[] heaps = new Term[1];
@@ -161,7 +161,7 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
 
                     implication = tb.imp(left, right);
 
-                    Term exactInstanceEquiv = tb.imp(exactInstance, equivalence);
+                    Term exactInstanceEquiv = tb.imp(exactInstance, t);
                     Term instanceImpl = implication;
 
                     exactInstanceEquiv = tb.all(h, tb.all(o, exactInstanceEquiv));
@@ -173,9 +173,9 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
                         result.add(new SequentFormula(instanceImpl));
                     }
                 } else if (right.op().name().equals(inv.op().name())) {
-
-                    Term exactInstanceEquiv = tb.imp(exactInstance, equivalence);
                     implication = tb.imp(right, left);
+
+                    Term exactInstanceEquiv = tb.imp(exactInstance, t);
                     Term instanceImpl = implication;
 
                     exactInstanceEquiv = tb.all(h, tb.all(o, exactInstanceEquiv));
@@ -204,14 +204,14 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
     private class SemanticsBlastingStrategy implements Strategy {
 
         @Override
-        public Name name() {
+        public @NonNull Name name() {
             return new Name("Semantics Blasting");
         }
 
         @Override
-        public RuleAppCost computeCost(RuleApp app,
-                PosInOccurrence pio, Goal goal,
-                MutableState mState) {
+        public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app,
+                                       PosInOccurrence pio, Goal goal,
+                                       MutableState mState) {
 
             if (app.rule() instanceof OneStepSimplifier) {
                 return NumberRuleAppCost.getZeroCost();
@@ -237,8 +237,8 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
         }
 
         @Override
-        public boolean isApprovedApp(RuleApp app, PosInOccurrence pio,
-                Goal goal) {
+        public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                                     Goal goal) {
 
             if (app.rule() instanceof OneStepSimplifier) {
                 return true;
@@ -258,7 +258,7 @@ public abstract class AbstractBlastingMacro extends StrategyProofMacro {
 
         @Override
         public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                RuleAppCostCollector collector) {
+                                   RuleAppCostCollector collector) {
         }
 
         @Override

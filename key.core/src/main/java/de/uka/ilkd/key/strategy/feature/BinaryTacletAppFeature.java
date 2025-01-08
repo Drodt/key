@@ -4,9 +4,9 @@
 package de.uka.ilkd.key.strategy.feature;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.rule.TacletApp;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -30,8 +30,8 @@ public abstract class BinaryTacletAppFeature extends BinaryFeature {
 
     @Override
     final protected boolean filter(RuleApp app, PosInOccurrence pos,
-            Goal goal,
-            MutableState mState) {
+                                   Goal goal,
+                                   MutableState mState) {
         if (app instanceof TacletApp) {
             return filter((TacletApp) app, pos, goal, mState);
         }

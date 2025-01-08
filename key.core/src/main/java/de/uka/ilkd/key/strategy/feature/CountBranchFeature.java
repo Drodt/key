@@ -4,11 +4,11 @@
 package de.uka.ilkd.key.strategy.feature;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.strategy.NumberRuleAppCost;
 import de.uka.ilkd.key.strategy.RuleAppCost;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -32,7 +32,7 @@ public class CountBranchFeature implements Feature {
      * @return the cost of <code>app</code>
      */
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-            MutableState mState) {
+                                   MutableState mState) {
         if (app.rule() instanceof Taclet tac) {
             final long branches = tac.goalTemplates().size();
             return NumberRuleAppCost.create(branches);

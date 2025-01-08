@@ -8,7 +8,6 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.rulefilter.IHTacletFilter;
 import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.feature.ConditionalFeature;
 import de.uka.ilkd.key.strategy.feature.Feature;
 import de.uka.ilkd.key.strategy.feature.MutableState;
@@ -23,6 +22,7 @@ import de.uka.ilkd.key.strategy.termgenerator.TermGenerator;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
@@ -108,9 +108,9 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection im
     }
 
 
-    public void instantiateApp(RuleApp app, PosInOccurrence pio,
-            Goal goal,
-            RuleAppCostCollector collector) {
+    public void instantiateApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                               Goal goal,
+                               RuleAppCostCollector collector) {
         final MutableState mState = new MutableState();
         final BackTrackingManager btManager = mState.getBacktrackingManager();
         btManager.setup(app);
@@ -119,7 +119,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection im
             if (cost instanceof TopRuleAppCost) {
                 continue;
             }
-            final RuleApp res = btManager.getResultingapp();
+            final org.key_project.prover.rules.RuleApp res = btManager.getResultingapp();
             if (res == app || res == null) {
                 continue;
             }
@@ -128,7 +128,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection im
     }
 
     protected abstract RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-            MutableState mState);
+                                                  MutableState mState);
 
     protected Feature forEach(TermBuffer x, TermGenerator gen, Feature body) {
         return ForEachCP.create(x, gen, body);

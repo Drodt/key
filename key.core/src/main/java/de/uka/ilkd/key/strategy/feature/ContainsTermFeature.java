@@ -4,7 +4,6 @@
 package de.uka.ilkd.key.strategy.feature;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.NumberRuleAppCost;
 import de.uka.ilkd.key.strategy.RuleAppCost;
 import de.uka.ilkd.key.strategy.TopRuleAppCost;
@@ -12,6 +11,7 @@ import de.uka.ilkd.key.strategy.termProjection.ProjectionToTerm;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 import static de.uka.ilkd.key.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
@@ -55,7 +55,7 @@ public class ContainsTermFeature implements Feature {
 
     @Override
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-            MutableState mState) {
+                                   MutableState mState) {
         final Term t1 = proj1.toTerm(app, pos, goal, mState);
         final Term t2 = proj2.toTerm(app, pos, goal, mState);
         ContainsTermVisitor visitor = new ContainsTermVisitor(t2);

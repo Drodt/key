@@ -220,7 +220,7 @@ public abstract class TacletApp implements RuleApp {
      * @inheritDoc
      */
     @Override
-    public <F extends Function> void execute(Namespace<@NonNull F> localFunctionNamespace) {
+    public void execute(Namespace<@NonNull Function> localFunctionNamespace) {
         if (!complete()) {
             throw new IllegalStateException(
                 "Tried to apply rule \n" + taclet + "\nthat is not complete." + this);

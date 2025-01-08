@@ -4,9 +4,9 @@
 package de.uka.ilkd.key.strategy.feature;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.RuleAppCost;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -14,7 +14,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
  */
 public class ConstFeature implements Feature {
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-            MutableState mState) {
+                                   MutableState mState) {
         return val;
     }
 
