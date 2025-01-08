@@ -75,8 +75,9 @@ public class QueryExpandCost implements Feature {
     }
 
     @Override
-    public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+    public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
+            Goal goal,
+            MutableState mState) {
         final Services services = goal.proof().getServices();
         final IntegerLDT integerLDT = services.getTypeConverter().getIntegerLDT();
         final Term t = (Term) pos.subTerm();
@@ -172,9 +173,10 @@ public class QueryExpandCost implements Feature {
      * @return The number of repetitive rule applications.
      */
     protected int queryExpandAlreadyAppliedAtPos(org.key_project.prover.rules.RuleApp app,
-                                                 PosInOccurrence pos, Goal goal) {
+            PosInOccurrence pos, Goal goal) {
         int count = 0;
-        ImmutableList<org.key_project.prover.rules.RuleApp> appliedRuleApps = goal.appliedRuleApps();
+        ImmutableList<org.key_project.prover.rules.RuleApp> appliedRuleApps =
+            goal.appliedRuleApps();
         if (appliedRuleApps != null && !appliedRuleApps.isEmpty()) {
             for (RuleApp appliedRuleApp : appliedRuleApps) {
                 final PosInOccurrence pio =

@@ -103,7 +103,7 @@ public class FocussedRuleApplicationManager
     }
 
     protected boolean isRuleApplicationForFocussedFormula(org.key_project.prover.rules.RuleApp rule,
-                                                          PosInOccurrence pos) {
+            PosInOccurrence pos) {
         /*
          * filter the rule applications, only allow applications within the focussed subterm or to
          * other formulas that have been added after creation of the manager (we rely on the fact
@@ -129,7 +129,8 @@ public class FocussedRuleApplicationManager
     }
 
     @Override
-    public void rulesAdded(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules, PosInOccurrence pos) {
+    public void rulesAdded(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules,
+            PosInOccurrence pos) {
         ImmutableList<org.key_project.prover.rules.RuleApp> applicableRules = ImmutableSLList.nil();
         for (RuleApp r : rules) {
             if (isRuleApplicationForFocussedFormula(r, pos)) {

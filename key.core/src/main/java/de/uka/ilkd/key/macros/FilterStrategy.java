@@ -23,14 +23,14 @@ public abstract class FilterStrategy implements Strategy {
 
     @Override
     public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                 Goal goal) {
+            Goal goal) {
         return delegate.isApprovedApp(app, pio, goal);
     }
 
     @Override
     public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                   Goal goal,
-                                   MutableState mState) {
+            Goal goal,
+            MutableState mState) {
         if (!isApprovedApp(app, pio, goal)) {
             return TopRuleAppCost.INSTANCE;
         }
@@ -39,7 +39,7 @@ public abstract class FilterStrategy implements Strategy {
 
     @Override
     public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                               RuleAppCostCollector collector) {
+            RuleAppCostCollector collector) {
         delegate.instantiateApp(app, pio, goal, collector);
     }
 

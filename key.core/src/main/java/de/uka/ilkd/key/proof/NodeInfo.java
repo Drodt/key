@@ -141,7 +141,8 @@ public class NodeInfo {
      * @param ruleApp The given {@link RuleApp}.
      * @return The active statement or {@code null} if no one is provided.
      */
-    public static SourceElement computeActiveStatement(org.key_project.prover.rules.RuleApp ruleApp) {
+    public static SourceElement computeActiveStatement(
+            org.key_project.prover.rules.RuleApp ruleApp) {
         SourceElement firstStatement = computeFirstStatement(ruleApp);
         return computeActiveStatement(firstStatement);
     }
@@ -158,7 +159,8 @@ public class NodeInfo {
      * @param ruleApp The given {@link RuleApp}.
      * @return The first statement or {@code null} if no one is provided.
      */
-    public static SourceElement computeFirstStatement(org.key_project.prover.rules.RuleApp ruleApp) {
+    public static SourceElement computeFirstStatement(
+            org.key_project.prover.rules.RuleApp ruleApp) {
         SourceElement firstStatement = null;
         // TODO: unify with MiscTools getActiveStatement
         if (ruleApp instanceof PosTacletApp pta) {

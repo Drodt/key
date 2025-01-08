@@ -46,8 +46,8 @@ public class SimpleFilteredStrategy implements Strategy {
      *         all (it is discarded by the strategy).
      */
     public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                   Goal goal,
-                                   MutableState mState) {
+            Goal goal,
+            MutableState mState) {
         if (app instanceof TacletApp && !ruleFilter.filter(app.rule())) {
             return TopRuleAppCost.INSTANCE;
         }
@@ -72,14 +72,14 @@ public class SimpleFilteredStrategy implements Strategy {
      * @return true iff the rule should be applied, false otherwise
      */
     public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                 Goal goal) {
+            Goal goal) {
         // do not apply a rule twice
         return !(app instanceof TacletApp) || NonDuplicateAppFeature.INSTANCE.computeCost(app, pio,
             goal, new MutableState()) != TopRuleAppCost.INSTANCE;
     }
 
     public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                               RuleAppCostCollector collector) {}
+            RuleAppCostCollector collector) {}
 
     @Override
     public boolean isStopAtFirstNonCloseableGoal() {

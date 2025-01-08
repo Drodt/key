@@ -359,7 +359,7 @@ public final class RuleAppIndex {
      * informs all observers, if a formula has been added, changed or removed
      */
     private void informNewRuleListener(org.key_project.prover.rules.RuleApp p_app,
-                                       PosInOccurrence p_pos) {
+            PosInOccurrence p_pos) {
         if (ruleListener != null) {
             ruleListener.ruleAdded(p_app, p_pos);
         }

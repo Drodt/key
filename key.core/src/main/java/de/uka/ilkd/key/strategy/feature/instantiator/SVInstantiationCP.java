@@ -49,8 +49,8 @@ public class SVInstantiationCP implements Feature {
     }
 
     public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
-                                   Goal goal,
-                                   MutableState mState) {
+            Goal goal,
+            MutableState mState) {
         final BackTrackingManager manager = mState.getBacktrackingManager();
         manager.passChoicePoint(new CP(app, pos, goal, mState), this);
         return NumberRuleAppCost.getZeroCost();
@@ -84,7 +84,8 @@ public class SVInstantiationCP implements Feature {
         private final Goal goal;
         private final MutableState mState;
 
-        private CP(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos, Goal goal, MutableState mState) {
+        private CP(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos, Goal goal,
+                MutableState mState) {
             this.pos = pos;
             this.app = app;
             this.goal = goal;

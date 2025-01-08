@@ -5,6 +5,7 @@ package de.uka.ilkd.key.strategy;
 
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.NewRuleListener;
+
 import org.key_project.prover.rules.RuleApp;
 
 

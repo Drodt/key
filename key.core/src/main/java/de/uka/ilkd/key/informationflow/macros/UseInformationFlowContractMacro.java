@@ -102,8 +102,8 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
      * @return true if rule may be applied
      */
     protected boolean ruleApplicationInContextAllowed(org.key_project.prover.rules.RuleApp ruleApp,
-                                                      PosInOccurrence pio,
-                                                      Goal goal) {
+            PosInOccurrence pio,
+            Goal goal) {
         return true;
     }
 
@@ -184,8 +184,8 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
 
         @Override
         public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp ruleApp,
-                                       PosInOccurrence pio, Goal goal,
-                                       MutableState mState) {
+                PosInOccurrence pio, Goal goal,
+                MutableState mState) {
             // first try to apply
             // - impLeft on previous information flow contract application
             // formula, else
@@ -214,7 +214,7 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
 
         @Override
         public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                     Goal goal) {
+                Goal goal) {
             // abort if
             // - the parent.parent rule application is an information
             // flow contract rule application,
@@ -250,7 +250,7 @@ public class UseInformationFlowContractMacro extends StrategyProofMacro {
 
         @Override
         public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                                   RuleAppCostCollector collector) {
+                RuleAppCostCollector collector) {
         }
 
         @Override

@@ -4,6 +4,7 @@
 package de.uka.ilkd.key.prover.impl;
 
 import de.uka.ilkd.key.proof.Goal;
+
 import org.key_project.prover.rules.RuleApp;
 
 /**
@@ -17,14 +18,16 @@ public class SingleRuleApplicationInfo {
     private final Goal goal;
     private final org.key_project.prover.rules.RuleApp appliedRuleApp;
 
-    SingleRuleApplicationInfo(Goal mayCloseableGoal, org.key_project.prover.rules.RuleApp appliedRuleApp) {
+    SingleRuleApplicationInfo(Goal mayCloseableGoal,
+            org.key_project.prover.rules.RuleApp appliedRuleApp) {
         this.message = "Rule applied successful";
         this.goal = mayCloseableGoal;
         this.appliedRuleApp = appliedRuleApp;
         this.success = true;
     }
 
-    SingleRuleApplicationInfo(String message, Goal nonCloseableGoal, org.key_project.prover.rules.RuleApp appliedRuleApp) {
+    SingleRuleApplicationInfo(String message, Goal nonCloseableGoal,
+            org.key_project.prover.rules.RuleApp appliedRuleApp) {
         this.message = message;
         this.goal = nonCloseableGoal;
         this.appliedRuleApp = appliedRuleApp;

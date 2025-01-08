@@ -998,7 +998,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as method call, {@code false} represent node as something
      *         else.
      */
-    public static boolean isMethodCallNode(Node node, org.key_project.prover.rules.RuleApp ruleApp, SourceElement statement) {
+    public static boolean isMethodCallNode(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            SourceElement statement) {
         return isMethodCallNode(node, ruleApp, statement, false);
     }
 
@@ -1013,8 +1014,9 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as method call, {@code false} represent node as something
      *         else.
      */
-    public static boolean isMethodCallNode(Node node, org.key_project.prover.rules.RuleApp ruleApp, SourceElement statement,
-                                           boolean allowImpliciteMethods) {
+    public static boolean isMethodCallNode(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            SourceElement statement,
+            boolean allowImpliciteMethods) {
         if (ruleApp != null) { // Do not handle open goal nodes without applied rule
             if (statement instanceof MethodBodyStatement) {
                 if (allowImpliciteMethods) {
@@ -1066,8 +1068,9 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as branch statement, {@code false} represent node as
      *         something else.
      */
-    public static boolean isBranchStatement(Node node, org.key_project.prover.rules.RuleApp ruleApp, SourceElement statement,
-                                            PositionInfo posInfo) {
+    public static boolean isBranchStatement(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            SourceElement statement,
+            PositionInfo posInfo) {
         return isStatementNode(node, ruleApp, statement, posInfo)
                 && (statement instanceof BranchStatement);
     }
@@ -1082,8 +1085,9 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as loop statement, {@code false} represent node as
      *         something else.
      */
-    public static boolean isLoopStatement(Node node, org.key_project.prover.rules.RuleApp ruleApp, SourceElement statement,
-                                          PositionInfo posInfo) {
+    public static boolean isLoopStatement(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            SourceElement statement,
+            PositionInfo posInfo) {
         return isStatementNode(node, ruleApp, statement, posInfo)
                 && (statement instanceof LoopStatement);
     }
@@ -1098,8 +1102,9 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as statement, {@code false} represent node as something
      *         else.
      */
-    public static boolean isStatementNode(Node node, org.key_project.prover.rules.RuleApp ruleApp, SourceElement statement,
-                                          PositionInfo posInfo) {
+    public static boolean isStatementNode(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            SourceElement statement,
+            PositionInfo posInfo) {
         // filter out: open goal node which has no applied rule, statements where source code is
         // missing, empty statements, empty blocks
         return ruleApp != null && posInfo != null && posInfo.getEndPosition() != Position.UNDEFINED
@@ -1115,7 +1120,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as termination, {@code false} represent node as something
      *         else.
      */
-    public static boolean isTerminationNode(Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isTerminationNode(Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         return "emptyModality".equals(MiscTools.getRuleDisplayName(ruleApp));
     }
 
@@ -1127,7 +1133,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as operation contract, {@code false} represent node as
      *         something else.
      */
-    public static boolean isOperationContract(Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isOperationContract(Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         if (ruleApp instanceof AbstractContractRuleApp) {
             Contract contract = ((AbstractContractRuleApp) ruleApp).getInstantiation();
             if (contract instanceof OperationContract) {
@@ -1149,7 +1156,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as block contract, {@code false} represent node as
      *         something else.
      */
-    public static boolean isBlockSpecificationElement(Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isBlockSpecificationElement(Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         return ruleApp instanceof AbstractAuxiliaryContractBuiltInRuleApp;
     }
 
@@ -1173,7 +1181,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as method return, {@code false} represent node as
      *         something else.
      */
-    public static boolean isMethodReturnNode(Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isMethodReturnNode(Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         String displayName = MiscTools.getRuleDisplayName(ruleApp);
         String ruleName = MiscTools.getRuleName(ruleApp);
         return "methodCallEmpty".equals(displayName) || "methodCallEmptyReturn".equals(ruleName)
@@ -1188,7 +1197,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as exceptional method return, {@code false} represent
      *         node as something else.
      */
-    public static boolean isExceptionalMethodReturnNode(Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isExceptionalMethodReturnNode(Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         String ruleName = MiscTools.getRuleName(ruleApp);
         return "methodCallParamThrow".equals(ruleName) || "methodCallThrow".equals(ruleName);
     }
@@ -1201,7 +1211,8 @@ public final class SymbolicExecutionUtil {
      * @param statement The actual statement ({@link SourceElement}).
      * @return {@code true} has loop condition, {@code false} has no loop condition.
      */
-    public static boolean hasLoopCondition(Node node, org.key_project.prover.rules.RuleApp ruleApp, SourceElement statement) {
+    public static boolean hasLoopCondition(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            SourceElement statement) {
         // Do not handle open goal nodes without applied rule.
         // For each loops have no loop condition.
         return ruleApp != null && statement instanceof LoopStatement
@@ -1240,7 +1251,8 @@ public final class SymbolicExecutionUtil {
      *         contain a {@link SymbolicExecutionTermLabel} or the given {@link RuleApp} is
      *         {@code null}.
      */
-    public static boolean hasLoopBodyTerminationLabel(org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean hasLoopBodyTerminationLabel(
+            org.key_project.prover.rules.RuleApp ruleApp) {
         if (ruleApp != null && ruleApp.posInOccurrence() != null) {
             Term term = (Term) ruleApp.posInOccurrence().subTerm();
             return term.containsLabel(LOOP_INVARIANT_NORMAL_BEHAVIOR_LABEL);
@@ -1269,7 +1281,8 @@ public final class SymbolicExecutionUtil {
      * @return The first found {@link SymbolicExecutionTermLabel} or {@code null} if no
      *         {@link SymbolicExecutionTermLabel} is provided.
      */
-    public static SymbolicExecutionTermLabel getSymbolicExecutionLabel(org.key_project.prover.rules.RuleApp ruleApp) {
+    public static SymbolicExecutionTermLabel getSymbolicExecutionLabel(
+            org.key_project.prover.rules.RuleApp ruleApp) {
         if (ruleApp != null && ruleApp.posInOccurrence() != null) {
             return getSymbolicExecutionLabel((Term) ruleApp.posInOccurrence().subTerm());
         } else {
@@ -1582,7 +1595,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} is also symbolic execution tree node, {@code false} is no node in a
      *         symbolic execution tree.
      */
-    public static boolean isSymbolicExecutionTreeNode(Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isSymbolicExecutionTreeNode(Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         if (node != null && !isRuleAppToIgnore(ruleApp) && hasSymbolicExecutionLabel(ruleApp)) {
             SourceElement statement = NodeInfo.computeActiveStatement(ruleApp);
             PositionInfo posInfo = statement != null ? statement.getPositionInfo() : null;
@@ -1634,7 +1648,8 @@ public final class SymbolicExecutionUtil {
      * @param ruleApp The {@link RuleApp} may used or not used in the rule.
      * @return {@code true} is in implicit method, {@code false} is not in implicit method.
      */
-    public static boolean isInImplicitMethod(Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isInImplicitMethod(Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         Term term = (Term) ruleApp.posInOccurrence().subTerm();
         term = TermBuilder.goBelowUpdates(term);
         JavaBlock block = term.javaBlock();
@@ -1725,7 +1740,8 @@ public final class SymbolicExecutionUtil {
 
     /**
      * Searches for the given {@link Node} the parent node which also represents a symbolic
-     * execution tree node (checked via {@link #isSymbolicExecutionTreeNode(Node, org.key_project.prover.rules.RuleApp)}).
+     * execution tree node (checked via
+     * {@link #isSymbolicExecutionTreeNode(Node, org.key_project.prover.rules.RuleApp)}).
      *
      * @param node The {@link Node} to start search in.
      * @param pio The {@link PosInOccurrence} of the modality.
@@ -1764,7 +1780,8 @@ public final class SymbolicExecutionUtil {
 
     /**
      * Searches for the given {@link Node} the parent node which also represents a symbolic
-     * execution tree node (checked via {@link #isSymbolicExecutionTreeNode(Node, org.key_project.prover.rules.RuleApp)}).
+     * execution tree node (checked via
+     * {@link #isSymbolicExecutionTreeNode(Node, org.key_project.prover.rules.RuleApp)}).
      *
      * @param node The {@link Node} to start search in.
      * @return The parent {@link Node} of the given {@link Node} which is also a set node or
@@ -3786,7 +3803,8 @@ public final class SymbolicExecutionUtil {
      * @return {@code true} represent node as loop body termination, {@code false} represent node as
      *         something else.
      */
-    public static boolean isLoopBodyTermination(final Node node, org.key_project.prover.rules.RuleApp ruleApp) {
+    public static boolean isLoopBodyTermination(final Node node,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         boolean result = false;
         if (ruleApp instanceof OneStepSimplifierRuleApp simplifierApp) {
             // Check applied rules in protocol
@@ -3961,7 +3979,8 @@ public final class SymbolicExecutionUtil {
      * @param ruleApp The {@link RuleApp}.
      * @return The computed call stack size and the second statement if available.
      */
-    public static Pair<Integer, SourceElement> computeSecondStatement(org.key_project.prover.rules.RuleApp ruleApp) {
+    public static Pair<Integer, SourceElement> computeSecondStatement(
+            org.key_project.prover.rules.RuleApp ruleApp) {
         if (ruleApp != null) {
             // Find inner most block
             SourceElement firstStatement = NodeInfo.computeFirstStatement(ruleApp);
@@ -4302,7 +4321,8 @@ public final class SymbolicExecutionUtil {
      * @param appliedRuleApp The {@link RuleApp} to check.
      * @return {@code true} validitiy branch, {@code false} otherwise.
      */
-    public static boolean isBlockContractValidityBranch(org.key_project.prover.rules.RuleApp appliedRuleApp) {
+    public static boolean isBlockContractValidityBranch(
+            org.key_project.prover.rules.RuleApp appliedRuleApp) {
         return appliedRuleApp != null
                 && isBlockContractValidityBranch(appliedRuleApp.posInOccurrence());
     }

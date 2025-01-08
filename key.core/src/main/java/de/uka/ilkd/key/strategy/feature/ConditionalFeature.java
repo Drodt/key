@@ -24,7 +24,7 @@ public class ConditionalFeature implements Feature {
     }
 
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         if (cond.filter(app.rule())) {
             return thenFeature.computeCost(app, pos, goal, mState);
         } else {

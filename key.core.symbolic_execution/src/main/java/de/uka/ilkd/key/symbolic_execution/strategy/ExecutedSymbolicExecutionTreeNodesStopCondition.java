@@ -159,7 +159,8 @@ public class ExecutedSymbolicExecutionTreeNodesStopCondition implements StopCond
      * @param executedNumberOfSetNodes The executed number of SET nodes.
      */
     protected void handleNodeLimitExceeded(int maxApplications, long timeout, Proof proof,
-            long startTime, int countApplied, Goal goal, Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            long startTime, int countApplied, Goal goal, Node node,
+            org.key_project.prover.rules.RuleApp ruleApp,
             Integer executedNumberOfSetNodes) {
         goalAllowedResultPerSetNode.put(node, Boolean.FALSE);
     }
@@ -181,7 +182,8 @@ public class ExecutedSymbolicExecutionTreeNodesStopCondition implements StopCond
      * @param executedNumberOfSetNodes The executed number of SET nodes.
      */
     protected void handleNodeLimitNotExceeded(int maxApplications, long timeout, Proof proof,
-            long startTime, int countApplied, Goal goal, Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            long startTime, int countApplied, Goal goal, Node node,
+            org.key_project.prover.rules.RuleApp ruleApp,
             Integer executedNumberOfSetNodes) {
         goalAllowedResultPerSetNode.put(node, Boolean.TRUE);
     }

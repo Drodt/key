@@ -76,7 +76,7 @@ public class OneStepProofMacro extends StrategyProofMacro {
          */
         @Override
         public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
-                                     Goal goal) {
+                Goal goal) {
             if (counter == 0 && delegate.isApprovedApp(app, pio, goal)) {
                 counter++;
                 return true;
@@ -87,8 +87,8 @@ public class OneStepProofMacro extends StrategyProofMacro {
 
         @Override
         public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app,
-                                       PosInOccurrence pio, Goal goal,
-                                       MutableState mState) {
+                PosInOccurrence pio, Goal goal,
+                MutableState mState) {
             return delegate.computeCost(app, pio, goal, mState);
 
         }
@@ -96,7 +96,7 @@ public class OneStepProofMacro extends StrategyProofMacro {
 
         @Override
         public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
-                                   RuleAppCostCollector collector) {
+                RuleAppCostCollector collector) {
             delegate.instantiateApp(app, pio, goal, collector);
         }
 

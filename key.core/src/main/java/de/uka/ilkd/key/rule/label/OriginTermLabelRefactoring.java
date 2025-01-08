@@ -42,9 +42,9 @@ public class OriginTermLabelRefactoring implements TermLabelRefactoring {
 
     @Override
     public RefactoringScope defineRefactoringScope(TermLabelState state, Services services,
-                                                   PosInOccurrence applicationPosInOccurrence,
-                                                   Term applicationTerm, Rule rule, Goal goal,
-                                                   Object hint, Term tacletTerm) {
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Rule rule, Goal goal,
+            Object hint, Term tacletTerm) {
         if (rule instanceof BuiltInRule
                 && !TermLabelRefactoring.shouldRefactorOnBuiltInRule(rule, goal, hint)) {
             return RefactoringScope.NONE;

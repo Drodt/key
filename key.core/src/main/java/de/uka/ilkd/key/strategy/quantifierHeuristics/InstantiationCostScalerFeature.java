@@ -31,7 +31,7 @@ public class InstantiationCostScalerFeature implements Feature {
     }
 
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
 
         final RuleAppCost cost = costFeature.computeCost(app, pos, goal, mState);
 

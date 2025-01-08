@@ -315,7 +315,8 @@ class KeyboardTacletPanel extends JPanel implements TabPanel {
         LOGGER.debug("Found {} taclets\n", taclets.size());
 
         if (actionOnlyCompleteTaclets.isSelected()) {
-            taclets = taclets.stream().filter(org.key_project.prover.rules.RuleApp::complete).collect(Collectors.toList());
+            taclets = taclets.stream().filter(org.key_project.prover.rules.RuleApp::complete)
+                    .collect(Collectors.toList());
         }
 
         KeyboardTacletModel newModel = new KeyboardTacletModel(taclets);
@@ -403,7 +404,8 @@ class KeyboardTacletModel {
         for (org.key_project.prover.rules.RuleApp t : taclets) {
             String n = t.rule().name().toString();
             seq.add(n);
-            List<org.key_project.prover.rules.RuleApp> appSeq = this.taclets.computeIfAbsent(n, it -> (new ArrayList<>(5)));
+            List<org.key_project.prover.rules.RuleApp> appSeq =
+                this.taclets.computeIfAbsent(n, it -> (new ArrayList<>(5)));
             appSeq.add(t);
         }
 

@@ -65,8 +65,8 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
      *         <code>TopRuleAppCost</code>.
      */
     public static RuleAppContainer createAppContainer(org.key_project.prover.rules.RuleApp p_app,
-                                                      PosInOccurrence p_pio,
-                                                      Goal p_goal) {
+            PosInOccurrence p_pio,
+            Goal p_goal) {
 
         if (p_app instanceof NoPosTacletApp) {
             return TacletAppContainer.createAppContainers((NoPosTacletApp) p_app, p_pio, p_goal);
@@ -89,7 +89,8 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
      *         of <code>TopRuleAppCost</code>.
      */
     public static ImmutableList<RuleAppContainer> createAppContainers(
-            ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules, PosInOccurrence pos, Goal goal) {
+            ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules,
+            PosInOccurrence pos, Goal goal) {
         ImmutableList<RuleAppContainer> result = ImmutableSLList.nil();
 
         if (rules.size() == 1) {

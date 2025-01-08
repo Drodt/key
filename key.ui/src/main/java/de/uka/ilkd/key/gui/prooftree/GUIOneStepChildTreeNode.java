@@ -9,8 +9,9 @@ import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.pp.LogicPrinter;
 
-import org.jspecify.annotations.NonNull;
 import org.key_project.prover.rules.RuleApp;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * A special kind of gui proof tree node to show intermediate steps of the
@@ -25,7 +26,7 @@ public class GUIOneStepChildTreeNode extends GUIAbstractTreeNode {
     private final GUIAbstractTreeNode parent;
 
     public GUIOneStepChildTreeNode(GUIProofTreeModel tree, GUIAbstractTreeNode parent,
-                                   org.key_project.prover.rules.RuleApp app, int formulaNr) {
+            org.key_project.prover.rules.RuleApp app, int formulaNr) {
         super(tree, parent.getNode());
         this.parent = parent;
         this.app = app;

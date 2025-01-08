@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import de.uka.ilkd.key.util.Quadruple;
 import de.uka.ilkd.key.util.Triple;
+
 import org.key_project.prover.rules.Rule;
 
 /**

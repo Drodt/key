@@ -294,7 +294,8 @@ public class InitConfig {
         justifInfo.addJustification(r, j);
     }
 
-    public void registerRuleIntroducedAtNode(org.key_project.prover.rules.RuleApp r, Node node, boolean isAxiom) {
+    public void registerRuleIntroducedAtNode(org.key_project.prover.rules.RuleApp r, Node node,
+            boolean isAxiom) {
         justifInfo.addJustification(r.rule(), new RuleJustificationByAddRules(node, isAxiom));
     }
 

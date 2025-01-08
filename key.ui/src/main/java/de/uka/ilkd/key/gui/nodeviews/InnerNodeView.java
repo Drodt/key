@@ -65,8 +65,9 @@ public final class InnerNodeView extends SequentView implements ProofDisposedLis
         this(node.proof(), node, node.getAppliedRuleApp(), node.sequent(), mainWindow);
     }
 
-    public InnerNodeView(Proof proof, Node node, org.key_project.prover.rules.RuleApp ruleApp, Sequent sequent,
-                         MainWindow mainWindow) {
+    public InnerNodeView(Proof proof, Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            Sequent sequent,
+            MainWindow mainWindow) {
         super(mainWindow);
         this.node = node;
         this.ruleApp = ruleApp;

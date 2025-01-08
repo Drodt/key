@@ -220,12 +220,14 @@ public class ExpressionBuilder extends DefaultBuilder {
         return cur;
     }
 
-    private Term binaryTerm(ParserRuleContext ctx, org.key_project.logic.op.Operator operator, Term left, Term right) {
+    private Term binaryTerm(ParserRuleContext ctx, org.key_project.logic.op.Operator operator,
+            Term left, Term right) {
         if (right == null) {
             return updateOrigin(left, ctx, services);
         }
         return capsulateTf(ctx,
-            () -> updateOrigin(getTermFactory().createTerm((Operator)operator, left, right), ctx, services));
+            () -> updateOrigin(getTermFactory().createTerm((Operator) operator, left, right), ctx,
+                services));
     }
 
     @Override

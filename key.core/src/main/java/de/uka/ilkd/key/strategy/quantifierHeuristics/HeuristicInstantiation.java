@@ -27,7 +27,7 @@ public class HeuristicInstantiation implements TermGenerator {
 
     @Override
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
-                                   MutableState mState) {
+            MutableState mState) {
         assert pos != null : "Feature is only applicable to rules with find";
 
         final Term qf = pos.sequentFormula().formula();

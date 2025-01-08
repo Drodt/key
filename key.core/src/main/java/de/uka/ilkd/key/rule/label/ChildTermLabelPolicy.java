@@ -93,7 +93,7 @@ public interface ChildTermLabelPolicy extends RuleSpecificTask {
      *         {@link TermLabel} to new {@link Term}.
      */
     boolean addLabel(TermServices services,
-                     PosInOccurrence applicationPosInOccurrence,
-                     Term applicationTerm, Rule rule, Goal goal, Object hint, Term tacletTerm,
-                     Term newTerm, Term childTerm, TermLabel label);
+            PosInOccurrence applicationPosInOccurrence,
+            Term applicationTerm, Rule rule, Goal goal, Object hint, Term tacletTerm,
+            Term newTerm, Term childTerm, TermLabel label);
 }

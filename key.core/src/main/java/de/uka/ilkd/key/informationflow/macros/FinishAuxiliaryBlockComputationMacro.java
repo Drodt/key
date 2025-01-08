@@ -39,7 +39,8 @@ public class FinishAuxiliaryBlockComputationMacro extends AbstractFinishAuxiliar
             if (poForProof instanceof BlockExecutionPO) {
                 final Goal initiatingGoal = ((BlockExecutionPO) poForProof).getInitiatingGoal();
                 if (initiatingGoal.node().parent() != null) {
-                    final org.key_project.prover.rules.RuleApp app = initiatingGoal.node().parent().getAppliedRuleApp();
+                    final org.key_project.prover.rules.RuleApp app =
+                        initiatingGoal.node().parent().getAppliedRuleApp();
                     return app instanceof BlockContractInternalBuiltInRuleApp;
                 }
             }

@@ -46,9 +46,9 @@ public abstract class FindTacletExecutor<TacletKind extends FindTaclet>
      * @param services the {@link Services} encapsulating all Java model information
      */
     protected abstract void applyReplacewith(TacletGoalTemplate gt, TermLabelState termLabelState,
-                                             SequentChangeInfo currentSequent,
-                                             PosInOccurrence posOfFind, MatchConditions matchCond,
-                                             Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services);
+            SequentChangeInfo currentSequent,
+            PosInOccurrence posOfFind, MatchConditions matchCond,
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services);
 
 
     /**
@@ -70,10 +70,10 @@ public abstract class FindTacletExecutor<TacletKind extends FindTaclet>
      * @param services the {@link Services} encapsulating all Java model information
      */
     protected abstract void applyAdd(Sequent add, TermLabelState termLabelState,
-                                     SequentChangeInfo currentSequent,
-                                     PosInOccurrence whereToAdd,
-                                     PosInOccurrence posOfFind,
-                                     MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services);
+            SequentChangeInfo currentSequent,
+            PosInOccurrence whereToAdd,
+            PosInOccurrence posOfFind,
+            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services);
 
 
 
