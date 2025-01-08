@@ -16,11 +16,12 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.RuleAppIndex;
 import de.uka.ilkd.key.proof.rulefilter.TacletFilter;
-import de.uka.ilkd.key.rule.*;
 
+import de.uka.ilkd.key.rule.*;
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
@@ -61,7 +62,7 @@ public class RuleCommand extends AbstractCommand<RuleCommand.Parameters> {
     @Override
     public void execute(AbstractUserInterfaceControl uiControl, Parameters args, EngineState state)
             throws ScriptException, InterruptedException {
-        RuleApp theApp = makeRuleApp(args, state);
+        org.key_project.prover.rules.RuleApp theApp = makeRuleApp(args, state);
         Goal g = state.getFirstOpenAutomaticGoal();
 
         if (theApp instanceof TacletApp tacletApp) {
@@ -77,7 +78,7 @@ public class RuleCommand extends AbstractCommand<RuleCommand.Parameters> {
                 }
             }
 
-            RuleApp completeApp = tacletApp.tryToInstantiate(g.proof().getServices());
+            org.key_project.prover.rules.RuleApp completeApp = tacletApp.tryToInstantiate(g.proof().getServices());
             theApp = completeApp == null ? theApp : completeApp;
         }
         assert theApp != null;
@@ -85,7 +86,7 @@ public class RuleCommand extends AbstractCommand<RuleCommand.Parameters> {
         g.apply(theApp);
     }
 
-    private RuleApp makeRuleApp(Parameters p, EngineState state) throws ScriptException {
+    private org.key_project.prover.rules.RuleApp makeRuleApp(Parameters p, EngineState state) throws ScriptException {
 
         final Proof proof = state.getProof();
         final Optional<BuiltInRule> maybeBuiltInRule =
@@ -207,8 +208,7 @@ public class RuleCommand extends AbstractCommand<RuleCommand.Parameters> {
     }
 
     private TacletApp makeNoFindTacletApp(Taclet taclet) {
-        TacletApp app = NoPosTacletApp.createNoPosTacletApp(taclet);
-        return app;
+        return NoPosTacletApp.createNoPosTacletApp((de.uka.ilkd.key.rule.Taclet) taclet);
     }
 
     private IBuiltInRuleApp builtInRuleApp(Parameters p, EngineState state, BuiltInRule rule)

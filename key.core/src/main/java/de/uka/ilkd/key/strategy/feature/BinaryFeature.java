@@ -4,11 +4,11 @@
 package de.uka.ilkd.key.strategy.feature;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.NumberRuleAppCost;
 import de.uka.ilkd.key.strategy.RuleAppCost;
 import de.uka.ilkd.key.strategy.TopRuleAppCost;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -23,9 +23,9 @@ public abstract class BinaryFeature implements Feature {
     /** Constant that represents the boolean value false */
     public static final RuleAppCost TOP_COST = TopRuleAppCost.INSTANCE;
 
-    public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos,
-            Goal goal,
-            MutableState mState) {
+    public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
+                                   Goal goal,
+                                   MutableState mState) {
         return filter(app, pos, goal, mState) ? ZERO_COST : TOP_COST;
     }
 
@@ -40,6 +40,6 @@ public abstract class BinaryFeature implements Feature {
      * @return true iff the result of the feature is supposed to be zero.
      */
     protected abstract boolean filter(RuleApp app, PosInOccurrence pos, Goal goal,
-            MutableState mState);
+                                      MutableState mState);
 
 }

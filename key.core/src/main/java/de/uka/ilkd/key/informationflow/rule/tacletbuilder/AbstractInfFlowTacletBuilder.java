@@ -17,6 +17,7 @@ import de.uka.ilkd.key.rule.tacletbuilder.RewriteTacletBuilder;
 import de.uka.ilkd.key.rule.tacletbuilder.RewriteTacletBuilderSchemaVarCollector;
 import de.uka.ilkd.key.util.MiscTools;
 
+import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.Visitor;
 import org.key_project.logic.op.sv.SchemaVariable;
@@ -150,7 +151,7 @@ abstract class AbstractInfFlowTacletBuilder extends TermBuilder {
                     heap1Pre, heap1Post, locset1, heap2Pre, heap2Post, locset2);
     }
 
-    static class QuantifiableVariableVisitor implements Visitor<Term> {
+    static class QuantifiableVariableVisitor implements Visitor<@NonNull Term> {
 
         private final LinkedList<QuantifiableVariable> vars = new LinkedList<>();
 

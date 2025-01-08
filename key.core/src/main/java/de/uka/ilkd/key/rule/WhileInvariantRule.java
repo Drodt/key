@@ -55,6 +55,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
@@ -524,7 +525,7 @@ public final class WhileInvariantRule implements BuiltInRule {
     }
 
 
-    private Term bodyTerm(TermLabelState termLabelState, Services services, RuleApp ruleApp,
+    private Term bodyTerm(TermLabelState termLabelState, Services services, org.key_project.prover.rules.RuleApp ruleApp,
             final Sequent applicationSequent, Instantiation inst, final Term invTerm,
             Term frameCondition, final Term variantPO, Goal bodyGoal, final JavaBlock guardJb,
             final Term guardTrueTerm) {
@@ -557,7 +558,7 @@ public final class WhileInvariantRule implements BuiltInRule {
         return new SequentFormula(sfTerm);
     }
 
-    private Term useCaseFormula(TermLabelState termLabelState, Services services, RuleApp ruleApp,
+    private Term useCaseFormula(TermLabelState termLabelState, Services services, org.key_project.prover.rules.RuleApp ruleApp,
             Instantiation inst, Goal useGoal, final JavaBlock guardJb, final Term guardFalseTerm) {
         final TermBuilder tb = services.getTermBuilder();
         JavaBlock useJavaBlock =
@@ -599,8 +600,8 @@ public final class WhileInvariantRule implements BuiltInRule {
     }
 
     private void prepareInvInitiallyValidBranch(TermLabelState termLabelState, Services services,
-            RuleApp ruleApp, Instantiation inst, final Term invTerm, Term reachableState,
-            Goal initGoal) {
+                                                org.key_project.prover.rules.RuleApp ruleApp, Instantiation inst, final Term invTerm, Term reachableState,
+                                                Goal initGoal) {
         initGoal.setBranchLabel("Invariant Initially Valid");
         initGoal.changeFormula(
             initFormula(termLabelState, inst, invTerm, reachableState, services, initGoal),
@@ -611,10 +612,10 @@ public final class WhileInvariantRule implements BuiltInRule {
 
 
     private void prepareBodyPreservesBranch(TermLabelState termLabelState, Services services,
-            RuleApp ruleApp, final Sequent applicationSequent, Instantiation inst,
-            final Term invTerm, Term wellFormedAnon, Term frameCondition, final Term variantPO,
-            Goal bodyGoal, final JavaBlock guardJb, final Term guardTrueTerm,
-            final Term[] uBeforeLoopDefAnonVariant, final Term uAnonInv) {
+                                            org.key_project.prover.rules.RuleApp ruleApp, final Sequent applicationSequent, Instantiation inst,
+                                            final Term invTerm, Term wellFormedAnon, Term frameCondition, final Term variantPO,
+                                            Goal bodyGoal, final JavaBlock guardJb, final Term guardTrueTerm,
+                                            final Term[] uBeforeLoopDefAnonVariant, final Term uAnonInv) {
         final TermBuilder tb = services.getTermBuilder();
         bodyGoal.setBranchLabel(BODY_PRESERVES_INVARIANT_LABEL);
         bodyGoal.addFormula(new SequentFormula(wellFormedAnon), true, false);
@@ -631,9 +632,9 @@ public final class WhileInvariantRule implements BuiltInRule {
 
 
     private void prepareUseCaseBranch(TermLabelState termLabelState, Services services,
-            RuleApp ruleApp, Instantiation inst, Term wellFormedAnon, Goal useGoal,
-            final JavaBlock guardJb, final Term guardFalseTerm, final Term[] uAnon,
-            final Term uAnonInv) {
+                                      org.key_project.prover.rules.RuleApp ruleApp, Instantiation inst, Term wellFormedAnon, Goal useGoal,
+                                      final JavaBlock guardJb, final Term guardFalseTerm, final Term[] uAnon,
+                                      final Term uAnonInv) {
         useGoal.setBranchLabel("Use Case");
         useGoal.addFormula(new SequentFormula(wellFormedAnon), true, false);
         useGoal.addFormula(new SequentFormula(uAnonInv), true, false);

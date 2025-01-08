@@ -7,11 +7,11 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.RuleAppCost;
 import de.uka.ilkd.key.strategy.TopRuleAppCost;
 import de.uka.ilkd.key.util.Debug;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
@@ -21,7 +21,7 @@ public class SumFeature implements Feature {
 
     @Override
     public RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal,
-            MutableState mState) {
+                                   MutableState mState) {
         // We require that there is at least one feature (in method
         // <code>createSum</code>)
         RuleAppCost res = features[0].computeCost(app, pos, goal, mState);

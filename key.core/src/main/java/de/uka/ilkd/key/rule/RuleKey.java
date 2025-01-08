@@ -8,7 +8,7 @@ import de.uka.ilkd.key.logic.ChoiceExpr;
 import org.key_project.logic.Name;
 
 import org.jspecify.annotations.NonNull;
-
+import org.key_project.prover.rules.Rule;
 
 /**
  * Provides a unique key for taclets based on a taclet's name and its taclet options. This class is
