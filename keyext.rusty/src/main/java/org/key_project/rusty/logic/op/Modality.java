@@ -3,16 +3,16 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.op;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.TermCreationException;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.RustyDLTheory;
+import org.key_project.util.collection.Pair;
+import org.key_project.util.collection.WeakValueLinkedHashMap;
 
 import org.jspecify.annotations.NonNull;
 
@@ -24,36 +24,22 @@ public class Modality extends org.key_project.logic.op.Modality {
     /**
      * keeps track of created modalities
      */
-    private static final Map<RustyProgramElement, WeakHashMap<RustyModalityKind, WeakReference<Modality>>> modalities =
-        new WeakHashMap<>();
+    private static final WeakValueLinkedHashMap<Pair<RustyModalityKind, RustyProgramElement>, Modality> modalities =
+        new WeakValueLinkedHashMap<>();
 
     /**
      * Retrieves the modality of the given kind and program.
      *
      * @param kind the kind of the modality such as diamond or box
-     * @param rb the program of this modality
+     * @param jb the program of this modality
      * @return the modality of the given kind and program.
      */
-    public static synchronized Modality getModality(RustyModalityKind kind, RustyBlock rb) {
-        var kind2mod = modalities.get(rb.program());
-        final Modality mod;
-        WeakReference<Modality> modRef;
-        if (kind2mod == null) {
-            kind2mod = new WeakHashMap<>();
-            mod = new Modality(rb, kind);
-            modRef = new WeakReference<>(mod);
-            kind2mod.put(kind, modRef);
-            modalities.put(rb.program(), kind2mod);
-        } else {
-            modRef = kind2mod.get(kind);
-            if (modRef == null || modRef.get() == null) {
-                mod = new Modality(rb, kind);
-                modRef = new WeakReference<>(mod);
-                kind2mod.put(kind, modRef);
-                modalities.put(rb.program(), kind2mod);
-            } else {
-                mod = modRef.get();
-            }
+    public static synchronized Modality getModality(RustyModalityKind kind, RustyBlock jb) {
+        var pair = new Pair<>(kind, jb.program());
+        Modality mod = modalities.get(pair);
+        if (mod == null) {
+            mod = new Modality(jb, kind);
+            modalities.put(pair, mod);
         }
         return mod;
     }
