@@ -314,8 +314,8 @@ public final class SymbolicExecutionSideProofUtil {
         term.execPreOrder(new DefaultVisitor() {
             @Override
             public void visit(Term visited) {
-                if (visited.op() instanceof JFunction) {
-                    functions.add((JFunction) visited.op());
+                if (visited.op() instanceof Function) {
+                    functions.add((Function) visited.op());
                 } else if (visited.op() instanceof IProgramVariable) {
                     progVars.add((IProgramVariable) visited.op());
                 }
@@ -421,7 +421,7 @@ public final class SymbolicExecutionSideProofUtil {
     private static boolean isRelevantThing(Services services, Term term) {
         if (term.op() instanceof IProgramVariable) {
             return true;
-        } else if (term.op() instanceof JFunction) {
+        } else if (term.op() instanceof Function) {
             HeapLDT heapLDT = services.getTypeConverter().getHeapLDT();
             if (SymbolicExecutionUtil.isHeap(term.op(), heapLDT)) {
                 return true;

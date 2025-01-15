@@ -583,7 +583,7 @@ class Translator extends JmlParserBaseVisitor<Object> {
 
             SLExpression other = expr.get(i);
             if (other.isType() && !result.isType()) {
-                JFunction ssortFunc = sortLDT.getSsort(other.getType().getSort(), services);
+                Function ssortFunc = sortLDT.getSsort(other.getType().getSort(), services);
                 other = new SLExpression(tb.func(ssortFunc));
             }
 
@@ -645,14 +645,14 @@ class Translator extends JmlParserBaseVisitor<Object> {
 
         if (left.isType() && left.getTerm() != null && right.isType()) {
             Sort os = right.getType().getSort();
-            JFunction ioFunc = services.getJavaDLTheory().getInstanceofSymbol(os, services);
+            Function ioFunc = services.getJavaDLTheory().getInstanceofSymbol(os, services);
             left = new SLExpression(tb.equals(tb.func(ioFunc, left.getTerm()), tb.TRUE()));
         } else {
             Term leftSort;
             if (left.isTerm()) {
                 leftSort = left.getTerm();
             } else {
-                JFunction ssortFunc = sortLDT.getSsort(left.getType().getSort(), services);
+                Function ssortFunc = sortLDT.getSsort(left.getType().getSort(), services);
                 leftSort = tb.func(ssortFunc);
             }
 
@@ -660,7 +660,7 @@ class Translator extends JmlParserBaseVisitor<Object> {
             if (right.isTerm()) {
                 rightSort = right.getTerm();
             } else {
-                JFunction ssortFunc = sortLDT.getSsort(right.getType().getSort(), services);
+                Function ssortFunc = sortLDT.getSsort(right.getType().getSort(), services);
                 rightSort = tb.func(ssortFunc);
             }
 
@@ -673,7 +673,7 @@ class Translator extends JmlParserBaseVisitor<Object> {
 
     @Override
     public Object visitRelational_lockset(JmlParser.Relational_locksetContext ctx) {
-        JFunction f = null;
+        Function f = null;
         SLExpression left = accept(ctx.shiftexpr());
         SLExpression right = accept(ctx.postfixexpr());
 

@@ -25,6 +25,7 @@ import de.uka.ilkd.key.util.Triple;
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.PosInTerm;
+import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
@@ -50,9 +51,9 @@ public abstract class AbstractSideProofRule implements BuiltInRule {
      * @param sort The {@link Sort} to use.
      * @return The created constant.
      */
-    protected JFunction createResultConstant(Services services, Sort sort) {
+    protected Function createResultConstant(Services services, Sort sort) {
         String functionName = services.getTermBuilder().newName("QueryResult");
-        JFunction function = new JFunction(new Name(functionName), sort);
+        Function function = new JFunction(new Name(functionName), sort);
         services.getNamespaces().functions().addSafely(function);
         return function;
     }
