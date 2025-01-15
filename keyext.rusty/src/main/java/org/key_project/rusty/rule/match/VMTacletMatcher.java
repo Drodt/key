@@ -12,6 +12,9 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.*;
+import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
+import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
+import org.key_project.prover.rules.instantiation.AssumesMatchResult;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.rule.*;
@@ -81,9 +84,9 @@ public class VMTacletMatcher implements TacletMatcher {
     }
 
     @Override
-    public org.key_project.prover.rules.MatchConditions matchFind(
+    public org.key_project.prover.rules.instantiation.MatchConditions matchFind(
             Term term,
-            org.key_project.prover.rules.MatchConditions matchCond,
+            org.key_project.prover.rules.instantiation.MatchConditions matchCond,
             LogicServices services) {
         if (findMatchProgram == TacletMatchProgram.EMPTY_PROGRAM) {
             return null;
@@ -101,7 +104,8 @@ public class VMTacletMatcher implements TacletMatcher {
      * {@inheritDoc}
      */
     @Override
-    public final MatchConditions checkConditions(org.key_project.prover.rules.MatchConditions cond,
+    public final MatchConditions checkConditions(
+            org.key_project.prover.rules.instantiation.MatchConditions cond,
             LogicServices services) {
         MatchConditions result = (MatchConditions) cond;
         if (result != null) {
@@ -154,7 +158,7 @@ public class VMTacletMatcher implements TacletMatcher {
     @Override
     public final MatchConditions checkVariableConditions(SchemaVariable var,
             SyntaxElement instantiationCandidate,
-            org.key_project.prover.rules.MatchConditions matchCond,
+            org.key_project.prover.rules.instantiation.MatchConditions matchCond,
             LogicServices services) {
         if (matchCond != null) {
             if (instantiationCandidate instanceof Term term) {
@@ -206,14 +210,15 @@ public class VMTacletMatcher implements TacletMatcher {
     @Override
     public final AssumesMatchResult matchAssumes(Iterable<AssumesFormulaInstantiation> toMatch,
             org.key_project.logic.Term p_template,
-            org.key_project.prover.rules.MatchConditions p_matchCond,
+            org.key_project.prover.rules.instantiation.MatchConditions p_matchCond,
             LogicServices p_services) {
         TacletMatchProgram prg = assumesMatchPrograms.get(p_template);
         MatchConditions matchCond = (MatchConditions) p_matchCond;
 
         ImmutableList<AssumesFormulaInstantiation> resFormulas =
             ImmutableSLList.nil();
-        ImmutableList<org.key_project.prover.rules.MatchConditions> resMC = ImmutableSLList.nil();
+        ImmutableList<org.key_project.prover.rules.instantiation.MatchConditions> resMC =
+            ImmutableSLList.nil();
 
         final boolean updateContextPresent =
             !matchCond.getInstantiations().getUpdateContext().isEmpty();
@@ -278,12 +283,13 @@ public class VMTacletMatcher implements TacletMatcher {
     @Override
     public final MatchConditions matchAssumes(
             Iterable<AssumesFormulaInstantiation> p_toMatch,
-            org.key_project.prover.rules.MatchConditions p_matchCond, LogicServices p_services) {
+            org.key_project.prover.rules.instantiation.MatchConditions p_matchCond,
+            LogicServices p_services) {
 
         final var anteIterator = assumesSequent.antecedent().iterator();
         final var succIterator = assumesSequent.succedent().iterator();
 
-        ImmutableList<org.key_project.prover.rules.MatchConditions> newMC;
+        ImmutableList<org.key_project.prover.rules.instantiation.MatchConditions> newMC;
 
         for (final AssumesFormulaInstantiation candidateInst : p_toMatch) {
             // Part of fix for #1716: match antecedent with antecedent, succ with succ
@@ -322,7 +328,7 @@ public class VMTacletMatcher implements TacletMatcher {
     @Override
     public MatchConditions matchSV(SchemaVariable sv,
             SyntaxElement syntaxElement,
-            org.key_project.prover.rules.MatchConditions matchCond,
+            org.key_project.prover.rules.instantiation.MatchConditions matchCond,
             LogicServices services) {
 
         final MatchSchemaVariableInstruction<? extends SchemaVariable> instr =

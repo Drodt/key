@@ -58,7 +58,7 @@ public abstract class TacletExecutor<T extends Taclet> extends
 
     @Override
     protected Term syntacticalReplace(Term term, PosInOccurrence applicationPosInOccurrence,
-            org.key_project.prover.rules.MatchConditions mc, @NonNull Goal goal,
+            org.key_project.prover.rules.instantiation.MatchConditions mc, @NonNull Goal goal,
             @NonNull RuleApp ruleApp, LogicServices services, Object... instantiationInfo) {
         return syntacticalReplace(term, applicationPosInOccurrence, (MatchConditions) mc, goal,
             ruleApp, (Services) services);
@@ -77,7 +77,7 @@ public abstract class TacletExecutor<T extends Taclet> extends
     @Override
     protected void applyAddrule(ImmutableList<? extends org.key_project.prover.rules.Taclet> rules,
             @NonNull Goal goal, LogicServices p_services,
-            org.key_project.prover.rules.MatchConditions p_matchCond) {
+            org.key_project.prover.rules.instantiation.MatchConditions p_matchCond) {
         var services = (Services) p_services;
         var matchCond = (MatchConditions) p_matchCond;
         for (var rule : rules) {
@@ -124,7 +124,8 @@ public abstract class TacletExecutor<T extends Taclet> extends
 
 
     @Override
-    protected Term applyContextUpdate(org.key_project.prover.rules.inst.SVInstantiations p_svInst,
+    protected Term applyContextUpdate(
+            org.key_project.prover.rules.instantiation.SVInstantiations p_svInst,
             Term formula, @NonNull Goal goal) {
         final var svInst = (SVInstantiations) p_svInst;
         if (svInst.getUpdateContext().isEmpty()) {
@@ -139,7 +140,8 @@ public abstract class TacletExecutor<T extends Taclet> extends
             SequentChangeInfo currentSequent,
             Goal goal,
             PosInOccurrence posOfFind,
-            LogicServices p_services, org.key_project.prover.rules.MatchConditions matchCond) {
+            LogicServices p_services,
+            org.key_project.prover.rules.instantiation.MatchConditions matchCond) {
         // TODO
     }
 

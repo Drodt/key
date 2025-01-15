@@ -10,7 +10,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.prover.rules.inst.InstantiationEntry;
+import org.key_project.prover.rules.instantiation.InstantiationEntry;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.PosInProgram;
@@ -22,7 +22,8 @@ import org.key_project.util.collection.*;
 
 import static org.key_project.rusty.rule.match.instructions.MatchProgramSVInstruction.convertToLogicElement;
 
-public class SVInstantiations implements org.key_project.prover.rules.inst.SVInstantiations {
+public class SVInstantiations
+        implements org.key_project.prover.rules.instantiation.SVInstantiations {
     /** the empty instantiation */
     public static final SVInstantiations EMPTY_SVINSTANTIATIONS = new SVInstantiations();
     /**
@@ -341,7 +342,8 @@ public class SVInstantiations implements org.key_project.prover.rules.inst.SVIns
                 && genericSortConditions.isEmpty() && genericSortInstantiations.isEmpty());
     }
 
-    public SVInstantiations union(org.key_project.prover.rules.inst.SVInstantiations p_other,
+    public SVInstantiations union(
+            org.key_project.prover.rules.instantiation.SVInstantiations p_other,
             LogicServices services) {
         final var other = (SVInstantiations) p_other;
         ImmutableMap<SchemaVariable, InstantiationEntry<?>> result = map;
