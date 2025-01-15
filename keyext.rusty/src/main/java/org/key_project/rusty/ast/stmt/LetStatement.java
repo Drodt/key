@@ -15,14 +15,48 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * Represents a `let` statement in a Rust abstract syntax tree (AST).
+ * A `let` statement declares a variable by binding it to a pattern, optionally specifying its type,
+ * and optionally providing an initializer expression.
+ *
+ * <p>
+ * This class is immutable and provides methods to access its components,
+ * including the pattern, type, and initializer expression.
+ * </p>
+ *
+ *
+ * <h3>Thread Safety</h3>
+ * <p>
+ * This class is immutable and therefore thread-safe.
+ * </p>
+ */
 public class LetStatement implements Statement, VariableDeclaration {
+    /**
+     * The pattern to which the value is bound.
+     */
     private final Pattern pat;
+
+    /**
+     * The type of the variable being declared (nullable).
+     */
     private final RustType type;
+
+    /**
+     * The initializer expression (nullable).
+     */
     private final Expr init;
 
     private int hashCode = -1;
 
-    public LetStatement(Pattern pat, RustType type, @Nullable Expr init) {
+    /**
+     * Constructs a new `LetStatement`.
+     *
+     * @param pat The pattern to which the value is bound. Must not be {@code null}.
+     * @param type The type of the variable being declared. May be {@code null}.
+     * @param init The initializer expression for the variable. May be {@code null}.
+     */
+    public LetStatement(Pattern pat, @Nullable RustType type, @Nullable Expr init) {
         this.pat = pat;
         this.type = type;
         this.init = init;
