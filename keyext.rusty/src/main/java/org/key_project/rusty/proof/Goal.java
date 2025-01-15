@@ -110,7 +110,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
          * caught.
          */
         final ImmutableList<Goal> goalList;
-        ruleApp.execute(localNamespaces.functions());
+        ruleApp.checkApplicability();
+        ruleApp.registerSkolemConstants(localNamespaces.functions());
         addAppliedRuleApp(ruleApp);
 
         try {

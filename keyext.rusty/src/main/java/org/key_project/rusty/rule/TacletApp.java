@@ -220,7 +220,7 @@ public abstract class TacletApp implements RuleApp {
      * @inheritDoc
      */
     @Override
-    public void execute(Namespace<@NonNull Function> localFunctionNamespace) {
+    public void checkApplicability() {
         if (!complete()) {
             throw new IllegalStateException(
                 "Tried to apply rule \n" + taclet + "\nthat is not complete." + this);
@@ -230,7 +230,6 @@ public abstract class TacletApp implements RuleApp {
             throw new RuntimeException(
                 "taclet application with unsatisfied 'checkPrefix': " + this);
         }
-        registerSkolemConstants(localFunctionNamespace);
     }
 
     public boolean isExecutable() {
@@ -380,7 +379,7 @@ public abstract class TacletApp implements RuleApp {
         return calculateNonInstantiatedSV();
     }
 
-    public <F extends Function> void registerSkolemConstants(Namespace<@NonNull F> functions) {
+    public void registerSkolemConstants(Namespace<@NonNull Function> functions) {
         final var insts = instantiations();
         final Iterator<SchemaVariable> svIt = insts.svIterator();
         while (svIt.hasNext()) {
@@ -392,7 +391,7 @@ public abstract class TacletApp implements RuleApp {
                 // case it is used in the \addrules() section of a rule
                 if (functions.lookup(inst.op().name()) == null) {
                     // noinspection unchecked
-                    functions.addSafely((F) inst.op());
+                    functions.addSafely((Function) inst.op());
                 }
             }
         }
