@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.rule;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Stack;
 
 import org.key_project.logic.Term;
@@ -33,12 +31,14 @@ import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.jspecify.annotations.NonNull;
+
 /**
  * visitor for <t> execPostOrder </t> of {@link Term}. Called with that method
  * on a term, the visitor builds a new term replacing SchemaVariables with their instantiations that
  * are given as a SVInstantiations object.
  */
-public class SyntacticalReplaceVisitor implements Visitor<Term> {
+public class SyntacticalReplaceVisitor implements Visitor<@NonNull Term> {
     protected final SVInstantiations svInst;
     protected final Services services;
     /** the termbuilder used to construct terms */
@@ -58,8 +58,6 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
      */
     private final Stack<Object> subStack; // of Term (and Boolean)
     private final Boolean newMarker = Boolean.TRUE;
-    private final Deque<Term> tacletTermStack = new ArrayDeque<>();
-
 
     /**
      * constructs a term visitor replacing any occurrence of a schemavariable found in
@@ -102,13 +100,6 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
             Rule rule, RuleApp ruleApp, Services services) {
         this(applicationPosInOccurrence, svInst, goal, rule, ruleApp,
             services, services.getTermBuilder());
-    }
-
-    public SyntacticalReplaceVisitor(
-            PosInOccurrence applicationPosInOccurrence, Goal goal, Rule rule, RuleApp ruleApp,
-            Services services, TermBuilder termBuilder) {
-        this(applicationPosInOccurrence,
-            SVInstantiations.EMPTY_SVINSTANTIATIONS, goal, rule, ruleApp, services);
     }
 
     /**
@@ -185,7 +176,7 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
         }
 
         ProgramReplaceVisitor trans;
-        RustyProgramElement result = null;
+        RustyProgramElement result;
 
         if (rb.program() instanceof ContextBlockExpression cbe) {
             trans = new ProgramReplaceVisitor(
@@ -217,11 +208,9 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     }
 
     private Term resolveSubst(Term t) {
-        if (t.op() instanceof SubstOp) {
-            Term resolved = ((SubstOp) t.op()).apply(t, tb);
-            return resolved;
+        if (t.op() instanceof SubstOp substOp) {
+            return substOp.apply(t, tb);
         } else {
-
             return t;
         }
     }
@@ -254,13 +243,11 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
                 if (boundVar instanceof SchemaVariable boundSchemaVariable) {
                     final Term instantiationForBoundSchemaVariable =
                         (Term) svInst.getInstantiation(boundSchemaVariable);
+                    // instantiation case might be null in case of PO generation for taclets
                     if (instantiationForBoundSchemaVariable != null) {
                         boundVar = (QuantifiableVariable) instantiationForBoundSchemaVariable.op();
-                    } else {
-                        // this case may happen for PO generation of taclets
-                        boundVar = (QuantifiableVariable) boundSchemaVariable;
+                        varsChanged = true;
                     }
-                    varsChanged = true;
                 }
                 newVars[j] = boundVar;
             }
@@ -279,14 +266,13 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
          * instantiatedOp =
          * handleSortDependingSymbol((SortDependingFunction) p_operatorToBeInstantiated);
          * } else
-         */ if (p_operatorToBeInstantiated instanceof ElementaryUpdate) {
+         */ if (p_operatorToBeInstantiated instanceof ElementaryUpdate elementaryUpdate) {
             instantiatedOp =
-                instantiateElementaryUpdate((ElementaryUpdate) p_operatorToBeInstantiated);
-        } else if (p_operatorToBeInstantiated instanceof SchemaVariable) {
-            if (!(p_operatorToBeInstantiated instanceof ProgramSV)
-                    || !((ProgramSV) p_operatorToBeInstantiated).isListSV()) {
-                instantiatedOp =
-                    (Operator) svInst.getInstantiation((SchemaVariable) p_operatorToBeInstantiated);
+                instantiateElementaryUpdate(elementaryUpdate);
+        } else if (p_operatorToBeInstantiated instanceof SchemaVariable sv) {
+            if (!(p_operatorToBeInstantiated instanceof ProgramSV programSV)
+                    || !programSV.isListSV()) {
+                instantiatedOp = (Operator) svInst.getInstantiation(sv);
             }
         }
         assert instantiatedOp != null;
@@ -296,16 +282,13 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
 
     private ElementaryUpdate instantiateElementaryUpdate(ElementaryUpdate op) {
         final UpdateableOperator originalLhs = op.lhs();
-        if (originalLhs instanceof SchemaVariable) {
-            Object lhsInst = svInst.getInstantiation((SchemaVariable) originalLhs);
-            if (lhsInst instanceof Term) {
-                lhsInst = ((Term) lhsInst).op();
+        if (originalLhs instanceof SchemaVariable orginalLhsAsSV) {
+            Object lhsInst = svInst.getInstantiation(orginalLhsAsSV);
+            if (lhsInst instanceof Term lhsInstAsTerm) {
+                lhsInst = lhsInstAsTerm.op();
             }
 
-            final UpdateableOperator newLhs;
-            if (lhsInst instanceof UpdateableOperator) {
-                newLhs = (UpdateableOperator) lhsInst;
-            } else {
+            if (!(lhsInst instanceof final UpdateableOperator newLhs)) {
                 assert false : "not updateable: " + lhsInst;
                 throw new IllegalStateException("Encountered non-updateable operator " + lhsInst
                     + " on left-hand side of update.");
@@ -332,16 +315,16 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
      */
     public Term getTerm() {
         if (computedResult == null) {
-            Object o = null;
+            Object o;
             do {
                 o = subStack.pop();
             } while (o == newMarker);
-            Term t = (Term) o;
+            // Term t = (Term) o;
             // CollisionDeletingSubstitutionTermApplier substVisit
             // = new CollisionDeletingSubstitutionTermApplier();
             // t.execPostOrder(substVisit);
             // t=substVisit.getTerm();
-            computedResult = t;
+            computedResult = (Term) o;
         }
         return computedResult;
     }
