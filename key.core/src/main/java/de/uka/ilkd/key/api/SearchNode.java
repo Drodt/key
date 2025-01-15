@@ -5,8 +5,8 @@ package de.uka.ilkd.key.api;
 
 import de.uka.ilkd.key.logic.Term;
 
-import org.key_project.prover.rules.MatchConditions;
-import org.key_project.prover.rules.inst.SVInstantiations;
+import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.SequentFormula;
 
 /**

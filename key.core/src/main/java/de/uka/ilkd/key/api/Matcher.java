@@ -13,10 +13,10 @@ import de.uka.ilkd.key.rule.*;
 import de.uka.ilkd.key.rule.match.vm.VMTacletMatcher;
 
 import org.key_project.logic.Name;
-import org.key_project.prover.rules.AssumesFormulaInstSeq;
-import org.key_project.prover.rules.AssumesFormulaInstantiation;
-import org.key_project.prover.rules.AssumesMatchResult;
-import org.key_project.prover.rules.inst.SVInstantiations;
+import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
+import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
+import org.key_project.prover.rules.instantiation.AssumesMatchResult;
+import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableArray;
