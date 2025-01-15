@@ -5,7 +5,9 @@ package org.key_project.rusty.rule;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.RuleSet;
+import org.key_project.prover.rules.TacletAnnotation;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.prover.rules.TacletAttributes;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
@@ -39,8 +41,8 @@ public class AntecTaclet extends FindTaclet {
             ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs, Term find,
             boolean ignoreTopLevelUpdates,
-            ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
-            ImmutableSet<org.key_project.prover.rules.TacletAnnotation> tacletAnnotations) {
+            ImmutableMap<SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
+            ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, applPart, goalTemplates, ruleSets, attrs, find, prefixMap,
             tacletAnnotations);
         this.ignoreTopLevelUpdates = ignoreTopLevelUpdates;
@@ -67,7 +69,7 @@ public class AntecTaclet extends FindTaclet {
 
     @Override
     protected void createAndInitializeExecutor() {
-        executor = new AntecTacletExecutor<>(this);
+        executor = new AntecTacletExecutor(this);
     }
 
     @Override

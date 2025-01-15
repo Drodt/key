@@ -8,6 +8,7 @@ import java.util.Iterator;
 import org.key_project.logic.PosInTerm;
 import org.key_project.prover.sequent.FormulaChangeInfo;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
@@ -16,9 +17,8 @@ import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
 import org.key_project.util.collection.ImmutableList;
 
-public abstract class FindTacletExecutor<TacletKind extends FindTaclet>
-        extends TacletExecutor<TacletKind> {
-    protected FindTacletExecutor(TacletKind taclet) {
+public abstract class FindTacletExecutor extends TacletExecutor {
+    protected FindTacletExecutor(Taclet taclet) {
         super(taclet);
     }
 
@@ -102,10 +102,10 @@ public abstract class FindTacletExecutor<TacletKind extends FindTaclet>
      * @param ruleApp the {@link TacletApp} describing the current ongoing taclet application
      * @param services the {@link Services} encapsulating all Rust model information
      */
-    protected abstract void applyAdd(org.key_project.prover.sequent.Sequent add,
+    protected abstract void applyAdd(Sequent add,
             SequentChangeInfo currentSequent,
             PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
-            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services);
+            MatchConditions matchCond, Goal goal, TacletApp ruleApp, Services services);
 
     /**
      * applies the {@code replacewith}-expression of taclet goal descriptions
@@ -122,7 +122,7 @@ public abstract class FindTacletExecutor<TacletKind extends FindTaclet>
      */
     protected abstract void applyReplacewith(TacletGoalTemplate gt,
             SequentChangeInfo currentSequent, PosInOccurrence posOfFind, MatchConditions matchCond,
-            Goal goal, RuleApp ruleApp, Services services);
+            Goal goal, TacletApp ruleApp, Services services);
 
     /**
      * creates a new position information object, describing where to add the formulas or

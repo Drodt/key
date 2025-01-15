@@ -7,8 +7,11 @@ package org.key_project.rusty.rule;
 import org.key_project.logic.Name;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.Rule;
 import org.key_project.prover.rules.RuleSet;
+import org.key_project.prover.rules.TacletAnnotation;
 import org.key_project.prover.rules.TacletApplPart;
+import org.key_project.prover.rules.TacletAttributes;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
 import org.key_project.rusty.logic.BoundVarsVisitor;
 import org.key_project.rusty.rule.match.VMTacletMatcher;
@@ -16,6 +19,8 @@ import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableSet;
+
+import org.jspecify.annotations.NonNull;
 
 
 public abstract class Taclet extends
@@ -33,10 +38,10 @@ public abstract class Taclet extends
     protected Taclet(Name name, org.key_project.prover.rules.TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
-            org.key_project.prover.rules.TacletAttributes attrs,
-            ImmutableMap<SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
+            TacletAttributes attrs,
+            ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
             boolean surviveSmbExec,
-            ImmutableSet<org.key_project.prover.rules.TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, applPart, goalTemplates, ruleSets, attrs, prefixMap, surviveSmbExec,
             tacletAnnotations);
     }
@@ -54,9 +59,9 @@ public abstract class Taclet extends
     protected Taclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
-            org.key_project.prover.rules.TacletAttributes attrs,
-            ImmutableMap<SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
-            ImmutableSet<org.key_project.prover.rules.TacletAnnotation> tacletAnnotations) {
+            TacletAttributes attrs,
+            ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
+            ImmutableSet<TacletAnnotation> tacletAnnotations) {
         this(name, applPart, goalTemplates, ruleSets, attrs, prefixMap, false,
             tacletAnnotations);
     }
@@ -141,8 +146,8 @@ public abstract class Taclet extends
         return (TacletPrefix) prefixMap.get(sv);
     }
 
-    public TacletExecutor<?> getExecutor() {
-        return (TacletExecutor<? extends Taclet>) executor;
+    public @NonNull TacletExecutor getExecutor() {
+        return (TacletExecutor) executor;
     }
 
     @Override

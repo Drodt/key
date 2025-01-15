@@ -6,7 +6,9 @@ package org.key_project.rusty.rule;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.RuleSet;
+import org.key_project.prover.rules.TacletAnnotation;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.prover.rules.TacletAttributes;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
@@ -21,6 +23,8 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableSet;
+
+import org.jspecify.annotations.NonNull;
 
 /**
  * A RewriteTaclet represents a taclet, whose find can be matched against any term in the sequent no
@@ -55,7 +59,7 @@ public class RewriteTaclet extends FindTaclet {
         /**
          * If the surrounding formula has been decomposed completely, the find-term will NOT appear
          * on
-         * the ANTEcedent. The formula {@code wellformed(h)} in {@code==> wellformed(h)} or in
+         * the ANTEcedent. The formula {@code wellformed(h)} in {@code ==> wellformed(h)} or in
          * {@code wellformed(h) ->
          * (inv(h) = inv(h2)) ==>} or in
          * {@code \if(b) \then(!wellformed(h)) \else(!wellformed(h2)) ==>}
@@ -119,9 +123,9 @@ public class RewriteTaclet extends FindTaclet {
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs, Term find,
-            ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
+            ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
             ApplicationRestriction p_applicationRestriction,
-            ImmutableSet<org.key_project.prover.rules.TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations) {
         this(name, applPart, goalTemplates, ruleSets, attrs, find, prefixMap,
             p_applicationRestriction, false, tacletAnnotations);
     }
@@ -129,11 +133,10 @@ public class RewriteTaclet extends FindTaclet {
     public RewriteTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
-
             TacletAttributes attrs, Term find,
-            ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
+            ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
             ApplicationRestriction p_applicationRestriction, boolean surviveSymbExec,
-            ImmutableSet<org.key_project.prover.rules.TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, applPart, goalTemplates, ruleSets, attrs, find, prefixMap,
             surviveSymbExec, tacletAnnotations);
         applicationRestriction = p_applicationRestriction;
@@ -142,7 +145,7 @@ public class RewriteTaclet extends FindTaclet {
 
     @Override
     protected void createAndInitializeExecutor() {
-        this.executor = new RewriteTacletExecutor<>(this);
+        this.executor = new RewriteTacletExecutor(this);
     }
 
     /**
@@ -196,8 +199,8 @@ public class RewriteTaclet extends FindTaclet {
     }
 
     @Override
-    public RewriteTacletExecutor<? extends RewriteTaclet> getExecutor() {
-        return (RewriteTacletExecutor<? extends RewriteTaclet>) executor;
+    public @NonNull RewriteTacletExecutor getExecutor() {
+        return (RewriteTacletExecutor) executor;
     }
 
     @Override
@@ -267,10 +270,9 @@ public class RewriteTaclet extends FindTaclet {
         if ((op == Junctor.NOT) || // not
                 (op == Junctor.IMP && it.getChild() == 0)) { // left hand side of implication
             polarity = polarity * -1;
-            // do not change polarity if find term
-            // is subterm of
-        } else if ((op == Junctor.AND) || // and
-                (op == Junctor.OR) || // or
+            // do not change polarity, if the find-term is a subterm of
+        } else if (op == Junctor.AND || // and
+                op == Junctor.OR || // or
                 (op == Junctor.IMP && it.getChild() != 0) || // right hand side of implication
                 (op == IfThenElse.IF_THEN_ELSE && it.getChild() != 0)) { // then or else part of
             // if-then-else

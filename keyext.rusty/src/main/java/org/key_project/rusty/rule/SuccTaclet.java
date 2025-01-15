@@ -5,6 +5,7 @@ package org.key_project.rusty.rule;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.rules.TacletAnnotation;
 import org.key_project.prover.rules.TacletApplPart;
@@ -41,7 +42,7 @@ public class SuccTaclet extends FindTaclet {
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs, Term find, boolean ignoreTopLevelUpdates,
-            ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
+            ImmutableMap<SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
             ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, applPart, goalTemplates, ruleSets, attrs, find, prefixMap,
             tacletAnnotations);
@@ -51,7 +52,7 @@ public class SuccTaclet extends FindTaclet {
 
     @Override
     protected void createAndInitializeExecutor() {
-        executor = new SuccTacletExecutor<>(this);
+        executor = new SuccTacletExecutor(this);
     }
 
     /**

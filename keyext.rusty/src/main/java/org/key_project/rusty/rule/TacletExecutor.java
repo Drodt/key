@@ -18,9 +18,9 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public abstract class TacletExecutor<T extends Taclet> extends
-        org.key_project.prover.rules.TacletExecutor<@NonNull Goal, @NonNull RuleApp, @NonNull T> {
-    protected TacletExecutor(T taclet) {
+public abstract class TacletExecutor extends
+        org.key_project.prover.rules.TacletExecutor<@NonNull Goal, @NonNull TacletApp> {
+    protected TacletExecutor(Taclet taclet) {
         super(taclet);
     }
 
@@ -59,7 +59,7 @@ public abstract class TacletExecutor<T extends Taclet> extends
     @Override
     protected Term syntacticalReplace(Term term, PosInOccurrence applicationPosInOccurrence,
             org.key_project.prover.rules.instantiation.MatchConditions mc, @NonNull Goal goal,
-            @NonNull RuleApp ruleApp, LogicServices services, Object... instantiationInfo) {
+            @NonNull TacletApp ruleApp, LogicServices services, Object... instantiationInfo) {
         return syntacticalReplace(term, applicationPosInOccurrence, (MatchConditions) mc, goal,
             ruleApp, (Services) services);
     }

@@ -10,7 +10,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.AntecTaclet;
 import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.RuleApp;
+import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
 
@@ -18,20 +18,19 @@ import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
  * Executes a Taclet which matches on a formula in the antecedent
  *
  * @author Richard Bubel
- * @param <TacletKind> the kind of taclet this executor is responsible for
  */
-public class AntecTacletExecutor<TacletKind extends AntecTaclet>
-        extends FindTacletExecutor<TacletKind> {
+public class AntecTacletExecutor extends FindTacletExecutor {
 
-    public AntecTacletExecutor(TacletKind taclet) {
+    public AntecTacletExecutor(AntecTaclet taclet) {
         super(taclet);
     }
 
     @Override
-    protected void applyAdd(org.key_project.prover.sequent.Sequent add,
+    protected void applyAdd(Sequent add,
             SequentChangeInfo currentSequent,
             PosInOccurrence whereToAdd, PosInOccurrence posOfFind, MatchConditions matchCond,
-            Goal goal, RuleApp ruleApp, Services services) {
+            Goal goal,
+            TacletApp ruleApp, Services services) {
         addToAntec(add.antecedent(), currentSequent, whereToAdd,
             posOfFind, matchCond, goal, ruleApp, services);
         addToSucc(add.succedent(), currentSequent, null,
@@ -40,7 +39,7 @@ public class AntecTacletExecutor<TacletKind extends AntecTaclet>
 
     @Override
     protected void applyReplacewith(TacletGoalTemplate gt, SequentChangeInfo currentSequent,
-            PosInOccurrence posOfFind, MatchConditions matchCond, Goal goal, RuleApp ruleApp,
+            PosInOccurrence posOfFind, MatchConditions matchCond, Goal goal, TacletApp ruleApp,
             Services services) {
         if (gt instanceof AntecSuccTacletGoalTemplate astgt) {
             final Sequent replWith = astgt.replaceWith();

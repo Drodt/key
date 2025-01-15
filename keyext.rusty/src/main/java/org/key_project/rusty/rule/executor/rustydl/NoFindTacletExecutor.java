@@ -5,6 +5,7 @@ package org.key_project.rusty.rule.executor.rustydl;
 
 import java.util.Iterator;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.rusty.Services;
@@ -13,7 +14,10 @@ import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
 import org.key_project.util.collection.ImmutableList;
 
-public class NoFindTacletExecutor extends TacletExecutor<NoFindTaclet> {
+import org.jspecify.annotations.NonNull;
+
+public class NoFindTacletExecutor extends TacletExecutor {
+
     public NoFindTacletExecutor(NoFindTaclet taclet) {
         super(taclet);
     }
@@ -25,7 +29,7 @@ public class NoFindTacletExecutor extends TacletExecutor<NoFindTaclet> {
      * @param ruleApp the taclet application that is executed
      */
     @Override
-    public ImmutableList<Goal> apply(Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
+    public ImmutableList<Goal> apply(@NonNull Goal goal, @NonNull RuleApp ruleApp) {
         // Number without the if-goal eventually needed
         int numberOfNewGoals = taclet.goalTemplates().size();
 
@@ -76,7 +80,7 @@ public class NoFindTacletExecutor extends TacletExecutor<NoFindTaclet> {
      */
     protected void applyAdd(Sequent add,
             SequentChangeInfo currentSequent, Services services, MatchConditions matchCond,
-            Goal goal, RuleApp ruleApp) {
+            Goal goal, TacletApp ruleApp) {
         addToAntec(add.antecedent(),
             currentSequent, null, null,
             matchCond, goal, ruleApp, services);

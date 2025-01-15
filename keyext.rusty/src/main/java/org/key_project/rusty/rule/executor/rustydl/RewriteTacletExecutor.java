@@ -16,14 +16,14 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.RewriteTaclet;
 import org.key_project.rusty.rule.RuleApp;
+import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
 import org.key_project.util.collection.ImmutableArray;
 
-public class RewriteTacletExecutor<TacletKind extends RewriteTaclet>
-        extends FindTacletExecutor<TacletKind> {
+public class RewriteTacletExecutor extends FindTacletExecutor {
 
-    public RewriteTacletExecutor(TacletKind taclet) {
+    public RewriteTacletExecutor(RewriteTaclet taclet) {
         super(taclet);
     }
 
@@ -44,7 +44,7 @@ public class RewriteTacletExecutor<TacletKind extends RewriteTaclet>
     @Override
     protected void applyAdd(Sequent add,
             SequentChangeInfo currentSequent, PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
-            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services) {
+            MatchConditions matchCond, Goal goal, TacletApp ruleApp, Services services) {
         if (posOfFind.isInAntec()) {
             addToAntec(add.antecedent(),
                 currentSequent,
@@ -64,7 +64,7 @@ public class RewriteTacletExecutor<TacletKind extends RewriteTaclet>
 
     @Override
     protected void applyReplacewith(TacletGoalTemplate gt, SequentChangeInfo currentSequent,
-            PosInOccurrence posOfFind, MatchConditions matchCond, Goal goal, RuleApp ruleApp,
+            PosInOccurrence posOfFind, MatchConditions matchCond, Goal goal, TacletApp ruleApp,
             Services services) {
         if (gt instanceof RewriteTacletGoalTemplate rwtgt) {
             final org.key_project.prover.sequent.SequentFormula cf = applyReplacewithHelper(goal,
