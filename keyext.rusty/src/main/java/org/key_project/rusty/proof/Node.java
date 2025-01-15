@@ -5,10 +5,10 @@ package org.key_project.rusty.proof;
 
 import java.util.*;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.rule.NoPosTacletApp;
-import org.key_project.rusty.rule.RuleApp;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableSet;
 

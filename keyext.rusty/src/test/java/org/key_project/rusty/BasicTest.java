@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.*;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.logic.op.ProgramVariable;
@@ -19,7 +20,6 @@ import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.proof.init.RustProfile;
 import org.key_project.rusty.proof.io.ProofSaver;
 import org.key_project.rusty.rule.NoPosTacletApp;
-import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.util.TacletForTests;
 import org.key_project.util.collection.ImmutableList;

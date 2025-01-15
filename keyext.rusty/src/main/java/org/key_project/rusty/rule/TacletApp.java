@@ -13,6 +13,8 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
 import org.key_project.prover.rules.instantiation.AssumesMatchResult;
@@ -149,8 +151,7 @@ public abstract class TacletApp implements RuleApp {
 
     public static boolean checkNoFreeVars(Taclet taclet, SVInstantiations instantiations,
             PosInOccurrence pos) {
-        for (var pair : ((org.key_project.rusty.rule.inst.SVInstantiations) instantiations)
-                .getInstantiationMap()) {
+        for (var pair : instantiations.getInstantiationMap()) {
             final var sv = pair.key();
             if (sv instanceof TermSV || sv instanceof FormulaSV) {
                 // TODO: Is this enough? Do we need, e.g., sort checks?

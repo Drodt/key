@@ -5,6 +5,7 @@ package org.key_project.rusty.rule;
 
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Term;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.sequent.SequentFormula;
@@ -48,7 +49,7 @@ public abstract class TacletExecutor extends
      * @return the (partially) instantiated term
      */
     protected Term syntacticalReplace(Term term, PosInOccurrence applicationPosInOccurrence,
-            MatchConditions mc, Goal goal, RuleApp ruleApp, Services services) {
+            MatchConditions mc, Goal goal, TacletApp ruleApp, Services services) {
         final SyntacticalReplaceVisitor srVisitor =
             new SyntacticalReplaceVisitor(applicationPosInOccurrence,
                 mc.getInstantiations(), goal, taclet, ruleApp, services);

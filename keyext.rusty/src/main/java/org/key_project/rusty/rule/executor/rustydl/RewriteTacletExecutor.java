@@ -15,7 +15,6 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.RewriteTaclet;
-import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
@@ -80,7 +79,7 @@ public class RewriteTacletExecutor extends FindTacletExecutor {
 
     private org.key_project.prover.sequent.SequentFormula applyReplacewithHelper(Goal goal,
             RewriteTacletGoalTemplate gt, PosInOccurrence posOfFind, Services services,
-            MatchConditions matchCond, RuleApp ruleApp) {
+            MatchConditions matchCond, TacletApp ruleApp) {
         final Term term = posOfFind.sequentFormula().formula();
         final IntIterator it = posOfFind.posInTerm().iterator();
         final Term rwTemplate = gt.replaceWith();
@@ -98,7 +97,7 @@ public class RewriteTacletExecutor extends FindTacletExecutor {
      * does the work for applyReplacewith (wraps recursion)
      */
     private Term replace(Term term, Term with, PosInOccurrence posOfFind, IntIterator it,
-            MatchConditions mc, Sort maxSort, Goal goal, Services services, RuleApp ruleApp) {
+            MatchConditions mc, Sort maxSort, Goal goal, Services services, TacletApp ruleApp) {
         if (it.hasNext()) {
             final int indexOfNextSubTerm = it.next();
 
