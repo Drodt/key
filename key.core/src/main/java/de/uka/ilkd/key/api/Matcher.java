@@ -82,9 +82,9 @@ public class Matcher {
         if (size > 0) {
             // Iteratoren durch die Sequent
             ImmutableArray<AssumesFormulaInstantiation> antecCand =
-                AssumesFormulaInstSeq.createList(currentSeq, true, copyServices);
+                AssumesFormulaInstSeq.createList(currentSeq, true);
             ImmutableArray<AssumesFormulaInstantiation> succCand =
-                AssumesFormulaInstSeq.createList(currentSeq, false, copyServices);
+                AssumesFormulaInstSeq.createList(currentSeq, false);
 
             org.key_project.prover.sequent.SequentFormula[] patternArray =
                 new org.key_project.prover.sequent.SequentFormula[patternSeq.size()];
