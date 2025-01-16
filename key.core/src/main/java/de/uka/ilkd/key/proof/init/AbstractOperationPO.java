@@ -44,7 +44,7 @@ import org.key_project.util.collection.ImmutableSet;
  * {@link AbstractPO} to execute some code within a try catch block.
  * </p>
  * <p>
- * The generated {@link Sequent} has the following form:
+ * The generated {@link org.key_project.prover.sequent.Sequent} has the following form:
  *
  * <pre>
  * {@code
@@ -755,8 +755,8 @@ public abstract class AbstractOperationPO extends AbstractPO {
     }
 
     /**
-     * Creates a {@link Term} to use in the postcondition of the generated {@link Sequent} which
-     * represents the uninterpreted predicate.
+     * Creates a {@link org.key_project.logic.Term} to use in the postcondition of the generated
+     * {@link org.key_project.prover.sequent.Sequent} which represents the uninterpreted predicate.
      *
      * @param formalParamVars The formal parameters {@link LocationVariable}s.
      * @param exceptionVar The exception variable.
