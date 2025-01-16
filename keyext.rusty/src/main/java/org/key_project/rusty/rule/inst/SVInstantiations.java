@@ -10,6 +10,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.InstantiationEntry;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;

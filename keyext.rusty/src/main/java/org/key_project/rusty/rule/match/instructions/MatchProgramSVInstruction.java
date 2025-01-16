@@ -7,6 +7,7 @@ import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
+import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.MatchConditions;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -17,7 +18,6 @@ import org.key_project.rusty.ldt.LDT;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
-import org.key_project.rusty.rule.inst.IllegalInstantiationException;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 import org.jspecify.annotations.NonNull;
