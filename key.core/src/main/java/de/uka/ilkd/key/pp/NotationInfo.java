@@ -13,6 +13,8 @@ import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.util.UnicodeHelper;
 
+import org.key_project.logic.op.sv.SchemaVariable;
+
 
 /**
  * <p>
@@ -73,9 +75,6 @@ import de.uka.ilkd.key.util.UnicodeHelper;
  * </ul>
  */
 public final class NotationInfo {
-
-
-
     // Priorities of operators (roughly corresponding to the grammatical structure in the parser.
     static final int PRIORITY_TOP = 0;
     static final int PRIORITY_EQUIVALENCE = 20;
@@ -450,7 +449,7 @@ public final class NotationInfo {
             }
         }
 
-        if (op instanceof SchemaVariable) {
+        if (op instanceof org.key_project.logic.op.sv.SchemaVariable) {
             result = notationTable.get(SchemaVariable.class);
             if (result != null) {
                 return result;

@@ -5,18 +5,19 @@ package de.uka.ilkd.key.macros;
 
 import java.util.Set;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.ObserverFunction;
-import de.uka.ilkd.key.logic.op.Operator;
 import de.uka.ilkd.key.logic.op.UpdateApplication;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.rule.*;
+import de.uka.ilkd.key.rule.OneStepSimplifier;
 import de.uka.ilkd.key.strategy.*;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleSet;
+import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.sequent.PosInOccurrence;
 
 public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
     private static final Set<String> ADMITTED_RULES =
@@ -80,7 +81,8 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
         }
 
         @Override
-        public boolean isApprovedApp(RuleApp app, PosInOccurrence pio, Goal goal) {
+        public boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                Goal goal) {
             return computeCost(app, pio, goal, new MutableState()) != TopRuleAppCost.INSTANCE &&
             // Assumptions are normally not considered by the cost
             // computation, because they are normally not yet
@@ -96,7 +98,8 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
         }
 
         @Override
-        public RuleAppCost computeCost(RuleApp app, PosInOccurrence pio, Goal goal,
+        public RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app,
+                PosInOccurrence pio, Goal goal,
                 MutableState mState) {
 
             Rule rule = app.rule();
@@ -114,9 +117,9 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
 
             // apply OSS to <inv>() calls.
             if (rule instanceof OneStepSimplifier) {
-                Term target = pio.subTerm();
+                var target = pio.subTerm();
                 if (target.op() instanceof UpdateApplication) {
-                    Operator updatedOp = target.sub(1).op();
+                    var updatedOp = target.sub(1).op();
                     if (updatedOp instanceof ObserverFunction) {
                         return NumberRuleAppCost.getZeroCost();
                     }
@@ -127,7 +130,8 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
         }
 
         @Override
-        public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+        public void instantiateApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+                Goal goal,
                 RuleAppCostCollector collector) {
             delegate.instantiateApp(app, pio, goal, collector);
         }
@@ -140,7 +144,8 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
     }
 
     @Override
-    protected Strategy createStrategy(Proof proof, PosInOccurrence posInOcc) {
+    protected Strategy createStrategy(Proof proof,
+            PosInOccurrence posInOcc) {
         return new AutoPilotStrategy(proof);
     }
 }

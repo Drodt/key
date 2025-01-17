@@ -3,15 +3,15 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.settings.ProofSettings;
 import de.uka.ilkd.key.strategy.feature.Feature;
 import de.uka.ilkd.key.strategy.feature.MutableState;
 
 import org.key_project.logic.Named;
+import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
  * Generic interface for evaluating the cost of a RuleApp with regard to a specific strategy
@@ -28,7 +28,8 @@ public interface Strategy extends Named, Feature {
      *         indicates that the rule shall not be applied at all (it is discarded by
      *         the strategy).
      */
-    default RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal) {
+    default RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
+            Goal goal) {
         return computeCost(app, pos, goal, new MutableState());
     }
 
@@ -45,7 +46,8 @@ public interface Strategy extends Named, Feature {
      *
      * @return true iff the rule should be applied, false otherwise
      */
-    boolean isApprovedApp(RuleApp app, PosInOccurrence pio, Goal goal);
+    boolean isApprovedApp(org.key_project.prover.rules.RuleApp app, PosInOccurrence pio,
+            Goal goal);
 
     /**
      * Instantiate an incomplete <code>RuleApp</code>. This method is called when the

@@ -33,6 +33,8 @@ import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionSideProofUtil;
 import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionUtil;
 
 import org.key_project.logic.SyntaxElement;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.Sequent;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -108,7 +110,7 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param methodEnd the line the containing method of this breakpoint ends at
      * @param containerType the type of the element containing the breakpoint
      */
-    public AbstractConditionalBreakpoint(int hitCount, IProgramMethod pm, Proof proof,
+    protected AbstractConditionalBreakpoint(int hitCount, IProgramMethod pm, Proof proof,
             boolean enabled, boolean conditionEnabled, int methodStart, int methodEnd,
             KeYJavaType containerType) {
         super(hitCount, proof, enabled);
@@ -129,7 +131,7 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
         super.updateState(maxApplications, timeout, proof, startTime, countApplied, goal);
         if (goal != null) {
             Node node = goal.node();
-            RuleApp ruleApp = goal.getRuleAppManager().peekNext();
+            org.key_project.prover.rules.RuleApp ruleApp = goal.getRuleAppManager().peekNext();
             if (getVarsForCondition() != null && ruleApp != null && node != null) {
                 refreshVarMaps(ruleApp, node);
             }
@@ -184,7 +186,8 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param ruleApp
      * @param inScope
      */
-    private void freeVariablesAfterReturn(Node node, RuleApp ruleApp, boolean inScope) {
+    private void freeVariablesAfterReturn(Node node, org.key_project.prover.rules.RuleApp ruleApp,
+            boolean inScope) {
         if ((SymbolicExecutionUtil.isMethodReturnNode(node, ruleApp)
                 || SymbolicExecutionUtil.isExceptionalMethodReturnNode(node, ruleApp)) && inScope) {
             toKeep.clear();
@@ -201,7 +204,8 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param oldMap the oldMap variableNamings
      */
     private void putValuesFromRenamings(ProgramVariable varForCondition, Node node, boolean inScope,
-            Map<SyntaxElement, SyntaxElement> oldMap, RuleApp ruleApp) {
+            Map<SyntaxElement, SyntaxElement> oldMap,
+            org.key_project.prover.rules.RuleApp ruleApp) {
         // look for renamings KeY did
         boolean found = false;
         // get current renaming tables
@@ -261,7 +265,7 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param ruleApp the applied rule app
      * @param node the current node
      */
-    protected void refreshVarMaps(RuleApp ruleApp, Node node) {
+    protected void refreshVarMaps(org.key_project.prover.rules.RuleApp ruleApp, Node node) {
         boolean inScope = isInScope(node);
         // collect old values
         Map<SyntaxElement, SyntaxElement> oldMap = getOldMap();
@@ -349,14 +353,15 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * @param node the current {@link Node}
      * @return true if the condition evaluates to true
      */
-    protected boolean conditionMet(RuleApp ruleApp, Proof proof, Node node) {
+    protected boolean conditionMet(org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
+            Node node) {
         ApplyStrategyInfo info = null;
         try {
             // initialize values
             PosInOccurrence pio = ruleApp.posInOccurrence();
-            Term term = pio.subTerm();
+            var t = pio.subTerm();
             getProof().getServices().getTermBuilder();
-            term = TermBuilder.goBelowUpdates(term);
+            Term term = TermBuilder.goBelowUpdates(t);
             IExecutionContext ec =
                 JavaTools.getInnermostExecutionContext(term.javaBlock(), proof.getServices());
             // put values into map which have to be replaced
@@ -392,7 +397,8 @@ public abstract class AbstractConditionalBreakpoint extends AbstractHitCountBrea
      * {@inheritDoc}
      */
     @Override
-    public boolean isBreakpointHit(SourceElement activeStatement, RuleApp ruleApp, Proof proof,
+    public boolean isBreakpointHit(SourceElement activeStatement,
+            org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
             Node node) {
         return (!conditionEnabled || conditionMet(ruleApp, proof, node))
                 && super.isBreakpointHit(activeStatement, ruleApp, proof, node);

@@ -8,12 +8,12 @@ import java.util.Optional;
 import de.uka.ilkd.key.java.JavaTools;
 import de.uka.ilkd.key.java.SourceElement;
 import de.uka.ilkd.key.logic.JavaBlock;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.NodeInfo;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.rule.Taclet;
 
+import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -35,7 +35,8 @@ public class FocussedBreakpointRuleApplicationManager
     }
 
     public FocussedBreakpointRuleApplicationManager(AutomatedRuleApplicationManager delegate,
-            Goal goal, Optional<PosInOccurrence> focussedSubterm, Optional<String> breakpoint) {
+            Goal goal, Optional<PosInOccurrence> focussedSubterm,
+            Optional<String> breakpoint) {
         this(focussedSubterm.map(pio -> new FocussedRuleApplicationManager(delegate, goal, pio))
                 .map(AutomatedRuleApplicationManager.class::cast).orElse(delegate),
             breakpoint);
@@ -59,13 +60,13 @@ public class FocussedBreakpointRuleApplicationManager
     }
 
     @Override
-    public RuleApp peekNext() {
+    public org.key_project.prover.rules.RuleApp peekNext() {
         return delegate.peekNext();
     }
 
     @Override
-    public RuleApp next() {
-        final RuleApp app = delegate.next();
+    public org.key_project.prover.rules.RuleApp next() {
+        final org.key_project.prover.rules.RuleApp app = delegate.next();
         return app;
     }
 
@@ -75,17 +76,18 @@ public class FocussedBreakpointRuleApplicationManager
     }
 
     @Override
-    public void ruleAdded(RuleApp rule, PosInOccurrence pos) {
+    public void ruleAdded(org.key_project.prover.rules.RuleApp rule, PosInOccurrence pos) {
         if (mayAddRule(rule, pos)) {
             delegate.ruleAdded(rule, pos);
         }
     }
 
     @Override
-    public void rulesAdded(ImmutableList<? extends RuleApp> rules, PosInOccurrence pos) {
-        ImmutableList<RuleApp> applicableRules = //
+    public void rulesAdded(ImmutableList<? extends org.key_project.prover.rules.RuleApp> rules,
+            PosInOccurrence pos) {
+        ImmutableList<org.key_project.prover.rules.RuleApp> applicableRules = //
             ImmutableSLList.nil();
-        for (RuleApp r : rules) {
+        for (org.key_project.prover.rules.RuleApp r : rules) {
             if (mayAddRule(r, pos)) {
                 applicableRules = applicableRules.prepend(r);
             }
@@ -101,8 +103,9 @@ public class FocussedBreakpointRuleApplicationManager
 
         if ((!(rule instanceof Taclet) || NodeInfo.isSymbolicExecution((Taclet) rule.rule()))
                 && isJavaPIO(pos)) {
+            var term = (de.uka.ilkd.key.logic.Term) pos.subTerm();
             final SourceElement activeStmt = //
-                JavaTools.getActiveStatement(pos.subTerm().javaBlock());
+                JavaTools.getActiveStatement(term.javaBlock());
             final String currStmtString = activeStmt.toString();
 
             return currStmtString == null || //
@@ -115,7 +118,10 @@ public class FocussedBreakpointRuleApplicationManager
     }
 
     private static boolean isJavaPIO(PosInOccurrence pio) {
-        return pio != null && pio.subTerm().javaBlock() != JavaBlock.EMPTY_JAVABLOCK;
+        if (pio == null)
+            return false;
+        var term = (de.uka.ilkd.key.logic.Term) pio.subTerm();
+        return term.javaBlock() != JavaBlock.EMPTY_JAVABLOCK;
     }
 
     @Override

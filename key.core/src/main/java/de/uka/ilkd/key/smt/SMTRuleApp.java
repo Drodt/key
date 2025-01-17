@@ -6,20 +6,24 @@ package de.uka.ilkd.key.smt;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.AbstractExternalSolverRuleApp;
 import de.uka.ilkd.key.rule.BuiltInRule;
-import de.uka.ilkd.key.rule.RuleApp;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.PosInTerm;
+import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.Sequent;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
+
 /**
- * The rule application that is used when a goal is closed by means of an SMT solver. So far it
+ * The rule application that is used when a goal is closed by means of an external solver. So far it
  * stores the rule that that has been used and a title containing some information for the user.
  */
 public class SMTRuleApp extends AbstractExternalSolverRuleApp {
@@ -79,17 +83,17 @@ public class SMTRuleApp extends AbstractExternalSolverRuleApp {
         }
 
         /**
-         * Create a new goal (to be closed in {@link Goal#apply(RuleApp)} directly afterwards)
+         * Create a new goal (to be closed in
+         * {@link Goal#apply(org.key_project.prover.rules.RuleApp)} directly afterwards)
          * with the same sequent as the given one.
          *
          * @param goal the Goal on which to apply <tt>ruleApp</tt>
-         * @param services the Services with the necessary information about the java programs
          * @param ruleApp the rule application to be executed
          * @return a list with an identical goal as the given <tt>goal</tt>
          */
         @Override
         @NonNull
-        public ImmutableList<Goal> apply(Goal goal, Services services, RuleApp ruleApp) {
+        public ImmutableList<Goal> apply(Goal goal, RuleApp ruleApp) {
             if (goal.proof().getInitConfig().getJustifInfo().getJustification(RULE) == null) {
                 goal.proof().getInitConfig().registerRule(RULE, () -> false);
             }
@@ -110,6 +114,7 @@ public class SMTRuleApp extends AbstractExternalSolverRuleApp {
         public Name name() {
             return name;
         }
+
     }
 
     @Override
@@ -118,7 +123,7 @@ public class SMTRuleApp extends AbstractExternalSolverRuleApp {
     }
 
     @Override
-    public SMTRuleApp setIfInsts(ImmutableList<PosInOccurrence> ifInsts) {
+    public SMTRuleApp setAssumesInsts(ImmutableList<PosInOccurrence> ifInsts) {
         setMutable(ifInsts);
         return this;
     }
@@ -143,6 +148,7 @@ public class SMTRuleApp extends AbstractExternalSolverRuleApp {
         for (SequentFormula succ : seq.succedent()) {
             ifInsts.add(new PosInOccurrence(succ, PosInTerm.getTopLevel(), false));
         }
-        return app.setIfInsts(ImmutableList.fromList(ifInsts));
+        return app.setAssumesInsts(ImmutableList.fromList(ifInsts));
     }
+
 }

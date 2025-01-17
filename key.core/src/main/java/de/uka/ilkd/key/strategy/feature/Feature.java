@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy.feature;
 
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.strategy.RuleAppCost;
+
+import org.key_project.prover.sequent.PosInOccurrence;
 
 /**
  * A {@link Feature} is a class that is able to compute the cost of a {@link RuleApp}.
@@ -27,5 +28,6 @@ public interface Feature {
      *         <code>TopRuleAppCost.INSTANCE</code> indicates that the rule shall not be applied at
      *         all (it is discarded by the strategy).
      */
-    RuleAppCost computeCost(RuleApp app, PosInOccurrence pos, Goal goal, MutableState mState);
+    RuleAppCost computeCost(org.key_project.prover.rules.RuleApp app, PosInOccurrence pos,
+            Goal goal, MutableState mState);
 }

@@ -10,8 +10,6 @@ import de.uka.ilkd.key.java.StatementBlock;
 import de.uka.ilkd.key.java.StatementContainer;
 import de.uka.ilkd.key.java.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.reference.IExecutionContext;
-import de.uka.ilkd.key.logic.PosInOccurrence;
-import de.uka.ilkd.key.logic.Sequent;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.proof.Node;
@@ -20,11 +18,14 @@ import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.init.ProofInputException;
 import de.uka.ilkd.key.proof.mgt.ProofEnvironment;
 import de.uka.ilkd.key.prover.impl.ApplyStrategyInfo;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.speclang.translation.SLTranslationException;
 import de.uka.ilkd.key.strategy.StrategyProperties;
 import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionSideProofUtil;
 import de.uka.ilkd.key.symbolic_execution.util.SymbolicExecutionUtil;
+
+import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.Sequent;
 
 
 /**
@@ -77,7 +78,8 @@ public class KeYWatchpoint extends AbstractConditionalBreakpoint {
     }
 
     @Override
-    protected boolean conditionMet(RuleApp ruleApp, Proof proof, Node node) {
+    protected boolean conditionMet(org.key_project.prover.rules.RuleApp ruleApp, Proof proof,
+            Node node) {
         if (suspendOnTrue) {
             return super.conditionMet(ruleApp, proof, node);
         } else {
@@ -87,8 +89,8 @@ public class KeYWatchpoint extends AbstractConditionalBreakpoint {
                     getProof().getServices().getTermBuilder().not(getCondition());
                 // initialize values
                 PosInOccurrence pio = ruleApp.posInOccurrence();
-                Term term = pio.subTerm();
-                term = TermBuilder.goBelowUpdates(term);
+                var t = pio.subTerm();
+                Term term = TermBuilder.goBelowUpdates(t);
                 IExecutionContext ec =
                     JavaTools.getInnermostExecutionContext(term.javaBlock(), proof.getServices());
                 // put values into map which have to be replaced

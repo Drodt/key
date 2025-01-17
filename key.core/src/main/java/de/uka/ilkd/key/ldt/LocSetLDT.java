@@ -19,6 +19,7 @@ import de.uka.ilkd.key.logic.TermServices;
 import de.uka.ilkd.key.logic.op.JFunction;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.op.Function;
 import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.Nullable;
@@ -27,22 +28,25 @@ import org.jspecify.annotations.Nullable;
 public final class LocSetLDT extends LDT {
 
     public static final Name NAME = new Name("LocSet");
+    public static final String INTERSECT_STRING = "intersect";
+    public static final String SETMINUS_STRING = "setMinus";
+    public static final String UNION_STRING = "union";
 
     private final JFunction empty;
-    private final JFunction allLocs;
-    private final JFunction singleton;
-    private final JFunction union;
-    private final JFunction intersect;
-    private final JFunction setMinus;
+    private final Function allLocs;
+    private final Function singleton;
+    private final Function union;
+    private final Function intersect;
+    private final Function setMinus;
     private final JFunction infiniteUnion;
-    private final JFunction allFields;
-    private final JFunction allObjects;
-    private final JFunction arrayRange;
-    private final JFunction freshLocs;
-    private final JFunction elementOf;
-    private final JFunction subset;
-    private final JFunction disjoint;
-    private final JFunction createdInHeap;
+    private final Function allFields;
+    private final Function allObjects;
+    private final Function arrayRange;
+    private final Function freshLocs;
+    private final Function elementOf;
+    private final Function subset;
+    private final Function disjoint;
+    private final Function createdInHeap;
 
 
     public LocSetLDT(TermServices services) {
@@ -70,27 +74,27 @@ public final class LocSetLDT extends LDT {
     }
 
 
-    public JFunction getAllLocs() {
+    public Function getAllLocs() {
         return allLocs;
     }
 
 
-    public JFunction getSingleton() {
+    public Function getSingleton() {
         return singleton;
     }
 
 
-    public JFunction getUnion() {
+    public Function getUnion() {
         return union;
     }
 
 
-    public JFunction getIntersect() {
+    public Function getIntersect() {
         return intersect;
     }
 
 
-    public JFunction getSetMinus() {
+    public Function getSetMinus() {
         return setMinus;
     }
 
@@ -100,42 +104,42 @@ public final class LocSetLDT extends LDT {
     }
 
 
-    public JFunction getAllFields() {
+    public Function getAllFields() {
         return allFields;
     }
 
 
-    public JFunction getAllObjects() {
+    public Function getAllObjects() {
         return allObjects;
     }
 
 
-    public JFunction getArrayRange() {
+    public Function getArrayRange() {
         return arrayRange;
     }
 
 
-    public JFunction getFreshLocs() {
+    public Function getFreshLocs() {
         return freshLocs;
     }
 
 
-    public JFunction getElementOf() {
+    public Function getElementOf() {
         return elementOf;
     }
 
 
-    public JFunction getSubset() {
+    public Function getSubset() {
         return subset;
     }
 
 
-    public JFunction getDisjoint() {
+    public Function getDisjoint() {
         return disjoint;
     }
 
 
-    public JFunction getCreatedInHeap() {
+    public Function getCreatedInHeap() {
         return createdInHeap;
     }
 
@@ -170,7 +174,7 @@ public final class LocSetLDT extends LDT {
 
 
     @Override
-    public JFunction getFunctionFor(de.uka.ilkd.key.java.expression.Operator op, Services serv,
+    public Function getFunctionFor(de.uka.ilkd.key.java.expression.Operator op, Services serv,
             ExecutionContext ec) {
         if (op instanceof Singleton) {
             return singleton;
@@ -211,7 +215,7 @@ public final class LocSetLDT extends LDT {
     }
 
     @Override
-    public @Nullable JFunction getFunctionFor(String operationName, Services services) {
+    public @Nullable Function getFunctionFor(String operationName, Services services) {
         return switch (operationName) {
         case "add" -> getUnion();
         case "sub" -> getSetMinus();

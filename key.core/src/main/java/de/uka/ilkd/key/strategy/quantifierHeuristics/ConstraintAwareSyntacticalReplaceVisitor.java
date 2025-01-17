@@ -4,14 +4,14 @@
 package de.uka.ilkd.key.strategy.quantifierHeuristics;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.logic.PosInOccurrence;
 import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.label.TermLabelState;
-import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.Rule;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.rule.SyntacticalReplaceVisitor;
 import de.uka.ilkd.key.rule.Taclet.TacletLabelHint;
+
+import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PosInOccurrence;
 
 
 /**
@@ -27,9 +27,9 @@ public class ConstraintAwareSyntacticalReplaceVisitor extends SyntacticalReplace
     public ConstraintAwareSyntacticalReplaceVisitor(TermLabelState termLabelState,
             Services services, Constraint metavariableInst,
             PosInOccurrence applicationPosInOccurrence, Rule rule, RuleApp ruleApp,
-            TacletLabelHint labelHint, Goal goal) {
-        super(termLabelState, labelHint, applicationPosInOccurrence, goal, rule, ruleApp, services,
-            services.getTermBuilder(false));
+            TacletLabelHint labelHint) {
+        super(termLabelState, labelHint, applicationPosInOccurrence, services, rule, ruleApp,
+            false);
         this.metavariableInst = metavariableInst;
     }
 
@@ -39,7 +39,7 @@ public class ConstraintAwareSyntacticalReplaceVisitor extends SyntacticalReplace
             // might occur in the term (if possible)
             final ConstraintAwareSyntacticalReplaceVisitor srv =
                 new ConstraintAwareSyntacticalReplaceVisitor(termLabelState, services,
-                    metavariableInst, applicationPosInOccurrence, rule, ruleApp, labelHint, goal);
+                    metavariableInst, applicationPosInOccurrence, rule, ruleApp, labelHint);
             t.execPostOrder(srv);
             return srv.getTerm();
         } else {

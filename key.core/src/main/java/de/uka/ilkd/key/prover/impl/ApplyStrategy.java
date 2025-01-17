@@ -10,11 +10,11 @@ import de.uka.ilkd.key.proof.*;
 import de.uka.ilkd.key.proof.proofevent.RuleAppInfo;
 import de.uka.ilkd.key.prover.GoalChooser;
 import de.uka.ilkd.key.prover.StopCondition;
-import de.uka.ilkd.key.rule.RuleApp;
 import de.uka.ilkd.key.settings.ProofSettings;
 import de.uka.ilkd.key.settings.StrategySettings;
 import de.uka.ilkd.key.strategy.StrategyProperties;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -267,9 +267,9 @@ public class ApplyStrategy extends AbstractProverCore {
         ProofTreeListener treeListener = new ProofTreeAdapter() {
             @Override
             public void proofGoalsAdded(ProofTreeEvent e) {
-                ImmutableList<Goal> newGoals = e.getGoals();
+                Iterable<Goal> newGoals = e.getGoals();
                 // Check for a closed goal ...
-                if (newGoals.size() == 0) {
+                if (!newGoals.iterator().hasNext()) {
                     // No new goals have been generated ...
                     closedGoals++;
                 }
