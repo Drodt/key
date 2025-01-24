@@ -65,17 +65,17 @@ public class RustySequentKit extends SequentKit {
     /**
      * creates a new Sequent
      *
-     * @param ante the Semisequent that plays the antecedent part
-     * @param succ the Semisequent that plays the succedent part
+     * @param antecedent the Semisequent that plays the antecedent part
+     * @param succedent the Semisequent that plays the succedent part
      * @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
      *         EMPTY_SEMISEQUENT
      */
     @Override
-    protected Sequent createSequent(Semisequent ante, Semisequent succ) {
-        if (ante.isEmpty() && succ.isEmpty()) {
+    protected Sequent createSequent(Semisequent antecedent, Semisequent succedent) {
+        if (antecedent.isEmpty() && succedent.isEmpty()) {
             return getEmptySequent();
         }
-        return new org.key_project.rusty.proof.calculus.Sequent(ante, succ);
+        return new org.key_project.rusty.proof.calculus.Sequent(antecedent, succedent);
     }
 
     @Override

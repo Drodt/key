@@ -296,7 +296,7 @@ public class VMTacletMatcher implements TacletMatcher {
             // Part of fix for #1716: match antecedent with antecedent, succ with succ
             boolean candidateInAntec = (candidateInst instanceof AssumesFormulaInstSeq)
                     // Only IfFormulaInstSeq has inAntec() property ...
-                    && (((AssumesFormulaInstSeq) candidateInst).inAntec())
+                    && (((AssumesFormulaInstSeq) candidateInst).inAntecedent())
                     || !(candidateInst instanceof AssumesFormulaInstSeq)
                             // ... and it seems we don't need the check for other implementations.
                             // Default: just take the next ante formula, else succ formula
