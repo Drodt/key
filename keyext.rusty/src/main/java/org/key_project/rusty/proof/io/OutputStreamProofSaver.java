@@ -228,7 +228,7 @@ public class OutputStreamProofSaver {
                 final org.key_project.prover.sequent.SequentFormula f = aL.getSequentFormula();
                 s.append(" (ifseqformula \"")
                         .append(node.sequent()
-                                .formulaNumberInSequent(ifis.inAntec(), f))
+                                .formulaNumberInSequent(ifis.inAntecedent(), f))
                         .append("\")");
             } /*
                * else if (aL instanceof IfFormulaInstDirect) {
