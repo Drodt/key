@@ -7,6 +7,7 @@ import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleAbortException;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.SequentChangeInfo;
+import org.key_project.prover.strategy.RuleApplicationManager;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.rule.NoPosTacletApp;
@@ -17,8 +18,6 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
-
-
 
 public final class Goal implements ProofGoal<@NonNull Goal> {
     private Node node;
@@ -102,7 +101,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
      * @param ruleApp the rule app
      * @return new goal(s)
      */
-    public ImmutableList<Goal> apply(final RuleApp ruleApp) {
+    public ImmutableList<Goal> apply(@NonNull final RuleApp ruleApp) {
         final Proof proof = proof();
 
         /*
@@ -133,6 +132,12 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
 
         return goalList;
+    }
+
+    @Override
+    public RuleApplicationManager<@NonNull Goal> getRuleAppManager() {
+        // TODO
+        throw new UnsupportedOperationException();
     }
 
     /**

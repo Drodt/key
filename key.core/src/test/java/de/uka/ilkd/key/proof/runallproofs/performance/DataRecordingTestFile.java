@@ -15,9 +15,9 @@ import de.uka.ilkd.key.proof.runallproofs.proofcollection.ProofCollectionSetting
 import de.uka.ilkd.key.proof.runallproofs.proofcollection.TestFile;
 import de.uka.ilkd.key.proof.runallproofs.proofcollection.TestProperty;
 import de.uka.ilkd.key.prover.impl.ApplyStrategy;
-import de.uka.ilkd.key.prover.impl.ApplyStrategyInfo;
 import de.uka.ilkd.key.strategy.Strategy;
 
+import org.key_project.prover.base.ApplyStrategyInfo;
 import org.key_project.util.collection.Pair;
 
 class DataRecordingTestFile extends TestFile {
