@@ -6,6 +6,7 @@ package org.key_project.rusty.proof;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleAbortException;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.strategy.RuleApplicationManager;
 import org.key_project.rusty.Services;
@@ -18,13 +19,14 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class Goal implements ProofGoal<@NonNull Goal> {
     private Node node;
     /**
      * The namespaces local to this goal. This may evolve over time.
      */
-    private NamespaceSet localNamespaces;
+    private final NamespaceSet localNamespaces;
     /**
      * list of all applied rule applications at this branch
      */
@@ -89,7 +91,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         getNode().setAppliedRuleApp(app);
     }
 
-    public org.key_project.prover.sequent.Sequent sequent() {
+    public @NonNull Sequent sequent() {
         return getNode().sequent();
     }
 
@@ -101,7 +103,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
      * @param ruleApp the rule app
      * @return new goal(s)
      */
-    public ImmutableList<Goal> apply(@NonNull final RuleApp ruleApp) {
+    public @Nullable ImmutableList<Goal> apply(@NonNull final RuleApp ruleApp) {
         final Proof proof = proof();
 
         /*
@@ -135,7 +137,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     }
 
     @Override
-    public RuleApplicationManager<@NonNull Goal> getRuleAppManager() {
+    public @NonNull RuleApplicationManager<@NonNull Goal> getRuleAppManager() {
         // TODO
         throw new UnsupportedOperationException();
     }
@@ -203,7 +205,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return clone;
     }
 
-    public Proof proof() {
+    public @NonNull Proof proof() {
         return node.proof();
     }
 
