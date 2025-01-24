@@ -116,8 +116,9 @@ public final class SymbolicExecutionSideProofUtil {
             String description, String methodTreatment, String loopTreatment, String queryTreatment,
             String splittingOption, boolean addNamesToServices) throws ProofInputException {
         // Execute side proof
-        ApplyStrategyInfo<Proof,Goal> info = startSideProof(proof, sideProofEnvironment, sequentToProve,
-            methodTreatment, loopTreatment, queryTreatment, splittingOption);
+        ApplyStrategyInfo<Proof, Goal> info =
+            startSideProof(proof, sideProofEnvironment, sequentToProve,
+                methodTreatment, loopTreatment, queryTreatment, splittingOption);
         try {
             // Extract results and conditions from side proof
             List<Pair<Term, Node>> conditionsAndResultsMap = new LinkedList<>();
@@ -180,8 +181,9 @@ public final class SymbolicExecutionSideProofUtil {
             String queryTreatment, String splittingOption, boolean addNamesToServices)
             throws ProofInputException {
         // Execute side proof
-        ApplyStrategyInfo<Proof,Goal> info = startSideProof(proof, sideProofEnvironment, sequentToProve,
-            methodTreatment, loopTreatment, queryTreatment, splittingOption);
+        ApplyStrategyInfo<Proof, Goal> info =
+            startSideProof(proof, sideProofEnvironment, sequentToProve,
+                methodTreatment, loopTreatment, queryTreatment, splittingOption);
         try {
             // Extract relevant things
             Set<Operator> relevantThingsInSequentToProve =
@@ -617,7 +619,7 @@ public final class SymbolicExecutionSideProofUtil {
      * @param splittingOption The splitting option to use.
      * @return The site proof result.
      */
-    public static ApplyStrategyInfo startSideProof(Proof proof, ProofStarter starter,
+    public static ApplyStrategyInfo<Proof, Goal> startSideProof(Proof proof, ProofStarter starter,
             String methodTreatment, String loopTreatment, String queryTreatment,
             String splittingOption) {
         assert starter != null;
@@ -635,7 +637,7 @@ public final class SymbolicExecutionSideProofUtil {
             StrategyProperties.QUANTIFIERS_NON_SPLITTING);
         starter.setStrategyProperties(sp);
         // Execute proof in the current thread
-        return (ApplyStrategyInfo) starter.start();
+        return (ApplyStrategyInfo<Proof, Goal>) starter.start();
     }
 
     /**
@@ -673,7 +675,7 @@ public final class SymbolicExecutionSideProofUtil {
      * @return The operator term of the formula with the given {@link Operator}.
      * @throws ProofInputException Occurred Exception.
      */
-    public static Term extractOperatorTerm(ApplyStrategyInfo<Proof,Goal> info, Operator operator)
+    public static Term extractOperatorTerm(ApplyStrategyInfo<Proof, Goal> info, Operator operator)
             throws ProofInputException {
         // Make sure that valid parameters are given
         assert info != null;
@@ -846,7 +848,7 @@ public final class SymbolicExecutionSideProofUtil {
      * @param description The description.
      * @param info The {@link ApplyStrategyInfo} to store or dispose its {@link Proof}.
      */
-    public static void disposeOrStore(String description, ApplyStrategyInfo<Proof,Goal> info) {
+    public static void disposeOrStore(String description, ApplyStrategyInfo<Proof, Goal> info) {
         if (info != null) {
             if (SideProofStore.DEFAULT_INSTANCE.isEnabled()) {
                 SideProofStore.DEFAULT_INSTANCE.addProof(description, info.getProof());
