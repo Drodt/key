@@ -86,8 +86,7 @@ public class Matcher {
             ImmutableArray<AssumesFormulaInstantiation> succCand =
                 AssumesFormulaInstSeq.createList(currentSeq, false);
 
-            org.key_project.prover.sequent.SequentFormula[] patternArray =
-                new org.key_project.prover.sequent.SequentFormula[patternSeq.size()];
+            SequentFormula[] patternArray = new SequentFormula[patternSeq.size()];
             int i = 0;
             for (SequentFormula fm : patternSeq) {
                 patternArray[i++] = fm;
