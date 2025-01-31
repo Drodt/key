@@ -13,7 +13,7 @@ import org.key_project.prover.sequent.SequentFormula;
  * Created by sarah on 5/2/17.
  */
 public final class SearchNode {
-    private final org.key_project.prover.sequent.SequentFormula[] pattern;
+    private final SequentFormula[] pattern;
     private final int pos;
     private final int succAntPos;
     private final MatchConditions mc;
