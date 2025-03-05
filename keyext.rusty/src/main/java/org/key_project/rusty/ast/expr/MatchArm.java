@@ -17,12 +17,4 @@ public record MatchArm(Pattern pattern,@Nullable Expr guard,Expr body)implements
 
 @Override public int getChildCount(){return 2+(guard==null?0:1);}
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(pattern);
-        if (guard != null) {sb.append(" if ").append(guard);}
-        sb.append(" => ").append(body);
-        return "";
-    }
-}
+@Override public String toString(){StringBuilder sb=new StringBuilder();sb.append(pattern);if(guard!=null){sb.append(" if ").append(guard);}sb.append(" => ").append(body);return"";}}

@@ -8,15 +8,6 @@ import org.key_project.rusty.logic.op.sv.OperatorSV;
 
 import org.jspecify.annotations.NonNull;
 
-public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operatorSV) implements Pattern {
-    @Override
-    public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return operatorSV;
-        throw new IndexOutOfBoundsException("SchemaVarPattern has only one child");
-    }
+public record SchemaVarPattern(boolean reference,boolean mut,OperatorSV operatorSV)implements Pattern{@Override public @NonNull SyntaxElement getChild(int n){if(n==0)return operatorSV;throw new IndexOutOfBoundsException("SchemaVarPattern has only one child");}
 
-    @Override
-    public int getChildCount() {
-        return 1;
-    }
-}
+@Override public int getChildCount(){return 1;}}

@@ -5,6 +5,9 @@ package org.key_project.rusty.proof.init;
 
 
 import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
@@ -25,10 +28,6 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 
 public class InitConfig {

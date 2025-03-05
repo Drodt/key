@@ -53,8 +53,10 @@ public final class PrimitiveType implements Type {
     @Override
     public Sort getSort(Services services) {
         return switch (this.name().toString()) {
-        case "u8", "u16", "u32", "u64", "u128", "usize", "i8", "i16", "i32", "i64", "i128", "iSIZE" -> services
-                .getNamespaces().sorts().lookup("int");
+        case "u8", "u16", "u32", "u64", "u128", "usize", "i8", "i16", "i32", "i64", "i128",
+                "iSIZE" ->
+            services
+                    .getNamespaces().sorts().lookup("int");
         case "bool" -> services.getNamespaces().sorts().lookup("bool");
         default -> throw new RuntimeException("Unknown type " + this);
         };

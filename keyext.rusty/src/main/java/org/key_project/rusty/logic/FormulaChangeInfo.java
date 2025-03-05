@@ -5,22 +5,15 @@ package org.key_project.rusty.logic;
 
 import org.key_project.prover.sequent.PosInOccurrence;
 
-public record FormulaChangeInfo(PosInOccurrence positionOfModification, org.key_project.prover.sequent.SequentFormula newFormula) {
+public record FormulaChangeInfo(PosInOccurrence positionOfModification,org.key_project.prover.sequent.SequentFormula newFormula){
 
-    public org.key_project.prover.sequent.SequentFormula getOriginalFormula() {
-        return positionOfModification().sequentFormula();
-    }
+public org.key_project.prover.sequent.SequentFormula getOriginalFormula(){return positionOfModification().sequentFormula();}
 
-    /**
-     * @return position within the original formula
-     */
-    @Override
-    public PosInOccurrence positionOfModification() {
-        return positionOfModification;
-    }
+/**
+ * @return position within the original formula
+ */
+@Override public PosInOccurrence positionOfModification(){return positionOfModification;}
 
-    public String toString() {
-        return "Replaced " + positionOfModification + " with " + newFormula;
-    }
+public String toString(){return"Replaced "+positionOfModification+" with "+newFormula;}
 
 }

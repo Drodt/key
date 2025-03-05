@@ -6,14 +6,6 @@ package org.key_project.rusty.ast.pat;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.util.collection.ImmutableArray;
 
-public record AltPattern(ImmutableArray<Pattern> alternatives) implements Pattern {
-    @Override
-    public SyntaxElement getChild(int n) {
-        return null;
-    }
+public record AltPattern(ImmutableArray<Pattern>alternatives)implements Pattern{@Override public SyntaxElement getChild(int n){return null;}
 
-    @Override
-    public int getChildCount() {
-        return 0;
-    }
-}
+@Override public int getChildCount(){return 0;}}

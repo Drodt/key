@@ -12,24 +12,10 @@ import org.jspecify.annotations.NonNull;
 /**
  * A schema variable standing for a type in SchemaRust
  */
-public record SchemaRustType(SchemaType type) implements RustType {
-    @Override
-    public void visit(Visitor v) {
-        v.performActionOnSchemaRustType(this);
-    }
+public record SchemaRustType(SchemaType type)implements RustType{@Override public void visit(Visitor v){v.performActionOnSchemaRustType(this);}
 
-    @Override
-    public @NonNull SyntaxElement getChild(int n) {
-        throw new IndexOutOfBoundsException(getClass() + " has no children");
-    }
+@Override public @NonNull SyntaxElement getChild(int n){throw new IndexOutOfBoundsException(getClass()+" has no children");}
 
-    @Override
-    public int getChildCount() {
-        return 0;
-    }
+@Override public int getChildCount(){return 0;}
 
-    @Override
-    public String toString() {
-        return type.toString();
-    }
-}
+@Override public String toString(){return type.toString();}}
