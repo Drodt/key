@@ -436,7 +436,7 @@ public class EqualityModuloProofIrrelevancy {
             }
         }
 
-        if (!_this.choices.equals(that.choices)) {
+        if (!_this.getChoices().equals(that.getChoices())) {
             return false;
         }
 
