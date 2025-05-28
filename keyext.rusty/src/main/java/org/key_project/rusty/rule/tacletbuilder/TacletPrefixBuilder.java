@@ -20,16 +20,17 @@ import org.key_project.rusty.rule.*;
 import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.ImmutableMap;
 
+import org.jspecify.annotations.NonNull;
 
 public class TacletPrefixBuilder {
     /**
-     * set of all schemavariables that are only allowed to be matched with quantifiable variables.
+     * set of all schema variables that are only allowed to be matched with quantifiable variables.
      */
     private int numberOfCurrentlyBoundVars =
         0;
     private final TacletBuilder<? extends Taclet> tacletBuilder;
 
-    protected ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap =
+    protected ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap =
         DefaultImmutableMap.nilMap();
 
     public TacletPrefixBuilder(TacletBuilder<? extends Taclet> tacletBuilder) {
@@ -216,7 +217,7 @@ public class TacletPrefixBuilder {
         }
     }
 
-    public ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> getPrefixMap() {
+    public ImmutableMap<SchemaVariable, org.key_project.prover.rules.TacletPrefix> getPrefixMap() {
         considerContext();
         return prefixMap;
     }
