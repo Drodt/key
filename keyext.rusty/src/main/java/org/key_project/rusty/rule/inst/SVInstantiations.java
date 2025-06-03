@@ -5,6 +5,7 @@ package org.key_project.rusty.rule.inst;
 
 import java.util.Iterator;
 
+import org.jspecify.annotations.NonNull;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
@@ -67,7 +68,7 @@ public class SVInstantiations
      *
      * @param map the ImmMap<SchemaVariable,InstantiationEntry<?>> with the instantiations
      */
-    private SVInstantiations(ImmutableMap<SchemaVariable, InstantiationEntry<?>> map,
+    private SVInstantiations(ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> map,
             // ImmutableMap<SchemaVariable, InstantiationEntry<?>> interesting,
             ImmutableList<Term> updateContext,
             GenericSortInstantiations genericSortInstantiations,
@@ -110,11 +111,6 @@ public class SVInstantiations
             LogicServices services) throws SortException {
         return add(sv, new InstantiationEntry<>(kind) {
         }, services);
-    }
-
-    public SVInstantiations addList(SchemaVariable sv, Object[] list, LogicServices services) {
-        return add(sv, new ListInstantiation(sv, ImmutableSLList.nil().prepend(list)),
-            services);
     }
 
     /**
