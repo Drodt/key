@@ -186,7 +186,7 @@ public class TacletIndex {
         Object indexObj;
         final Term indexTerm = tac.find();
         if (indexTerm.op() instanceof Modality mod) {
-            final RustyProgramElement prg = mod.program().program();
+            final RustyProgramElement prg = mod.programBlock().program();
             if (prg.getChildCount() == 0) {
                 indexObj = Modality.class;
             } else {
@@ -380,7 +380,7 @@ public class TacletIndex {
 
         if (op instanceof Modality mod) {
             prefixOccurrences.reset();
-            final var sb = (BlockExpression) mod.program().program();
+            final var sb = (BlockExpression) mod.programBlock().program();
             res = getRustyTacletList(map, (RustyProgramElement) sb.getChild(0), prefixOccurrences);
         }
 

@@ -4,8 +4,13 @@
 package org.key_project.rusty.logic.op.sv;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Term;
+import org.key_project.logic.TermCreationException;
+import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.op.Modality;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -68,5 +73,55 @@ public class ModalOperatorSV extends Modality.RustyModalityKind implements Schem
         return false;
     }
 
+    // Operator interface methods (irrelevant for this kind of SV)
+    @Override
+    public @NonNull Sort argSort(int i) {
+        throw new IndexOutOfBoundsException("A JavaModalityKind does not have arguments.");
+    }
 
+    @Override
+    public @NonNull ImmutableArray<Sort> argSorts() {
+        return new ImmutableArray<>();
+    }
+
+    @Override
+    public @NonNull Sort sort() {
+        throw new UnsupportedOperationException("A RustyModalityKind does not have a sort.");
+    }
+
+    @Override
+    public int arity() {
+        return 0;
+    }
+
+    @Override
+    public @NonNull Sort sort(@NonNull Sort @NonNull [] sorts) {
+        throw new IndexOutOfBoundsException("A JavaModalityKind does not have a sort.");
+    }
+
+    @Override
+    public boolean bindVarsAt(int n) {
+        return false;
+    }
+
+    @Override
+    public @NonNull Modifier modifier() {
+        return Modifier.NONE;
+    }
+
+    @Override
+    public boolean hasModifier(@NonNull Modifier mod) {
+        return SchemaVariable.super.hasModifier(mod);
+    }
+
+    @Override
+    public boolean isRigid() {
+        return false;
+    }
+
+    @Override
+    public <T extends Term> void validTopLevelException(T term) throws TermCreationException {
+        throw new TermCreationException("ModalOperatorSV should not be checked" +
+            " via this method as it is not an actual operator");
+    }
 }

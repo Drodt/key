@@ -137,7 +137,7 @@ public class RenamingTermProperty implements Property<Term> {
             if (mod0.kind() != mod1.kind()) {
                 return false;
             }
-            nat = handleRusty(mod0.program(), mod1.program(), nat);
+            nat = handleRusty(mod0.programBlock(), mod1.programBlock(), nat);
             if (nat == FAILED) {
                 return false;
             }
@@ -347,7 +347,7 @@ public class RenamingTermProperty implements Property<Term> {
      * @return the hash code
      */
     private int hashRustyBlock(Modality mod) {
-        final RustyBlock rb = mod.program();
+        final RustyBlock rb = mod.programBlock();
         if (!rb.isEmpty()) {
             final RustyProgramElement rpe = rb.program();
             return rpe != null ? RENAMING_PROGRAM_ELEMENT_PROPERTY.hashCodeModThisProperty(rpe) : 0;

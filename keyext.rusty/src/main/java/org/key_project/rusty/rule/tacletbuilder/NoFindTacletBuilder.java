@@ -4,7 +4,7 @@
 package org.key_project.rusty.rule.tacletbuilder;
 
 
-import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.rusty.rule.BoundUniquenessChecker;
 import org.key_project.rusty.rule.NoFindTaclet;
@@ -24,7 +24,7 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
         prefixBuilder.build();
         NoFindTaclet t = new NoFindTaclet(this.name,
             new TacletApplPart(ifseq,
-                new Taclet.ApplicationRestriction(Taclet.ApplicationRestriction.IN_SEQUENT_STATE),
+                new ApplicationRestriction(ApplicationRestriction.IN_SEQUENT_STATE),
                 varsNew, varsNotFreeIn, varsNewDependingOn,
                 variableConditions),
             goals, ruleSets, attrs, prefixBuilder.getPrefixMap(), choices, tacletAnnotations);

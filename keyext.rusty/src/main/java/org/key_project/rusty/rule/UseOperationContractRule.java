@@ -219,7 +219,7 @@ public final class UseOperationContractRule implements BuiltInRule {
 
         // active statement must be method call or new
         final var methodCall =
-            getMethodCall(modality.program(), services);
+            getMethodCall(modality.programBlock(), services);
         if (methodCall == null) {
             return null;
         }
@@ -308,7 +308,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         var services = goal.getOverlayServices();
         // get instantiation
         final Instantiation inst = instantiate(ruleApp.posInOccurrence().subTerm(), services);
-        final RustyBlock rb = inst.modality().program();
+        final RustyBlock rb = inst.modality().programBlock();
         final TermBuilder tb = services.getTermBuilder();
 
         final var contract =
@@ -372,7 +372,8 @@ public final class UseOperationContractRule implements BuiltInRule {
         final BlockExpression postBE = replaceBlock(rb, resultAssign);
         final RustyBlock postRustyBlock = new RustyBlock(postBE);
         Modality modality = Modality.getModality(inst.modality.kind(), postRustyBlock);
-        final Term normalPost = tb.prog(modality.kind(), modality.program(), inst.progPost.sub(0));
+        final Term normalPost =
+            tb.prog(modality.kind(), modality.programBlock(), inst.progPost.sub(0));
         postGoal.changeFormula(new SequentFormula(tb.apply(inst.u, normalPost)),
             ruleApp.posInOccurrence());
         postGoal.addFormula(new SequentFormula(postAssumption), true, false);

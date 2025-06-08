@@ -228,19 +228,19 @@ public class LogicPrinter {
     protected void printRewriteAttributes(RewriteTaclet taclet) {
         final var applicationRestriction = taclet.applicationRestriction();
         if ((applicationRestriction
-                .matches(RewriteTaclet.ApplicationRestriction.SAME_UPDATE_LEVEL))) {
+                .matches(ApplicationRestriction.SAME_UPDATE_LEVEL))) {
             layouter.nl().print("\\sameUpdateLevel");
         }
         if ((applicationRestriction
-                .matches(RewriteTaclet.ApplicationRestriction.IN_SEQUENT_STATE))) {
+                .matches(ApplicationRestriction.IN_SEQUENT_STATE))) {
             layouter.nl().print("\\inSequentState");
         }
         if ((applicationRestriction
-                .matches(RewriteTaclet.ApplicationRestriction.ANTECEDENT_POLARITY))) {
+                .matches(ApplicationRestriction.ANTECEDENT_POLARITY))) {
             layouter.nl().print("\\antecedentPolarity");
         }
         if ((applicationRestriction
-                .matches(RewriteTaclet.ApplicationRestriction.SUCCEDENT_POLARITY))) {
+                .matches(ApplicationRestriction.SUCCEDENT_POLARITY))) {
             layouter.nl().print("\\succedentPolarity");
         }
     }
@@ -1105,7 +1105,7 @@ public class LogicPrinter {
                         ta[i] = phi.sub(i);
                     }
                     final Modality m =
-                        Modality.getModality((Modality.RustyModalityKind) o, mod.program());
+                        Modality.getModality(kind, mod.programBlock());
                     final Term term = services.getTermFactory().createTerm(m, ta,
                         (ImmutableArray<QuantifiableVariable>) phi.boundVars());
                     notationInfo.getNotation(m).print(term, this);

@@ -10,10 +10,8 @@ import java.util.stream.Collectors;
 import org.key_project.logic.*;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.prover.rules.RuleSet;
+import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.Taclet;
-import org.key_project.prover.rules.TacletAnnotation;
-import org.key_project.prover.rules.Trigger;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
@@ -159,7 +157,7 @@ public class TacletPBuilder extends ExpressionBuilder {
                 semanticError(ctx, "formula rules are only permitted for \\axioms");
             }
             TacletBuilder<?> b =
-                createTacletBuilderFor(null, Taclet.ApplicationRestriction.NONE, ctx);
+                createTacletBuilderFor(null, ApplicationRestriction.NONE, ctx);
             currentTBuilder.push(b);
             Sequent addSeq = RustySequentKit
                     .createAnteSequent(ImmutableSLList.singleton(new SequentFormula(form)));
@@ -188,22 +186,22 @@ public class TacletPBuilder extends ExpressionBuilder {
         Object find = accept(ctx.find);
         Sequent seq = find instanceof Sequent ? (Sequent) find : null;
 
-        var applicationRestriction = Taclet.ApplicationRestriction.NONE;
+        var applicationRestriction = ApplicationRestriction.NONE;
         if (!ctx.SAMEUPDATELEVEL().isEmpty()) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.SAME_UPDATE_LEVEL);
+                applicationRestriction.combine(ApplicationRestriction.SAME_UPDATE_LEVEL);
         }
         if (!ctx.INSEQUENTSTATE().isEmpty()) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.IN_SEQUENT_STATE);
+                applicationRestriction.combine(ApplicationRestriction.IN_SEQUENT_STATE);
         }
         if (!ctx.ANTECEDENTPOLARITY().isEmpty() || (seq != null && !seq.antecedent().isEmpty())) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.ANTECEDENT_POLARITY);
+                applicationRestriction.combine(ApplicationRestriction.ANTECEDENT_POLARITY);
         }
         if (!ctx.SUCCEDENTPOLARITY().isEmpty() || (seq != null && !seq.succedent().isEmpty())) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.SUCCEDENT_POLARITY);
+                applicationRestriction.combine(ApplicationRestriction.SUCCEDENT_POLARITY);
         }
 
         TacletBuilder<?> b = createTacletBuilderFor(find, applicationRestriction, ctx);
@@ -521,7 +519,7 @@ public class TacletPBuilder extends ExpressionBuilder {
     }
 
     private @NonNull TacletBuilder<?> createTacletBuilderFor(Object find,
-            RewriteTaclet.ApplicationRestriction applicationRestriction, ParserRuleContext ctx) {
+            ApplicationRestriction applicationRestriction, ParserRuleContext ctx) {
         if (find == null) {
             return new NoFindTacletBuilder();
         } else if (find instanceof Term) {

@@ -243,7 +243,7 @@ class TermImpl implements Term {
     public boolean containsCodeBlockRecursive() {
         if (containsCodeBlockRecursive == ThreeValuedTruth.UNKNOWN) {
             ThreeValuedTruth result = ThreeValuedTruth.FALSE;
-            if (op instanceof Modality mod && !((RustyBlock) mod.program()).isEmpty()) {
+            if (op instanceof Modality mod && !((RustyBlock) mod.programBlock()).isEmpty()) {
                 result = ThreeValuedTruth.TRUE;
             } else {
                 for (int i = 0, arity = subs.size(); i < arity; i++) {
@@ -264,9 +264,9 @@ class TermImpl implements Term {
         StringBuilder sb = new StringBuilder();
         if (op() instanceof Modality mod) {
             if (mod.kind() == org.key_project.rusty.logic.op.Modality.RustyModalityKind.DIA) {
-                sb.append("\\<").append(mod.program()).append("\\>");
+                sb.append("\\<").append(mod.programBlock()).append("\\>");
             } else {
-                sb.append("\\[").append(mod.program()).append("\\]");
+                sb.append("\\[").append(mod.programBlock()).append("\\]");
             }
             sb.append("(").append(sub(0)).append(")");
             return sb.toString();

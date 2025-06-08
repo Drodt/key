@@ -12,7 +12,6 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.MatchConditions;
-import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.SVPlace;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
@@ -32,7 +31,7 @@ import org.key_project.util.collection.ImmutableArray;
  * argument the pattern for which you want to get a matcher.
  * <br>
  * The program is executed by invoking
- * {@link TacletMatchProgram#match(Term, MatchConditions, Services)}.
+ * {@link TacletMatchProgram#match(Term, MatchConditions, LogicServices)}.
  */
 public class TacletMatchProgram {
     /** the skip program (matches anything) */
@@ -114,7 +113,7 @@ public class TacletMatchProgram {
             } else {
                 program.add(Instruction.matchModalOperator(mod));
             }
-            final RustyProgramElement patternPrg = mod.program().program();
+            final RustyProgramElement patternPrg = mod.programBlock().program();
             program.add(Instruction.matchProgram(patternPrg));
         } else if (op instanceof MutRef mr && mr.getPlace() instanceof SVPlace sv) {
             program.add(Instruction.matchPlaceSV(sv));

@@ -4,7 +4,7 @@
 package org.key_project.rusty.rule.tacletbuilder;
 
 
-import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.rusty.rule.SuccTaclet;
@@ -55,7 +55,7 @@ public class SuccTacletBuilder extends FindTacletBuilder<SuccTaclet> {
         prefixBuilder.build();
         SuccTaclet t = new SuccTaclet(name,
             new TacletApplPart(ifseq,
-                applicationRestriction.combine(Taclet.ApplicationRestriction.SUCCEDENT_POLARITY),
+                applicationRestriction.combine(ApplicationRestriction.SUCCEDENT_POLARITY),
                 varsNew, varsNotFreeIn, varsNewDependingOn,
                 variableConditions),
             goals, ruleSets, attrs, (Sequent) find, prefixBuilder.getPrefixMap(),

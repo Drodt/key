@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.rule.tacletbuilder;
 
-import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.rusty.rule.AntecTaclet;
@@ -70,7 +70,7 @@ public class AntecTacletBuilder extends FindTacletBuilder<@NonNull AntecTaclet> 
 
         AntecTaclet t = new AntecTaclet(name,
             new TacletApplPart(ifseq,
-                applicationRestriction.combine(Taclet.ApplicationRestriction.ANTECEDENT_POLARITY),
+                applicationRestriction.combine(ApplicationRestriction.ANTECEDENT_POLARITY),
                 varsNew, varsNotFreeIn, varsNewDependingOn,
                 variableConditions),
             goals, ruleSets, attrs, (Sequent) find, prefixBuilder.getPrefixMap(),

@@ -350,7 +350,7 @@ public final class ProblemInitializer {
                 rootGoal.addProgramVariable(pv);
             }
         } else if (term.op() instanceof Modality mod) {
-            final RustyProgramElement pe = mod.program().program();
+            final RustyProgramElement pe = mod.programBlock().program();
             final Services serv = rootGoal.proof().getServices();
             final ImmutableSet<ProgramVariable> freeProgVars =
                 MiscTools.getLocalIns(pe, serv).union(MiscTools.getLocalOuts(pe, serv));

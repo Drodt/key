@@ -5,7 +5,6 @@ package org.key_project.rusty.rule.inst;
 
 import java.util.Iterator;
 
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
@@ -21,6 +20,8 @@ import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.sv.SchemaVariableFactory;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.*;
+
+import org.jspecify.annotations.NonNull;
 
 import static org.key_project.rusty.Services.convertToLogicElement;
 

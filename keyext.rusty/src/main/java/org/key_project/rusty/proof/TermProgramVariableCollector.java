@@ -39,7 +39,7 @@ public class TermProgramVariableCollector implements Visitor<@NonNull Term> {
 
         if (visited.op() instanceof Modality mod) {
             ProgramVariableCollector pvc =
-                new ProgramVariableCollector(mod.program().program(), services);
+                new ProgramVariableCollector(mod.programBlock().program(), services);
             pvc.start();
             result.addAll(pvc.result());
         }

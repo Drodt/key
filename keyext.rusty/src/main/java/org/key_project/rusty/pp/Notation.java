@@ -156,8 +156,7 @@ public abstract class Notation {
         public void print(Term t, LogicPrinter sp) {
             assert t.op() instanceof Modality;
             var mod = (Modality) t.op();
-            assert mod.program() != null;
-            sp.printModalityTerm(left, mod.program(), right, t, ass);
+            sp.printModalityTerm(left, mod.programBlock(), right, t, ass);
         }
     }
 
@@ -174,7 +173,7 @@ public abstract class Notation {
 
         public void print(Term t, LogicPrinter sp) {
             var mod = (Modality) t.op();
-            sp.printModalityTerm("\\modality{" + t.op().name() + "}", mod.program(),
+            sp.printModalityTerm("\\modality{" + t.op().name() + "}", mod.programBlock(),
                 "\\endmodality", t, ass);
         }
     }

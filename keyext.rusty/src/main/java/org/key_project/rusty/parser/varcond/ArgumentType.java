@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.varcond;
 
-import org.key_project.logic.ParsableVariable;
 import org.key_project.logic.Term;
+import org.key_project.logic.op.ParsableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 

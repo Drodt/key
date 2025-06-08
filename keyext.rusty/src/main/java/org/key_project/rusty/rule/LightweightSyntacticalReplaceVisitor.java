@@ -106,7 +106,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
             boolean rblockChanged = false;
 
             if (visitedOp instanceof Modality mod) {
-                var rb = mod.program();
+                var rb = mod.programBlock();
                 var olfRb = rb;
                 rb = replacePrg(svInst, rb);
                 if (rb != olfRb) {
@@ -242,7 +242,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
         if (op.kind() instanceof ModalOperatorSV) {
             kind = (Modality.RustyModalityKind) svInst.getInstantiation(op.kind());
         }
-        if (rb != op.program() || kind != op.kind()) {
+        if (rb != op.programBlock() || kind != op.kind()) {
             return Modality.getModality(kind, rb);
         }
         return op;

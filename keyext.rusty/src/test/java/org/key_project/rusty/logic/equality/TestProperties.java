@@ -27,8 +27,8 @@ public class TestProperties {
         var t1 = TacletForTests.parseTerm(termString1);
         var t2 = TacletForTests.parseTerm(termString2);
 
-        var p1 = ((Modality) t1.op()).program().program();
-        var p2 = ((Modality) t2.op()).program().program();
+        var p1 = ((Modality) t1.op()).programBlock().program();
+        var p2 = ((Modality) t2.op()).programBlock().program();
 
         return new ProgramTuple(p1, p2);
     }

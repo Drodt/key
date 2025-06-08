@@ -37,7 +37,7 @@ public class CreateLocalAnonUpdate extends AbstractTermTransformer {
             return null;
         }
 
-        final var pe = mod.program().program();
+        final var pe = mod.programBlock().program();
 
         final ImmutableSet<ProgramVariable> localOuts = MiscTools.getLocalOuts(pe, services);
         return createLocalAnonUpdate(localOuts, services);

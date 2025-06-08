@@ -397,7 +397,7 @@ public abstract class Taclet implements Rule {
     }
 
     /// Helper for {@link Taclet#toString()}, specifically the attributes.
-    StringBuffer toStringAttribs(StringBuffer sb) {
+    protected StringBuffer toStringAttribs(StringBuffer sb) {
         // if (noninteractive()) sb = sb.append(" \\noninteractive");
         sb.append("\nChoices: ").append(choices);
         return sb;

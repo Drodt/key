@@ -184,7 +184,7 @@ public final class ProgVarReplacer {
         Operator op = t.op();
         boolean changedOp = false;
         if (op instanceof Modality mod) {
-            var be = (BlockExpression) mod.program().program();
+            var be = (BlockExpression) mod.programBlock().program();
             var newBe = (BlockExpression) replace(be);
             if (newBe != be) {
                 var newRb = new RustyBlock(newBe);

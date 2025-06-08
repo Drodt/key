@@ -5,13 +5,13 @@ package org.key_project.rusty.rule.tacletbuilder;
 
 
 import org.key_project.logic.Term;
-import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.rusty.rule.RewriteTaclet;
 
 public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBuilder<T> {
     public RewriteTacletBuilder<T> setApplicationRestriction(
-            Taclet.ApplicationRestriction p_applicationRestriction) {
+            ApplicationRestriction p_applicationRestriction) {
         applicationRestriction = p_applicationRestriction;
         return this;
     }

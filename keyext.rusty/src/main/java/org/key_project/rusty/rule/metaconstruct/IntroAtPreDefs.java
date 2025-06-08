@@ -36,7 +36,7 @@ public class IntroAtPreDefs extends AbstractTermTransformer {
         final TermBuilder tb = services.getTermBuilder();
         final Term target = term.sub(0);
 
-        final var pe = ((Modality) target.op()).program().program();
+        final var pe = ((Modality) target.op()).programBlock().program();
 
         final var fnFrame = RustTools.getInnermostFunctionFrame(pe, services);
 

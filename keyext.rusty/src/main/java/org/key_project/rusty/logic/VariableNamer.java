@@ -371,7 +371,7 @@ public abstract class VariableNamer implements InstantiationProposer {
         Term progTerm;
         if (pio != null && (progTerm = findProgramInTerm(pio.subTerm())) != null) {
             var mod = (Modality) progTerm.op();
-            return mod.program().program();
+            return mod.programBlock().program();
         } else {
             return new EmptyStatement();
         }

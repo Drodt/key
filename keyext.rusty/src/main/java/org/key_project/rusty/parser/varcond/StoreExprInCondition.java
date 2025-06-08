@@ -56,7 +56,7 @@ public class StoreExprInCondition implements VariableCondition {
         // containing exactly one statement; see JavaDoc.
 
         var mod = (Modality) instantiatedTerm.op();
-        var be = (BlockExpression) mod.program().program();
+        var be = (BlockExpression) mod.programBlock().program();
         var es = (ExpressionStatement) be.getChild(0);
 
         return matchCond.setInstantiations(svInst.add(storeInSV, es.getExpression(), services));

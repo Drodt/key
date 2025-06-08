@@ -75,7 +75,7 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
             if (mod.kind() instanceof ModalOperatorSV msv) {
                 varList = varList.prepend(msv);
             }
-            varList = collectSVInProgram(mod.program(), varList);
+            varList = collectSVInProgram(mod.programBlock(), varList);
         } else if (op instanceof ElementaryUpdate eu) {
             varList = collectSVInElementaryUpdate(eu, varList);
         }

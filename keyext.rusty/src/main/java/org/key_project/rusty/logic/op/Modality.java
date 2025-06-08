@@ -71,7 +71,7 @@ public class Modality extends org.key_project.logic.op.Modality {
     }
 
     @Override
-    public @NonNull RustyBlock program() {
+    public @NonNull RustyBlock programBlock() {
         return block;
     }
 
