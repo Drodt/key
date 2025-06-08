@@ -10,10 +10,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -57,7 +56,6 @@ import de.uka.ilkd.key.gui.utilities.GuiUtilities;
 import de.uka.ilkd.key.gui.utilities.LruCached;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.proof.ProofAggregate;
 import de.uka.ilkd.key.proof.ProofEvent;
 import de.uka.ilkd.key.settings.FeatureSettings;
 import de.uka.ilkd.key.settings.GeneralSettings;
@@ -444,7 +442,7 @@ public final class MainWindow extends JFrame {
      */
     private void applyGnomeWorkaround() {
         Toolkit xToolkit = Toolkit.getDefaultToolkit();
-        Field awtAppClassNameField;
+        java.lang.reflect.Field awtAppClassNameField;
         try {
             awtAppClassNameField = xToolkit.getClass().getDeclaredField("awtAppClassName");
             awtAppClassNameField.setAccessible(true);
@@ -575,7 +573,7 @@ public final class MainWindow extends JFrame {
 
         getContentPane().add(toolBarPanel, BorderLayout.PAGE_START);
 
-        proofListView.setPreferredSize(new Dimension(350, 100));
+        proofListView.setPreferredSize(new java.awt.Dimension(350, 100));
         GuiUtilities.paintEmptyViewComponent(proofListView, "Proofs");
 
         // JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, proofListView,
@@ -848,7 +846,7 @@ public final class MainWindow extends JFrame {
         SwingUtilities.invokeLater(this::updateSequentView);
     }
 
-    private void addToProofList(ProofAggregate plist) {
+    private void addToProofList(de.uka.ilkd.key.proof.ProofAggregate plist) {
         proofList.addProof(plist);
         // TODO/Check: the code below emulates phantom actions. Check if this can be solved
         // differently
@@ -1185,7 +1183,7 @@ public final class MainWindow extends JFrame {
         return currentGoalView;
     }
 
-    public void addProblem(final ProofAggregate plist) {
+    public void addProblem(final de.uka.ilkd.key.proof.ProofAggregate plist) {
         Runnable guiUpdater = () -> {
             disableCurrentGoalView = true;
             addToProofList(plist);
@@ -1407,12 +1405,12 @@ public final class MainWindow extends JFrame {
         openExampleAction.actionPerformed(null);
     }
 
-    public void loadProblem(File file) {
+    public void loadProblem(Path file) {
         getUserInterface().loadProblem(file);
     }
 
-    public void loadProblem(File file, List<File> classPath, File bootClassPath,
-            List<File> includes) {
+    public void loadProblem(Path file, List<Path> classPath, Path bootClassPath,
+            List<Path> includes) {
         getUserInterface().loadProblem(file, classPath, bootClassPath, includes);
     }
 
@@ -1423,7 +1421,7 @@ public final class MainWindow extends JFrame {
      * @param proofPath the path of the proof to load (relative to the root of the bundle ->
      *        filename only)
      */
-    public void loadProofFromBundle(File proofBundle, File proofPath) {
+    public void loadProofFromBundle(Path proofBundle, Path proofPath) {
         getUserInterface().loadProofFromBundle(proofBundle, proofPath);
     }
 

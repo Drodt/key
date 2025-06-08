@@ -6,11 +6,12 @@ package de.uka.ilkd.key.gui.mergerule.predicateabstraction;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import javax.swing.*;
@@ -23,7 +24,6 @@ import javax.swing.table.TableCellRenderer;
 import de.uka.ilkd.key.axiom_abstraction.AbstractDomainElement;
 import de.uka.ilkd.key.axiom_abstraction.AbstractDomainLattice;
 import de.uka.ilkd.key.axiom_abstraction.predicateabstraction.*;
-import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.gui.MainWindow;
 import de.uka.ilkd.key.gui.mergerule.predicateabstraction.ObservableArrayList.ObservableArrayListChangeListener;
 import de.uka.ilkd.key.java.Services;
@@ -33,10 +33,7 @@ import de.uka.ilkd.key.logic.op.LocationVariable;
 import de.uka.ilkd.key.logic.op.ProgramVariable;
 import de.uka.ilkd.key.parser.ParserException;
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.proof.init.JavaProfile;
 import de.uka.ilkd.key.proof.io.OutputStreamProofSaver;
-import de.uka.ilkd.key.proof.io.ProblemLoaderException;
 import de.uka.ilkd.key.rule.merge.procedures.MergeWithPredicateAbstraction;
 import de.uka.ilkd.key.util.mergerule.MergeRuleUtils;
 
@@ -547,7 +544,7 @@ public class AbstractionPredicatesChoiceDialog extends JDialog {
      */
     private String abstrPredToString(AbstractionPredicate pred) {
         final Services services = MainWindow.getInstance().getMediator().getServices();
-        final Pair<LocationVariable, Term> predFormWithPh = pred.getPredicateFormWithPlaceholder();
+        final Pair<LocationVariable, JTerm> predFormWithPh = pred.getPredicateFormWithPlaceholder();
 
         return "(" + predFormWithPh.first + ","
             + OutputStreamProofSaver.printAnything(predFormWithPh.second, services) + ")";
@@ -766,7 +763,7 @@ public class AbstractionPredicatesChoiceDialog extends JDialog {
     // ////////////////////////////////////// //
 
     public static void main(String[] args) {
-        final Proof proof = loadProof("firstTouch/01-Agatha/project.key");
+        final de.uka.ilkd.key.proof.Proof proof = loadProof("firstTouch/01-Agatha/project.key");
 
         final ArrayList<LocationVariable> differingLocVars = new ArrayList<>();
         differingLocVars.add(new LocationVariable(new ProgramElementName("test"),
@@ -787,17 +784,17 @@ public class AbstractionPredicatesChoiceDialog extends JDialog {
      * @param proofFileName The file name of the proof file to load.
      * @return The loaded proof.
      */
-    static Proof loadProof(String proofFileName) {
-        File proofFile = new File("examples/" + proofFileName);
+    static de.uka.ilkd.key.proof.Proof loadProof(String proofFileName) {
+        Path proofFile = Paths.get("examples/", proofFileName);
 
         try {
-            KeYEnvironment<?> environment =
-                KeYEnvironment.load(
-                    JavaProfile.getDefaultInstance(), proofFile, null,
+            de.uka.ilkd.key.control.KeYEnvironment<?> environment =
+                de.uka.ilkd.key.control.KeYEnvironment.load(
+                    de.uka.ilkd.key.proof.init.JavaProfile.getDefaultInstance(), proofFile, null,
                     null, null, true);
 
             return environment.getLoadedProof();
-        } catch (ProblemLoaderException e) {
+        } catch (de.uka.ilkd.key.proof.io.ProblemLoaderException e) {
             return null;
         }
     }
