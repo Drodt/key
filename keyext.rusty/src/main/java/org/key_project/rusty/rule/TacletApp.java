@@ -15,7 +15,7 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.*;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.sequent.*;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -52,7 +52,7 @@ public abstract class TacletApp implements RuleApp {
     /**
      * caches a created match condition {@code (instantiations, RenameTable.EMPTY)}
      */
-    private final org.key_project.rusty.rule.MatchConditions matchConditions;
+    private final MatchConditions matchConditions;
 
     /**
      * chosen instantiations for the assumes-sequent formulas
@@ -82,7 +82,7 @@ public abstract class TacletApp implements RuleApp {
         this.taclet = taclet;
         this.instantiations = (org.key_project.rusty.rule.inst.SVInstantiations) instantiations;
         this.assumesInstantiations = ifInstantiations;
-        this.matchConditions = new org.key_project.rusty.rule.MatchConditions(this.instantiations);
+        this.matchConditions = new MatchConditions(this.instantiations);
     }
 
     /**
@@ -113,7 +113,7 @@ public abstract class TacletApp implements RuleApp {
         return instantiations;
     }
 
-    public org.key_project.rusty.rule.MatchConditions matchConditions() {
+    public MatchConditions matchConditions() {
         return matchConditions;
     }
 
@@ -125,7 +125,7 @@ public abstract class TacletApp implements RuleApp {
      * creates a new Taclet application containing all the instantiations, constraints and new
      * metavariables given by the mc object and forget the old ones
      */
-    public abstract TacletApp setMatchConditions(MatchConditions mc, Services services);
+    public abstract TacletApp setMatchConditions(MatchResultInfo mc, Services services);
 
     /**
      * checks if the variable conditions of type 'x not free in y' are hold by the found
@@ -229,7 +229,7 @@ public abstract class TacletApp implements RuleApp {
             ImmutableList<Term> oldUpdCtx =
                 matchConditions().getInstantiations().getUpdateContext();
             var newConditions = rwt.checkPrefix(posInOccurrence(),
-                org.key_project.rusty.rule.MatchConditions.EMPTY_MATCHCONDITIONS);
+                MatchConditions.EMPTY_MATCHCONDITIONS);
             if (newConditions == null) {
                 return false;
             }
@@ -626,7 +626,7 @@ public abstract class TacletApp implements RuleApp {
             ImmutableArray<AssumesFormulaInstantiation> instSucc,
             ImmutableArray<AssumesFormulaInstantiation> instAntec,
             ImmutableList<AssumesFormulaInstantiation> instAlreadyMatched,
-            MatchConditions matchCond,
+            MatchResultInfo matchCond,
             Services services) {
 
         while (ruleSuccTail.isEmpty()) {
@@ -708,7 +708,7 @@ public abstract class TacletApp implements RuleApp {
      * creates a new Taclet application containing all the instantiations, constraints, new
      * metavariables and if formula instantiations given and forget the old ones
      */
-    protected abstract TacletApp setAllInstantiations(MatchConditions mc,
+    protected abstract TacletApp setAllInstantiations(MatchResultInfo mc,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations, Services services);
 
     /**
@@ -745,7 +745,7 @@ public abstract class TacletApp implements RuleApp {
                 : "If instantiations list has wrong size "
                     + "or the if formulas have already been instantiated";
 
-        MatchConditions mc =
+        MatchResultInfo mc =
             taclet().getMatcher().matchAssumes(p_list, matchConditions,
                 p_services);
 
@@ -892,7 +892,7 @@ public abstract class TacletApp implements RuleApp {
      */
     public TacletApp addCheckedInstantiation(SchemaVariable sv, RustyProgramElement pe,
             Services services, boolean interesting) {
-        final MatchConditions cond =
+        final MatchResultInfo cond =
             taclet().getMatcher().matchSV(sv, pe, matchConditions, services);
 
         if (cond == null) {

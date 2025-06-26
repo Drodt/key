@@ -8,7 +8,7 @@ import org.key_project.logic.SyntaxElementCursor;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
@@ -30,8 +30,8 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@N
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(Term instantiationCandidate,
-            MatchConditions matchCond,
+    public MatchResultInfo match(Term instantiationCandidate,
+            MatchResultInfo matchCond,
             LogicServices services) {
         final ProgramSVSort svSort = (ProgramSVSort) op.sort();
 
@@ -47,8 +47,8 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@N
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(Operator instantiationCandidate,
-            MatchConditions matchConditions,
+    public MatchResultInfo match(Operator instantiationCandidate,
+            MatchResultInfo matchConditions,
             LogicServices services) {
         if (instantiationCandidate instanceof RustyProgramElement pe) {
             return match(pe, matchConditions, services);
@@ -60,9 +60,9 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@N
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions matchConditions,
+    public MatchResultInfo match(SyntaxElementCursor cursor, MatchResultInfo matchConditions,
             LogicServices services) {
-        MatchConditions result = match((Term) cursor.getCurrentNode(), matchConditions, services);
+        MatchResultInfo result = match((Term) cursor.getCurrentNode(), matchConditions, services);
         if (result != null) {
             cursor.gotoNextSibling();
         }
@@ -73,9 +73,9 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@N
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(
+    public MatchResultInfo match(
             RustyProgramElement instantiationCandidate,
-            MatchConditions matchCond,
+            MatchResultInfo matchCond,
             LogicServices services) {
         final ProgramSVSort svSort = (ProgramSVSort) op.sort();
 
@@ -92,7 +92,7 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@N
      * match conditions are returned, otherwise <tt>null</tt>. Such an addition can fail, e.g. if
      * already a pair <tt>(this,x)</tt> exists where <tt>x!=pe</tt>
      */
-    private MatchConditions addInstantiation(RustyProgramElement pe, MatchConditions matchCond,
+    private MatchResultInfo addInstantiation(RustyProgramElement pe, MatchResultInfo matchCond,
             Services services) {
 
         final SVInstantiations instantiations =

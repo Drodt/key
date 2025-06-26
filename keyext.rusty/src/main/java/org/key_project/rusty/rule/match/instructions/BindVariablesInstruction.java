@@ -7,7 +7,7 @@ import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.BoundVariable;
 import org.key_project.rusty.logic.op.sv.VariableSV;
@@ -33,8 +33,8 @@ public class BindVariablesInstruction {
          * or
          * have been assigned to the same abstract name and the sorts are equal.
          */
-        private MatchConditions match(
-                BoundVariable instantiationCandidate, MatchConditions matchCond,
+        private MatchResultInfo match(
+                BoundVariable instantiationCandidate, MatchResultInfo matchCond,
                 LogicServices services) {
             if (templateVar != instantiationCandidate) {
                 if (instantiationCandidate.sort() != templateVar.sort()) {
@@ -45,9 +45,9 @@ public class BindVariablesInstruction {
         }
 
         @Override
-        public MatchConditions match(
+        public MatchResultInfo match(
                 SyntaxElementCursor cursor,
-                MatchConditions matchConditions, LogicServices services) {
+                MatchResultInfo matchConditions, LogicServices services) {
             var node = cursor.getCurrentNode();
             if (!(node instanceof BoundVariable bv)) {
                 return null;
@@ -66,8 +66,8 @@ public class BindVariablesInstruction {
             super(templateVar);
         }
 
-        private MatchConditions match(
-                BoundVariable instantiationCandidate, MatchConditions matchCond,
+        private MatchResultInfo match(
+                BoundVariable instantiationCandidate, MatchResultInfo matchCond,
                 Services services) {
             final Object foundMapping = matchCond.getInstantiations().getInstantiation(op);
             if (foundMapping == null) {
@@ -80,8 +80,8 @@ public class BindVariablesInstruction {
         }
 
         @Override
-        public MatchConditions match(
-                SyntaxElementCursor cursor, MatchConditions matchConditions,
+        public MatchResultInfo match(
+                SyntaxElementCursor cursor, MatchResultInfo matchConditions,
                 LogicServices services) {
             var node = cursor.getCurrentNode();
             if (!(node instanceof BoundVariable bv)) {
@@ -93,8 +93,8 @@ public class BindVariablesInstruction {
         }
 
         @Override
-        public MatchConditions match(
-                Term instantiationCandidate, MatchConditions matchCond, LogicServices services) {
+        public MatchResultInfo match(
+                Term instantiationCandidate, MatchResultInfo matchCond, LogicServices services) {
             throw new UnsupportedOperationException();
         }
     }

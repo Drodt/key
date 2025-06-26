@@ -337,7 +337,7 @@ public class NoPosTacletApp extends TacletApp {
         }
 
         if (updateContextFixed
-                && !updateContextCompatible((de.uka.ilkd.key.rule.MatchConditions) res)) {
+                && !updateContextCompatible((MatchConditions) res)) {
             /*
              * LOGGER.debug("NoPosTacletApp: Incompatible context", instantiations.getUpdateContext
              * (), res.matchConditions().getInstantiations().getUpdateContext());
@@ -354,11 +354,11 @@ public class NoPosTacletApp extends TacletApp {
         var svInst = taclet() instanceof NoFindTaclet ? instantiations()
                 : instantiations().clearUpdateContext();
 
-        de.uka.ilkd.key.rule.MatchConditions mc;
+        MatchConditions mc;
         if (svInst.isEmpty()) {
-            mc = de.uka.ilkd.key.rule.MatchConditions.EMPTY_MATCHCONDITIONS;
+            mc = MatchConditions.EMPTY_MATCHCONDITIONS;
         } else {
-            mc = new de.uka.ilkd.key.rule.MatchConditions(svInst, RenameTable.EMPTY_TABLE);
+            mc = new MatchConditions(svInst, RenameTable.EMPTY_TABLE);
         }
 
         if (taclet() instanceof RewriteTaclet) {
@@ -369,7 +369,7 @@ public class NoPosTacletApp extends TacletApp {
     }
 
 
-    private boolean updateContextCompatible(de.uka.ilkd.key.rule.MatchConditions p_mc) {
+    private boolean updateContextCompatible(MatchConditions p_mc) {
         return instantiations.getUpdateContext()
                 .equals(p_mc.getInstantiations().getUpdateContext());
     }

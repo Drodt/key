@@ -6,8 +6,9 @@ package org.key_project.rusty.rule.match.instructions;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.OperatorSV;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.rule.inst.SVInstantiations;
@@ -33,8 +34,8 @@ public abstract class MatchSchemaVariableInstruction<SV extends @NonNull Operato
      * schemavariable has been already matched to a term <tt>t2</tt> which is not unifiable with the
      * given term.
      */
-    protected final MatchConditions addInstantiation(Term term,
-            MatchConditions matchCond,
+    protected final MatchResultInfo addInstantiation(Term term,
+            MatchResultInfo matchCond,
             LogicServices services) {
         if (op.isRigid() && !term.isRigid()) {
             return null;
@@ -61,17 +62,17 @@ public abstract class MatchSchemaVariableInstruction<SV extends @NonNull Operato
     /**
      * tries to match the schema variable of this instruction with the specified
      * {@link RustyProgramElement} {@code instantiationCandidate} w.r.t. the given constraints by
-     * {@link MatchConditions}
+     * {@link MatchResultInfo}
      *
      * @param instantiationCandidate the {@link RustyProgramElement} to be matched
-     * @param mc the {@link MatchConditions} with additional constraints (e.g. previous matches of
+     * @param mc the {@link MatchResultInfo} with additional constraints (e.g. previous matches of
      *        this instructions {@link SchemaVariable})
      * @param services the {@link Services}
-     * @return {@code null} if no matches have been found or the new {@link MatchConditions} with
+     * @return {@code null} if no matches have been found or the new {@link MatchResultInfo} with
      *         the pair ({@link SchemaVariable}, {@link RustyProgramElement}) added
      */
-    public MatchConditions match(RustyProgramElement instantiationCandidate,
-            MatchConditions mc,
+    public MatchResultInfo match(RustyProgramElement instantiationCandidate,
+            MatchResultInfo mc,
             LogicServices services) {
         return null;
     }

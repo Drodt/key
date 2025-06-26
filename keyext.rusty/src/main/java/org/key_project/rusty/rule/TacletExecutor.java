@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
@@ -68,7 +69,7 @@ public abstract class TacletExecutor extends
 
     @Override
     protected Term syntacticalReplace(Term term, PosInOccurrence applicationPosInOccurrence,
-            org.key_project.prover.rules.instantiation.MatchConditions mc, @NonNull Goal goal,
+            MatchResultInfo mc, @NonNull Goal goal,
             @NonNull RuleApp ruleApp, LogicServices services, Object... instantiationInfo) {
         return syntacticalReplace(term, applicationPosInOccurrence, (MatchConditions) mc, goal,
             ruleApp, (Services) services);
@@ -87,7 +88,7 @@ public abstract class TacletExecutor extends
     @Override
     protected void applyAddrule(ImmutableList<? extends org.key_project.prover.rules.Taclet> rules,
             @NonNull Goal goal, LogicServices p_services,
-            org.key_project.prover.rules.instantiation.MatchConditions p_matchCond) {
+            MatchResultInfo p_matchCond) {
         var services = (Services) p_services;
         var matchCond = (MatchConditions) p_matchCond;
         for (var rule : rules) {
@@ -221,7 +222,7 @@ public abstract class TacletExecutor extends
             Goal goal,
             PosInOccurrence posOfFind,
             LogicServices p_services,
-            org.key_project.prover.rules.instantiation.MatchConditions matchCond) {
+            MatchResultInfo matchCond) {
         // TODO
     }
 

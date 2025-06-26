@@ -3,9 +3,10 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.rule;
 
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
-public class MatchConditions extends org.key_project.prover.rules.instantiation.MatchConditions {
+public class MatchConditions extends MatchResultInfo {
     public static final MatchConditions EMPTY_MATCHCONDITIONS =
         new MatchConditions(SVInstantiations.EMPTY_SVINSTANTIATIONS);
 

@@ -9,7 +9,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.Services;
@@ -164,7 +164,7 @@ public class NoPosTacletApp extends TacletApp {
             return null;
         }
 
-        MatchConditions res;
+        MatchResultInfo res;
         if (taclet() instanceof FindTaclet) {
             res = taclet().getMatcher().matchFind(t, mc, services);
             // the following check will partly be repeated within the
@@ -178,7 +178,7 @@ public class NoPosTacletApp extends TacletApp {
         return evalCheckRes(res, services);
     }
 
-    private NoPosTacletApp evalCheckRes(MatchConditions res, Services services) {
+    private NoPosTacletApp evalCheckRes(MatchResultInfo res, Services services) {
         if (res == null) {
             return null;
         }
@@ -200,7 +200,7 @@ public class NoPosTacletApp extends TacletApp {
      * metavariables given by the mc object and forget the old ones
      */
     @Override
-    public TacletApp setMatchConditions(MatchConditions mc, Services services) {
+    public TacletApp setMatchConditions(MatchResultInfo mc, Services services) {
         return createNoPosTacletApp(taclet(), mc.getInstantiations(),
             assumesFormulaInstantiations(),
             services);
@@ -211,7 +211,7 @@ public class NoPosTacletApp extends TacletApp {
      * metavariables and if formula instantiations given and forget the old ones
      */
     @Override
-    protected TacletApp setAllInstantiations(MatchConditions mc,
+    protected TacletApp setAllInstantiations(MatchResultInfo mc,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations, Services services) {
         return createNoPosTacletApp(taclet(), mc.getInstantiations(), ifInstantiations, services);
     }

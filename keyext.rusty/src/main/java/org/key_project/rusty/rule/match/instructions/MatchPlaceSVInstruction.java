@@ -6,7 +6,7 @@ package org.key_project.rusty.rule.match.instructions;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
 import org.key_project.logic.Term;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.PVPlace;
 import org.key_project.rusty.logic.SVPlace;
@@ -20,7 +20,7 @@ public class MatchPlaceSVInstruction extends MatchSchemaVariableInstruction<@Non
         super(place.getSchemaVariable());
     }
 
-    public MatchConditions match(MutRef mr, MatchConditions mc, LogicServices services) {
+    public MatchResultInfo match(MutRef mr, MatchResultInfo mc, LogicServices services) {
         var place = mr.getPlace();
         if (place instanceof PVPlace pvp) {
             return addInstantiation(
@@ -31,13 +31,13 @@ public class MatchPlaceSVInstruction extends MatchSchemaVariableInstruction<@Non
     }
 
     @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions matchConditions,
+    public MatchResultInfo match(SyntaxElementCursor cursor, MatchResultInfo matchConditions,
             LogicServices services) {
         cursor.goToNext();
         var node = cursor.getCurrentNode();
         if (!(node instanceof MutRef mr))
             return null;
-        final MatchConditions result =
+        final MatchResultInfo result =
             match(mr, matchConditions, services);
         if (result != null) {
             cursor.gotoNextSibling();
@@ -46,7 +46,7 @@ public class MatchPlaceSVInstruction extends MatchSchemaVariableInstruction<@Non
     }
 
     @Override
-    public MatchConditions match(Term instantiationCandidate, MatchConditions matchCond,
+    public MatchResultInfo match(Term instantiationCandidate, MatchResultInfo matchCond,
             LogicServices services) {
         return match((MutRef) instantiationCandidate.op(), matchCond, services);
     }

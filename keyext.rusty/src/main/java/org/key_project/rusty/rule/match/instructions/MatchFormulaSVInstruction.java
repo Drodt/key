@@ -6,7 +6,7 @@ package org.key_project.rusty.rule.match.instructions;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
 import org.key_project.logic.Term;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.sv.FormulaSV;
 
@@ -22,7 +22,7 @@ public class MatchFormulaSVInstruction extends MatchSchemaVariableInstruction<@N
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(Term subst, MatchConditions mc, LogicServices services) {
+    public MatchResultInfo match(Term subst, MatchResultInfo mc, LogicServices services) {
         if (subst.sort() == RustyDLTheory.FORMULA) {
             return addInstantiation(subst, mc, services);
         }
@@ -30,10 +30,10 @@ public class MatchFormulaSVInstruction extends MatchSchemaVariableInstruction<@N
     }
 
     @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions mc,
+    public MatchResultInfo match(SyntaxElementCursor cursor, MatchResultInfo mc,
             LogicServices services) {
 
-        final MatchConditions result = match((Term) cursor.getCurrentNode(), mc, services);
+        final MatchResultInfo result = match((Term) cursor.getCurrentNode(), mc, services);
         if (result != null) {
             cursor.gotoNextSibling();
         }

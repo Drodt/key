@@ -5,7 +5,7 @@ package org.key_project.rusty.rule.match.instructions;
 
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.rule.inst.SVInstantiations;
@@ -17,7 +17,7 @@ public class MatchModalOperatorSVInstruction implements MatchInstruction {
         this.op = op;
     }
 
-    public MatchConditions match(Modality.RustyModalityKind kind, MatchConditions mc,
+    public MatchResultInfo match(Modality.RustyModalityKind kind, MatchResultInfo mc,
             LogicServices services) {
         if (op.getModalities().contains(kind)) {
             return mc.setInstantiations(
@@ -28,7 +28,7 @@ public class MatchModalOperatorSVInstruction implements MatchInstruction {
     }
 
     @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions mc,
+    public MatchResultInfo match(SyntaxElementCursor cursor, MatchResultInfo mc,
             LogicServices services) {
         // TODO: is there a better place for this?
         cursor.goToNext();

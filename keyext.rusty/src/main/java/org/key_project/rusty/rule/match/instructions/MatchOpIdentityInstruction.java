@@ -7,7 +7,7 @@ import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 
 /**
  * The match instruction reports a success if the top level operator of the term to be matched is
@@ -27,7 +27,7 @@ public class MatchOpIdentityInstruction<T extends Operator> extends Instruction<
      * {@inheritDoc}
      */
     @Override
-    public final MatchConditions match(Term instantiationCandidate, MatchConditions matchConditions,
+    public final MatchResultInfo match(Term instantiationCandidate, MatchResultInfo matchConditions,
             LogicServices services) {
         if (instantiationCandidate.op() == op) {
             return matchConditions;
@@ -39,7 +39,7 @@ public class MatchOpIdentityInstruction<T extends Operator> extends Instruction<
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(Operator instantiationCandidate, MatchConditions matchConditions,
+    public MatchResultInfo match(Operator instantiationCandidate, MatchResultInfo matchConditions,
             LogicServices services) {
         if (instantiationCandidate == op) {
             return matchConditions;
@@ -51,12 +51,12 @@ public class MatchOpIdentityInstruction<T extends Operator> extends Instruction<
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions matchConditions,
+    public MatchResultInfo match(SyntaxElementCursor cursor, MatchResultInfo matchConditions,
             LogicServices services) {
         // TODO: Is there a more suitable place for this?
         // Go to op
         cursor.goToNext();
-        MatchConditions result =
+        MatchResultInfo result =
             match((Operator) cursor.getCurrentNode(), matchConditions, services);
         if (result != null) {
             cursor.goToNext();

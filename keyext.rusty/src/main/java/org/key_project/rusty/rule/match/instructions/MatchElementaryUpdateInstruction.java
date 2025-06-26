@@ -6,7 +6,7 @@ package org.key_project.rusty.rule.match.instructions;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
 import org.key_project.logic.Term;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
@@ -30,13 +30,13 @@ public class MatchElementaryUpdateInstruction extends Instruction<@NonNull Eleme
     }
 
     @Override
-    public MatchConditions match(Term instantiationCandidate, MatchConditions matchCond,
+    public MatchResultInfo match(Term instantiationCandidate, MatchResultInfo matchCond,
             LogicServices services) {
         return match((ElementaryUpdate) instantiationCandidate.op(), matchCond, services);
     }
 
-    public MatchConditions match(ElementaryUpdate instantiationCandidateOp,
-            MatchConditions matchCond,
+    public MatchResultInfo match(ElementaryUpdate instantiationCandidateOp,
+            MatchResultInfo matchCond,
             LogicServices services) {
         if (instantiationCandidateOp != op) {
             matchCond = leftHandSide.match(instantiationCandidateOp.lhs(), matchCond, services);
@@ -45,13 +45,13 @@ public class MatchElementaryUpdateInstruction extends Instruction<@NonNull Eleme
     }
 
     @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions matchConditions,
+    public MatchResultInfo match(SyntaxElementCursor cursor, MatchResultInfo matchConditions,
             LogicServices services) {
         cursor.goToNext();
         var node = cursor.getCurrentNode();
         if (!(node instanceof ElementaryUpdate eu))
             return null;
-        final MatchConditions result =
+        final MatchResultInfo result =
             match(eu, matchConditions, services);
         if (result != null) {
             cursor.gotoNextSibling();

@@ -8,7 +8,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.SVPlace;
@@ -87,16 +87,16 @@ public abstract class Instruction<Op extends Operator> implements MatchInstructi
 
     /**
      * tries to match the schema variable of this instruction with the specified {@link Term}
-     * {@code instantiationCandidate} w.r.t. the given constraints by {@link MatchConditions}
+     * {@code instantiationCandidate} w.r.t. the given constraints by {@link MatchResultInfo}
      *
      * @param instantiationCandidate the {@link Term} to be matched
-     * @param matchCond the {@link MatchConditions} with additional constraints (e.g. previous
+     * @param matchCond the {@link MatchResultInfo} with additional constraints (e.g. previous
      *        matches of this schemavariable)
      * @param services the {@link Services}
-     * @return {@code null} if no matches have been found or the new {@link MatchConditions} with
+     * @return {@code null} if no matches have been found or the new {@link MatchResultInfo} with
      *         the pair {@code (sv, instantiationCandidate)} added
      */
-    public abstract MatchConditions match(Term instantiationCandidate,
-            MatchConditions matchCond,
+    public abstract MatchResultInfo match(Term instantiationCandidate,
+            MatchResultInfo matchCond,
             LogicServices services);
 }

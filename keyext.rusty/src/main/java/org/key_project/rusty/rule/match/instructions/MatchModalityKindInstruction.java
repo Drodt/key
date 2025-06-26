@@ -5,7 +5,7 @@ package org.key_project.rusty.rule.match.instructions;
 
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElementCursor;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.logic.op.Modality;
 
 
@@ -26,7 +26,7 @@ public class MatchModalityKindInstruction implements MatchInstruction {
      * {@inheritDoc}
      */
     @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions matchConditions,
+    public MatchResultInfo match(SyntaxElementCursor cursor, MatchResultInfo matchConditions,
             LogicServices services) {
         cursor.goToNext();
         cursor.goToNext();

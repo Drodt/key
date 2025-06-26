@@ -5,6 +5,7 @@ package org.key_project.rusty.rule;
 
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElement;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 
 /**
@@ -34,9 +35,9 @@ public interface VariableCondition extends org.key_project.prover.rules.Variable
             Services services);
 
     @Override
-    default org.key_project.prover.rules.instantiation.MatchConditions check(
+    default MatchResultInfo check(
             org.key_project.logic.op.sv.SchemaVariable var, SyntaxElement instCandidate,
-            org.key_project.prover.rules.instantiation.MatchConditions matchCond,
+            MatchResultInfo matchCond,
             LogicServices services) {
         return check(var, instCandidate, (MatchConditions) matchCond,
             (Services) services);
