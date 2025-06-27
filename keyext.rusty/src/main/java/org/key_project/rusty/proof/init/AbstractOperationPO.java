@@ -8,9 +8,9 @@ import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.logic.RustyBlock;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
 
 /**
@@ -161,13 +161,13 @@ public abstract class AbstractOperationPO extends AbstractPO {
     }
 
     /**
-     * Returns the {@link Modality.RustyModalityKind} to use as termination
+     * Returns the {@link RModality.RustyModalityKind} to use as termination
      * marker.
      *
-     * @return The {@link Modality.RustyModalityKind} to use as termination
+     * @return The {@link RModality.RustyModalityKind} to use as termination
      *         marker.
      */
-    protected abstract Modality.RustyModalityKind getTerminationMarker();
+    protected abstract RModality.RustyModalityKind getTerminationMarker();
 
     /**
      * Builds the initial updates.

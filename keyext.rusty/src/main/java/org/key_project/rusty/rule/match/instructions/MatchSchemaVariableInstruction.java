@@ -9,23 +9,21 @@ import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
+import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 import org.jspecify.annotations.NonNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.key_project.rusty.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
 
-public abstract class MatchSchemaVariableInstruction<SV extends @NonNull OperatorSV>
-        extends Instruction<SV> {
-    private static final Logger LOGGER =
-        LoggerFactory.getLogger(MatchSchemaVariableInstruction.class);
+public abstract class MatchSchemaVariableInstruction
+        implements MatchInstruction {
+    protected final @NonNull OperatorSV op;
 
-    protected MatchSchemaVariableInstruction(SV op) {
-        super(op);
+    protected MatchSchemaVariableInstruction(@NonNull OperatorSV op) {
+        this.op = op;
     }
 
     /**

@@ -9,7 +9,7 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.InfiniteLoopExpression;
 import org.key_project.rusty.logic.RustyBlock;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.VariableCondition;
@@ -53,7 +53,7 @@ public class LoopInvariantCondition implements VariableCondition {
 
         final var rb = new RustyBlock(svInst.getContextInstantiation().contextProgram());
 
-        var modKind = (Modality.RustyModalityKind) svInst.getInstantiation(modalitySV);
+        var modKind = (RModality.RustyModalityKind) svInst.getInstantiation(modalitySV);
 
         Term invInst = tb.tt();
 

@@ -11,6 +11,7 @@ import org.key_project.logic.op.Modality;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
@@ -263,7 +264,7 @@ class TermImpl implements Term {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (op() instanceof Modality mod) {
-            if (mod.kind() == org.key_project.rusty.logic.op.Modality.RustyModalityKind.DIA) {
+            if (mod.kind() == RModality.RustyModalityKind.DIA) {
                 sb.append("\\<").append(mod.programBlock()).append("\\>");
             } else {
                 sb.append("\\[").append(mod.programBlock()).append("\\]");

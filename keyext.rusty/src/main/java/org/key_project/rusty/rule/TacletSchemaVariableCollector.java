@@ -15,7 +15,7 @@ import org.key_project.prover.sequent.Semisequent;
 import org.key_project.rusty.ast.visitor.ProgramSVCollector;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
@@ -71,7 +71,7 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
     @Override
     public void visit(Term visited) {
         final Operator op = visited.op();
-        if (op instanceof Modality mod) {
+        if (op instanceof RModality mod) {
             if (mod.kind() instanceof ModalOperatorSV msv) {
                 varList = varList.prepend(msv);
             }

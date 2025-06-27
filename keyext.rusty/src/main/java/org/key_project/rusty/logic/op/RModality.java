@@ -20,11 +20,11 @@ import org.jspecify.annotations.NonNull;
  * This class is used to represent a dynamic logic modality like diamond and box (but also
  * extensions of DL like preserves and throughout are possible in the future).
  */
-public class Modality extends org.key_project.logic.op.Modality {
+public class RModality extends org.key_project.logic.op.Modality {
     /**
      * keeps track of created modalities
      */
-    private static final Map<RustyProgramElement, WeakHashMap<RustyModalityKind, WeakReference<Modality>>> modalities =
+    private static final Map<RustyProgramElement, WeakHashMap<RustyModalityKind, WeakReference<RModality>>> modalities =
         new WeakHashMap<>();
 
     /**
@@ -34,20 +34,20 @@ public class Modality extends org.key_project.logic.op.Modality {
      * @param rb the program of this modality
      * @return the modality of the given useKind and program.
      */
-    public static synchronized Modality getModality(RustyModalityKind kind, RustyBlock rb) {
+    public static synchronized RModality getModality(RustyModalityKind kind, RustyBlock rb) {
         var kind2mod = modalities.get(rb.program());
-        final Modality mod;
-        WeakReference<Modality> modRef;
+        final RModality mod;
+        WeakReference<RModality> modRef;
         if (kind2mod == null) {
             kind2mod = new WeakHashMap<>();
-            mod = new Modality(rb, kind);
+            mod = new RModality(rb, kind);
             modRef = new WeakReference<>(mod);
             kind2mod.put(kind, modRef);
             modalities.put(rb.program(), kind2mod);
         } else {
             modRef = kind2mod.get(kind);
             if (modRef == null || modRef.get() == null) {
-                mod = new Modality(rb, kind);
+                mod = new RModality(rb, kind);
                 modRef = new WeakReference<>(mod);
                 kind2mod.put(kind, modRef);
                 modalities.put(rb.program(), kind2mod);
@@ -65,7 +65,7 @@ public class Modality extends org.key_project.logic.op.Modality {
      * <strong>Creation must only be done by ???!</strong>
      *
      */
-    private Modality(RustyBlock prg, RustyModalityKind kind) {
+    private RModality(RustyBlock prg, RustyModalityKind kind) {
         super(kind.name(), RustyDLTheory.FORMULA, kind);
         this.block = prg;
     }

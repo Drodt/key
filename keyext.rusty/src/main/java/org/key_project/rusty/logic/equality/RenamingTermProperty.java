@@ -11,8 +11,8 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.NameAbstractionTable;
 import org.key_project.rusty.logic.RustyBlock;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -133,7 +133,7 @@ public class RenamingTermProperty implements Property<Term> {
 
         final Operator op1 = t1.op();
 
-        if (op0 instanceof Modality mod0 && op1 instanceof Modality mod1) {
+        if (op0 instanceof RModality mod0 && op1 instanceof RModality mod1) {
             if (mod0.kind() != mod1.kind()) {
                 return false;
             }
@@ -307,7 +307,7 @@ public class RenamingTermProperty implements Property<Term> {
         final Operator op = term.op();
         if (op instanceof QuantifiableVariable qv) {
             hashCode = 17 * hashCode + hashQuantifiableVariable(qv, nameAbstractionList);
-        } else if (op instanceof Modality mod) {
+        } else if (op instanceof RModality mod) {
             hashCode = 17 * hashCode + mod.kind().hashCode();
             hashCode = 17 * hashCode + hashRustyBlock(mod);
         } else if (op instanceof ProgramVariable pv) {
@@ -343,10 +343,10 @@ public class RenamingTermProperty implements Property<Term> {
      * <p>
      * The hash code is computed based on the hash code of the program element of the Rust block.
      *
-     * @param mod the {@link Modality} to compute the hash code for
+     * @param mod the {@link RModality} to compute the hash code for
      * @return the hash code
      */
-    private int hashRustyBlock(Modality mod) {
+    private int hashRustyBlock(RModality mod) {
         final RustyBlock rb = mod.programBlock();
         if (!rb.isEmpty()) {
             final RustyProgramElement rpe = rb.program();

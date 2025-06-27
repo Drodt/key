@@ -21,8 +21,8 @@ import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.stmt.EmptyStatement;
 import org.key_project.rusty.ast.visitor.RustyASTVisitor;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.proof.Goal;
@@ -370,7 +370,7 @@ public abstract class VariableNamer implements InstantiationProposer {
     protected RustyProgramElement getProgramFromPIO(PosInOccurrence pio) {
         Term progTerm;
         if (pio != null && (progTerm = findProgramInTerm(pio.subTerm())) != null) {
-            var mod = (Modality) progTerm.op();
+            var mod = (RModality) progTerm.op();
             return mod.programBlock().program();
         } else {
             return new EmptyStatement();
@@ -381,7 +381,7 @@ public abstract class VariableNamer implements InstantiationProposer {
      * returns the subterm containing a java block, or null (helper for getProgramFromPIO())
      */
     private Term findProgramInTerm(Term term) {
-        if (term.op() instanceof Modality) {
+        if (term.op() instanceof RModality) {
             return term;
         }
         for (int i = 0; i < term.arity(); i++) {

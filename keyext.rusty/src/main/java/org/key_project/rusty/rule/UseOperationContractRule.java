@@ -16,9 +16,9 @@ import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.fn.Function;
 import org.key_project.rusty.ast.visitor.ProgramContextAdder;
 import org.key_project.rusty.logic.*;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.proof.Goal;
@@ -177,15 +177,15 @@ public final class UseOperationContractRule implements BuiltInRule {
      */
     private static ImmutableSet<FunctionalOperationContract> getApplicableContracts(
             Services services, ProgramFunction fn,
-            Modality.RustyModalityKind modalityKind) {
+            RModality.RustyModalityKind modalityKind) {
         ImmutableSet<FunctionalOperationContract> result =
             services.getSpecificationRepository().getOperationContracts(fn, modalityKind);
 
         // in box modalities, diamond contracts may be applied as well
-        if (modalityKind == Modality.RustyModalityKind.BOX) {
+        if (modalityKind == RModality.RustyModalityKind.BOX) {
             result = result.union(
                 services.getSpecificationRepository().getOperationContracts(fn,
-                    Modality.RustyModalityKind.DIA));
+                    RModality.RustyModalityKind.DIA));
         }
 
         return result;
@@ -213,7 +213,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         }
 
         // focus (below update) must be modality term
-        if (!(progPost.op() instanceof Modality modality)) {
+        if (!(progPost.op() instanceof RModality modality)) {
             return null;
         }
 
@@ -274,7 +274,7 @@ public final class UseOperationContractRule implements BuiltInRule {
 
         // contract can be applied if modality is box and needs no termination
         // argument
-        if (inst.modality.kind() == Modality.RustyModalityKind.BOX) {
+        if (inst.modality.kind() == RModality.RustyModalityKind.BOX) {
             return true;
         }
 
@@ -371,7 +371,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         }
         final BlockExpression postBE = replaceBlock(rb, resultAssign);
         final RustyBlock postRustyBlock = new RustyBlock(postBE);
-        Modality modality = Modality.getModality(inst.modality.kind(), postRustyBlock);
+        RModality modality = RModality.getModality(inst.modality.kind(), postRustyBlock);
         final Term normalPost =
             tb.prog(modality.kind(), modality.programBlock(), inst.progPost.sub(0));
         postGoal.changeFormula(new SequentFormula(tb.apply(inst.u, normalPost)),
@@ -468,7 +468,7 @@ public final class UseOperationContractRule implements BuiltInRule {
      * @param fn The program function.
      * @param actualParams The actual parameter terms.
      */
-    public record Instantiation(Term u, Term progPost, Modality modality, Expr actualResult,
+    public record Instantiation(Term u, Term progPost, RModality modality, Expr actualResult,
             Term actualSelf,
             Call call, ProgramFunction fn,
             ImmutableList<Term> actualParams) {

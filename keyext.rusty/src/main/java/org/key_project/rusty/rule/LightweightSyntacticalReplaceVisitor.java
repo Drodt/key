@@ -22,7 +22,7 @@ import org.key_project.rusty.ast.visitor.ProgramReplaceVisitor;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.SubstOp;
 import org.key_project.rusty.logic.op.TermTransformer;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
@@ -105,7 +105,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
             // instantiation of java block
             boolean rblockChanged = false;
 
-            if (visitedOp instanceof Modality mod) {
+            if (visitedOp instanceof RModality mod) {
                 var rb = mod.programBlock();
                 var olfRb = rb;
                 rb = replacePrg(svInst, rb);
@@ -237,13 +237,13 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
         return (result == rb.program()) ? rb : new RustyBlock(result);
     }
 
-    private Operator instantiateModality(Modality op, RustyBlock rb) {
-        Modality.RustyModalityKind kind = op.kind();
+    private Operator instantiateModality(RModality op, RustyBlock rb) {
+        RModality.RustyModalityKind kind = op.kind();
         if (op.kind() instanceof ModalOperatorSV) {
-            kind = (Modality.RustyModalityKind) svInst.getInstantiation(op.kind());
+            kind = (RModality.RustyModalityKind) svInst.getInstantiation(op.kind());
         }
         if (rb != op.programBlock() || kind != op.kind()) {
-            return Modality.getModality(kind, rb);
+            return RModality.getModality(kind, rb);
         }
         return op;
     }

@@ -17,8 +17,8 @@ import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.logic.op.sv.*;
 import org.key_project.rusty.logic.sort.GenericSort;
@@ -185,10 +185,10 @@ public class TacletIndex {
     private static Object getIndexObj(FindTaclet tac) {
         Object indexObj;
         final Term indexTerm = tac.find();
-        if (indexTerm.op() instanceof Modality mod) {
+        if (indexTerm.op() instanceof RModality mod) {
             final RustyProgramElement prg = mod.programBlock().program();
             if (prg.getChildCount() == 0) {
-                indexObj = Modality.class;
+                indexObj = RModality.class;
             } else {
                 indexObj = prg.getChild(0);
                 if (!(indexObj instanceof SchemaVariable)) {
@@ -199,8 +199,8 @@ public class TacletIndex {
             indexObj = indexTerm.op();
             if (indexObj instanceof ElementaryUpdate) {
                 indexObj = ElementaryUpdate.class;
-            } else if (indexObj instanceof Modality) {
-                indexObj = Modality.class;
+            } else if (indexObj instanceof RModality) {
+                indexObj = RModality.class;
             }
         }
 
@@ -378,13 +378,13 @@ public class TacletIndex {
         ImmutableList<NoPosTacletApp> res = ImmutableSLList.nil();
         final Operator op = term.op();
 
-        if (op instanceof Modality mod) {
+        if (op instanceof RModality mod) {
             prefixOccurrences.reset();
             final var sb = (BlockExpression) mod.programBlock().program();
             res = getRustyTacletList(map, (RustyProgramElement) sb.getChild(0), prefixOccurrences);
         }
 
-        if (term.op() instanceof Modality || op instanceof ProgramVariable) {
+        if (term.op() instanceof RModality || op instanceof ProgramVariable) {
             res = merge(res, map.get(DEFAULT_PROGSV_KEY));
         }
 
@@ -396,8 +396,8 @@ public class TacletIndex {
          * } else
          */ if (op instanceof ElementaryUpdate) {
             inMap = map.get(ElementaryUpdate.class);
-        } else if (op instanceof Modality) {
-            inMap = map.get(Modality.class);
+        } else if (op instanceof RModality) {
+            inMap = map.get(RModality.class);
         } else {
             inMap = map.get(op);
         }

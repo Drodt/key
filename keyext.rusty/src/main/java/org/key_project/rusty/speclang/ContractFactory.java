@@ -6,8 +6,8 @@ package org.key_project.rusty.speclang;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
+import org.key_project.rusty.logic.op.RModality;
 
 public class ContractFactory {
     private final Services services;
@@ -49,7 +49,7 @@ public class ContractFactory {
      * @return the resulting functional operation contract
      */
     public FunctionalOperationContract func(String baseName, ProgramFunction fn,
-            Modality.RustyModalityKind modalityKind,
+            RModality.RustyModalityKind modalityKind,
             Term pre, Term mby,
             Term post,
             Term modifiable,
@@ -84,7 +84,8 @@ public class ContractFactory {
             Term modifiable,
             ProgramVariableCollection progVars, boolean toBeSaved) {
         return func(baseName, fn,
-            terminates ? Modality.RustyModalityKind.DIA : Modality.RustyModalityKind.BOX, pre, mby,
+            terminates ? RModality.RustyModalityKind.DIA : RModality.RustyModalityKind.BOX, pre,
+            mby,
             post, modifiable, progVars, toBeSaved);
     }
 }

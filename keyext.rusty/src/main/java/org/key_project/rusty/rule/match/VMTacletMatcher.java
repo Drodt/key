@@ -13,10 +13,8 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.conditions.NotFreeIn;
-import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
-import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
-import org.key_project.prover.rules.instantiation.AssumesMatchResult;
-import org.key_project.prover.rules.instantiation.MatchResultInfo;
+import org.key_project.prover.rules.instantiation.*;
+import org.key_project.prover.rules.matcher.vm.VMProgramInterpreter;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.rule.*;
@@ -24,6 +22,7 @@ import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.match.instructions.MatchSchemaVariableInstruction;
+import org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
@@ -34,9 +33,9 @@ import static org.key_project.rusty.logic.equality.RenamingTermProperty.RENAMING
 
 public class VMTacletMatcher implements TacletMatcher {
     /** the matcher for the find expression of the taclet */
-    private final TacletMatchProgram findMatchProgram;
+    private final VMProgramInterpreter findMatchProgram;
     /** the matcher for the taclet's assumes formulas */
-    private final HashMap<Term, TacletMatchProgram> assumesMatchPrograms = new HashMap<>();
+    private final HashMap<Term, VMProgramInterpreter> assumesMatchPrograms = new HashMap<>();
 
     /**
      * the variable conditions of the taclet that need to be satisfied by found schema variable
@@ -72,16 +71,18 @@ public class VMTacletMatcher implements TacletMatcher {
             findExp = ft.find();
             ignoreTopLevelUpdates = ft.ignoreTopLevelUpdates()
                     && !(findExp.op() instanceof UpdateApplication);
-            findMatchProgram = TacletMatchProgram.createProgram(findExp);
+            findMatchProgram =
+                new VMProgramInterpreter(SyntaxElementMatchProgramGenerator.createProgram(findExp));
 
         } else {
             ignoreTopLevelUpdates = false;
             findExp = null;
-            findMatchProgram = TacletMatchProgram.EMPTY_PROGRAM;
+            findMatchProgram = null;
         }
 
         for (var sf : assumesSequent) {
-            assumesMatchPrograms.put(sf.formula(), TacletMatchProgram.createProgram(sf.formula()));
+            assumesMatchPrograms.put(sf.formula(), new VMProgramInterpreter(
+                SyntaxElementMatchProgramGenerator.createProgram(sf.formula())));
         }
     }
 
@@ -90,12 +91,12 @@ public class VMTacletMatcher implements TacletMatcher {
             Term term,
             MatchResultInfo matchCond,
             LogicServices services) {
-        if (findMatchProgram == TacletMatchProgram.EMPTY_PROGRAM) {
+        if (findMatchProgram == null) {
             return null;
         }
         if (ignoreTopLevelUpdates) {
-            Pair</* term below updates */Term, MatchConditions> resultUpdateMatch =
-                matchAndIgnoreUpdatePrefix(term, (MatchConditions) matchCond);
+            Pair</* term below updates */Term, MatchResultInfo> resultUpdateMatch =
+                matchAndIgnoreUpdatePrefix(term, matchCond);
             term = resultUpdateMatch.first;
             matchCond = resultUpdateMatch.second;
         }
@@ -193,16 +194,17 @@ public class VMTacletMatcher implements TacletMatcher {
      * @return a pair of updated match conditions and the unwrapped term without the ignored updates
      *         (Which have been added to the update context in the match conditions)
      */
-    private Pair<Term, MatchConditions> matchAndIgnoreUpdatePrefix(final Term term,
-            MatchConditions matchCond) {
+    private Pair<Term, MatchResultInfo> matchAndIgnoreUpdatePrefix(final Term term,
+            MatchResultInfo matchCond) {
 
         final Operator sourceOp = term.op();
 
         if (sourceOp instanceof UpdateApplication) {
             // updates can be ignored
             Term update = UpdateApplication.getUpdate(term);
+            var instantiations = ((MatchConditions) matchCond).getInstantiations();
             matchCond = matchCond.setInstantiations(
-                matchCond.getInstantiations().addUpdate(update));
+                instantiations.addUpdate(update));
             return matchAndIgnoreUpdatePrefix(UpdateApplication.getTarget(term), matchCond);
         } else {
             return new Pair<>(term, matchCond);
@@ -214,7 +216,7 @@ public class VMTacletMatcher implements TacletMatcher {
             org.key_project.logic.Term p_template,
             MatchResultInfo p_matchCond,
             LogicServices p_services) {
-        TacletMatchProgram prg = assumesMatchPrograms.get(p_template);
+        VMProgramInterpreter prg = assumesMatchPrograms.get(p_template);
         MatchConditions matchCond = (MatchConditions) p_matchCond;
 
         ImmutableList<AssumesFormulaInstantiation> resFormulas =
@@ -332,8 +334,8 @@ public class VMTacletMatcher implements TacletMatcher {
             MatchResultInfo matchCond,
             LogicServices services) {
 
-        final MatchSchemaVariableInstruction<? extends SchemaVariable> instr =
-            TacletMatchProgram.getMatchInstructionForSV(sv);
+        final MatchSchemaVariableInstruction instr =
+            RustyDLMatchInstructionSet.getMatchInstructionForSV(sv);
 
         if (syntaxElement instanceof Term term) {
             matchCond = instr.match(term, matchCond, services);

@@ -62,12 +62,12 @@ public class FnSpecConverter {
         }).toList());
         if (diverges == tb.ff()) {
             return Stream.of(new FunctionalOperationContractImpl(name, name, target,
-                Modality.RustyModalityKind.DIA, pre, variant, post, null, paramVars, result,
+                RModality.RustyModalityKind.DIA, pre, variant, post, null, paramVars, result,
                 null, 0, true, services));
         }
         if (diverges == tb.tt()) {
             return Stream.of(new FunctionalOperationContractImpl(name, name, target,
-                Modality.RustyModalityKind.BOX, pre, variant, post, null, paramVars, result,
+                RModality.RustyModalityKind.BOX, pre, variant, post, null, paramVars, result,
                 null, 0, true, services));
         }
         // TODO

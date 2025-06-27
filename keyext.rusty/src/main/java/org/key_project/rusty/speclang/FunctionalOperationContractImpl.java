@@ -13,9 +13,9 @@ import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.proof.OpReplacer;
 import org.key_project.rusty.proof.init.ContractPO;
 import org.key_project.rusty.proof.init.FunctionalOperationContractPO;
@@ -31,7 +31,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     final String baseName;
     final String name;
     final ProgramFunction fn;
-    final Modality.RustyModalityKind modalityKind;
+    final RModality.RustyModalityKind modalityKind;
     /**
      * The original precondition terms.
      */
@@ -65,7 +65,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     // -------------------------------------------------------------------------
 
     FunctionalOperationContractImpl(String baseName, String name,
-            ProgramFunction fn, Modality.RustyModalityKind modalityKind,
+            ProgramFunction fn, RModality.RustyModalityKind modalityKind,
             Term pre, Term mby, Term post, Term modifiables,
             ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar, Term globalDefs,
             int id, boolean toBeSaved,
@@ -175,7 +175,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     @Override
-    public Modality.RustyModalityKind getModalityKind() {
+    public RModality.RustyModalityKind getModalityKind() {
         return modalityKind;
     }
 

@@ -15,8 +15,8 @@ import org.key_project.rusty.ast.expr.LoopExpression;
 import org.key_project.rusty.ast.visitor.RustyASTVisitor;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.speclang.LoopSpecImpl;
 import org.key_project.rusty.speclang.LoopSpecification;
@@ -36,7 +36,7 @@ public class IntroAtPreDefs extends AbstractTermTransformer {
         final TermBuilder tb = services.getTermBuilder();
         final Term target = term.sub(0);
 
-        final var pe = ((Modality) target.op()).programBlock().program();
+        final var pe = ((RModality) target.op()).programBlock().program();
 
         final var fnFrame = RustTools.getInnermostFunctionFrame(pe, services);
 

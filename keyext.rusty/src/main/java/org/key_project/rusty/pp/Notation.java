@@ -154,8 +154,8 @@ public abstract class Notation {
         }
 
         public void print(Term t, LogicPrinter sp) {
-            assert t.op() instanceof Modality;
-            var mod = (Modality) t.op();
+            assert t.op() instanceof RModality;
+            var mod = (RModality) t.op();
             sp.printModalityTerm(left, mod.programBlock(), right, t, ass);
         }
     }
@@ -172,7 +172,7 @@ public abstract class Notation {
         }
 
         public void print(Term t, LogicPrinter sp) {
-            var mod = (Modality) t.op();
+            var mod = (RModality) t.op();
             sp.printModalityTerm("\\modality{" + t.op().name() + "}", mod.programBlock(),
                 "\\endmodality", t, ass);
         }
@@ -343,7 +343,7 @@ public abstract class Notation {
             } else if (v instanceof ModalOperatorSV modalOperatorSV) {
                 sp.layouter().beginC(0).beginC().print("\\schemaVar \\modalOperator {").brk(0);
                 boolean first = true;
-                for (Modality.RustyModalityKind modality : modalOperatorSV.getModalities()) {
+                for (RModality.RustyModalityKind modality : modalOperatorSV.getModalities()) {
                     if (!first) {
                         sp.layouter().print(",").brk();
                     } else {

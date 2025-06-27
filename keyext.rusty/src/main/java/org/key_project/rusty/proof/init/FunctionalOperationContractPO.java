@@ -11,9 +11,9 @@ import org.key_project.rusty.ast.PathSegment;
 import org.key_project.rusty.ast.ResDef;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -57,7 +57,7 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
     }
 
     @Override
-    protected Modality.RustyModalityKind getTerminationMarker() {
+    protected RModality.RustyModalityKind getTerminationMarker() {
         return getContract().getModalityKind();
     }
 

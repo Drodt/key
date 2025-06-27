@@ -9,7 +9,7 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.rule.LightweightSyntacticalReplaceVisitor;
 import org.key_project.rusty.rule.MatchConditions;
@@ -55,7 +55,7 @@ public class StoreExprInCondition implements VariableCondition {
         // We assume that the term has a RustyBlock and that consists of a BlockExpression
         // containing exactly one statement; see JavaDoc.
 
-        var mod = (Modality) instantiatedTerm.op();
+        var mod = (RModality) instantiatedTerm.op();
         var be = (BlockExpression) mod.programBlock().program();
         var es = (ExpressionStatement) be.getChild(0);
 

@@ -8,7 +8,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.IObserverFunction;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
@@ -58,7 +58,7 @@ public class ContractRuleApp extends AbstractContractRuleApp {
         if (contracts.size() != 1) {
             return this; // incomplete app;
         }
-        var m = ((Modality) programTerm().op()).<Modality.RustyModalityKind>kind();
+        var m = ((RModality) programTerm().op()).<RModality.RustyModalityKind>kind();
         return setContract(contracts.iterator().next());
     }
 
@@ -72,7 +72,7 @@ public class ContractRuleApp extends AbstractContractRuleApp {
             UseOperationContractRule.getApplicableContracts(UseOperationContractRule
                     .computeInstantiation(posInOccurrence().subTerm(), services),
                 services);
-        var m = ((Modality) programTerm().op()).<Modality.RustyModalityKind>kind();
+        var m = ((RModality) programTerm().op()).<RModality.RustyModalityKind>kind();
         // final FunctionalOperationContract combinedContract =
         // services.getSpecificationRepository().combineOperationContracts(contracts);
         assert contracts.size() == 1;

@@ -19,7 +19,7 @@ import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.logic.*;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.op.sv.SchemaVariableFactory;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
@@ -29,7 +29,6 @@ import org.key_project.rusty.parser.varcond.ArgumentType;
 import org.key_project.rusty.parser.varcond.TacletBuilderCommand;
 import org.key_project.rusty.parser.varcond.TacletBuilderManipulators;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
-import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.tacletbuilder.*;
 import org.key_project.rusty.util.parsing.BuildingException;
 import org.key_project.util.collection.*;
@@ -106,7 +105,7 @@ public class TacletPBuilder extends ExpressionBuilder {
     @Override
     public Object visitOne_schema_modal_op_decl(
             KeYRustyParser.One_schema_modal_op_declContext ctx) {
-        ImmutableSet<Modality.RustyModalityKind> modalities = DefaultImmutableSet.nil();
+        ImmutableSet<RModality.RustyModalityKind> modalities = DefaultImmutableSet.nil();
         Sort sort = accept(ctx.sort);
         if (sort != null && sort != RustyDLTheory.FORMULA) {
             semanticError(ctx, "Modal operator SV must be a FORMULA, not " + sort);

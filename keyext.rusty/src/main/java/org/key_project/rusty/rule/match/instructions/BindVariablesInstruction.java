@@ -4,17 +4,18 @@
 package org.key_project.rusty.rule.match.instructions;
 
 import org.key_project.logic.LogicServices;
-import org.key_project.logic.SyntaxElementCursor;
+import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
+import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.BoundVariable;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-/** This instructions matches the variable below a binder (e.g. a quantifier). */
+/** This instruction matches the variable below a binder (e.g. a quantifier). */
 public class BindVariablesInstruction {
 
     public static MatchInstruction create(QuantifiableVariable var) {
@@ -35,7 +36,7 @@ public class BindVariablesInstruction {
          */
         private MatchResultInfo match(
                 BoundVariable instantiationCandidate, MatchResultInfo matchCond,
-                LogicServices services) {
+                LogicServices ignoredServices) {
             if (templateVar != instantiationCandidate) {
                 if (instantiationCandidate.sort() != templateVar.sort()) {
                     matchCond = null;
@@ -45,22 +46,18 @@ public class BindVariablesInstruction {
         }
 
         @Override
-        public MatchResultInfo match(
-                SyntaxElementCursor cursor,
+        public @Nullable MatchResultInfo match(SyntaxElement actualElement,
                 MatchResultInfo matchConditions, LogicServices services) {
-            var node = cursor.getCurrentNode();
-            if (!(node instanceof BoundVariable bv)) {
+            if (!(actualElement instanceof BoundVariable bv)) {
                 return null;
             }
-            var result = match(bv, matchConditions, services);
-            cursor.gotoNextSibling();
-            return result;
+            return match(bv, matchConditions, services);
         }
     }
 
 
     private static class VariableSVBinder
-            extends MatchSchemaVariableInstruction<@NonNull VariableSV> {
+            extends MatchSchemaVariableInstruction {
 
         public VariableSVBinder(VariableSV templateVar) {
             super(templateVar);
@@ -80,22 +77,12 @@ public class BindVariablesInstruction {
         }
 
         @Override
-        public MatchResultInfo match(
-                SyntaxElementCursor cursor, MatchResultInfo matchConditions,
-                LogicServices services) {
-            var node = cursor.getCurrentNode();
-            if (!(node instanceof BoundVariable bv)) {
+        public @Nullable MatchResultInfo match(SyntaxElement actualElement,
+                MatchResultInfo matchConditions, LogicServices services) {
+            if (!(actualElement instanceof BoundVariable bv)) {
                 return null;
             }
-            var result = match(bv, matchConditions, (Services) services);
-            cursor.gotoNextSibling();
-            return result;
-        }
-
-        @Override
-        public MatchResultInfo match(
-                Term instantiationCandidate, MatchResultInfo matchCond, LogicServices services) {
-            throw new UnsupportedOperationException();
+            return match(bv, matchConditions, (Services) services);
         }
     }
 }

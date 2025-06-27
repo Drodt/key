@@ -6,7 +6,7 @@ package org.key_project.rusty.logic.op.sv;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.ImmutableSet;
 
@@ -50,7 +50,7 @@ public class SchemaVariableFactory {
      * @return the SchemaVariable
      */
     public static ModalOperatorSV createModalOperatorSV(Name name, Sort sort,
-            ImmutableSet<Modality.RustyModalityKind> modalityKinds) {
+            ImmutableSet<RModality.RustyModalityKind> modalityKinds) {
         return new ModalOperatorSV(name, modalityKinds);
     }
 

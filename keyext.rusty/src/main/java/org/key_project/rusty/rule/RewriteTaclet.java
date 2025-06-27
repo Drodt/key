@@ -15,7 +15,7 @@ import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.logic.op.IfThenElse;
 import org.key_project.rusty.logic.op.Junctor;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.rule.executor.rustydl.RewriteTacletExecutor;
 import org.key_project.rusty.rule.inst.SVInstantiations;
@@ -122,7 +122,7 @@ public class RewriteTaclet extends FindTaclet {
                     svi = svi.addUpdate(update);
                 }
             } else if (!applicationRestriction().equals(ApplicationRestriction.NONE)
-                    && (op instanceof Modality)) {
+                    && (op instanceof RModality)) {
                 return null;
             }
 

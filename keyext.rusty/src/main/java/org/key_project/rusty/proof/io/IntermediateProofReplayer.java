@@ -26,8 +26,8 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.op.LogicVariable;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.*;
 import org.key_project.rusty.parser.KeYIO;
 import org.key_project.rusty.proof.Goal;
@@ -623,7 +623,7 @@ public class IntermediateProofReplayer {
             result = app.createSkolemConstant(value, skolemSv, true, services);
         } else if (sv instanceof ModalOperatorSV msv) {
             result = app.addInstantiation(
-                app.instantiations().add(msv, Modality.RustyModalityKind.getKind(value), services),
+                app.instantiations().add(msv, RModality.RustyModalityKind.getKind(value), services),
                 services);
         } else {
             var varNS = p.getNamespaces().variables();

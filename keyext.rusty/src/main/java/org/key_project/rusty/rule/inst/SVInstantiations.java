@@ -16,7 +16,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.RustyDLTheory;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.SchemaVariableFactory;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.*;
@@ -108,7 +108,7 @@ public class SVInstantiations
     /**
      * Add the given additional condition for the generic sort instantiations
      */
-    public SVInstantiations add(SchemaVariable sv, Modality.RustyModalityKind kind,
+    public SVInstantiations add(SchemaVariable sv, RModality.RustyModalityKind kind,
             LogicServices services) throws SortException {
         return add(sv, new InstantiationEntry<>(kind) {
         }, services);
@@ -381,7 +381,8 @@ public class SVInstantiations
     /**
      * Add the given additional condition for the generic sort instantiations
      */
-    public SVInstantiations add(GenericSortCondition p_c, Services services) throws SortException {
+    public SVInstantiations add(GenericSortCondition p_c, LogicServices services)
+            throws SortException {
         return new SVInstantiations(map, getUpdateContext(),
             getGenericSortInstantiations(), getGenericSortConditions().prepend(p_c))
                 .checkCondition(p_c, false, services);

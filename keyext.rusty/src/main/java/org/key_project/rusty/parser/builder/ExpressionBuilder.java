@@ -22,7 +22,7 @@ import org.key_project.rusty.ast.SchemaRustyReader;
 import org.key_project.rusty.ldt.LDT;
 import org.key_project.rusty.logic.*;
 import org.key_project.rusty.logic.op.*;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
@@ -552,12 +552,12 @@ public class ExpressionBuilder extends DefaultBuilder {
         return getServices().getTermFactory();
     }
 
-    protected ImmutableSet<Modality.RustyModalityKind> opSVHelper(String opName,
-            ImmutableSet<Modality.RustyModalityKind> modalityKinds) {
+    protected ImmutableSet<RModality.RustyModalityKind> opSVHelper(String opName,
+            ImmutableSet<RModality.RustyModalityKind> modalityKinds) {
         if (opName.charAt(0) == '#') {
             return lookupOperatorSV(opName, modalityKinds);
         } else {
-            Modality.RustyModalityKind m = Modality.RustyModalityKind.getKind(opName);
+            RModality.RustyModalityKind m = RModality.RustyModalityKind.getKind(opName);
             if (m == null) {
                 semanticError(null, "Unrecognised operator: " + opName);
             }
@@ -616,8 +616,8 @@ public class ExpressionBuilder extends DefaultBuilder {
         return ss;
     }
 
-    private ImmutableSet<Modality.RustyModalityKind> lookupOperatorSV(String opName,
-            ImmutableSet<Modality.RustyModalityKind> modalityKinds) {
+    private ImmutableSet<RModality.RustyModalityKind> lookupOperatorSV(String opName,
+            ImmutableSet<RModality.RustyModalityKind> modalityKinds) {
         SchemaVariable sv = schemaVariables().lookup(new Name(opName));
         if (sv instanceof ModalOperatorSV osv) {
             modalityKinds = modalityKinds.union(osv.getModalities());
@@ -829,11 +829,11 @@ public class ExpressionBuilder extends DefaultBuilder {
              * if (!inSchemaMode()) { semanticError(ctx,
              * "No schema elements allowed outside taclet declarations (" + sjb.opName + ")"); }
              */
-            var kind = (Modality.RustyModalityKind) schemaVariables().lookup(new Name(sjb.opName));
-            op = Modality.getModality(kind, sjb.rustyBlock);
+            var kind = (RModality.RustyModalityKind) schemaVariables().lookup(new Name(sjb.opName));
+            op = RModality.getModality(kind, sjb.rustyBlock);
         } else {
-            var kind = Modality.RustyModalityKind.getKind(sjb.opName);
-            op = Modality.getModality(kind, sjb.rustyBlock);
+            var kind = RModality.RustyModalityKind.getKind(sjb.opName);
+            op = RModality.getModality(kind, sjb.rustyBlock);
         }
         if (op == null) {
             semanticError(ctx, "Unknown modal operator: " + sjb.opName);

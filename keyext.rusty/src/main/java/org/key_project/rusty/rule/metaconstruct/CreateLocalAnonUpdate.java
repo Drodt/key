@@ -9,9 +9,9 @@ import org.key_project.logic.op.Function;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RFunction;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.collection.ImmutableSet;
@@ -33,7 +33,7 @@ public class CreateLocalAnonUpdate extends AbstractTermTransformer {
         final Term target = term.sub(0);
 
         // the target term should have a program block
-        if (!(target.op() instanceof Modality mod)) {
+        if (!(target.op() instanceof RModality mod)) {
             return null;
         }
 

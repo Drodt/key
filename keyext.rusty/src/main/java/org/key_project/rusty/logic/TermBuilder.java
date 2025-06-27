@@ -235,16 +235,16 @@ public class TermBuilder {
         return tf.createTerm(f, s, boundVars);
     }
 
-    public Term prog(Modality.RustyModalityKind modKind, RustyBlock jb, Term t) {
-        return tf.createTerm(Modality.getModality(modKind, jb), new Term[] { t }, null);
+    public Term prog(RModality.RustyModalityKind modKind, RustyBlock jb, Term t) {
+        return tf.createTerm(RModality.getModality(modKind, jb), new Term[] { t }, null);
     }
 
     public Term box(RustyBlock jb, Term t) {
-        return prog(Modality.RustyModalityKind.BOX, jb, t);
+        return prog(RModality.RustyModalityKind.BOX, jb, t);
     }
 
     public Term dia(RustyBlock jb, Term t) {
-        return prog(Modality.RustyModalityKind.DIA, jb, t);
+        return prog(RModality.RustyModalityKind.DIA, jb, t);
     }
 
     public Term ife(Term cond, Term _then, Term _else) {

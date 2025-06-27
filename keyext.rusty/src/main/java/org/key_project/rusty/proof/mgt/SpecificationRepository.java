@@ -10,8 +10,8 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.InfiniteLoopExpression;
 import org.key_project.rusty.ast.expr.LoopExpression;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.rusty.speclang.LoopSpecification;
@@ -35,7 +35,7 @@ public class SpecificationRepository {
     }
 
     public ImmutableSet<FunctionalOperationContract> getOperationContracts(ProgramFunction fn,
-            Modality.RustyModalityKind modalityKind) {
+            RModality.RustyModalityKind modalityKind) {
         ImmutableSet<FunctionalOperationContract> result = getOperationContracts(fn);
         for (var contract : result) {
             if (!contract.getModalityKind().equals(modalityKind)) {

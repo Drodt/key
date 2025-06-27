@@ -18,8 +18,8 @@ import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.visitor.ProgVarReplaceVisitor;
 import org.key_project.rusty.logic.*;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.inst.*;
 import org.key_project.util.collection.*;
@@ -183,12 +183,12 @@ public final class ProgVarReplacer {
 
         Operator op = t.op();
         boolean changedOp = false;
-        if (op instanceof Modality mod) {
+        if (op instanceof RModality mod) {
             var be = (BlockExpression) mod.programBlock().program();
             var newBe = (BlockExpression) replace(be);
             if (newBe != be) {
                 var newRb = new RustyBlock(newBe);
-                op = Modality.getModality(mod.kind(), newRb);
+                op = RModality.getModality(mod.kind(), newRb);
                 changedOp = true;
             }
         }

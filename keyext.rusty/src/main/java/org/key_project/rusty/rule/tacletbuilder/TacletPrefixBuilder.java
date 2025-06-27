@@ -11,7 +11,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.conditions.NotFreeIn;
 import org.key_project.prover.sequent.Sequent;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.FormulaSV;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.TermSV;
@@ -63,7 +63,7 @@ public class TacletPrefixBuilder {
     }
 
     private void visit(Term t) {
-        if (t.op() instanceof Modality mod && mod.kind() instanceof ModalOperatorSV msv) {
+        if (t.op() instanceof RModality mod && mod.kind() instanceof ModalOperatorSV msv) {
             // TODO: Is false correct?
             prefixMap.put(msv, new TacletPrefix(0, false));
         }

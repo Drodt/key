@@ -21,8 +21,8 @@ import org.key_project.rusty.ast.HirRustyReader;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.ProofAggregate;
@@ -349,7 +349,7 @@ public final class ProblemInitializer {
             if (namespaces.programVariables().lookup(pv.name()) == null) {
                 rootGoal.addProgramVariable(pv);
             }
-        } else if (term.op() instanceof Modality mod) {
+        } else if (term.op() instanceof RModality mod) {
             final RustyProgramElement pe = mod.programBlock().program();
             final Services serv = rootGoal.proof().getServices();
             final ImmutableSet<ProgramVariable> freeProgVars =

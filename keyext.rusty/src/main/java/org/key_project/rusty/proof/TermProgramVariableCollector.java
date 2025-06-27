@@ -10,8 +10,8 @@ import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.visitor.ProgramVariableCollector;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 
 import org.jspecify.annotations.NonNull;
 
@@ -37,7 +37,7 @@ public class TermProgramVariableCollector implements Visitor<@NonNull Term> {
             result.add(variable);
         }
 
-        if (visited.op() instanceof Modality mod) {
+        if (visited.op() instanceof RModality mod) {
             ProgramVariableCollector pvc =
                 new ProgramVariableCollector(mod.programBlock().program(), services);
             pvc.start();

@@ -92,9 +92,9 @@ public class NotationInfo {
             new Notation.Quantifier("\\forall", PRIORITY_QUANTIFIER, PRIORITY_QUANTIFIER));
         tbl.put(Quantifier.EX,
             new Notation.Quantifier("\\exists", PRIORITY_QUANTIFIER, PRIORITY_QUANTIFIER));
-        tbl.put(Modality.RustyModalityKind.DIA,
+        tbl.put(RModality.RustyModalityKind.DIA,
             new Notation.ModalityNotation("\\<", "\\>", PRIORITY_MODALITY, PRIORITY_POST_MODALITY));
-        tbl.put(Modality.RustyModalityKind.BOX,
+        tbl.put(RModality.RustyModalityKind.BOX,
             new Notation.ModalityNotation("\\[", "\\]", PRIORITY_MODALITY, PRIORITY_POST_MODALITY));
         tbl.put(ModalOperatorSV.class,
             new Notation.ModalSVNotation(PRIORITY_MODALITY, PRIORITY_POST_MODALITY));
@@ -167,7 +167,7 @@ public class NotationInfo {
             return result;
         }
 
-        if (op instanceof Modality mod) {
+        if (op instanceof RModality mod) {
             result = notationTable.get(mod.kind());
             if (result != null) {
                 return result;

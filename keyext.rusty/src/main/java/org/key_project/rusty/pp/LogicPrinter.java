@@ -1093,9 +1093,9 @@ public class LogicPrinter {
     public void printModalityTerm(String left, RustyBlock jb, String right, Term phi, int ass) {
         assert jb != null;
         assert jb.program() != null;
-        if (phi.op() instanceof Modality mod && mod.kind() instanceof ModalOperatorSV) {
+        if (phi.op() instanceof RModality mod && mod.kind() instanceof ModalOperatorSV) {
             Object o = getInstantiations().getInstantiation(mod.kind());
-            if (o instanceof Modality.RustyModalityKind kind) {
+            if (o instanceof RModality.RustyModalityKind kind) {
                 if (notationInfo.getAbbrevMap().isEnabled(phi)) {
                     layouter.startTerm(0);
                     layouter.print(notationInfo.getAbbrevMap().getAbbrev(phi));
@@ -1104,8 +1104,8 @@ public class LogicPrinter {
                     for (int i = 0; i < phi.arity(); i++) {
                         ta[i] = phi.sub(i);
                     }
-                    final Modality m =
-                        Modality.getModality(kind, mod.programBlock());
+                    final RModality m =
+                        RModality.getModality(kind, mod.programBlock());
                     final Term term = services.getTermFactory().createTerm(m, ta,
                         (ImmutableArray<QuantifiableVariable>) phi.boundVars());
                     notationInfo.getNotation(m).print(term, this);

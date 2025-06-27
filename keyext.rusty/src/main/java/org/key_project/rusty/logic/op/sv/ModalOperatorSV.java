@@ -9,17 +9,17 @@ import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
-public class ModalOperatorSV extends Modality.RustyModalityKind implements SchemaVariable {
+public class ModalOperatorSV extends RModality.RustyModalityKind implements SchemaVariable {
     /**
      * the set of modalities this sv can match
      */
-    private final ImmutableSet<Modality.RustyModalityKind> modalities;
+    private final ImmutableSet<RModality.RustyModalityKind> modalities;
 
 
     /**
@@ -28,7 +28,7 @@ public class ModalOperatorSV extends Modality.RustyModalityKind implements Schem
      * @param name the Name of the SchemaVariable
      * @param modalityKinds modal operators matched by this SV
      */
-    ModalOperatorSV(Name name, ImmutableSet<Modality.RustyModalityKind> modalityKinds) {
+    ModalOperatorSV(Name name, ImmutableSet<RModality.RustyModalityKind> modalityKinds) {
         super(name);
         this.modalities = modalityKinds;
     }
@@ -36,7 +36,7 @@ public class ModalOperatorSV extends Modality.RustyModalityKind implements Schem
     /**
      * returns an unmodifiable set of operators this schemavariable can match
      */
-    public ImmutableSet<Modality.RustyModalityKind> getModalities() {
+    public ImmutableSet<RModality.RustyModalityKind> getModalities() {
         return modalities;
     }
 
