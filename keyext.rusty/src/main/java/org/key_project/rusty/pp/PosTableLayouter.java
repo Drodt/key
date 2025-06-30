@@ -92,7 +92,8 @@ public class PosTableLayouter extends Layouter<PosTableLayouter.Mark> {
     }
 
     /// Called before a substring is printed that has its own entry in a position table. The method
-    /// sends a mark to the layouter, which will make the backend set a start entry in posTbl, push a
+    /// sends a mark to the layouter, which will make the backend set a start entry in posTbl, push
+    /// a
     /// new StackEntry with the current posTbl and current pos on the stack and set the current pos
     /// to the length of the current string result. Subclasses may overwrite this method with an
     /// empty body if position information is not needed there.
@@ -107,7 +108,8 @@ public class PosTableLayouter extends Layouter<PosTableLayouter.Mark> {
 
     /// Called after a substring is printed that has its own entry in a position table. The backend
     /// will finish the position table on the top of the stack and set the entry on the top of the
-    /// stack to be the current position/position table. Subclasses may overwrite this method with an
+    /// stack to be the current position/position table. Subclasses may overwrite this method with
+    /// an
     /// empty body if position information is not needed there.
     public void markEndSub() {
         mark(MarkType.MARK_END_SUB);

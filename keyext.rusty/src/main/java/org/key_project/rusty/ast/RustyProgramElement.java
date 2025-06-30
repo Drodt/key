@@ -66,7 +66,8 @@ public interface RustyProgramElement extends SyntaxElement {
         return pos >= max;
     }
 
-    /// calls the corresponding method of a visitor in order to perform some action/transformation on
+    /// calls the corresponding method of a visitor in order to perform some action/transformation
+    /// on
     /// this element
     ///
     /// @param v the Visitor

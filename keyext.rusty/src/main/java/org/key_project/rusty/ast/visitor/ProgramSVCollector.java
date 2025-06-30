@@ -21,7 +21,7 @@ public class ProgramSVCollector extends RustyASTWalker {
     /// @param root the ProgramElement where to begin
     /// @param vars the IList<SchemaVariable> where to add the new-found ones
     /// @param svInst the SVInstantiations previously found in order to determine the needed labels
-    ///        for the UnwindLoop construct.
+    /// for the UnwindLoop construct.
     public ProgramSVCollector(RustyProgramElement root, ImmutableList<SchemaVariable> vars,
             SVInstantiations svInst) {
         super(root);

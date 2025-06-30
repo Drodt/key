@@ -14,7 +14,8 @@ import org.key_project.util.collection.ImmutableSet;
 
 /// Sort used for generic taclets
 ///
-/// Within an SVInstantiations-object a generic sort is instantiated by a concrete sort, which has to
+/// Within an SVInstantiations-object a generic sort is instantiated by a concrete sort, which has
+/// to
 /// be a subsort of the instantiations of the supersorts of this sort
 public class GenericSort extends SortImpl {
     /// list of sorts this generic sort may be instantiated with; EMPTY_SORT_SORT means that every
@@ -24,7 +25,7 @@ public class GenericSort extends SortImpl {
     /// creates a generic sort
     ///
     /// @param ext supersorts of this sort, which have to be either concrete sorts or plain generic
-    ///        sorts (i.e. not collection sorts of generic sorts)
+    /// sorts (i.e. not collection sorts of generic sorts)
     public GenericSort(Name name, ImmutableSet<Sort> ext, ImmutableSet<Sort> oneOf) {
         super(name, false, ext);
         this.oneOf = oneOf;
@@ -42,9 +43,9 @@ public class GenericSort extends SortImpl {
     }
 
     /// @return true if "p_s" is a possible instantiation of this sort. This method does not check
-    ///         the instantiations of other generic sorts, i.e. the return value true is possible
-    ///         even if "p_s" is not a valid instantiation.
-    ///         Use "GenericSortInstantiations" instead
+    /// the instantiations of other generic sorts, i.e. the return value true is possible
+    /// even if "p_s" is not a valid instantiation.
+    /// Use "GenericSortInstantiations" instead
     public boolean isPossibleInstantiation(Sort p_s) {
         return p_s != RustyDLTheory.FORMULA && (oneOf.isEmpty() || oneOf.contains(p_s))
                 && checkNonGenericSupersorts(p_s);

@@ -5,6 +5,7 @@ package org.key_project.rusty.logic;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
 import org.key_project.logic.op.Modality;
@@ -51,15 +52,16 @@ class TermImpl implements Term {
     private ThreeValuedTruth containsCodeBlockRecursive = ThreeValuedTruth.UNKNOWN;
     private ImmutableSet<QuantifiableVariable> freeVars = null;
 
-    /// Constructs a term for the given operator, with the given sub terms, bounded variables and (if
+    /// Constructs a term for the given operator, with the given sub terms, bounded variables and
+    /// (if
     /// applicable) the code block on this term.
     ///
     /// @param op the operator of the term, e.g., some arithmetic operation
     /// @param subs the sub terms of the constructed term (whose type is constrained by the used
-    ///        operator)
+    /// operator)
     /// @param boundVars the bounded variables (if applicable), e.g., for quantifiers
     public TermImpl(Operator op, ImmutableArray<Term> subs,
-            ImmutableArray<QuantifiableVariable> boundVars) {
+            @Nullable ImmutableArray<QuantifiableVariable> boundVars) {
         assert op != null;
         assert subs != null;
         this.op = op;

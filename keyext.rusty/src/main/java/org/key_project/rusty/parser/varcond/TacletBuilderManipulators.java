@@ -11,7 +11,6 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
-import org.key_project.rusty.parser.builder.TacletPBuilder;
 import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
 

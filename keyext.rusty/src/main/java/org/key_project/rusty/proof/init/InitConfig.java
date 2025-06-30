@@ -96,7 +96,8 @@ public class InitConfig {
         return settings;
     }
 
-    /// returns the Services of this initial configuration providing access to the used program model
+    /// returns the Services of this initial configuration providing access to the used program
+    /// model
     ///
     /// @return the Services of this initial configuration
     public Services getServices() {
@@ -143,7 +144,8 @@ public class InitConfig {
     }
 
 
-    /// Returns the choices which are currently active. For getting the active choices for a specific
+    /// Returns the choices which are currently active. For getting the active choices for a
+    /// specific
     /// proof, <code>getChoices</code> in <code>de.uka.ilkd.key.proof.Proof
     /// </code> has to be used.
     public ImmutableSet<Choice> getActivatedChoices() {

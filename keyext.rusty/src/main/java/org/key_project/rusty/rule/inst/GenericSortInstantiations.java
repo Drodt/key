@@ -84,9 +84,9 @@ public final class GenericSortInstantiations {
 
 
     /// @return `Boolean.TRUE` if the sorts used within "p_entry" are correct,
-    ///         `Boolean.FALSE` if the
-    ///         sorts are definitely incorrect, null if the sorts could (perhaps) be made correct by
-    ///         choosing the right generic sort instantiations
+    /// `Boolean.FALSE` if the
+    /// sorts are definitely incorrect, null if the sorts could (perhaps) be made correct by
+    /// choosing the right generic sort instantiations
     public Boolean checkSorts(OperatorSV sv, InstantiationEntry<?> p_entry) {
         if (!(p_entry instanceof TermInstantiation) || sv instanceof ProgramSV) {
             return Boolean.TRUE;
@@ -108,8 +108,8 @@ public final class GenericSortInstantiations {
 
 
     /// @return Boolean.TRUE if the generic sort instantiations within "this" satisfy "p_condition",
-    ///         null otherwise (this means, "p_condition" could be satisfied by create a new
-    ///         "GenericSortInstantiations"-object)
+    /// null otherwise (this means, "p_condition" could be satisfied by create a new
+    /// "GenericSortInstantiations"-object)
     public Boolean checkCondition(GenericSortCondition p_condition) {
         Sort s = insts.get(p_condition.getGenericSort());
 
@@ -134,7 +134,8 @@ public final class GenericSortInstantiations {
         return insts.isEmpty();
     }
 
-    /// Create a list of conditions establishing the instantiations stored by this object (not saying
+    /// Create a list of conditions establishing the instantiations stored by this object (not
+    /// saying
     /// anything about further generic sorts)
     public ImmutableList<GenericSortCondition> toConditions() {
         ImmutableList<GenericSortCondition> res = ImmutableSLList.nil();
@@ -150,7 +151,7 @@ public final class GenericSortInstantiations {
 
 
     /// @return p_s iff p_s is not a generic sort, the concrete sort p_s is instantiated with
-    ///         currently otherwise
+    /// currently otherwise
     /// @throws GenericSortException iff p_s is a generic sort which is not yet instantiated
     public Sort getRealSort(OperatorSV p_sv) {
         return getRealSort(p_sv.sort());
@@ -208,7 +209,8 @@ public final class GenericSortInstantiations {
     private final static FailException FAIL_EXCEPTION = new FailException();
 
 
-    /// Method which is called recursively and tries to instantiate one (the first) generic sort from
+    /// Method which is called recursively and tries to instantiate one (the first) generic sort
+    /// from
     /// the "p_remainingSorts"-list
     ///
     /// @param p_remainingSorts generic sorts which needs to be instantiated (topologically sorted)
@@ -387,11 +389,12 @@ public final class GenericSortInstantiations {
     }
 
 
-    /// Method which is called recursively and tries to instantiate one (the first) generic sort from
+    /// Method which is called recursively and tries to instantiate one (the first) generic sort
+    /// from
     /// the "p_remainingSorts"-list
     ///
     /// @param p_remainingSorts generic sorts which needs to be instantiated (topologically sorted,
-    ///        starting with the most general sort)
+    /// starting with the most general sort)
     /// @param p_curRes instantiations so far
     /// @return a solution if one could be found, null otherwise
     private static ImmutableMap<GenericSort, Sort> solveForcedInstHelp(
@@ -606,7 +609,7 @@ public final class GenericSortInstantiations {
 
 
     /// @return true iff "p_s" is a valid instantiation of the generic sort "p_gs", and this
-    ///         instantiation is consistent with previously chosen instantiations
+    /// instantiation is consistent with previously chosen instantiations
     private static boolean isPossibleInstantiation(GenericSort p_gs, Sort p_s,
             ImmutableMap<GenericSort, Sort> p_curRes) {
 

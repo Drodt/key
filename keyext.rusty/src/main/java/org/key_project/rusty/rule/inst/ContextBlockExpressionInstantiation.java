@@ -7,7 +7,8 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.PosInProgram;
 
 /// this class is created if the scheme given by a context term has matched to a Rust program. The
-/// ContextBlockExpressionInstantiation class stores the instantiations of the prefix and the suffix.
+/// ContextBlockExpressionInstantiation class stores the instantiations of the prefix and the
+/// suffix.
 public class ContextBlockExpressionInstantiation {
     /// the end position of the prefix omega
     private final PosInProgram prefixEnd;

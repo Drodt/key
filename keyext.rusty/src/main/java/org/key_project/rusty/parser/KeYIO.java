@@ -16,8 +16,6 @@ import org.key_project.prover.rules.Taclet;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.parser.builder.*;
-import org.key_project.rusty.proof.init.ProblemInitializer;
-import org.key_project.rusty.util.parsing.BuildingException;
 import org.key_project.rusty.util.parsing.BuildingIssue;
 
 import org.antlr.v4.runtime.CharStream;
@@ -95,7 +93,8 @@ public class KeYIO {
         return new Loader(content, null);
     }
 
-    /// Loading of complete KeY files into the given schema. Supports recursive loading, but does not
+    /// Loading of complete KeY files into the given schema. Supports recursive loading, but does
+    /// not
     /// provide support for Java and Rust type informations.
     ///
     /// Little sister of [ProblemInitializer].

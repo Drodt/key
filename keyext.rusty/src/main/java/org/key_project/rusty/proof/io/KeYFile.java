@@ -311,7 +311,7 @@ public class KeYFile implements EnvInput {
     ///
     /// @param issues the [BuildingIssue]s to be converted into [String]s
     /// @return list containing a [String] for each [BuildingIssue]
-    ///         in <code>issues</code>
+    /// in <code>issues</code>
     protected List<String> getPositionedStrings(List<BuildingIssue> issues) {
         return issues.stream().map(BuildingIssue::message)
                 .collect(Collectors.<String>toList());

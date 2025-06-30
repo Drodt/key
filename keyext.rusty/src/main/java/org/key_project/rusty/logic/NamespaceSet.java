@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Choice;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
@@ -102,7 +103,7 @@ public class NamespaceSet {
 
     /// looks up if the given name is found in one of the namespaces and returns the named object or
     /// null if no object with the same name has been found
-    public Named lookup(Name name) {
+    public @Nullable Named lookup(Name name) {
         final Namespace<?>[] spaces = asArray();
         return lookup(name, spaces);
     }
@@ -110,8 +111,8 @@ public class NamespaceSet {
     /// @param name
     /// @param spaces
     /// @return the element with the given name if found in the given namespaces, otherwise
-    ///         <tt>null</tt>
-    private Named lookup(Name name, final Namespace<?>[] spaces) {
+    /// <tt>null</tt>
+    private @Nullable Named lookup(Name name, final Namespace<?>[] spaces) {
         for (Namespace<?> space : spaces) {
             final Named n = space.lookup(name);
             if (n != null) {
@@ -138,7 +139,7 @@ public class NamespaceSet {
     ///
     /// @param name the Name to look up
     /// @return the element of the given name or null
-    public Named lookupLogicSymbol(Name name) {
+    public @Nullable Named lookupLogicSymbol(Name name) {
         return lookup(name, logicAsArray());
     }
 
@@ -154,6 +155,8 @@ public class NamespaceSet {
         }
     }
 
+    // TODO: Nullness
+    @SuppressWarnings("argument.type.incompatible")
     public NamespaceSet getParent() {
         return new NamespaceSet(varNS.parent(), progVarNS.parent(), funcNS.parent(),
             choiceNS.parent(), sortNS.parent());

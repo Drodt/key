@@ -42,8 +42,9 @@ public interface FileRepo {
 
     /// This method can be used to write a file that has no counterpart outside to the FileRepo.
     ///
-    /// @param path the path of the file to store. The path must be relative to the base directory of
-    ///        the proof package.
+    /// @param path the path of the file to store. The path must be relative to the base directory
+    /// of
+    /// the proof package.
     /// @return an OutputStream to the file in the FileRepo
     /// @throws FileNotFoundException if a file with the given path exists
     OutputStream createOutputStream(Path path) throws FileNotFoundException;
@@ -59,13 +60,14 @@ public interface FileRepo {
     /// @throws IllegalStateException if the Rust path is already set
     void setRustyPath(String rustyPath) throws IllegalStateException;
 
-    /// Sets the base directory of the proof, i.e. the main directory where the proof is loaded from.
+    /// Sets the base directory of the proof, i.e. the main directory where the proof is loaded
+    /// from.
     /// When loading Rust sources this is the directory the loaded file resides in. When loading
     /// .key-Files this is the directory specified via "\\programSource" or the directory of the
     /// .key-File, if no source directory is specified.
     /// This is needed by the FileRepo for resolving pathnames.
     ///
     /// @param path The path of the base directory. If a file is given, then its parent directory is
-    ///        set as base path.
+    /// set as base path.
     void setBaseDir(Path path);
 }

@@ -25,8 +25,9 @@ public class SemisequentTacletAppIndex {
     /// Create an index object for the semisequent determined by <code>s</code> and
     /// <code>antec</code> that contains term indices for each formula.
     ///
-    /// @param antec iff true create an index for the antecedent of <code>s</code>, otherwise for the
-    ///        succedent
+    /// @param antec iff true create an index for the antecedent of <code>s</code>, otherwise for
+    /// the
+    /// succedent
     SemisequentTacletAppIndex(Sequent s, boolean antec, Services services,
             TacletIndex tacletIndex) {
         this.seq = s;

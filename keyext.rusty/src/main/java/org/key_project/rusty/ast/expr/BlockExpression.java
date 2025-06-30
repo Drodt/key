@@ -6,6 +6,7 @@ package org.key_project.rusty.ast.expr;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ElseBranch;
@@ -24,12 +25,12 @@ import org.jspecify.annotations.NonNull;
 
 public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch, ElseBranch {
     protected final ImmutableList<Statement> statements;
-    protected final Expr value;
+    protected final @Nullable Expr value;
     private final int prefixLength;
 
     private int hashCode = -1;
 
-    public BlockExpression(ImmutableList<Statement> statements, Expr value) {
+    public BlockExpression(ImmutableList<Statement> statements, @Nullable Expr value) {
         this.statements = statements;
         this.value = value;
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
@@ -61,7 +62,7 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
         return statements;
     }
 
-    public Expr getValue() {
+    public @Nullable Expr getValue() {
         return value;
     }
 

@@ -71,9 +71,9 @@ public abstract class AbstractProblemLoader {
     /// @param includes Optional includes to consider.
     /// @param profileOfNewProofs The [Profile] to use for new [Proof]s.
     /// @param control The [ProblemLoaderControl] to use.
-    ///        [#selectProofObligation(InitConfig)] if no [Proof] is
-    ///        defined by the loaded proof or `false` otherwise which still allows to work with
-    ///        the loaded [InitConfig].
+    /// [#selectProofObligation(InitConfig)] if no [Proof] is
+    /// defined by the loaded proof or `false` otherwise which still allows to work with
+    /// the loaded [InitConfig].
     protected AbstractProblemLoader(File file,
             List<File> includes, Profile profileOfNewProofs,
             ProblemLoaderControl control) {
@@ -102,7 +102,7 @@ public abstract class AbstractProblemLoader {
     /// possible.
     ///
     /// @param callbackProofLoaded optional callback, called when the proof is loaded but not yet
-    ///        replayed
+    /// replayed
     /// @throws ProofInputException Occurred Exception.
     /// @throws IOException Occurred Exception.
     /// @throws ProblemLoaderException Occurred Exception.
@@ -186,7 +186,7 @@ public abstract class AbstractProblemLoader {
     ///
     /// @return a FileRepo that can be used for proof bundle saving
     /// @throws IOException if for some reason the FileRepo can not be created (e.g. temporary
-    ///         directory can not be created).
+    /// directory can not be created).
     protected FileRepo createFileRepo() throws IOException {
         // create a FileRepo depending on the settings
         /*
@@ -471,7 +471,7 @@ public abstract class AbstractProblemLoader {
     /// elements and specifications.
     ///
     /// @return The instantiated [InitConfig] which provides access to the loaded source
-    ///         elements and specifications.
+    /// elements and specifications.
     public InitConfig getInitConfig() {
         return initConfig;
     }
@@ -480,7 +480,7 @@ public abstract class AbstractProblemLoader {
     /// process.
     ///
     /// @return The instantiate proof or `null` if no proof was instantiated during loading
-    ///         process.
+    /// process.
     public Proof getProof() {
         return proof;
     }

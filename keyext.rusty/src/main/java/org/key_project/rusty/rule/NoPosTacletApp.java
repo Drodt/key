@@ -55,8 +55,10 @@ public class NoPosTacletApp extends TacletApp {
     }
 
     /// Create TacletApp with immutable "instantiations", i.e. this instantiations must not be
-    /// modified later (e.g. by "addInstantiation"). However, this information is currently only used
-    /// to decide about introduction of metavariables. Immutable instantiations are important for the
+    /// modified later (e.g. by "addInstantiation"). However, this information is currently only
+    /// used
+    /// to decide about introduction of metavariables. Immutable instantiations are important for
+    /// the
     /// "addrules" part of taclets.
     public static NoPosTacletApp createFixedNoPosTacletApp(Taclet taclet,
             SVInstantiations instantiations, Services services) {
@@ -114,9 +116,11 @@ public class NoPosTacletApp extends TacletApp {
         return null;
     }
 
-    /// returns true iff all necessary informations are collected, so that the Taclet can be applied.
+    /// returns true iff all necessary informations are collected, so that the Taclet can be
+    /// applied.
     ///
-    /// @return true iff all necessary informations are collected, so that the Taclet can be applied.
+    /// @return true iff all necessary informations are collected, so that the Taclet can be
+    /// applied.
     @Override
     public boolean complete() {
         return (uninstantiatedVars().isEmpty() && taclet() instanceof NoFindTaclet

@@ -4,12 +4,12 @@
 package org.key_project.rusty.rule;
 
 import org.key_project.logic.Term;
-import org.key_project.logic.Visitor;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 
 /// This class is used to collect all appearing SchemaVariables that are bound in a Taclet.
-/// Duplicates are not removed becaues the use of persistent datastructure and up to now we just have
+/// Duplicates are not removed becaues the use of persistent datastructure and up to now we just
+/// have
 /// a SetAsList-implementaion causing to have O(sqr(n)) if it would be used. The class is used by
 /// RuleApps to compute all non-instantiated variables.
 public class TacletVariableSVCollector extends TacletSchemaVariableCollector {

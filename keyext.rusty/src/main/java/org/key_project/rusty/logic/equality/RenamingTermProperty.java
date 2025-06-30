@@ -22,7 +22,8 @@ public class RenamingTermProperty implements Property<Term> {
     /// The single instance of this property.
     public static final RenamingTermProperty RENAMING_TERM_PROPERTY = new RenamingTermProperty();
 
-    /// This constructor is private as a single instance of this class should be shared. The instance
+    /// This constructor is private as a single instance of this class should be shared. The
+    /// instance
     /// can be accessed through [#RENAMING_TERM_PROPERTY].
     private RenamingTermProperty() {}
 
@@ -32,7 +33,7 @@ public class RenamingTermProperty implements Property<Term> {
     /// @param term2 the term compared to `term1`
     /// @param v should not be used for this equality check
     /// @return `true` iff `term2` has the same values in operator, sort, arity,
-    ///         varsBoundHere and RustyBlock as `term1` modulo bound renaming
+    /// varsBoundHere and RustyBlock as `term1` modulo bound renaming
     /// @param <V> is not needed for this equality check
     @Override
     public <V> boolean equalsModThisProperty(Term term1, Term term2, V... v) {
@@ -80,7 +81,7 @@ public class RenamingTermProperty implements Property<Term> {
     }
 
     /// @return the index of the first occurrence of <code>var</code> in <code>list</code>, or
-    ///         <code>-1</code> if the variable is not an element of the list
+    /// <code>-1</code> if the variable is not an element of the list
     private static int indexOf(QuantifiableVariable var, ImmutableList<QuantifiableVariable> list) {
         int res = 0;
         while (!list.isEmpty()) {
@@ -172,7 +173,7 @@ public class RenamingTermProperty implements Property<Term> {
     /// @param rb1 the second [RustyBlock] to compare
     /// @param nat the [NameAbstractionTable] used for the comparison
     /// @return the updated [NameAbstractionTable] if the [RustyBlock]s are equal modulo
-    ///         renaming or [#FAILED] if they are not
+    /// renaming or [#FAILED] if they are not
     private static NameAbstractionTable handleRusty(RustyBlock rb0, RustyBlock rb1,
             NameAbstractionTable nat) {
         if (!rb0.isEmpty() || !rb1.isEmpty()) {
@@ -202,7 +203,8 @@ public class RenamingTermProperty implements Property<Term> {
         return true;
     }
 
-    /// Recursively descends into the subterms of the given terms and checks if they are equal modulo
+    /// Recursively descends into the subterms of the given terms and checks if they are equal
+    /// modulo
     /// renaming.
     ///
     /// @param t0 the first term
@@ -267,7 +269,7 @@ public class RenamingTermProperty implements Property<Term> {
     ///
     /// @param term the term to compute the hash code for
     /// @param nameAbstractionList the list of bound variables that is used to abstract from the
-    ///        variable names
+    /// variable names
     /// @param hashCode the accumulated hash code (should be 1 for the first call)
     /// @return the hash code
     private int hashTermHelper(Term term, ImmutableList<QuantifiableVariable> nameAbstractionList,
@@ -292,13 +294,14 @@ public class RenamingTermProperty implements Property<Term> {
 
     /// Computes the hash code of a quantifiable variable modulo bound renaming.
     ///
-    /// If the variable is bound, the hash code is computed based on the index of the variable in the
+    /// If the variable is bound, the hash code is computed based on the index of the variable in
+    /// the
     /// list of bound variables.
     /// If the variable is not bound, the hash code is computed based on the variable itself.
     ///
     /// @param qv the [QuantifiableVariable] to compute the hash code for
     /// @param nameAbstractionList the list of bound variables that is used to abstract from the
-    ///        variable names
+    /// variable names
     /// @return the hash code
     private int hashQuantifiableVariable(QuantifiableVariable qv,
             ImmutableList<QuantifiableVariable> nameAbstractionList) {
@@ -331,7 +334,7 @@ public class RenamingTermProperty implements Property<Term> {
     ///
     /// @param term the term to compute the hash code for
     /// @param nameAbstractionList the list of bound variables that is used to abstract from the
-    ///        variable names
+    /// variable names
     /// @param hashCode the accumulated hash code
     /// @return the hash code
     private int recursiveHelper(Term term, ImmutableList<QuantifiableVariable> nameAbstractionList,

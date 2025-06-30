@@ -32,7 +32,7 @@ public class AbbrevMap {
     /// @param t a term
     /// @param abbreviation the abbreviation for of this term
     /// @param enabled true if the abbreviation should be used (e.g. when printing the term), false
-    ///        otherwise.
+    /// otherwise.
     public void put(Term t, String abbreviation, boolean enabled) throws AbbrevException {
         AbbrevWrapper scw;
         if (containsTerm(t)) {
@@ -124,7 +124,8 @@ public class AbbrevMap {
         termenabled.put(new AbbrevWrapper(t), enabled ? Boolean.TRUE : Boolean.FALSE);
     }
 
-    /// Exports the current abbreviation map as a sequence of pairs of the term and its abbreviation.
+    /// Exports the current abbreviation map as a sequence of pairs of the term and its
+    /// abbreviation.
     /// Note, this will allocate a new data structure each time.
     public Collection<Pair<Term, String>> export() {
         return termstring.entrySet().stream().map(e -> new Pair<>(e.getKey().t, e.getValue()))

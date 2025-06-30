@@ -22,8 +22,6 @@ import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.BoundVarsVisitor;
 import org.key_project.rusty.logic.OpCollector;
-import org.key_project.rusty.proof.RuleAppIndex;
-import org.key_project.rusty.proof.TacletAppIndex;
 import org.key_project.rusty.proof.mgt.AxiomJustification;
 import org.key_project.rusty.proof.mgt.LemmaJustification;
 import org.key_project.rusty.proof.mgt.RuleJustification;
@@ -43,7 +41,7 @@ import org.jspecify.annotations.NonNull;
 /// of a logic (sequent) calculus. A typical taclet definition looks similar to
 ///
 /// <code>
-///    taclet_name { if ( ... ) find ( ... ) goal_descriptions }
+/// taclet_name { if ( ... ) find ( ... ) goal_descriptions }
 /// </code>
 ///
 /// where the if-part must and the find-part can contain a sequent arrow, that indicates, if a term
@@ -56,11 +54,12 @@ import org.jspecify.annotations.NonNull;
 /// goal. Therefore the term of the sequent has to match the schema as found in the taclet's find
 /// part. The taclet is then attached to this term, more precise not the taclet itself, but an
 /// application object of this taclet (see [TacletApp][TacletApp]. When
-/// this attached taclet application object is applied, the new goals are constructed as described by
+/// this attached taclet application object is applied, the new goals are constructed as described
+/// by
 /// the goal descriptions. For example
 ///
 /// <code>
-///    find (A | B ==>) replacewith ( A ==> ); replacewith(B ==>)
+/// find (A | B ==>) replacewith ( A ==> ); replacewith(B ==>)
 /// </code>
 ///
 /// creates two new goals, where the first has been built by replacing <code> A | B </code> with
@@ -69,7 +68,8 @@ import org.jspecify.annotations.NonNull;
 /// of this class serve different purposes: First they represent the syntactical structure of a
 /// taclet, but they also include the taclet interpreter isself. The taclet interpreter knows two
 /// modes: the match and the execution mode. The match mode tries to find a a mapping from
-/// schemavariables to a given term or formula. In the execution mode, a given goal is manipulated in
+/// schemavariables to a given term or formula. In the execution mode, a given goal is manipulated
+/// in
 /// the manner as described by the goal descriptions.
 ///
 ///
@@ -92,15 +92,16 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
     /// creates a Taclet (originally known as Schematic Theory Specific Rules)
     ///
     /// @param name the name of the Taclet
-    /// @param find the Term or Sequent that is the pattern that has to be found in a sequent and the
-    ///        places
-    ///        where it matches the Taclet can be applied
+    /// @param find the Term or Sequent that is the pattern that has to be found in a sequent and
+    /// the
+    /// places
+    /// where it matches the Taclet can be applied
     /// @param applPart contains the application part of an Taclet that is the if-sequence, the
-    ///        variable conditions
+    /// variable conditions
     /// @param goalTemplates a list of goal descriptions.
     /// @param ruleSets a list of rule sets for the Taclet
     /// @param attrs attributes for the Taclet; these are boolean values indicating a noninteractive
-    ///        or recursive use of the Taclet.
+    /// or recursive use of the Taclet.
     protected Taclet(Name name, SyntaxElement find, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
@@ -116,15 +117,16 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
     /// creates a Schematic Theory Specific Rule (Taclet) with the given parameters.
     ///
     /// @param name the name of the Taclet
-    /// @param find the Term or Sequent that is the pattern that has to be found in a sequent and the
-    ///        places
-    ///        where it matches the Taclet can be applied
+    /// @param find the Term or Sequent that is the pattern that has to be found in a sequent and
+    /// the
+    /// places
+    /// where it matches the Taclet can be applied
     /// @param applPart contains the application part of an Taclet that is the if-sequence, the
-    ///        variable conditions
+    /// variable conditions
     /// @param goalTemplates a list of goal descriptions.
     /// @param ruleSets a list of rule sets for the Taclet
     /// @param attrs attributes for the Taclet; these are boolean values indicating a noninteractive
-    ///        or recursive use of the Taclet.
+    /// or recursive use of the Taclet.
     protected Taclet(Name name, SyntaxElement find, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
@@ -151,7 +153,8 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
 
 
     /// computes and returns all variables that occur bound in the taclet including the taclets
-    /// defined in <tt>addrules</tt> sections. The result is cached and therefore only computed once.
+    /// defined in <tt>addrules</tt> sections. The result is cached and therefore only computed
+    /// once.
     ///
     /// @return all variables occuring bound in the taclet
     public ImmutableSet<QuantifiableVariable> getBoundVariables() {
@@ -247,8 +250,9 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
     /// Find a schema variable that could be used to choose a name for an instantiation (a new
     /// variable or constant) of "p"
     ///
-    /// @return a schema variable that is substituted by "p" somewhere in this taclet (that is, these
-    ///         schema variables occur as arguments of a substitution operator)
+    /// @return a schema variable that is substituted by "p" somewhere in this taclet (that is,
+    /// these
+    /// schema variables occur as arguments of a substitution operator)
     public SchemaVariable getNameCorrespondent(SchemaVariable p, Services services) {
         // should be synchronized
         if (svNameCorrespondences == null) {

@@ -15,7 +15,8 @@ import org.jspecify.annotations.NonNull;
 public class BoundVarsVisitor implements Visitor<@NonNull Term> {
     private ImmutableSet<QuantifiableVariable> bdVars = DefaultImmutableSet.nil();
 
-    /// creates a Visitor that collects all bound variables for the subterms of the term it is called
+    /// creates a Visitor that collects all bound variables for the subterms of the term it is
+    /// called
     /// from.
     public BoundVarsVisitor() {
     }

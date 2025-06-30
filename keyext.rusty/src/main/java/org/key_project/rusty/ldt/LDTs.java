@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
@@ -34,7 +35,7 @@ public class LDTs implements Iterable<LDT> {
         return intLDT;
     }
 
-    public LDT get(Name name) {
+    public @Nullable LDT get(Name name) {
         return map.get(name);
     }
 
@@ -44,7 +45,7 @@ public class LDTs implements Iterable<LDT> {
         return map.values().iterator();
     }
 
-    public LDT getLDTFor(Sort s) {
+    public @Nullable LDT getLDTFor(Sort s) {
         for (LDT ldt : this) {
             if (s.equals(ldt.targetSort())) {
                 return ldt;

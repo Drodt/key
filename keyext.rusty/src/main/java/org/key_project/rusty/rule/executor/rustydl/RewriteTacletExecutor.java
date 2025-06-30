@@ -31,9 +31,9 @@ public class RewriteTacletExecutor
     ///
     /// @param add the Sequent to be added
     /// @param currentSequent the Sequent which is the current (intermediate) result of applying the
-    ///        taclet
+    /// taclet
     /// @param posOfFind describes the application position of the find expression in the original
-    ///        sequent
+    /// sequent
     /// @param whereToAdd the PosInOccurrence describes the place where to add the semisequent
     /// @param matchCond the MatchConditions with all required instantiations
     /// @param goal the Goal the taclet is applied to

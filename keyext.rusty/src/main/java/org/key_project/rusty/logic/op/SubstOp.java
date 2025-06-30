@@ -26,7 +26,7 @@ public class SubstOp extends AbstractOperator {
     }
 
     /// @return sort of the second subterm or throws an IllegalArgumentException if the given term
-    ///         has no correct (2=) arity
+    /// has no correct (2=) arity
     @Override
     public Sort sort(Sort[] sorts) {
         if (sorts.length == 2) {

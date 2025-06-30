@@ -74,11 +74,13 @@ public class PosTacletApp extends TacletApp {
     }
 
 
-    /// returns the LogicVariables that are bound above the PositionInOccurrence of the PosTacletApp.
-    /// __OPTIMIZE__ If this method is needed more than once caching the result should be considered.
+    /// returns the LogicVariables that are bound above the PositionInOccurrence of the
+    /// PosTacletApp.
+    /// __OPTIMIZE__ If this method is needed more than once caching the result should be
+    /// considered.
     ///
     /// @return the set of the logicvariables that are bound for the indicated application position
-    ///         of the TacletApp.
+    /// of the TacletApp.
     private static ImmutableSet<QuantifiableVariable> varsBoundAboveFindPos(Taclet taclet,
             PosInOccurrence pos) {
 

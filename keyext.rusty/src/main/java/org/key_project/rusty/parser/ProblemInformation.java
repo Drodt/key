@@ -11,7 +11,8 @@ public class ProblemInformation {
     /// value, this field is non-null and empty.
     private @Nullable String chooseContract;
 
-    /// Value of a "\proofObligation". If "\proofObligation" are mentioned in the file, but without a
+    /// Value of a "\proofObligation". If "\proofObligation" are mentioned in the file, but without
+    /// a
     /// value, this field is non-null and empty.
     private @Nullable String proofObligation;
 

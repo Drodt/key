@@ -33,7 +33,8 @@ public class KeYUserProblemFile extends KeYFile implements ProofOblInput {
     // constructors
     // -------------------------------------------------------------------------
 
-    /// Creates a new representation of a KeYUserFile with the given name, a rule source representing
+    /// Creates a new representation of a KeYUserFile with the given name, a rule source
+    /// representing
     /// the physical source of the input, and a graphical representation to call back in order to
     /// report the progress while reading.
     ///

@@ -33,7 +33,8 @@ public class Layouter<M> {
 
 
     /// Total size of received strings and blanks, if they were printed in one line. The difference
-    /// of this between two states says how much space would be needed to print the intervening stuff
+    /// of this between two states says how much space would be needed to print the intervening
+    /// stuff
     /// without line breaks.
     private int totalSize = 0;
 
@@ -42,7 +43,8 @@ public class Layouter<M> {
     /// <code>stream</code>
     private int totalOutput = 0;
 
-    /// The size assigned to things which are guaranteed not to fit on a line. For good measure, this
+    /// The size assigned to things which are guaranteed not to fit on a line. For good measure,
+    /// this
     /// is initialized to twice the line width by the constructors.
     private final int largeSize;
 
@@ -88,7 +90,8 @@ public class Layouter<M> {
 
     // PRIMITIVE STREAM OPERATIONS ------------------------------------
 
-    /// Output text material. The string <code>s</code> should not contain newline characters. If you
+    /// Output text material. The string <code>s</code> should not contain newline characters. If
+    /// you
     /// have a string with newline characters, and want to retain its formatting, consider using the
     /// [#pre(Strings)] method. The Layouter will not insert any line breaks in such a string.
     ///
@@ -347,7 +350,8 @@ public class Layouter<M> {
     }
 
 
-    /// Layout preformatted text. This amounts to a (consistent) block with indentation 0, where each
+    /// Layout preformatted text. This amounts to a (consistent) block with indentation 0, where
+    /// each
     /// line of <code>s</code> (separated by \n) gets printed as a string and newlines become forced
     /// breaks.
     ///
@@ -437,7 +441,8 @@ public class Layouter<M> {
         abstract int size();
 
         /// Returns whether the followingSize is already known. That is the case if either a
-        /// corresponding next BreakToken or CloseBlockToken has been encountered, or if the material
+        /// corresponding next BreakToken or CloseBlockToken has been encountered, or if the
+        /// material
         /// is known not to fit on a line.
         boolean followingSizeKnown() {
             return true;

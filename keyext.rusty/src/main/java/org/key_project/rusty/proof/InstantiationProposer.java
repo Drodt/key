@@ -18,7 +18,7 @@ public interface InstantiationProposer {
     /// @param services pointer to services object
     /// @param undoAnchor node to be used as undo anchor
     /// @param previousProposals a list of other proposals which should be taken into account (e.g.
-    ///        for name uniqueness), or null
+    /// for name uniqueness), or null
     String getProposal(TacletApp app, SchemaVariable var, Services services, Node undoAnchor,
             ImmutableList<String> previousProposals);
 }

@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof.init.loader;
 
-import java.io.IOException;
 
 import org.key_project.rusty.proof.init.FunctionalOperationContractPO;
 import org.key_project.rusty.proof.init.IPersistablePO;

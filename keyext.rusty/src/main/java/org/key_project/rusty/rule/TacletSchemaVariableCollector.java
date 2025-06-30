@@ -37,7 +37,7 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
 
 
     /// @param svInsts the SVInstantiations that have been already found (needed by unwind loop
-    ///        constructs to determine which labels are needed)
+    /// constructs to determine which labels are needed)
     public TacletSchemaVariableCollector(SVInstantiations svInsts) {
         varList = ImmutableSLList.nil();
         instantiations = svInsts;
@@ -93,8 +93,9 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
     ///
     /// @param op the ElementaryUpdate operator to be scanned for schemavariables
     /// @param vars the ImmutableList<SchemaVariable> with already found schema variables
-    /// @return a list of schema variables containing the ones of <code>vars</code> together with the
-    ///         schema variables found in <code>op</code>
+    /// @return a list of schema variables containing the ones of <code>vars</code> together with
+    /// the
+    /// schema variables found in <code>op</code>
     private ImmutableList<SchemaVariable> collectSVInElementaryUpdate(ElementaryUpdate op,
             ImmutableList<SchemaVariable> vars) {
         ImmutableList<SchemaVariable> result = vars;
@@ -151,7 +152,7 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
     ///
     /// @param taclet the Taclet where the variables have to be collected to
     /// @param visitAddrules a boolean that contols if the addrule sections are to be ignored (iff
-    ///        false) or if the visitor descends into them (iff true)
+    /// false) or if the visitor descends into them (iff true)
     public void visit(Taclet taclet, boolean visitAddrules) {
         visit(taclet.assumesSequent());
         visitFindPart(taclet);

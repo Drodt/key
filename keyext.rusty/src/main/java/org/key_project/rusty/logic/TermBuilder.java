@@ -6,7 +6,6 @@ package org.key_project.rusty.logic;
 import java.util.Iterator;
 
 import org.key_project.logic.Name;
-import org.key_project.logic.Namespace;
 import org.key_project.logic.Term;
 import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.Function;
@@ -573,7 +572,7 @@ public class TermBuilder {
     ///
     /// @param baseName The base name (prefix) for the name to generate.
     /// @return An available name constructed by affixing a counter to the passed base name, or some
-    ///         available free name (please consult comment above).
+    /// available free name (please consult comment above).
     /// @see #newName(String, NamespaceSet)
     public String newName(String baseName) {
         return newName(baseName, services.getNamespaces());
@@ -584,13 +583,14 @@ public class TermBuilder {
     ///
     /// Warning (DS): This method ignores the baseName if there are free name proposals. This can,
     /// for instance, cause troubles in loading proofs containing rule apps with more than one
-    /// introduced (and saved) new name. In this case, the order of new names in the saved proof file
+    /// introduced (and saved) new name. In this case, the order of new names in the saved proof
+    /// file
     /// matters (the first unused name is returned, regardless of the baseName).
     ///
     /// @param baseName The base name (prefix) for the name to generate.
     /// @param localNamespace The local [NamespaceSet] to check.
     /// @return An available name constructed by affixing a counter to the passed base name, or some
-    ///         available free name (please consult comment above).
+    /// available free name (please consult comment above).
     public String newName(String baseName, NamespaceSet localNamespace) {
         final Name savedName = services.getNameRecorder().getProposal();
         if (savedName != null) {

@@ -114,15 +114,17 @@ public final class ProgramSV extends OperatorSV
             services);
     }
 
-    /// adds a found mapping from schema variable <code>var</code> to program element <code>pe</code>
+    /// adds a found mapping from schema variable <code>var</code> to program element
+    /// <code>pe</code>
     /// and returns the updated match conditions or null if mapping is not possible because of
     /// violating some variable condition
     ///
     /// @param pe the ProgramElement <code>var</code> is mapped to
     /// @param matchCond the MatchConditions to be updated
     /// @param services the Services provide access to the Java model
-    /// @return the updated match conditions including mapping <code>var</code> to <code>pe</code> or
-    ///         null if some variable condition would be hurt by the mapping
+    /// @return the updated match conditions including mapping <code>var</code> to <code>pe</code>
+    /// or
+    /// null if some variable condition would be hurt by the mapping
     private MatchConditions addProgramInstantiation(RustyProgramElement pe,
             MatchConditions matchCond,
             Services services) {
@@ -154,14 +156,15 @@ public final class ProgramSV extends OperatorSV
     }
 
     /// adds a found mapping from schema variable <code>var</code> to the list of program elements
-    /// <code>list</code> and returns the updated match conditions or null if mapping is not possible
+    /// <code>list</code> and returns the updated match conditions or null if mapping is not
+    /// possible
     /// because of violating some variable condition
     ///
     /// @param list the ProgramList <code>var</code> is mapped to
     /// @param matchCond the MatchConditions to be updated
     /// @param services the Services provide access to the Java model
     /// @return the updated match conditions including mapping <code>var</code> to <code>list</code>
-    ///         or null if some variable condition would be hurt by the mapping
+    /// or null if some variable condition would be hurt by the mapping
     private MatchConditions addProgramInstantiation(ProgramList list, MatchConditions matchCond,
             Services services) {
         if (matchCond == null) {
@@ -186,7 +189,7 @@ public final class ProgramSV extends OperatorSV
     ///
     /// @param match the ProgramElement to be matched
     /// @param services the Services object encapsulating information about the java datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     /// @return true if the SchemaVariable can stand for the given element
     private boolean check(RustyProgramElement match, Services services) {
         if (match == null) {

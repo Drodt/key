@@ -64,7 +64,7 @@ public final class UpdateApplication extends AbstractOperator {
 
 
     /// @return the index of the subterm representing the formula/term/update that the update is
-    ///         applied to
+    /// applied to
     public static int targetPos() {
         return 1;
     }

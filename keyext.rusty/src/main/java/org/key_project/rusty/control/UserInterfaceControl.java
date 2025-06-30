@@ -19,12 +19,12 @@ import org.key_project.rusty.proof.io.ProblemLoaderException;
 
 /// Provides the user interface independent logic to manage multiple proofs. This includes:
 ///
-///   - Functionality to load files via
-///     [#load(Profile,File,List,File,List,Properties,boolean,Consumer)].
-///   - Functionality to instantiate new [Proof]s via
-///     [#createProof(InitConfig,ProofOblInput)].
-///   - Functionality to register existing [Proof]s in the user interface via
-///     [#registerProofAggregate(ProofAggregate)].
+/// - Functionality to load files via
+/// [#load(Profile,File,List,File,List,Properties,boolean,Consumer)].
+/// - Functionality to instantiate new [Proof]s via
+/// [#createProof(InitConfig,ProofOblInput)].
+/// - Functionality to register existing [Proof]s in the user interface via
+/// [#registerProofAggregate(ProofAggregate)].
 ///
 ///
 /// @author Martin Hentschel
@@ -38,17 +38,17 @@ public interface UserInterfaceControl {
     ///
     ///
     /// @param profile An optional [Profile] to use. If it is `null` the default profile
-    ///        [#getDefaultProfile()] is used.
+    /// [#getDefaultProfile()] is used.
     /// @param file The java file to open.
     /// @param classPaths The class path entries to use.
     /// @param bootClassPath The boot class path to use.
     /// @param includes Optional includes to consider.
     /// @param poPropertiesToForce Some optional [Properties] for the PO which extend or
-    ///        overwrite saved PO [Properties].
+    /// overwrite saved PO [Properties].
     /// @param forceNewProfileOfNewProofs `` true
-    ///        `AbstractProblemLoader.profileOfNewProofs` will be used as [Profile] of
-    ///        new proofs, `false` [Profile] specified by problem file will be used for
-    ///        new proofs.
+    /// `AbstractProblemLoader.profileOfNewProofs` will be used as [Profile] of
+    /// new proofs, `false` [Profile] specified by problem file will be used for
+    /// new proofs.
     /// @param callbackProofLoaded receives the proof after it is loaded, but before it is replayed
     /// @return The opened [AbstractProblemLoader].
     /// @throws ProblemLoaderException Occurred Exception.

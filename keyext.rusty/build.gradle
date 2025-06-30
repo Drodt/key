@@ -28,10 +28,27 @@ generateGrammarSource {
     arguments += ["-visitor", "-lib" , "../key.ncore/src/main/antlr/"]
 }
 
-task testRunAllProofs(type: Test) {
+tasks.register('testRunAllProofs', Test) {
     description 'Prove/reload all .key/.proof files tagged for regression testing'
     group "verification"
     filter {
         includeTestsMatching "RunAllProofs"
+    }
+}
+
+checkerFramework {
+    if(System.getProperty("ENABLE_NULLNESS")) {
+        checkers = [
+                "org.checkerframework.checker.nullness.NullnessChecker",
+        ]
+        extraJavacArgs = [
+                "-AonlyDefs=^org\\.key_project\\.rusty",
+                "-AassumeAssertionsAreEnabled",
+                "-Xmaxerrs", "10",
+                "-Astubs=$rootDir/key.util/src/main/checkerframework:permit-nullness-assertion-exception.astub",
+                "-AstubNoWarnIfNotFound",
+                "-Werror",
+                "-Aversion",
+        ]
     }
 }

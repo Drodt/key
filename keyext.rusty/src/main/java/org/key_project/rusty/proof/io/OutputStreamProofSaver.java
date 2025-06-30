@@ -149,7 +149,8 @@ public class OutputStreamProofSaver {
         }
     }
 
-    /// Print applied rule(s) for a proof node and its decendants into the passed writer such that in
+    /// Print applied rule(s) for a proof node and its decendants into the passed writer such that
+    /// in
     /// can be loaded again as a proof.
     ///
     /// @param node the proof node from which to be printed

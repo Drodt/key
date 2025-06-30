@@ -4,11 +4,7 @@
 package org.key_project.rusty.proof.init;
 
 import java.io.IOException;
-import java.util.Properties;
 
-import org.key_project.prover.sequent.Sequent;
-import org.key_project.rusty.proof.io.AbstractProblemLoader;
-import org.key_project.rusty.proof.io.ProofSaver;
 import org.key_project.rusty.settings.Configuration;
 
 ///
@@ -28,7 +24,8 @@ import org.key_project.rusty.settings.Configuration;
 /// During load process the [de.uka.ilkd.key.proof.io.AbstractProblemLoader] tries to execute a
 /// static method on the class
 /// defined via [Properties] key [#PROPERTY_CLASS] with the following signature:
-/// `public static LoadedPOContainer loadFrom(InitConfig initConfig, Properties properties) throws IOException`
+/// `public static LoadedPOContainer loadFrom(InitConfig initConfig, Properties properties) throws
+/// IOException`
 /// The returned [de.uka.ilkd.key.proof.init.IPersistablePO.LoadedPOContainer] contains the
 /// instantiated [de.uka.ilkd.key.proof.init.ProofOblInput] together
 /// with the proof index.
@@ -59,10 +56,12 @@ public interface IPersistablePO extends ProofOblInput {
 
     /// The class stored in a [Properties] instance via key must provide the static method with
     /// the following signature:
-    /// `public static LoadedPOContainer loadFrom(InitConfig initConfig, Properties properties) throws IOException`
+    /// `public static LoadedPOContainer loadFrom(InitConfig initConfig, Properties properties)
+    /// throws IOException`
     /// This method is called by the [AbstractProblemLoader] to
     /// recreate a proof obligation. This class
-    /// defines the result of this method which is the created proof obligation and its proof number.
+    /// defines the result of this method which is the created proof obligation and its proof
+    /// number.
     ///
     /// @author Martin Hentschel
     class LoadedPOContainer {

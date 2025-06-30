@@ -83,8 +83,8 @@ public class Monomial {
     }
 
     /// @return true iff the variables/parts of <code>this</code> subsume the variables of
-    ///         <code>m</code>, i.e., if each variable that occurs in <code>m</code> occurs in the
-    ///         same or a higher power in <code>this</code>
+    /// <code>m</code>, i.e., if each variable that occurs in <code>m</code> occurs in the
+    /// same or a higher power in <code>this</code>
     public boolean variablesSubsume(Monomial m) {
         return this.parts.size() >= m.parts.size() && difference(m.parts, this.parts).isEmpty();
     }
@@ -98,7 +98,7 @@ public class Monomial {
     }
 
     /// @return true iff the coefficient of <code>m</code> can be made smaller (absolutely) by
-    ///         subtracting a multiple of <code>this</code>
+    /// subtracting a multiple of <code>this</code>
     public boolean reducible(Monomial m) {
         final BigInteger a = m.coefficient;
         final BigInteger c = this.coefficient;
@@ -124,7 +124,7 @@ public class Monomial {
     }
 
     /// @return the result of dividing the least common reducible (LCR) of monomial <code>m</code>
-    ///         and <code>this</code> by the monomial <code>this</code>
+    /// and <code>this</code> by the monomial <code>this</code>
     public Monomial divideLCR(Monomial m) {
         assert !(coefficient.signum() == 0);
         assert !(m.coefficient.signum() == 0);
@@ -269,7 +269,7 @@ public class Monomial {
     }
 
     /// @return the list of all terms that occur in <code>a</code> but not in <code>b</code>.
-    ///         multiplicity is treated as well here, so this is really difference of multisets
+    /// multiplicity is treated as well here, so this is really difference of multisets
     private static ImmutableList<Term> difference(ImmutableList<Term> a, ImmutableList<Term> b) {
         ImmutableList<Term> res = a;
         final Iterator<Term> it = b.iterator();

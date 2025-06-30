@@ -25,7 +25,8 @@ public abstract class AbstractFileRepo implements FileRepo {
     protected static final PathMatcher KEY_MATCHER =
         FileSystems.getDefault().getPathMatcher("glob:**.{key,proof}");
 
-    /// The base directory of the loaded proof (needed to calculate relative paths). If a .key/.proof
+    /// The base directory of the loaded proof (needed to calculate relative paths). If a
+    /// .key/.proof
     /// file is loaded, this should be set to the path specified via "javaSource". If a directory is
     /// loaded, baseDir should be set to the path of the directory. The path stored here is absolute
     /// and normalized.
@@ -72,7 +73,8 @@ public abstract class AbstractFileRepo implements FileRepo {
         Files.copy(source, target);
     }
 
-    /// Tests if the given path references an internal file in KeY, i.e. if it is inside JavaRedux or
+    /// Tests if the given path references an internal file in KeY, i.e. if it is inside JavaRedux
+    /// or
     /// rules folder.
     ///
     /// @param path the path to test
@@ -146,7 +148,7 @@ public abstract class AbstractFileRepo implements FileRepo {
     ///
     /// @param path the given file (absolute or relative to the proof base directory)
     /// @return the name (may include subdirectories) the file should have in proof package, that is
-    ///         a path relative to the root of the package
+    /// a path relative to the root of the package
     protected abstract Path getSaveName(Path path);
 
     /// Can be used to get a direct InputStream to a file stored in the FileRepo. The concrete
@@ -154,9 +156,9 @@ public abstract class AbstractFileRepo implements FileRepo {
     ///
     /// @param p the original path (outside the FileRepo) of the requested file
     /// @return an InputStream of the resource or null if it has not been stored in the FileRepo
-    ///         before.
+    /// before.
     /// @throws FileNotFoundException if the does not file exist, is a directory, or can not be
-    ///         opened
+    /// opened
     protected abstract InputStream getInputStreamInternal(Path p) throws FileNotFoundException;
 
     protected Path getRustPath() {

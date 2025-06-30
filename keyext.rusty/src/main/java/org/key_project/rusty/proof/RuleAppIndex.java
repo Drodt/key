@@ -42,7 +42,7 @@ public class RuleAppIndex {
     ///
     /// @param pos the PosInOccurrence to focus
     /// @param services the Services object encapsulating information about the Rust datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     public ImmutableList<TacletApp> getTacletAppAt(PosInOccurrence pos,
             Services services) {
         ImmutableList<TacletApp> result = ImmutableSLList.nil();
@@ -77,7 +77,7 @@ public class RuleAppIndex {
     ///
     /// @param pos the position where to start from
     /// @param services the Services object encapsulating information about the java datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     /// @return the possible rule applications
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos,
             Services services) {

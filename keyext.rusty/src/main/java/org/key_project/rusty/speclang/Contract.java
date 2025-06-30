@@ -19,8 +19,8 @@ public interface Contract extends SpecificationElement {
     int INVALID_ID = Integer.MIN_VALUE;
 
     /// @return `true` if any only if this contract does not necessarily need to be proven in
-    ///         its own proof obligation. E.g., this is true for [FunctionalBlockContract]s and
-    ///         [FunctionalLoopContract]s.
+    /// its own proof obligation. E.g., this is true for [FunctionalBlockContract]s and
+    /// [FunctionalLoopContract]s.
     default boolean isAuxiliary() {
         return false;
     }

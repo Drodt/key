@@ -33,10 +33,10 @@ public final class ProofCollection {
     ///
     /// @return A list of [RunAllProofsTestUnit]s.
     /// @throws IOException Names of [SingletonProofCollectionUnit]s are
-    ///         determined by their
-    ///         corresponding file names. In case file name can't be read
-    ///         [IOException] may be
-    ///         thrown.
+    /// determined by their
+    /// corresponding file names. In case file name can't be read
+    /// [IOException] may be
+    /// thrown.
     public List<RunAllProofsTestUnit> createRunAllProofsTestUnits() throws IOException {
         List<String> activeGroups = settings.getRunOnlyOn();
 

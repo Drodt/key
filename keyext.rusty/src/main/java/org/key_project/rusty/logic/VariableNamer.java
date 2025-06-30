@@ -121,7 +121,8 @@ public abstract class VariableNamer implements InstantiationProposer {
         return proposal;
     }
 
-    /// intended to be called when symbolically executing a variable declaration; resolves any naming
+    /// intended to be called when symbolically executing a variable declaration; resolves any
+    /// naming
     /// conflicts between the new variable and other global variables by renaming the new variable
     /// and / or other variables
     ///
@@ -157,7 +158,7 @@ public abstract class VariableNamer implements InstantiationProposer {
     /// @param sv the schema variable
     /// @param posOfFind the PosInOccurrence containing the name's target program
     /// @param posOfDeclaration the PosInProgram where the name will be declared (or null to just be
-    ///        pessimistic about the scope)
+    /// pessimistic about the scope)
     /// @param previousProposals list of names which should be considered taken, or null
     /// @return the name proposal, or null if no proposal is available
     protected String getNameProposalForSchemaVariable(String basename,

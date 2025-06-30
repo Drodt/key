@@ -107,7 +107,7 @@ public class LogicPrinter {
     ///
     /// @param filter The SequentPrintFilter for seq
     /// @param lineWidth the max. number of character to put on one line (the actual taken linewidth
-    ///        is the max of [#DEFAULT_LINE_WIDTH] and the given value
+    /// is the max of [#DEFAULT_LINE_WIDTH] and the given value
     public void update(SequentPrintFilter filter, int lineWidth) {
         setLineWidth(lineWidth);
         reset();
@@ -135,7 +135,7 @@ public class LogicPrinter {
     /// @param sv The instantiations of the SchemaVariables
     /// @param showWholeTaclet Should the find, varcond and heuristic part be pretty-printed?
     /// @param declareSchemaVars Should declarations for the schema variables used in the taclet be
-    ///        pretty-printed?
+    /// pretty-printed?
     public void printTaclet(Taclet taclet, SVInstantiations sv, boolean showWholeTaclet,
             boolean declareSchemaVars) {
         instantiations = sv;
@@ -447,7 +447,8 @@ public class LogicPrinter {
     }
 
     /// Pretty-print a sequent. The sequent arrow is rendered as <code>=&gt;</code>. If the sequent
-    /// doesn't fit in one line, a line break is inserted after each formula, the sequent arrow is on
+    /// doesn't fit in one line, a line break is inserted after each formula, the sequent arrow is
+    /// on
     /// a line of its own, and formulae are indented w.r.t. the arrow. A line-break is printed after
     /// the Sequent. No filtering is done.
     ///
@@ -523,7 +524,8 @@ public class LogicPrinter {
     }
 
     /// Pretty-print a sequent. The sequent arrow is rendered as <code>=&gt;</code>. If the sequent
-    /// doesn't fit in one line, a line break is inserted after each formula, the sequent arrow is on
+    /// doesn't fit in one line, a line break is inserted after each formula, the sequent arrow is
+    /// on
     /// a line of its own, and formulae are indented w.r.t. the arrow. A line-break is printed after
     /// the Sequent.
     ///
@@ -727,7 +729,8 @@ public class LogicPrinter {
     }
 
     /// Print a binary term in infix style. For instance <code>p
-    /// &amp; q</code>, where <code>&amp;</code> is the infix operator. If line breaks are necessary,
+    /// &amp; q</code>, where <code>&amp;</code> is the infix operator. If line breaks are
+    /// necessary,
     /// the format is like
     /// <pre>
     ///
@@ -787,7 +790,7 @@ public class LogicPrinter {
     /// necessary, the format is
     /// <pre>
     /// {u}
-    ///   t
+    /// t
     /// </pre>
     ///
     /// @param l the left brace
@@ -931,7 +934,7 @@ public class LogicPrinter {
     /// necessary, the format is
     /// <pre>
     /// {var/t}
-    ///   s
+    /// s
     /// </pre>
     ///
     /// @param l the String used as left brace symbol
@@ -956,7 +959,7 @@ public class LogicPrinter {
     /// are necessary, the format is
     /// <pre>
     /// all x:s.
-    ///   phi
+    /// phi
     /// </pre>
     ///
     /// Note that the parameter <code>var</code> has to contain the variable name with colon and
@@ -1002,8 +1005,10 @@ public class LogicPrinter {
         }
     }
 
-    /// Print a Rusty block. This is formatted using the ProgramPrinter given to the constructor. The
-    /// result is indented according to the surrounding material. The first `executable' statement is
+    /// Print a Rusty block. This is formatted using the ProgramPrinter given to the constructor.
+    /// The
+    /// result is indented according to the surrounding material. The first `executable' statement
+    /// is
     /// marked for highlighting.
     ///
     /// @param rb the Java block to be printed
@@ -1071,7 +1076,8 @@ public class LogicPrinter {
         return layouter.result();
     }
 
-    /// Prints a subterm, if needed with parentheses. Each subterm has a Priority. If the priority is
+    /// Prints a subterm, if needed with parentheses. Each subterm has a Priority. If the priority
+    /// is
     /// less than the associativity for that subterm fixed by the Notation/NotationInfo, parentheses
     /// are needed.
     ///
@@ -1126,7 +1132,7 @@ public class LogicPrinter {
     /// Pretty-prints a ProgramElement.
     ///
     /// @param pe You've guessed it, the ProgramElement to be pretty-printedprint(Term t,
-    ///        LogicPrinter sp)
+    /// LogicPrinter sp)
     public void printProgramElement(RustyProgramElement pe) {
         if (pe instanceof ProgramVariable) {
             printProgramVariable((ProgramVariable) pe);
@@ -1135,7 +1141,8 @@ public class LogicPrinter {
         }
     }
 
-    /// Pretty-Prints a ProgramVariable in the logic, not in Java blocks. Prints out the full (logic)
+    /// Pretty-Prints a ProgramVariable in the logic, not in Java blocks. Prints out the full
+    /// (logic)
     /// name, so if A.b is private, it becomes a.A::b .
     ///
     /// @param pv The ProgramVariable in the logicprint(Term t, LogicPrinter sp)

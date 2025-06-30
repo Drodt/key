@@ -81,23 +81,25 @@ public class ProgramContextAdder {
         return new BlockExpression(body, wrapper.getValue());
     }
 
-    /// inserts the content of the statement block <code>putIn</code> and adds succeeding children of
+    /// inserts the content of the statement block <code>putIn</code> and adds succeeding children
+    /// of
     /// the innermost non-terminal element (usually statement block) in the context.
     ///
     /// @param wrapper the RustyProgramElement with the context that has to be wrapped
-    ///        around the content of <code>putIn</code>
+    /// around the content of <code>putIn</code>
     /// @param putIn the ContextBlockExpression with content that has to be wrapped by the elements
-    ///        hidden in
-    ///        the context
-    /// @param suffix the PosInProgram describing the position of the first element before the suffix
-    ///        of the context
+    /// hidden in
+    /// the context
+    /// @param suffix the PosInProgram describing the position of the first element before the
+    /// suffix
+    /// of the context
     /// @return the BlockExpression which encloses the content of <code>putIn</code> together with
-    ///         the
-    ///         succeeding context elements of the innermost context block (attention: in a
-    ///         case like <code>{{{oldStmnt; list of further stmnt;}} moreStmnts; }</code> only the
-    ///         underscored part is returned <code>{{ __{putIn;....}__ }moreStmnts;}</code> adding
-    ///         the other braces including the <code>moreStmnts;</code> part has to be done
-    ///         elsewhere.
+    /// the
+    /// succeeding context elements of the innermost context block (attention: in a
+    /// case like <code>{{{oldStmnt; list of further stmnt;}} moreStmnts; }</code> only the
+    /// underscored part is returned <code>{{ __{putIn;....}__ }moreStmnts;}</code> adding
+    /// the other braces including the <code>moreStmnts;</code> part has to be done
+    /// elsewhere.
     private RustyProgramElement createWrapperBody(RustyProgramElement wrapper,
             ContextBlockExpression putIn, PosInProgram suffix) {
         if (wrapper instanceof BlockExpression) {

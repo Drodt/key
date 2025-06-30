@@ -263,7 +263,7 @@ public class Statistics {
         /// interactive rule applications
         ///
         /// @param node the given node
-        ///        //@param interactiveAppsDetails already collected interactive rule applications
+        /// //@param interactiveAppsDetails already collected interactive rule applications
         private void changeOnNode(final Node node) {
             nodes++;
 
@@ -323,7 +323,7 @@ public class Statistics {
         /// Compute number of interactive rule applications and collect their names.
         ///
         /// @param node the considered node
-        ///        //@param intAppsDetails the already collected interactive rule applications
+        /// //@param intAppsDetails the already collected interactive rule applications
         /// @return the number of interactive rule apllications
         private int interactiveRuleApps(final Node node) {
             /*

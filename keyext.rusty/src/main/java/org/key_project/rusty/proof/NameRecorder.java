@@ -3,9 +3,12 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
+
+import java.util.Objects;
 
 public class NameRecorder {
     private ImmutableList<Name> pre = ImmutableSLList.nil();
@@ -13,11 +16,7 @@ public class NameRecorder {
     private ImmutableList<Name> post = ImmutableSLList.nil();
 
     public void setProposals(ImmutableList<Name> proposals) {
-        if (proposals == null) {
-            pre = ImmutableSLList.nil();
-        } else {
-            pre = proposals;
-        }
+        pre = Objects.requireNonNullElseGet(proposals, ImmutableSLList::nil);
     }
 
     /// Get the name proposals added using [#addProposal(Name)].
@@ -41,7 +40,7 @@ public class NameRecorder {
     /// Get a proposal and remove it from this recorder.
     ///
     /// @return the first proposal
-    public Name getProposal() {
+    public @Nullable Name getProposal() {
         Name proposal = null;
 
         if (pre != null && !pre.isEmpty()) {

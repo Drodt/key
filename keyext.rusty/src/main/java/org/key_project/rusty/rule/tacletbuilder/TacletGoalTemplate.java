@@ -14,7 +14,8 @@ import org.key_project.util.collection.ImmutableSet;
 import org.jspecify.annotations.NonNull;
 
 /// this class contains the goals of the schematic theory specific rules (Taclet). There are new
-/// sequents that have to be added, new rules and rule variables. The replacewith-goal is implemented
+/// sequents that have to be added, new rules and rule variables. The replacewith-goal is
+/// implemented
 /// in subclasses
 public class TacletGoalTemplate
         extends org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate {
@@ -23,8 +24,8 @@ public class TacletGoalTemplate
     /// @param addedSeq new Sequent to be added
     /// @param addedRules IList<Taclet> contains the new allowed rules at this branch
     /// @param addedProgVars a SetOf<SchemaVariable> which will be instantiated with an application
-    ///        time unused (new) program variables that are introduced by an application of this
-    ///        template
+    /// time unused (new) program variables that are introduced by an application of this
+    /// template
     public TacletGoalTemplate(org.key_project.prover.sequent.Sequent addedSeq,
             ImmutableList<Taclet> addedRules,
             ImmutableSet<SchemaVariable> addedProgVars) {
@@ -32,9 +33,9 @@ public class TacletGoalTemplate
     }
 
     /// creates new Goaldescription same effect as <code>new TacletGoalTemplate(addedSeq,
-    ///                                             addedRules,
-    ///                                             SetAsListOf.<SchemaVariable>nil())
-    ///                                             </code>
+    /// addedRules,
+    /// SetAsListOf.<SchemaVariable>nil())
+    /// </code>
     ///
     /// @param addedSeq new Sequent to be added
     /// @param addedRules IList<Taclet> contains the new allowed rules at this branch

@@ -9,7 +9,6 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.RuleApp;
-import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.*;
 
@@ -82,7 +81,7 @@ public class TermTacletAppIndex {
     ///
     /// @param pos the [PosInOccurrence] to focus
     /// @param services the [Services] object encapsulating information about the Rust
-    ///        datastructures like (static)types etc.
+    /// datastructures like (static)types etc.
     /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> getRewriteTaclet(PosInOccurrence pos,
             Services services, TacletIndex tacletIndex) {
@@ -94,7 +93,7 @@ public class TermTacletAppIndex {
     ///
     /// @param pos the PosInOccurrence to focus
     /// @param services the Services object encapsulating information about the Rust datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> getFindTaclet(PosInOccurrence pos,
             Services services, TacletIndex tacletIndex) {
@@ -113,10 +112,11 @@ public class TermTacletAppIndex {
 
     /// collects all AntecedentTaclet instantiations for the given heuristics and SequentFormula
     ///
-    /// @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to (pos
-    ///        must point to the top level formula, i.e. <tt>pos.isTopLevel()</tt> must be true)
+    /// @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to
+    /// (pos
+    /// must point to the top level formula, i.e. <tt>pos.isTopLevel()</tt> must be true)
     /// @param services the Services object encapsulating information about the Rust datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> antecTaclet(PosInOccurrence pos,
             Services services, TacletIndex tacletIndex) {
@@ -125,10 +125,11 @@ public class TermTacletAppIndex {
 
     /// collects all SuccedentTaclet instantiations for the given heuristics and SequentFormula
     ///
-    /// @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to (pos
-    ///        must point to the top level formula, i.e. <tt>pos.isTopLevel()</tt> must be true)
+    /// @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to
+    /// (pos
+    /// must point to the top level formula, i.e. <tt>pos.isTopLevel()</tt> must be true)
     /// @param services the Services object encapsulating information about the Rust datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> succTaclet(PosInOccurrence pos,
             Services services, TacletIndex tacletIndex) {
@@ -200,8 +201,8 @@ public class TermTacletAppIndex {
     ///
     /// @param pos The position of this index
     /// @param collectedApps the [<PosInOccurrence,ImmutableList<NoPosTacletApp>>][ImmutableMap]
-    ///        to which to add the found taclet applications; it must not contain `pos` or any
-    ///        position below pos as key
+    /// to which to add the found taclet applications; it must not contain `pos` or any
+    /// position below pos as key
     /// @return the resulting list of taclet applications from this and all subterm taclet indices
     private ImmutableList<Pair<PosInOccurrence, ImmutableList<NoPosTacletApp>>> collectAllTacletAppsHereAndBelow(
             PosInOccurrence pos,
@@ -237,7 +238,7 @@ public class TermTacletAppIndex {
     ///
     /// @param newTaclet The taclet that is supposed to be added
     /// @param pos Pointer to the term/formula for which an index is to be created. <code>pos</code>
-    ///        has to be a top-level term position
+    /// has to be a top-level term position
     /// @return the index object
     public TermTacletAppIndex addTaclet(NoPosTacletApp newTaclet, PosInOccurrence pos,
             Services services, TacletIndex tacletIndex) {

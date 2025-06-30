@@ -31,11 +31,12 @@ public abstract class LDT implements Named {
     // -------------------------------------------------------------------------
 
     protected LDT(Name name, Services services) {
-        sort = services.getNamespaces().sorts().lookup(name);
+        var sort = services.getNamespaces().sorts().lookup(name);
         if (sort == null) {
             throw new RuntimeException("LDT " + name + " not found.\n"
                 + "It seems that there are definitions missing from the .key files.");
         }
+        this.sort = sort;
         this.name = name;
     }
 
@@ -92,7 +93,8 @@ public abstract class LDT implements Named {
         return sort;
     }
 
-    /// get the function in this LDT for an operation identified by generic operationName. If the LDT
+    /// get the function in this LDT for an operation identified by generic operationName. If the
+    /// LDT
     /// does not support this named function, it should return null.
     /// This is used to resolve overloaded symbols.
     /// For example: "+" may map to "add" for integers, and to "addFloat" for floats.
@@ -100,7 +102,7 @@ public abstract class LDT implements Named {
     /// @param operationName non-null operationName for a generic function
     /// @param services services to use
     /// @return reference to the respective LDT-specific function for the operation, null if not
-    ///         available
+    /// available
     public @Nullable Function getFunctionFor(String operationName, Services services) {
         // by default an LDT does not support overloaded symbols
         return null;

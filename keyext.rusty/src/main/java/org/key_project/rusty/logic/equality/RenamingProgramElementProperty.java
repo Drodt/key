@@ -22,7 +22,8 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     public static final RenamingProgramElementProperty RENAMING_PROGRAM_ELEMENT_PROPERTY =
         new RenamingProgramElementProperty();
 
-    /// This constructor is private as a single instance of this class should be shared. The instance
+    /// This constructor is private as a single instance of this class should be shared. The
+    /// instance
     /// can be accessed through
     /// [#RENAMING_PROGRAM_ELEMENT_PROPERTY].
     private RenamingProgramElementProperty() {}
@@ -39,7 +40,7 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     /// @param rpe2 the second element of the equality check
     /// @param v can be a single [NameAbstractionTable] for this equality check
     /// @return `true` iff `rpe2` is a source element syntactically equal to `rpe1`
-    ///         modulo renaming
+    /// modulo renaming
     /// @param <V> is supposed to be [NameAbstractionTable] for this equality check
     @Override
     public <V> boolean equalsModThisProperty(RustyProgramElement rpe1, RustyProgramElement rpe2,
@@ -128,7 +129,7 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     /// @param se1 the first [SyntaxElement] to be compared
     /// @param se2 the second [SyntaxElement] to be compared
     /// @return `true` iff the two source elements are equal under the standard `equals`
-    ///         method
+    /// method
     private boolean handleStandard(SyntaxElement se1, SyntaxElement se2) {
         return se1.equals(se2);
     }
@@ -138,7 +139,7 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     /// @param rnte the rusty program element with children to be compared
     /// @param se the [SyntaxElement] to be compared
     /// @return `true` iff `se` is of the same class and has the same number of children
-    ///         as `jnte`
+    /// as `jnte`
     private boolean handleRustyNonTerminalProgramElement(SyntaxElement rnte,
             SyntaxElement se) {
         /*
@@ -163,7 +164,7 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     /// @param se the [SyntaxElement] to be compared
     /// @param nat the [NameAbstractionTable] the variable of `vs` should be added to
     /// @return `true` iff `se` is of the same class as `vs` and has the same
-    ///         number of children, dimensions and type
+    /// number of children, dimensions and type
     private boolean handleBindingPattern(BindingPattern bp, SyntaxElement se,
             NameAbstractionTable nat) {
         if (se == bp) {
@@ -189,10 +190,10 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     /// [Identifier] to a [SyntaxElement].
     ///
     /// @param se1 the first [SyntaxElement] which is either a [ProgramVariable] or an
-    ///        [Identifier]
+    /// [Identifier]
     /// @param se2 the second [SyntaxElement] to be compared
     /// @param nat the [NameAbstractionTable] that should be used to check whether `se1`
-    ///        and `se2` have the same abstract name
+    /// and `se2` have the same abstract name
     /// @return `true` iff `se1` and `se2` have the same abstract name
     private boolean handleProgramVariableOrIdentifier(SyntaxElement se1, SyntaxElement se2,
             NameAbstractionTable nat) {
@@ -244,8 +245,8 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
         ///
         /// @param name the [Name] whose abstract name should be returned
         /// @return the abstract name of the [Name] or `-1` if the element
-        ///         is
-        ///         not in the map
+        /// is
+        /// not in the map
         public int getAbstractName(Name name) {
             final Integer result = map.get(name);
             return result != null ? result : -1;

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.prover.rules.matcher.vm.VMProgramInterpreter;
-import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.prover.rules.matcher.vm.instruction.VMInstruction;
 import org.key_project.rusty.logic.SVPlace;
 import org.key_project.rusty.logic.op.*;
@@ -38,7 +36,7 @@ public class SyntaxElementMatchProgramGenerator {
     ///
     /// @param pattern the [Term] used as pattern for which to create a matcher
     /// @param program the list of [MatchInstruction] to which the instructions for matching
-    ///        `pattern` are added.
+    /// `pattern` are added.
     private static void createProgram(Term pattern, ArrayList<VMInstruction> program) {
         final Operator op = pattern.op();
 

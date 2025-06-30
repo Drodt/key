@@ -4,6 +4,7 @@
 package org.key_project.rusty.ast.expr;
 
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.IntIterator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -22,7 +23,7 @@ public class ContextBlockExpression extends BlockExpression {
     /// length of this progran prefix
     private final int patternPrefixLength;
 
-    public ContextBlockExpression(ImmutableList<Statement> statements, Expr expr) {
+    public ContextBlockExpression(ImmutableList<Statement> statements, @Nullable Expr expr) {
         super(statements, expr);
         patternPrefixLength = this.getPrefixLength();
     }
@@ -143,7 +144,7 @@ public class ContextBlockExpression extends BlockExpression {
     /// @param prefix the ProgramPrefix the outermost prefix element of the source
     /// @param pos the number of elements to disappear in the context
     /// @param relPos the position of the first active statement of element
-    ///        prefix.getPrefixElementAt(pos);
+    /// prefix.getPrefixElementAt(pos);
     /// @return the PosInProgram of the first element, which is not part of the prefix
     private PosInProgram matchPrefixEnd(final PossibleProgramPrefix prefix, int pos,
             PosInProgram relPos) {

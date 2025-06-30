@@ -17,7 +17,8 @@ import org.antlr.v4.runtime.Token;
 import org.jspecify.annotations.NonNull;
 
 public class ProofReplayer {
-    /// This map is for the translation between symbols in the sexpr and the corresponding proof tag.
+    /// This map is for the translation between symbols in the sexpr and the corresponding proof
+    /// tag.
     private static final Map<String, IProofFileParser.ProofElementID> proofSymbolElementId =
         new LinkedHashMap<>(32);
 

@@ -15,7 +15,7 @@ public interface Settings {
     ///
     ///
     /// @param props a non-null references to a configuration object. The state of this object
-    ///        shall not be changed by the implementations.
+    /// shall not be changed by the implementations.
     void readSettings(@NonNull Configuration props);
 
     /// The internal state is stored in the given configuration object. The stored information must
@@ -25,8 +25,8 @@ public interface Settings {
     /// The internal state shall not be changed by the implementations.
     ///
     /// @param props a non-null reference to a configration object, which state is modified
-    ///        accordingly to the local
-    ///        internal state.
+    /// accordingly to the local
+    /// internal state.
     void writeSettings(@NonNull Configuration props);
 
 

@@ -14,16 +14,17 @@ public abstract class FindTacletBuilder<T extends FindTaclet> extends TacletBuil
     /// encodes restrictions on the state where a rewrite taclet is applicable If the value is equal
     /// to
     ///
-    ///   - [#NONE] no state restrictions are posed
-    ///   - [#SAME_UPDATE_LEVEL] then <code>\assumes</code> must
-    ///     match on
-    ///     a
-    ///     formula within the same state as <code>\find</code> rsp. <code>\add</code>. For efficiency no
-    ///     modalities are allowed above the <code>\find</code> position
-    ///   - [#IN_SEQUENT_STATE] the <code>\find</code> part is
-    ///     only
-    ///     allowed to
-    ///     match on formulas which are evaluated in the same state as the sequent
+    /// - [#NONE] no state restrictions are posed
+    /// - [#SAME_UPDATE_LEVEL] then <code>\assumes</code> must
+    /// match on
+    /// a
+    /// formula within the same state as <code>\find</code> rsp. <code>\add</code>. For efficiency
+    /// no
+    /// modalities are allowed above the <code>\find</code> position
+    /// - [#IN_SEQUENT_STATE] the <code>\find</code> part is
+    /// only
+    /// allowed to
+    /// match on formulas which are evaluated in the same state as the sequent
     ///
     protected ApplicationRestriction applicationRestriction =
         ApplicationRestriction.NONE;

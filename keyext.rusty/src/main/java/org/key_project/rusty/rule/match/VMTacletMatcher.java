@@ -171,13 +171,15 @@ public class VMTacletMatcher implements TacletMatcher {
         return (MatchConditions) matchCond;
     }
 
-    /// ignores a possible update prefix This method assumes that the taclet allows to ignore updates
+    /// ignores a possible update prefix This method assumes that the taclet allows to ignore
+    /// updates
     /// and the find expression does not start with an update application operator
     ///
     /// @param term the term to be matched
     /// @param matchCond the accumulated match conditions for a successful match
-    /// @return a pair of updated match conditions and the unwrapped term without the ignored updates
-    ///         (Which have been added to the update context in the match conditions)
+    /// @return a pair of updated match conditions and the unwrapped term without the ignored
+    /// updates
+    /// (Which have been added to the update context in the match conditions)
     private Pair<Term, MatchResultInfo> matchAndIgnoreUpdatePrefix(final Term term,
             MatchResultInfo matchCond) {
 
@@ -242,9 +244,9 @@ public class VMTacletMatcher implements TacletMatcher {
     ///
     /// @param context the list of update label pairs describing the update context
     /// @param formula the formula whose own update context must be equal (modulo renaming) to the
-    ///        given one
+    /// given one
     /// @return `null` if the update context does not match the one of the formula or the
-    ///         formula without the update context
+    /// formula without the update context
     private Term matchUpdateContext(ImmutableList<Term> context, Term formula) {
         ImmutableList<Term> curContext = context;
         for (int i = 0, size = context.size(); i < size; i++) {

@@ -28,11 +28,11 @@ import org.antlr.v4.runtime.Token;
 
 /// This visitor evaluates all basic (level 0) declarations. This includes:
 ///
-///   - Option Declarations
-///   - Sorts
-///   - Program variables
-///   - Schema variables
-///   - Rulesets
+/// - Option Declarations
+/// - Sorts
+/// - Program variables
+/// - Schema variables
+/// - Rulesets
 ///
 ///
 /// This information is registered into the given [NamespaceSet].

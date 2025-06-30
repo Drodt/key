@@ -46,8 +46,9 @@ class Semisequent extends org.key_project.prover.sequent.Semisequent {
         ///
         /// @param idx int encoding the place the element has to be put
         /// @param sequentFormula [SequentFormula] to be inserted
-        /// @return semisequent change information object with new semisequent with sequentFormula at
-        ///         place idx
+        /// @return semisequent change information object with new semisequent with sequentFormula
+        /// at
+        /// place idx
         @Override
         public SemisequentChangeInfo insert(int idx, SequentFormula sequentFormula) {
             return insertFirst(sequentFormula);
@@ -56,8 +57,9 @@ class Semisequent extends org.key_project.prover.sequent.Semisequent {
         /// inserts the element at index 0
         ///
         /// @param sequentFormula [SequentFormula] to be inserted
-        /// @return semisequent change information object with new semisequent with sequentFormula at
-        ///         place idx
+        /// @return semisequent change information object with new semisequent with sequentFormula
+        /// at
+        /// place idx
         @Override
         public SemisequentChangeInfo insertFirst(SequentFormula sequentFormula) {
             final SemisequentChangeInfo sci = new SemisequentChangeInfo(
@@ -69,8 +71,9 @@ class Semisequent extends org.key_project.prover.sequent.Semisequent {
         /// inserts the element at the end of the semisequent
         ///
         /// @param sequentFormula [SequentFormula] to be inserted
-        /// @return semisequent change information object with new semisequent with sequentFormula at
-        ///         place idx
+        /// @return semisequent change information object with new semisequent with sequentFormula
+        /// at
+        /// place idx
         @Override
         public SemisequentChangeInfo insertLast(SequentFormula sequentFormula) {
             return insertFirst(sequentFormula);
@@ -88,8 +91,9 @@ class Semisequent extends org.key_project.prover.sequent.Semisequent {
         ///
         /// @param idx an int specifying the index of the element that has to be replaced
         /// @param sequentFormula the [SequentFormula] replacing the old element at index idx
-        /// @return semisequent change information object with new semisequent with sequentFormula at
-        ///         place idx
+        /// @return semisequent change information object with new semisequent with sequentFormula
+        /// at
+        /// place idx
         @Override
         public SemisequentChangeInfo replace(int idx, SequentFormula sequentFormula) {
             return insertFirst(sequentFormula);

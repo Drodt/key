@@ -31,7 +31,8 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
 
     private RustyProgramElement result = null;
 
-    /// creates a visitor that replaces the program variables in the given statement by new ones with
+    /// creates a visitor that replaces the program variables in the given statement by new ones
+    /// with
     /// the same name
     ///
     /// @param st the statement where the prog vars are replaced

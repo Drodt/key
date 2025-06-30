@@ -33,7 +33,8 @@ public interface EnvInput extends Named {
         return null;
     }
 
-    /// Reads the input using the given modification strategy, i.e., parts of the input do not modify
+    /// Reads the input using the given modification strategy, i.e., parts of the input do not
+    /// modify
     /// the initial configuration while others do.
     ///
     /// @return The found warnings or an empty [ImmutableSet] if no warnings occurred.

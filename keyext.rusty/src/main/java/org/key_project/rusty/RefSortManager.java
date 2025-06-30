@@ -38,8 +38,12 @@ public class RefSortManager {
     }
 
     public boolean isMRefOf(Sort mRefS, Sort sort) {
-        return mRefMap.get(mRefS).equals(sort);
+        MRefSort mRefSort = mRefMap.get(mRefS);
+        return mRefSort != null && mRefSort.equals(sort);
     }
 
-    public boolean isSRefOf(Sort sRefS, Sort sort) { return sRefMap.get(sRefS).equals(sort); }
+    public boolean isSRefOf(Sort sRefS, Sort sort) {
+        SRefSort sRefSort = sRefMap.get(sRefS);
+        return sRefSort != null && sRefSort.equals(sort);
+    }
 }

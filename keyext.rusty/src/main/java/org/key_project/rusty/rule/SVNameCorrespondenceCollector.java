@@ -16,7 +16,8 @@ import org.key_project.util.collection.ImmutableMap;
 
 import org.jspecify.annotations.NonNull;
 
-/// This visitor is used to collect information about schema variable pairs occurring within the same
+/// This visitor is used to collect information about schema variable pairs occurring within the
+/// same
 /// substitution operator within a taclet. This information is used to choose names of metavariables
 /// or skolem functions.
 public class SVNameCorrespondenceCollector implements Visitor<@NonNull Term> {
@@ -27,7 +28,7 @@ public class SVNameCorrespondenceCollector implements Visitor<@NonNull Term> {
     /// is called by the execPostOrder-method of a term
     ///
     /// @param t the Term if the toplevel operator of this term is a substitution of schema
-    ///        variables, then this pair is added to the map "nameCorrespondences"
+    /// variables, then this pair is added to the map "nameCorrespondences"
     public void visit(Term t) {
         final var top = t.op();
         if (top instanceof SubstOp) {
@@ -40,8 +41,9 @@ public class SVNameCorrespondenceCollector implements Visitor<@NonNull Term> {
         }
     }
 
-    /// @return the found correspondences as a map, mapping schema variable a onto schema variables b
-    ///         if b is replaced with a somewhere in this taclet
+    /// @return the found correspondences as a map, mapping schema variable a onto schema variables
+    /// b
+    /// if b is replaced with a somewhere in this taclet
     public ImmutableMap<SchemaVariable, SchemaVariable> getCorrespondences() {
         return nameCorrespondences;
     }
@@ -72,7 +74,7 @@ public class SVNameCorrespondenceCollector implements Visitor<@NonNull Term> {
     ///
     /// @param taclet the Taclet where the correspondences have to be collected
     /// @param visitAddrules a boolean that contols if the addrule sections are to be ignored (iff
-    ///        false) or if the visitor descends into them (iff true)
+    /// false) or if the visitor descends into them (iff true)
     public void visit(Taclet taclet, boolean visitAddrules) {
         SchemaVariable findSV = null;
         visit(taclet.assumesSequent());

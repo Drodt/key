@@ -24,7 +24,7 @@ public class TestFile {
     /// can be used to return an absolute [File] object.
     ///
     /// @param baseDirectory Base directory that will be used as start location in case given path
-    ///        name is a relative path.
+    /// name is a relative path.
     /// @param pathName Path whose associated [File] object will be returned.
     /// @return [File] object pointing to given path name relative to given base directory.
     static File getAbsoluteFile(File baseDirectory, String pathName) {
@@ -96,10 +96,11 @@ public class TestFile {
     /// location specified by [#path] string.
     ///
     /// @return Returns a [TestResult] object, which consists of a boolean value indicating
-    ///         whether test run was successful and a message string that can be printed out on
-    ///         command line to inform the user about the test result.
-    /// @throws Exception Any exception that may occur during KeY execution will be converted into an
-    ///         [Exception] object with original exception as cause.
+    /// whether test run was successful and a message string that can be printed out on
+    /// command line to inform the user about the test result.
+    /// @throws Exception Any exception that may occur during KeY execution will be converted into
+    /// an
+    /// [Exception] object with original exception as cause.
     public TestResult runKey() throws Exception {
         try (var catched = new OutputCatcher()) { // now everything System.out stuff will be also
             // caught

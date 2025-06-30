@@ -32,7 +32,7 @@ public final class PosInProgram {
     /// @param prg the RustyProgramElement we walk through
     /// @return the RustyProgramElement at the given position
     /// @throws IndexOutOfBoundsException if position <code>pos</code> refers to a non-existent
-    ///         program element
+    /// program element
     public static RustyProgramElement getProgramAt(PosInProgram pos, RustyProgramElement prg) {
         RustyProgramElement result = prg;
         for (int i = 0; i < pos.depth; i++) {

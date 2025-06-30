@@ -5,7 +5,6 @@ package org.key_project.rusty.parser.varcond;
 
 import java.util.List;
 
-import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
 
 import org.jspecify.annotations.NonNull;

@@ -58,7 +58,8 @@ public class InitialPositionTable extends PositionTable {
     }
 
 
-    /// Returns the path for a given PosInOccurrence. This is built up from the initial 0, the number
+    /// Returns the path for a given PosInOccurrence. This is built up from the initial 0, the
+    /// number
     /// of the SequentFormula in the sequent, the position in the constrained formula, and possibly
     /// inside a Metavariable instantiation.
     ///

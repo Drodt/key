@@ -34,7 +34,8 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableArray;
 
 /// visitor for <t> execPostOrder </t> of [Term]. Called with that method
-/// on a term, the visitor builds a new term replacing SchemaVariables with their instantiations that
+/// on a term, the visitor builds a new term replacing SchemaVariables with their instantiations
+/// that
 /// are given as a SVInstantiations object.
 public class SyntacticalReplaceVisitor implements Visitor<Term> {
     protected final SVInstantiations svInst;

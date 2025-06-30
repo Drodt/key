@@ -83,11 +83,11 @@ public class KeYEnvironment {
     /// @param includes Optional includes to consider.
     /// @param poPropertiesToForce Some optional PO [Properties] to force.
     /// @param callbackProofLoaded An optional callback (called when the proof is loaded, before
-    ///        replay)
+    /// replay)
     /// @param forceNewProfileOfNewProofs `` true
-    ///        `AbstractProblemLoader.profileOfNewProofs` will be used as [Profile] of
-    ///        new proofs, `false` [Profile] specified by problem file will be used for
-    ///        new proofs.
+    /// `AbstractProblemLoader.profileOfNewProofs` will be used as [Profile] of
+    /// new proofs, `false` [Profile] specified by problem file will be used for
+    /// new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
     public static KeYEnvironment load(Profile profile, File location,
@@ -130,9 +130,9 @@ public class KeYEnvironment {
     /// @param includes Optional includes to consider.
     /// @param poPropertiesToForce Some optional PO [Properties] to force.
     /// @param forceNewProfileOfNewProofs `` true
-    ///        `AbstractProblemLoader.profileOfNewProofs` will be used as [Profile] of
-    ///        new proofs, `false` [Profile] specified by problem file will be used for
-    ///        new proofs.
+    /// `AbstractProblemLoader.profileOfNewProofs` will be used as [Profile] of
+    /// new proofs, `false` [Profile] specified by problem file will be used for
+    /// new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
     public static KeYEnvironment load(Profile profile, File location,
@@ -150,9 +150,9 @@ public class KeYEnvironment {
     /// @param location The location to load.
     /// @param includes Optional includes to consider.
     /// @param forceNewProfileOfNewProofs `` true
-    ///        `AbstractProblemLoader.profileOfNewProofs` will be used as
-    ///        [Profile] of new proofs, `false` [Profile] specified by problem file
-    ///        will be used for new proofs.
+    /// `AbstractProblemLoader.profileOfNewProofs` will be used as
+    /// [Profile] of new proofs, `false` [Profile] specified by problem file
+    /// will be used for new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
     public static KeYEnvironment load(Profile profile, File location,

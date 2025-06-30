@@ -22,7 +22,8 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/// For the loop scope rule, if a local program variable that may be altered by the loop body appears
+/// For the loop scope rule, if a local program variable that may be altered by the loop body
+/// appears
 /// in the frame condition,
 /// it is necessary to use the value _before_ the loop first executes in the frame condition.
 ///

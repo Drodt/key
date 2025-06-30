@@ -29,7 +29,8 @@ public class SVInstantiations
         implements org.key_project.prover.rules.instantiation.SVInstantiations {
     /// the empty instantiation
     public static final SVInstantiations EMPTY_SVINSTANTIATIONS = new SVInstantiations();
-    /// the context itself is not realised as a schemavariable, therefore we need here a dummy SV for
+    /// the context itself is not realised as a schemavariable, therefore we need here a dummy SV
+    /// for
     /// a more unified handling (key in map)
     private static final SchemaVariable CONTEXTSV = SchemaVariableFactory.createProgramSV(
         new Name("Context"), new ProgramSVSort(new Name("ContextStatementBlock")) {
@@ -193,8 +194,8 @@ public class SVInstantiations
     /// returns the instantiation of the given SchemaVariable
     ///
     /// @return the InstantiationEntry the SchemaVariable will be instantiated with, `null` if
-    ///         no
-    ///         instantiation is stored
+    /// no
+    /// instantiation is stored
     public InstantiationEntry<?> getInstantiationEntry(SchemaVariable sv) {
         return map.get(sv);
     }
@@ -202,7 +203,7 @@ public class SVInstantiations
     /// returns the instantiation of the given SchemaVariable
     ///
     /// @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
-    ///         stored
+    /// stored
     public Object getInstantiation(SchemaVariable sv) {
         final InstantiationEntry<?> entry = getInstantiationEntry(sv);
         return entry == null ? null : entry.getInstantiation();
@@ -218,7 +219,7 @@ public class SVInstantiations
     /// program element it is tried to convert it to a term otherwise an exception is thrown
     ///
     /// @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
-    ///         stored
+    /// stored
     public Term getTermInstantiation(SchemaVariable sv, LogicServices services) {
         final Object inst = getInstantiation(sv);
         if (inst == null) {
@@ -402,9 +403,9 @@ public class SVInstantiations
     /// the new pair is taken without a warning.
     ///
     /// @param prefix the PosInProgram describing the position of the first statement after the
-    ///        prefix
+    /// prefix
     /// @param postfix the PosInProgram describing the position of the statement just before the
-    ///        postfix
+    /// postfix
     /// @param pe the ProgramElement the context positions are related to
     public SVInstantiations replace(PosInProgram prefix, PosInProgram postfix,
             RustyProgramElement pe, Services services) {

@@ -3,12 +3,10 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty;
 
-import java.util.Map;
 
 import org.key_project.logic.Term;
 import org.key_project.prover.proof.SessionCaches;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
-import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
 import org.key_project.util.LRUCache;
 
@@ -19,7 +17,8 @@ import org.key_project.util.LRUCache;
 ///
 /// This is a redesign of the old static caches which were implemented via final static [Map]s
 /// like
-/// `private static final Map<CacheKey, TermTacletAppIndex> termTacletAppIndexCache = new LRUCache<CacheKey, TermTacletAppIndex> ( MAX_TERM_TACLET_APP_INDEX_ENTRIES );`.
+/// `private static final Map<CacheKey, TermTacletAppIndex> termTacletAppIndexCache = new
+/// LRUCache<CacheKey, TermTacletAppIndex> ( MAX_TERM_TACLET_APP_INDEX_ENTRIES );`.
 ///
 ///
 /// The old idea that memory is reused and shared between multiple [Proof]s by static variables
@@ -31,20 +30,21 @@ import org.key_project.util.LRUCache;
 /// memory to live in which makes the whole **system unusable slow**.
 ///
 ///
-/// The goal of this new design is to avoid all static cache variables and to collect them instead as
+/// The goal of this new design is to avoid all static cache variables and to collect them instead
+/// as
 /// instance variables in this class. Each [Proof] has its own [Services] which provides
 /// a [ServiceCaches] instance to use via [#getCaches()]. The advantages are:
 ///
-///   - The cache contains only usable content and nothing from other [Proof]s not relevant for
-///     the current [Proof].
-///   - The whole memory is freed when a [Proof] is disposed via [#dispose()].
-///   - Multiple [Proof]s at the same time are faster because they can fill the cache up to the
-///     fixed limit. Also the user interface profits from it when a user switches between proofs.
-///   - Even if multiple large [Proof]s exist at the same time it seems to be no problem that
-///     multiple caches exist.
-///   - The old behavior in which multiple [Proof]s use the same cache can be realized just by
-///     using the same [ServiceCaches] instance. This can be useful for instance in side
-///     proofs.
+/// - The cache contains only usable content and nothing from other [Proof]s not relevant for
+/// the current [Proof].
+/// - The whole memory is freed when a [Proof] is disposed via [#dispose()].
+/// - Multiple [Proof]s at the same time are faster because they can fill the cache up to the
+/// fixed limit. Also the user interface profits from it when a user switches between proofs.
+/// - Even if multiple large [Proof]s exist at the same time it seems to be no problem that
+/// multiple caches exist.
+/// - The old behavior in which multiple [Proof]s use the same cache can be realized just by
+/// using the same [ServiceCaches] instance. This can be useful for instance in side
+/// proofs.
 ///
 ///
 ///

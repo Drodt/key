@@ -6,7 +6,6 @@ package org.key_project.rusty.proof.io;
 import java.io.File;
 import java.util.List;
 
-import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.init.Profile;
 
 /// This single threaded problem loader is used by the Eclipse integration of KeY.

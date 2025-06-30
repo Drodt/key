@@ -17,8 +17,8 @@ import org.key_project.util.collection.ImmutableSLList;
 /// The bound uniqueness checker ensures that schemavariables can be bound at most once in the
 /// <tt>\find</tt> and <tt>\assumes</tt> part of a taclet. The justification for this restriction is
 /// to prevent the user to write taclets that match only in very rare cases, e.g. <code>
-///   \assumes (==>\forall var; phi)
-///   \find (\forall var; phi ==>)
+/// \assumes (==>\forall var; phi)
+/// \find (\forall var; phi ==>)
 /// </code> would nearly never match, as <tt>var</tt> would be required to match the same object.
 public class BoundUniquenessChecker {
 

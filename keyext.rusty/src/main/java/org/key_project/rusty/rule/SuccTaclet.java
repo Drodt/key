@@ -28,15 +28,16 @@ public class SuccTaclet extends FindTaclet {
     ///
     /// @param name the name of the [Taclet]
     /// @param applPart contains the application part of a taclet that is the if-sequent, the
-    ///        variable conditions
+    /// variable conditions
     /// @param goalTemplates a list of goal descriptions.
     /// @param ruleSets a list of rule sets for the Taclet
-    /// @param attrs attributes for the Taclet; these are boolean values indicating a non-interactive
-    ///        or recursive use of the Taclet.
+    /// @param attrs attributes for the Taclet; these are boolean values indicating a
+    /// non-interactive
+    /// or recursive use of the Taclet.
     /// @param find the find sequent of the Taclet
     /// @param prefixMap an ImmutableMap from [SchemaVariable] to [TacletPrefix] that
-    ///        contains
-    ///        the prefix for each SchemaVariable in the taclet
+    /// contains
+    /// the prefix for each SchemaVariable in the taclet
     public SuccTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates, ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs, Sequent find,

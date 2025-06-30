@@ -32,7 +32,8 @@ public class Printer<M> {
     private final ArrayList<Integer> marginStack = new ArrayList<>(10);
 
 
-    /// Create a printer. It will write its output to <code>writer</code>. Lines have a maximum width
+    /// Create a printer. It will write its output to <code>writer</code>. Lines have a maximum
+    /// width
     /// of <code>lineWidth</code>.
     Printer(StringBackend<M> back, int lineWidth) {
         this.back = back;

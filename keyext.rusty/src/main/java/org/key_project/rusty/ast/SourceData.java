@@ -24,7 +24,8 @@ public class SourceData {
     private final Services services;
 
 
-    /// creates a new source data object with parent node <tt>element</tt> whose <tt>childPos</tt>-th
+    /// creates a new source data object with parent node <tt>element</tt> whose
+    /// <tt>childPos</tt>-th
     /// child has to be matched (-1 denotes <tt>element</tt> itself has to be matched
     ///
     /// @param element the ProgramElement
@@ -41,8 +42,9 @@ public class SourceData {
 
     /// returns index of the child to be matched
     ///
-    /// @return an int which is <tt>-1</tt> if @link #getElement() has to be matched itself otherwise
-    ///         it refers to the index of the child of <tt>element</tt> to be matched
+    /// @return an int which is <tt>-1</tt> if @link #getElement() has to be matched itself
+    /// otherwise
+    /// it refers to the index of the child of <tt>element</tt> to be matched
     public int getChildPos() {
         return childPos;
     }

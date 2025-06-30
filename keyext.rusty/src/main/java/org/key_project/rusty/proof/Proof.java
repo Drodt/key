@@ -5,6 +5,7 @@ package org.key_project.rusty.proof;
 
 import java.util.Iterator;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.Term;
@@ -31,7 +32,7 @@ public class Proof implements ProofObject<Goal>, Named {
     final long creationTime = System.currentTimeMillis();
 
     /// the root of the proof
-    private Node root;
+    private @Nullable Node root;
 
     /// list with the open goals of the proof
     private ImmutableList<Goal> openGoals = ImmutableSLList.nil();
@@ -185,7 +186,7 @@ public class Proof implements ProofObject<Goal>, Named {
     ///
     /// @param oldGoal the old goal that has to be removed from list
     /// @param newGoals the Iterable<Goal> with the new goals that were result of a rule application
-    ///        on goal
+    /// on goal
     @Override
     public void replace(Goal oldGoal, @NonNull Iterable<@NonNull Goal> newGoals) {
         openGoals = openGoals.removeAll(oldGoal);

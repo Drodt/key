@@ -5,7 +5,6 @@ package org.key_project.rusty.proof.init.loader;
 
 import org.key_project.rusty.proof.init.IPersistablePO;
 import org.key_project.rusty.proof.init.InitConfig;
-import org.key_project.rusty.proof.init.KeYUserProblemFile;
 import org.key_project.rusty.settings.Configuration;
 
 import org.jspecify.annotations.NullMarked;
@@ -33,7 +32,7 @@ public interface ProofObligationLoader {
     /// @param properties the `\proofObligation` configuration
     /// @return always a valid PO
     /// @throws Exception in case of an arbitrary exception, e.g., missing information
-    ///         `properties`
+    /// `properties`
     IPersistablePO.LoadedPOContainer loadFrom(InitConfig initConfig, Configuration properties)
             throws Exception;
 

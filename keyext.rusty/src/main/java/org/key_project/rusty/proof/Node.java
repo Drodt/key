@@ -145,7 +145,7 @@ public class Node implements Iterable<Node> {
 
     /// @param child a child of this node.
     /// @return the number of the node <code>child</code>, if it is a child of this node (starting
-    ///         with <code>0</code>), <code>-1</code> otherwise
+    /// with <code>0</code>), <code>-1</code> otherwise
     public int getChildNr(Node child) {
         int res = 0;
         final Iterator<Node> it = childrenIterator();
@@ -296,7 +296,7 @@ public class Node implements Iterable<Node> {
     }
 
     /// @return an iterator for the leaves of the subtree below this node. The computation is called
-    ///         at every call!
+    /// at every call!
     public Iterator<Node> leavesIterator() {
         return new NodeIterator(getLeaves().iterator());
     }

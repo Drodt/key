@@ -27,7 +27,7 @@ public class OpReplacer {
     /// Creates an `OpReplacer`.
     ///
     /// @param map map mapping from the operators/terms to be replaced to the ones to replace them
-    ///        with.
+    /// with.
     /// @param tf a term factory.
     public OpReplacer(Map<? extends SyntaxElement, ? extends SyntaxElement> map, TermFactory tf) {
         assert map != null;

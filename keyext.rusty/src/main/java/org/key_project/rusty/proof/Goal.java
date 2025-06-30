@@ -82,7 +82,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return ruleAppIndex;
     }
 
-    /// puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node of
+    /// puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node
+    /// of
     /// the goal
     ///
     /// @param app the applied rule app
@@ -204,7 +205,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /// sets the sequent of the node
     ///
     /// @param sci SequentChangeInfo containing the sequent to be set and describing the applied
-    ///        changes to the sequent of the node currently pointed to by this goal
+    /// changes to the sequent of the node currently pointed to by this goal
     public void setSequent(SequentChangeInfo sci) {
         assert sci.getOriginalSequent() == getNode().sequent();
         if (!sci.hasChanged()) {
@@ -307,7 +308,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     ///
     /// @param sf the SequentFormula to be added
     /// @param inAntec boolean true(false) if SequentFormula has to be added to antecedent
-    ///        (succedent)
+    /// (succedent)
     /// @param first boolean true if at the front, if false then sf is added at the back
     public void addFormula(SequentFormula sf, boolean inAntec, boolean first) {
         setSequent(sequent().addFormula(sf, inAntec, first));

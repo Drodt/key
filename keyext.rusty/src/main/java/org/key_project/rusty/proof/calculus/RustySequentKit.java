@@ -29,7 +29,7 @@ public class RustySequentKit extends SequentKit {
     ///
     /// @param ante list of redundant-free formulas that plays the antecedent part
     /// @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
-    ///         EMPTY_SEMISEQUENT
+    /// EMPTY_SEMISEQUENT
     public static Sequent createAnteSequent(ImmutableList<SequentFormula> ante) {
         return getInstance().newAntecedent(ante);
     }
@@ -38,7 +38,7 @@ public class RustySequentKit extends SequentKit {
     ///
     /// @param succ the Semisequent that plays the succedent part
     /// @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
-    ///         EMPTY_SEMISEQUENT
+    /// EMPTY_SEMISEQUENT
     public static Sequent createSuccSequent(ImmutableList<SequentFormula> succ) {
         return getInstance().newSuccedent(succ);
     }
@@ -63,7 +63,7 @@ public class RustySequentKit extends SequentKit {
     /// @param ante the Semisequent that plays the antecedent part
     /// @param succ the Semisequent that plays the succedent part
     /// @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
-    ///         EMPTY_SEMISEQUENT
+    /// EMPTY_SEMISEQUENT
     @Override
     protected Sequent createSequent(Semisequent ante, Semisequent succ) {
         if (ante.isEmpty() && succ.isEmpty()) {

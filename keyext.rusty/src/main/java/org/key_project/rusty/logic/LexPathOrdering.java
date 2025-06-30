@@ -159,8 +159,9 @@ public class LexPathOrdering implements TermOrdering {
 
     /// Compare the two given symbols
     ///
-    /// @return a number negative, zero or a number positive if <code>p_a</code> is less than, equal,
-    ///         or greater than <code>p_b</code>
+    /// @return a number negative, zero or a number positive if <code>p_a</code> is less than,
+    /// equal,
+    /// or greater than <code>p_b</code>
     private int compare(Operator aOp, Sort aSort, Operator bOp,
             Sort bSort) {
         if (aOp == bOp) {
@@ -219,8 +220,8 @@ public class LexPathOrdering implements TermOrdering {
     private final WeakHashMap<Sort, Integer> sortDepthCache = new WeakHashMap<>();
 
     /// @return the length of the longest path from <code>s</code> to the top element of the sort
-    ///         lattice. Probably this length is not computed correctly here, because the
-    ///         representation of sorts in key is completely messed up, but you get the idea
+    /// lattice. Probably this length is not computed correctly here, because the
+    /// representation of sorts in key is completely messed up, but you get the idea
     private int getSortDepth(Sort s) {
         Integer res = sortDepthCache.get(s);
         if (res == null) {
@@ -256,8 +257,9 @@ public class LexPathOrdering implements TermOrdering {
 
         /// Compare the weights of two symbols using the function <code>getWeight</code>.
         ///
-        /// @return a number negative, zero or a number positive if the weight of <code>p_a</code> is
-        ///         less than, equal, or greater than the weight of <code>p_b</code>
+        /// @return a number negative, zero or a number positive if the weight of <code>p_a</code>
+        /// is
+        /// less than, equal, or greater than the weight of <code>p_b</code>
         public int compareWeights(Operator p_a, Operator p_b) {
             final Integer aWeight = getWeight(p_a);
             final Integer bWeight = getWeight(p_b);
@@ -372,12 +374,14 @@ public class LexPathOrdering implements TermOrdering {
     }
 
     /// TODO: this should also be used when comparing terms
-    /// The reduction ordering on integers that is described in "A critical-pair/completion algorithm
+    /// The reduction ordering on integers that is described in "A critical-pair/completion
+    /// algorithm
     /// for finitely generated ideals in rings", with the difference that positive numbers are here
     /// considered as smaller than negative numbers (with the same absolute value)
     ///
-    /// @return a negative number, zero, or a positive number, if <code>a</code> is smaller, equal to
-    ///         or greater than <code>b</code>
+    /// @return a negative number, zero, or a positive number, if <code>a</code> is smaller, equal
+    /// to
+    /// or greater than <code>b</code>
     public static int compare(BigInteger a, BigInteger b) {
         final int c = a.abs().compareTo(b.abs());
         if (c != 0) {
@@ -387,8 +391,8 @@ public class LexPathOrdering implements TermOrdering {
     }
 
     /// @return the result of dividing <code>a</code> by <code>c</code>, such that the remainder
-    ///         becomes minimal in the reduction ordering <code>LexPathOrdering.compare</code> on
-    ///         integers
+    /// becomes minimal in the reduction ordering <code>LexPathOrdering.compare</code> on
+    /// integers
     public static BigInteger divide(BigInteger a, BigInteger c) {
         final BigInteger[] divRem = a.divideAndRemainder(c);
         while (true) {

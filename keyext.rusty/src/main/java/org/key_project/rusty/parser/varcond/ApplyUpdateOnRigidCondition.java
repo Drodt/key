@@ -47,7 +47,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
     /// @param u the schema variable matched against an update
     /// @param phi the schema variable matched against a formula or term
     /// @param result the schema variable containing the result of applying <code>u</code> on
-    ///        <code>phi</code>
+    /// <code>phi</code>
     public ApplyUpdateOnRigidCondition(UpdateSV u, org.key_project.logic.op.sv.SchemaVariable phi,
             org.key_project.logic.op.sv.SchemaVariable result) {
         this.u = u;
@@ -65,8 +65,9 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
     /// @param u the update applied on <code>phi</code>
     /// @param phi the formula or term the update <code>u</code> is applied on
     /// @param services the [Services] to help create terms
-    /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code> and
-    ///         possible renaming
+    /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code>
+    /// and
+    /// possible renaming
     private static Term applyUpdateOnRigid(Term u, Term phi, Services services) {
         if (phi.boundVars().isEmpty() || u.freeVars().isEmpty()) {
             final TermBuilder tb = services.getTermBuilder();
@@ -92,8 +93,9 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
     /// @param u the update applied on <code>phi</code>
     /// @param phi the formula or term the update <code>u</code> is applied on
     /// @param services the [Services] to help create terms
-    /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code> and
-    ///         possible renaming
+    /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code>
+    /// and
+    /// possible renaming
     private static Term applyUpdateOnRigidQuantifier(Term u, Term phi, Services services) {
         final TermBuilder tb = services.getTermBuilder();
 

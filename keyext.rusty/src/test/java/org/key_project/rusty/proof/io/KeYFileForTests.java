@@ -32,7 +32,8 @@ public class KeYFileForTests extends KeYFile {
     }
 
     /// reads the whole .key file and modifies the initial configuration assigned to this object
-    /// according to the given modification strategy. Throws an exception if no initial configuration
+    /// according to the given modification strategy. Throws an exception if no initial
+    /// configuration
     /// has been set yet.
     @Override
     public ImmutableSet<String> read() throws ProofInputException {

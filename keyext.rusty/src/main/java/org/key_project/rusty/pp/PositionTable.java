@@ -9,10 +9,14 @@ import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/// A PositionTable describes the start and end positions of substrings of a String in order to get a
-/// PosInSequent from an int describing a position in a string representing a Term or a Sequent, etc.
-/// A PositionTable therefore represents a table consisting of two columns of type int (start and end
-/// position) and a reference to another PositionTable representing the position information for that
+/// A PositionTable describes the start and end positions of substrings of a String in order to get
+/// a
+/// PosInSequent from an int describing a position in a string representing a Term or a Sequent,
+/// etc.
+/// A PositionTable therefore represents a table consisting of two columns of type int (start and
+/// end
+/// position) and a reference to another PositionTable representing the position information for
+/// that
 /// substring. A PositionTable is valid (in order to support efficient putting of new entries to the
 /// table and an efficient search for a Position), if the last entry that has been set is (s, e, x)
 /// and the next entry is (s', e', x') with s'>e.
@@ -43,7 +47,7 @@ public class PositionTable {
     /// Semisequent, or the number of Semisequents in a Sequent, etc.)
     ///
     /// @param rows the number of direct sub-elements in the term whose position information is
-    ///        represented by the constructed object.
+    /// represented by the constructed object.
     public PositionTable(int rows) {
         this.rows = rows;
         startPos = new int[rows];
@@ -90,10 +94,10 @@ public class PositionTable {
     ///
     /// @param index the character index to search for.
     /// @param length the length of the whole string corresponding to this position table. Needed in
-    ///        case it turns out the index belongs to the top level.
+    /// case it turns out the index belongs to the top level.
     ///
     /// @return the character range of the `lowest' subtable that includes <code>index</code> in its
-    ///         range.
+    /// range.
     public Range rangeForIndex(int index, int length) {
         int sub = searchEntry(index);
         if (sub == -1) {
@@ -125,8 +129,8 @@ public class PositionTable {
     }
 
     /// @return Returns the character range of the first java statement in a program modality for
-    ///         _this_position table. If this is not a program modality, returns null. Note that
-    ///         this will be overridden in the subclass [ModalityPositionTable].
+    /// _this_position table. If this is not a program modality, returns null. Note that
+    /// this will be overridden in the subclass [ModalityPositionTable].
     public Range getFirstStatementRange() {
         return null;
     }
@@ -150,7 +154,7 @@ public class PositionTable {
     /// given PositionTable as child of the sub-element finished by putting this end position
     ///
     /// @param end char position that ends the sub-element started by the corresponding start entry
-    ///        in the position table
+    /// in the position table
     /// @param child PositionTable for the sub-element from start to end
     public void setEnd(int end, PositionTable child) {
         endPos[currentEntry] = end;
@@ -224,7 +228,7 @@ public class PositionTable {
     /// one child table for each subterm.
     ///
     /// @param filterEntry the print filter entry that contains information about which constrained
-    ///        formula we are in and how the constraint and metavariables were printed.
+    /// formula we are in and how the constraint and metavariables were printed.
     /// @param posList the position list that navigates through the position tables.
     /// @param pio the PosInOccurrence leading to the current term
     private PosInSequent getTermPIS(SequentPrintFilterEntry filterEntry,

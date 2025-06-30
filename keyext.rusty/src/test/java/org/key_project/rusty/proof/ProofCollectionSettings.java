@@ -36,7 +36,7 @@ public class ProofCollectionSettings {
     /// can be used to return an absolute [File] object.
     ///
     /// @param baseDirectory Base directory that will be used as start location in case given path
-    ///        name is a relative path.
+    /// name is a relative path.
     /// @param pathName Path whose associated [File] object will be returned.
     /// @return [File] object pointing to given path name relative to given base directory.
     static File getAbsoluteFile(File baseDirectory, String pathName) {

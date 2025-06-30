@@ -17,9 +17,9 @@ import org.jspecify.annotations.Nullable;
 
 /// This class brings some nice features to the visitors of key's ast.
 ///
-///   - It makes casting implicit by using {[#accept(RuleContext)]}
-///   - It allows to pass arguments by an explicit stack.
-///   - It brings handling of errors and warnings.
+/// - It makes casting implicit by using {[#accept(RuleContext)]}
+/// - It allows to pass arguments by an explicit stack.
+/// - It brings handling of errors and warnings.
 ///
 ///
 /// @param <T> return type

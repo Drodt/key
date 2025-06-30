@@ -6,11 +6,9 @@ package org.key_project.rusty.rule.match.instructions;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.OperatorSV;
-import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
-import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
@@ -28,7 +26,8 @@ public abstract class MatchSchemaVariableInstruction
 
     /// Tries to add the pair <tt>(this,term)</tt> to the match conditions. If successful the
     /// resulting conditions are returned, otherwise null. Failure is possible e.g. if this
-    /// schemavariable has been already matched to a term <tt>t2</tt> which is not unifiable with the
+    /// schemavariable has been already matched to a term <tt>t2</tt> which is not unifiable with
+    /// the
     /// given term.
     protected final MatchResultInfo addInstantiation(Term term,
             MatchResultInfo matchCond,
@@ -61,10 +60,10 @@ public abstract class MatchSchemaVariableInstruction
     ///
     /// @param instantiationCandidate the [RustyProgramElement] to be matched
     /// @param mc the [MatchResultInfo] with additional constraints (e.g. previous matches of
-    ///        this instructions [SchemaVariable])
+    /// this instructions [SchemaVariable])
     /// @param services the [Services]
     /// @return `null` if no matches have been found or the new [MatchResultInfo] with
-    ///         the pair ([SchemaVariable], [RustyProgramElement]) added
+    /// the pair ([SchemaVariable], [RustyProgramElement]) added
     public MatchResultInfo match(RustyProgramElement instantiationCandidate,
             MatchResultInfo mc,
             LogicServices services) {

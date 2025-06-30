@@ -26,7 +26,7 @@ public class TacletAppIntermediate extends AppIntermediate {
     ///
     /// @param tacletName Name of the taclet.
     /// @param posInfo Position information (Integer representing position of the target formula,
-    ///        PosInTerm for relevant term inside the formula).
+    /// PosInTerm for relevant term inside the formula).
     /// @param insts Schema variable instantiations.
     /// @param assumesSeqFormulaList
     /// @param ifDirectFormulaList

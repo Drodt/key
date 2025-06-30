@@ -29,7 +29,7 @@ public class SchemaVariableFactory {
     /// @param sort the Sort of the term the SchemaVariable will be used to represent
     /// @param rigidness true iff this SV may only match rigid terms/formulas
     /// @param strictSV boolean indicating if the schemavariable is declared as strict forcing exact
-    ///        type match
+    /// type match
     /// @return the SchemaVariable
     public static TermSV createTermSV(Name name, Sort sort, boolean rigidness, boolean strictSV) {
         return new TermSV(name, sort, rigidness, strictSV);

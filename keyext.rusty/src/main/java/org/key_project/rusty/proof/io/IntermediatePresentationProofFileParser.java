@@ -238,7 +238,7 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
     }
 
     /// @return An intermediate built-in rule application generated from previously parsed
-    ///         information.
+    /// information.
     private BuiltInAppIntermediate constructBuiltInApp() {
         BuiltinRuleInformation builtinInfo = (BuiltinRuleInformation) ruleInfo;
         return new BuiltInAppIntermediate(builtinInfo.currRuleName,
@@ -256,7 +256,7 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
     }
 
     /// @return True iff we are currently parsing a built-in rule and are inside an if-insts sub
-    ///         expression.
+    /// expression.
     private boolean insideBuiltinIfInsts() {
         // return ruleInfo.isBuiltinInfo()
         // && ((BuiltinRuleInformation) ruleInfo).builtinIfInsts != null;

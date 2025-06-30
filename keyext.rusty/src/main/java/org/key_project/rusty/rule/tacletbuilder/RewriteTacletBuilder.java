@@ -35,8 +35,10 @@ public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBui
     }
 
     /// builds and returns the RewriteTaclet that is specified by former set... / add... methods. If
-    /// no name is specified then an Taclet with an empty string name is build. No specifications for
-    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet are
+    /// no name is specified then an Taclet with an empty string name is build. No specifications
+    /// for
+    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet
+    /// are
     /// empty. No specification for the if-sequent is represented as a sequent with two empty
     /// semisequents. No specification for the interactive or recursive flags imply that the flags
     /// are not set. No specified find part causes an TacletBuilderException. Throws an
@@ -80,9 +82,11 @@ public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBui
     }
 
 
-    /// builds and returns the Taclet that is specified by former set... / add... methods. If no name
+    /// builds and returns the Taclet that is specified by former set... / add... methods. If no
+    /// name
     /// is specified then an Taclet with an empty string name is build. No specifications for
-    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet are
+    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet
+    /// are
     /// empty. No specification for the if-sequence is represented as a sequent with two empty
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set. No specified find part causes an IllegalStateException.

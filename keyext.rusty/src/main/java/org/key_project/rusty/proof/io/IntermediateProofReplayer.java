@@ -94,7 +94,7 @@ public class IntermediateProofReplayer {
     /// [#getLastSelectedGoal()].
     ///
     /// @param deleteIntermediateTree indicates if the intermediate proof tree should be
-    ///        deleted (set to false if it shal be kept for further use)
+    /// deleted (set to false if it shal be kept for further use)
     /// @return result of the replay procedure (see [Result])
     public Result replay(boolean deleteIntermediateTree) {
         // initialize progress monitoring
@@ -556,7 +556,7 @@ public class IntermediateProofReplayer {
     /// @param value Name for the instantiated logic variable.
     /// @param services The services object.
     /// @return An instantiated taclet application, where the schema variable has been instantiated
-    ///         by a logic variable of the given name.
+    /// by a logic variable of the given name.
     public static TacletApp parseSV1(TacletApp app, VariableSV sv, String value,
             Services services) {
         // TODO
@@ -573,8 +573,8 @@ public class IntermediateProofReplayer {
     /// @param value Name for the instantiated Skolem constant, program element or term..
     /// @param targetGoal The goal corresponding to the given application.
     /// @return An instantiated taclet application, where the schema variable has been instantiated,
-    ///         depending on its type, by a Skolem constant, program element, or term of the given
-    ///         name.
+    /// depending on its type, by a Skolem constant, program element, or term of the given
+    /// name.
     /// @see #parseSV1(TacletApp, VariableSV, String, Services)
     public static TacletApp parseSV2(TacletApp app, SchemaVariable sv, String value,
             Goal targetGoal) {

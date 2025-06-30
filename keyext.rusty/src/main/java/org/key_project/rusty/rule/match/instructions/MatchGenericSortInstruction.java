@@ -30,7 +30,7 @@ public class MatchGenericSortInstruction implements MatchInstruction {
     /// @param dependingSortToMatch the depending [Sort] of the concrete function to be matched
     /// @param matchConditions the [MatchResultInfo] accumulated so far
     /// @return <code>null</code> if failed the resulting match conditions otherwise the resulting
-    ///         [MatchResultInfo]
+    /// [MatchResultInfo]
     private MatchResultInfo matchSorts(Sort dependingSortToMatch, MatchResultInfo matchConditions,
             LogicServices services) {
         // This restriction has been dropped for free generic sorts to prove taclets correct

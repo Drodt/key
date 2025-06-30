@@ -21,7 +21,7 @@ public class SortImpl extends AbstractSort {
     }
 
     public SortImpl(Name name, boolean isAbstract) {
-        super(name, isAbstract);
+        this(name, isAbstract, ImmutableSet.empty());
     }
 
     public SortImpl(Name name) {

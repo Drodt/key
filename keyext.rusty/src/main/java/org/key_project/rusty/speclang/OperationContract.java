@@ -18,7 +18,8 @@ public interface OperationContract extends Contract {
     @Override
     OperationContract map(UnaryOperator<Term> op, Services services);
 
-    /// Returns <code>true</code> iff the method (according to the contract) does not modify the heap
+    /// Returns <code>true</code> iff the method (according to the contract) does not modify the
+    /// heap
     /// at all, i.e., iff it is "strictly pure."
     ///
     /// @return whether this contract is strictly pure.

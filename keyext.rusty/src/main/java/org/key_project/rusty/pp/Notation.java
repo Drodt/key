@@ -21,7 +21,8 @@ import org.key_project.util.collection.ImmutableList;
 /// class represent different kinds of concrete syntax, like prefix, infix, postfix, function style,
 /// attribute style, etc.
 public abstract class Notation {
-    /// The priority of this operator in the given concrete syntax. This is used to determine whether
+    /// The priority of this operator in the given concrete syntax. This is used to determine
+    /// whether
     /// parentheses are required around a subterm.
     private final int priority;
 

@@ -125,8 +125,8 @@ public abstract class ProgramSVSort extends SortImpl {
 
     /// This sort represents a type of program schema variables that match only on
     ///
-    ///   - program variables or
-    ///   - (negated) literal expressions
+    /// - program variables or
+    /// - (negated) literal expressions
     ///
     private static class SimpleExpressionSort extends ProgramSVSort {
 

@@ -25,7 +25,9 @@ import org.key_project.util.collection.ImmutableList;
 /// The generated [Sequent] has the following form:
 /// <pre>
 ///
-/// `==><generalAssumptions> &<preconditions>-><updatesToStoreInitialValues><modalityStart>exc=null;try{<methodBodyExpand>}catch(java.lang.Throwable e){exc = e}<modalityEnd>(exc = null & <postconditions > & <optionalUninterpretedPredicate>)`
+/// `==><generalAssumptions>
+/// &<preconditions>-><updatesToStoreInitialValues><modalityStart>exc=null;try{<methodBodyExpand>}catch(java.lang.Throwable
+/// e){exc = e}<modalityEnd>(exc = null & <postconditions > & <optionalUninterpretedPredicate>)`
 /// </pre>
 ///
 public class FunctionalOperationContractPO extends AbstractOperationPO implements ContractPO {

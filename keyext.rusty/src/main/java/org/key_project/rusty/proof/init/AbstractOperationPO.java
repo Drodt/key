@@ -21,7 +21,9 @@ import org.key_project.util.collection.ImmutableList;
 /// The generated [Sequent] has the following form:
 /// <pre>
 ///
-/// `==><generalAssumptions> &<preconditions>-><updatesToStoreInitialValues><modalityStart>panics=false;<customCode><modalityEnd>(<postconditions > & <optionalUninterpretedPredicate>)`
+/// `==><generalAssumptions>
+/// &<preconditions>-><updatesToStoreInitialValues><modalityStart>panics=false;<customCode><modalityEnd>(<postconditions
+/// > & <optionalUninterpretedPredicate>)`
 /// </pre>
 ///
 ///
@@ -75,7 +77,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
     /// be renamed to make sure that their names are unique in the whole KeY application.
     ///
     /// @return `true` use unique names, `false` use original names even if they are not
-    ///         unique in whole KeY application.
+    /// unique in whole KeY application.
     protected boolean isMakeNamesUnique() {
         // Changing this behaviour to fix #1552.
         // return true;
@@ -86,7 +88,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
     /// arguments.
     ///
     /// @return `true` use copy of method call arguments, `false` use original method
-    ///         call arguments.
+    /// call arguments.
     protected boolean isCopyOfArgumentsUsed() {
         return true;
     }
@@ -147,7 +149,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
     /// marker.
     ///
     /// @return The [RModality.RustyModalityKind] to use as termination
-    ///         marker.
+    /// marker.
     protected abstract RModality.RustyModalityKind getTerminationMarker();
 
     /// Builds the initial updates.

@@ -5,6 +5,7 @@ package org.key_project.rusty;
 
 import java.util.*;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.sort.Sort;
@@ -28,7 +29,7 @@ public final class RustInfo {
         fnToProgFn = new HashMap<>();
     }
 
-    public KeYRustyType getKeYRustyType(String name) {
+    public @Nullable KeYRustyType getKeYRustyType(String name) {
         KeYRustyType result = getPrimitiveKeYRustyType(name);
         // TODO: ADTs etc.
         return result;
@@ -43,6 +44,7 @@ public final class RustInfo {
         }
         if (type instanceof TupleType tt && tt == TupleType.UNIT) {
             var sort = services.getNamespaces().sorts().lookup("unit");
+            assert sort != null;
             var krt = new KeYRustyType(type, sort);
             type2KRTCache.put(type, krt);
             return krt;
@@ -71,7 +73,7 @@ public final class RustInfo {
         throw new IllegalArgumentException("Unsupported type: " + type);
     }
 
-    private KeYRustyType getPrimitiveKeYRustyType(String name) {
+    private @Nullable KeYRustyType getPrimitiveKeYRustyType(String name) {
         PrimitiveType type = PrimitiveType.get(name);
         if (type != null) {
             return getPrimitiveKeYRustyType(type);
@@ -122,7 +124,7 @@ public final class RustInfo {
         }
     }
 
-    public ProgramFunction getFunction(Function function) {
+    public @Nullable ProgramFunction getFunction(Function function) {
         return fnToProgFn.get(function);
     }
 

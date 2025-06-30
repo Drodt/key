@@ -186,7 +186,8 @@ public abstract class TacletBuilder<T extends Taclet> {
     }
 
     /// adds a new goal descriptions to the goal descriptions of the Taclet. The TacletGoalTemplate
-    /// must be of the appropriate useKind (Rewrite/Ante/Succ), otherwise an IllegalArgumentException
+    /// must be of the appropriate useKind (Rewrite/Ante/Succ), otherwise an
+    /// IllegalArgumentException
     /// is
     /// thrown.
     public abstract void addTacletGoalTemplate(TacletGoalTemplate goal);
@@ -203,7 +204,8 @@ public abstract class TacletBuilder<T extends Taclet> {
         return varsNotFreeIn.iterator();
     }
 
-    /// builds and returns the Taclet that is specified by former set... / add... methods. If no name
+    /// builds and returns the Taclet that is specified by former set... / add... methods. If no
+    /// name
     /// is specified then a Taclet with an empty string name is build. No specifications for
     /// variable conditions, goals or rule sets imply that the corresponding parts of the Taclet are
     /// empty. No specification for the if-sequence is represented as a sequent with two empty

@@ -21,8 +21,9 @@ public class PosInSequent {
     /// Additionally a boolean indicates whether the the whole SequentFormula or just the formula is
     /// meant.
     ///
-    /// @param posInOcc the PositionInOccurrence describing the SequentFormula and maybe a subterm of
-    ///        its formula.
+    /// @param posInOcc the PositionInOccurrence describing the SequentFormula and maybe a subterm
+    /// of
+    /// its formula.
     public static PosInSequent createCfmaPos(PosInOccurrence posInOcc) {
         return new PosInSequent(posInOcc, false);
     }

@@ -28,13 +28,13 @@ public class NoFindTaclet extends Taclet {
     ///
     /// @param name the name of the Taclet
     /// @param applPart contains the application part of a Taclet that is the if-sequent, the
-    ///        variable conditions
+    /// variable conditions
     /// @param goalTemplates the IList containing all goal descriptions of the
-    ///        taclet to be created
+    /// taclet to be created
     /// @param ruleSets a list of rule sets for the Taclet
     /// @param attrs attributes for the Taclet; these are boolean values
     /// @param prefixMap a ImmutableMap that contains the prefix for each
-    ///        SchemaVariable in the Taclet
+    /// SchemaVariable in the Taclet
     /// @param choices the SetOf<Choices> to which this taclet belongs to
     public NoFindTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates, ImmutableList<RuleSet> ruleSets,
@@ -56,7 +56,8 @@ public class NoFindTaclet extends Taclet {
         return getAssumesVariables();
     }
 
-    /// the empty set as a no find taclet has no other entities where variables cann occur bound than
+    /// the empty set as a no find taclet has no other entities where variables cann occur bound
+    /// than
     /// in the goal templates
     ///
     /// @return empty set

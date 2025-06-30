@@ -12,8 +12,10 @@ import org.key_project.rusty.rule.NoFindTaclet;
 public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
 
     /// builds and returns the RewriteTaclet that is specified by former set... / add... methods. If
-    /// no name is specified then an Taclet with an empty string name is build. No specifications for
-    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet are
+    /// no name is specified then an Taclet with an empty string name is build. No specifications
+    /// for
+    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet
+    /// are
     /// empty. No specification for the if-sequent is represented as a sequent with two empty
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set.
@@ -34,14 +36,15 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
     /// adds a new goal descriptions to the goal descriptions of the Taclet.
     ///
     /// @param goal the TacletGoalTemplate specifying all the changes to be made to achieve one of
-    ///        the resulting goals
+    /// the resulting goals
     public void addTacletGoalTemplate(TacletGoalTemplate goal) {
         goals = goals.prepend(goal);
     }
 
 
 
-    /// checks that a variableSV occurrs at most once in a quantifier of the ifs and finds and throws
+    /// checks that a variableSV occurrs at most once in a quantifier of the ifs and finds and
+    /// throws
     /// an exception otherwise
     protected void checkBoundInIfAndFind() {
         final BoundUniquenessChecker ch = new BoundUniquenessChecker(ifSequent());
@@ -52,9 +55,11 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
     }
 
 
-    /// builds and returns the Taclet that is specified by former set... / add... methods. If no name
+    /// builds and returns the Taclet that is specified by former set... / add... methods. If no
+    /// name
     /// is specified then an Taclet with an empty string name is build. No specifications for
-    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet are
+    /// variable conditions, goals or heuristics imply that the corresponding parts of the Taclet
+    /// are
     /// empty. No specification for the if-sequent is represented as a sequent with two empty
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set. May throw an TacletBuilderException if a bound SchemaVariable occurs more than

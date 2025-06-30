@@ -34,16 +34,16 @@ public abstract class FindTaclet extends Taclet {
     ///
     /// @param name the Name of the taclet
     /// @param applPart the TacletApplPart that contains the if-sequent, the not-free and new-vars
-    ///        conditions
+    /// conditions
     /// @param goalTemplates a IList<TacletGoalTemplate> that contains all goaltemplates of the
-    ///        taclet (these are the instructions used to create new goals when applying the Taclet)
+    /// taclet (these are the instructions used to create new goals when applying the Taclet)
     /// @param ruleSets a ImmutableList that contains all rule sets the Taclet is attached to
     /// @param attrs the TacletAttributes encoding if the Taclet is non-interactive, recursive or
-    ///        something like that
+    /// something like that
     /// @param find the Term that is the pattern that has to be found in a sequent and the places
-    ///        where it matches the Taclet can be applied
+    /// where it matches the Taclet can be applied
     /// @param prefixMap a ImmutableMap that contains the prefix for each
-    ///        SchemaVariable in the Taclet
+    /// SchemaVariable in the Taclet
     protected FindTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
@@ -60,16 +60,16 @@ public abstract class FindTaclet extends Taclet {
     ///
     /// @param name the Name of the taclet
     /// @param applPart the TacletApplPart that contains the if-sequent, the not-free and new-vars
-    ///        conditions
+    /// conditions
     /// @param goalTemplates an ImmutableList that contains all goaltemplates of the
-    ///        taclet (these are the instructions used to create new goals when applying the Taclet)
+    /// taclet (these are the instructions used to create new goals when applying the Taclet)
     /// @param ruleSets an ImmutableList that contains all rule sets the Taclet is attached to
     /// @param attrs the TacletAttributes encoding if the Taclet is non-interactive, recursive or
-    ///        something like that
+    /// something like that
     /// @param find the Term that is the pattern that has to be found in a sequent and the places
-    ///        where it matches the Taclet can be applied
+    /// where it matches the Taclet can be applied
     /// @param prefixMap an ImmutableMap that contains the prefix for each
-    ///        SchemaVariable in the Taclet
+    /// SchemaVariable in the Taclet
     protected FindTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,

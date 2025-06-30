@@ -9,7 +9,6 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.prover.sequent.FormulaChangeInfo;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentChangeInfo;
-import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.*;
@@ -88,14 +87,14 @@ public abstract class FindTacletExecutor
     /// applies the `add`-expressions of taclet goal descriptions
     ///
     /// @param add the [Sequent] with the uninstantiated [SequentFormula]'s to be added
-    ///        to the goal's sequent
+    /// to the goal's sequent
     /// @param currentSequent the [SequentChangeInfo] which is the current (intermediate)
-    ///        result of applying the taclet
+    /// result of applying the taclet
     /// @param whereToAdd the [PosInOccurrence] where to add the sequent or `null` if it
-    ///        should just be added to the head of the sequent (otherwise it will be tried to add the
-    ///        new formulas close to that position)
+    /// should just be added to the head of the sequent (otherwise it will be tried to add the
+    /// new formulas close to that position)
     /// @param posOfFind the [PosInOccurrence] providing the position information where the
-    ///        match took place
+    /// match took place
     /// @param matchCond the [MatchConditions] with all required instantiations
     /// @param goal the Goal where the taclet is applied to
     /// @param ruleApp the [TacletApp] describing the current ongoing taclet application
@@ -108,9 +107,9 @@ public abstract class FindTacletExecutor
     /// applies the `replacewith`-expression of taclet goal descriptions
     ///
     /// @param gt the [TacletGoalTemplate] used to get the taclet's
-    ///        `replacewith`-expression
+    /// `replacewith`-expression
     /// @param currentSequent the [SequentChangeInfo] which is the current (intermediate)
-    ///        result of applying the taclet
+    /// result of applying the taclet
     /// @param posOfFind the [PosInOccurrence] belonging to the find expression
     /// @param matchCond the [MatchConditions] with all required instantiations
     /// @param goal the [Goal] on which the taclet is applied

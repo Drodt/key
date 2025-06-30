@@ -67,7 +67,7 @@ public class TacletAppIndex {
     /// collects all NoFindTacletInstantiations
     ///
     /// @param services the Services object encapsulating information about the Rust datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(Services services) {
         return tacletIndex().getNoFindTaclet(services);
@@ -106,9 +106,9 @@ public class TacletAppIndex {
     }
 
     /// @return true iff this index is currently outdated with respect to the sequent of the
-    ///         associated goal; this does not detect other modifications
-    ///         like an altered user
-    ///         constraint
+    /// associated goal; this does not detect other modifications
+    /// like an altered user
+    /// constraint
     private boolean isOutdated() {
         return getGoal() == null || getSequent() != getNode().sequent();
     }
@@ -188,7 +188,7 @@ public class TacletAppIndex {
     ///
     /// @param pos the position where to start from
     /// @param services the Services object encapsulating information about the java datastructures
-    ///        like (static)types etc.
+    /// like (static)types etc.
     /// @return the possible rule applications
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos,
             Services services) {

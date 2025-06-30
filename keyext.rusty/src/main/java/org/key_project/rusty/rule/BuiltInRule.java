@@ -12,7 +12,8 @@ import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
-/// Built-in rule interface. As applications of this rule kind may not be successful in each case one
+/// Built-in rule interface. As applications of this rule kind may not be successful in each case
+/// one
 /// has to ensure that the goal split is done only iff the application was successful.
 public interface BuiltInRule extends Rule, RuleExecutor<Goal> {
     /// the rule is applied on the given goal using the information of rule application.
@@ -20,7 +21,7 @@ public interface BuiltInRule extends Rule, RuleExecutor<Goal> {
     /// @param goal the Goal on which to apply <tt>ruleApp</tt>
     /// @param ruleApp the rule application to be executed
     /// @return all open goals below \old(goal.node()), i.e. the goals resulting from the rule
-    ///         application
+    /// application
     /// @throws RuleAbortException when this rule was aborted
     @NonNull
     ImmutableList<Goal> apply(Goal goal, RuleApp ruleApp)

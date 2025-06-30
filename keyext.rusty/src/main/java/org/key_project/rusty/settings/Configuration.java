@@ -201,7 +201,7 @@ public class Configuration {
     /// @param name property name
     /// @param clazz the class type of the elements
     /// @throws ClassCastException if the entry is not a [List] or contains elements of the
-    ///         wrong type
+    /// wrong type
     @SuppressWarnings("unchecked")
     public <T> @Nullable List<T> getList(String name, Class<T> clazz) {
         List<?> result = get(name, List.class);

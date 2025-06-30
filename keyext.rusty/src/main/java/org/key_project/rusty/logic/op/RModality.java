@@ -105,7 +105,8 @@ public class RModality extends org.key_project.logic.op.Modality {
             return kinds.get(name);
         }
 
-        /// Whether this modality is termination sensitive, i.e., it is a "diamond-useKind" modality.
+        /// Whether this modality is termination sensitive, i.e., it is a "diamond-useKind"
+        /// modality.
         public boolean terminationSensitive() {
             return (this == DIA);
         }

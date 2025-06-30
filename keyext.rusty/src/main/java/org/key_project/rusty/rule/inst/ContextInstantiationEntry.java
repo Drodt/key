@@ -15,8 +15,9 @@ public class ContextInstantiationEntry
     /// creates a new ContextInstantiationEntry
     ///
     /// @param pi the PosInProgram describing the position of the first statement after the prefix
-    /// @param omega the PosInProgram describing the position of the statement just before the suffix
-    ///        starts
+    /// @param omega the PosInProgram describing the position of the statement just before the
+    /// suffix
+    /// starts
     /// @param pe the ProgramElement the context positions are related to
     ContextInstantiationEntry(PosInProgram pi, PosInProgram omega,
             RustyProgramElement pe) {

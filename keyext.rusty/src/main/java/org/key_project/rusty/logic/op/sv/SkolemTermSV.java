@@ -15,7 +15,7 @@ public class SkolemTermSV extends OperatorSV implements TerminalSyntaxElement {
     ///
     /// @param name the Name of the SchemaVariable
     /// @param sort the Sort of the SchemaVariable and the matched type allowed to match a list of
-    ///        program constructs
+    /// program constructs
     SkolemTermSV(Name name, Sort sort) {
         super(name, sort, true, false);
         assert sort != RustyDLTheory.UPDATE;

@@ -30,7 +30,8 @@ public final class Junctor extends AbstractSortedOperator {
     /// true and B is true
     public static final Junctor AND = new Junctor(new Name("and"), 2);
 
-    /// the usual 'or' operator '\/' (be A, B formulae then 'A \/ B' is true if and only if A is true
+    /// the usual 'or' operator '\/' (be A, B formulae then 'A \/ B' is true if and only if A is
+    /// true
     /// or B is true
     public static final Junctor OR = new Junctor(new Name("or"), 2);
 

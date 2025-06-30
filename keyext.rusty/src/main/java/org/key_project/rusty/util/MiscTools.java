@@ -19,7 +19,7 @@ public final class MiscTools {
     /// @param pe a program element.
     /// @param services services.
     /// @return all variables read in the specified program element, excluding newly declared
-    ///         variables.
+    /// variables.
     public static ImmutableSet<ProgramVariable> getLocalIns(RustyProgramElement pe,
             Services services) {
         final var rpvc = new ReadPVCollector(pe, services);
@@ -32,7 +32,7 @@ public final class MiscTools {
     /// @param pe a program element.
     /// @param services services.
     /// @return all variables changed in the specified program element, excluding newly declared
-    ///         variables.
+    /// variables.
     public static ImmutableSet<ProgramVariable> getLocalOuts(RustyProgramElement pe,
             Services services) {
         final WrittenAndDeclaredPVCollector wpvc = new WrittenAndDeclaredPVCollector(pe, services);
