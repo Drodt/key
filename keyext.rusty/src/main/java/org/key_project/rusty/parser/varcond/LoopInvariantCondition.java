@@ -15,11 +15,9 @@ import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.speclang.LoopSpecification;
 
-/**
- * Extracts the loop invariants for a loop term (for all applicable heap contexts).
- *
- * @author Dominic Steinhoefel
- */
+/// Extracts the loop invariants for a loop term (for all applicable heap contexts).
+///
+/// @author Dominic Steinhoefel
 public class LoopInvariantCondition implements VariableCondition {
     private final ProgramSV loopExprSV;
     private final SchemaVariable modalitySV;

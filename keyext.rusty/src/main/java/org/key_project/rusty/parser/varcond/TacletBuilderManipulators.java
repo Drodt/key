@@ -16,13 +16,11 @@ import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
 
 
-/**
- * This class manages the register of various factories for the different built-in
- * {@link VariableCondition}s.
- *
- * @author Alexander Weigl
- * @version 1 (12/9/19)
- */
+/// This class manages the register of various factories for the different built-in
+/// [VariableCondition]s.
+///
+/// @author Alexander Weigl
+/// @version 1 (12/9/19)
 public class TacletBuilderManipulators {
     // region Factories
     // Shortcut for argument types
@@ -135,30 +133,24 @@ public class TacletBuilderManipulators {
             GET_VARIANT, IS_LABELED);
     }
 
-    /**
-     * Announce a {@link TacletBuilderCommand} for the use during the interpretation of asts. This
-     * affects every following interpretation of rule contextes in
-     * {@link TacletPBuilder}.
-     */
+    /// Announce a [TacletBuilderCommand] for the use during the interpretation of asts. This
+    /// affects every following interpretation of rule contextes in
+    /// [TacletPBuilder].
     public static void register(TacletBuilderCommand... cb) {
         for (TacletBuilderCommand a : cb) {
             register(a);
         }
     }
 
-    /**
-     * @see #register(TacletBuilderCommand...)
-     */
+    /// @see #register(TacletBuilderCommand...)
     public static void register(TacletBuilderCommand cb) {
         tacletBuilderCommands.add(cb);
     }
 
 
-    /**
-     * Returns all available {@link TacletBuilderCommand}s that response on the given name.
-     *
-     * @see TacletBuilderCommand#isSuitableFor(String)
-     */
+    /// Returns all available [TacletBuilderCommand]s that response on the given name.
+    ///
+    /// @see TacletBuilderCommand#isSuitableFor(String)
     public static List<TacletBuilderCommand> getConditionBuildersFor(String name) {
         return tacletBuilderCommands.stream().filter(it -> it.isSuitableFor(name))
                 .collect(Collectors.toList());

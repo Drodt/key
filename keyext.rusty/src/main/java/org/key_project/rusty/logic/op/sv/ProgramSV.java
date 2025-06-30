@@ -30,11 +30,9 @@ public final class ProgramSV extends OperatorSV
     private static final ProgramList EMPTY_LIST_INSTANTIATION =
         new ProgramList(new ImmutableArray<>(new RustyProgramElement[0]));
 
-    /**
-     * creates a new SchemaVariable used as a placeholder for program constructs
-     *
-     * @param name the Name of the SchemaVariable allowed to match a list of program constructs
-     */
+    /// creates a new SchemaVariable used as a placeholder for program constructs
+    ///
+    /// @param name the Name of the SchemaVariable allowed to match a list of program constructs
     ProgramSV(Name name, ProgramSVSort s, boolean isListSV) {
         super(name, s, false, false);
         this.isListSV = isListSV;
@@ -116,17 +114,15 @@ public final class ProgramSV extends OperatorSV
             services);
     }
 
-    /**
-     * adds a found mapping from schema variable <code>var</code> to program element <code>pe</code>
-     * and returns the updated match conditions or null if mapping is not possible because of
-     * violating some variable condition
-     *
-     * @param pe the ProgramElement <code>var</code> is mapped to
-     * @param matchCond the MatchConditions to be updated
-     * @param services the Services provide access to the Java model
-     * @return the updated match conditions including mapping <code>var</code> to <code>pe</code> or
-     *         null if some variable condition would be hurt by the mapping
-     */
+    /// adds a found mapping from schema variable <code>var</code> to program element <code>pe</code>
+    /// and returns the updated match conditions or null if mapping is not possible because of
+    /// violating some variable condition
+    ///
+    /// @param pe the ProgramElement <code>var</code> is mapped to
+    /// @param matchCond the MatchConditions to be updated
+    /// @param services the Services provide access to the Java model
+    /// @return the updated match conditions including mapping <code>var</code> to <code>pe</code> or
+    ///         null if some variable condition would be hurt by the mapping
     private MatchConditions addProgramInstantiation(RustyProgramElement pe,
             MatchConditions matchCond,
             Services services) {
@@ -157,17 +153,15 @@ public final class ProgramSV extends OperatorSV
         return insts == null ? null : matchCond.setInstantiations(insts);
     }
 
-    /**
-     * adds a found mapping from schema variable <code>var</code> to the list of program elements
-     * <code>list</code> and returns the updated match conditions or null if mapping is not possible
-     * because of violating some variable condition
-     *
-     * @param list the ProgramList <code>var</code> is mapped to
-     * @param matchCond the MatchConditions to be updated
-     * @param services the Services provide access to the Java model
-     * @return the updated match conditions including mapping <code>var</code> to <code>list</code>
-     *         or null if some variable condition would be hurt by the mapping
-     */
+    /// adds a found mapping from schema variable <code>var</code> to the list of program elements
+    /// <code>list</code> and returns the updated match conditions or null if mapping is not possible
+    /// because of violating some variable condition
+    ///
+    /// @param list the ProgramList <code>var</code> is mapped to
+    /// @param matchCond the MatchConditions to be updated
+    /// @param services the Services provide access to the Java model
+    /// @return the updated match conditions including mapping <code>var</code> to <code>list</code>
+    ///         or null if some variable condition would be hurt by the mapping
     private MatchConditions addProgramInstantiation(ProgramList list, MatchConditions matchCond,
             Services services) {
         if (matchCond == null) {
@@ -188,14 +182,12 @@ public final class ProgramSV extends OperatorSV
         return insts == null ? null : matchCond.setInstantiations(insts);
     }
 
-    /**
-     * returns true, if the given SchemaVariable can stand for the ProgramElement
-     *
-     * @param match the ProgramElement to be matched
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return true if the SchemaVariable can stand for the given element
-     */
+    /// returns true, if the given SchemaVariable can stand for the ProgramElement
+    ///
+    /// @param match the ProgramElement to be matched
+    /// @param services the Services object encapsulating information about the java datastructures
+    ///        like (static)types etc.
+    /// @return true if the SchemaVariable can stand for the given element
     private boolean check(RustyProgramElement match, Services services) {
         if (match == null) {
             return false;

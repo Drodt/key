@@ -11,12 +11,10 @@ import org.key_project.rusty.rule.LightweightSyntacticalReplaceVisitor;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.VariableCondition;
 
-/**
- * Stores the given {@link Term}, after substitution of {@link SchemaVariable}s, into the given
- * {@link SchemaVariable} for later use in other conditions and transformers.
- *
- * @author Dominic Steinhoefel
- */
+/// Stores the given [Term], after substitution of [SchemaVariable]s, into the given
+/// [SchemaVariable] for later use in other conditions and transformers.
+///
+/// @author Dominic Steinhoefel
 public class StoreTermInCondition implements VariableCondition {
     private final SchemaVariable storeInSV;
     private final Term term;

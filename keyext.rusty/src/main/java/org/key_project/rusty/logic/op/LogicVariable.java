@@ -15,13 +15,11 @@ import org.key_project.rusty.logic.RustyDLTheory;
 import org.jspecify.annotations.NonNull;
 
 
-/**
- * The objects of this class represent logical variables, used e.g. for quantification.
- * It uses De Brujin indices instead of names.
- * <br>
- * This class is for occurrences of logic variables in formulas/terms. For the class
- * for definition of logical variables {@see BoundVariable}.
- */
+/// The objects of this class represent logical variables, used e.g. for quantification.
+/// It uses De Brujin indices instead of names.
+///
+/// This class is for occurrences of logic variables in formulas/terms. For the class
+/// for definition of logical variables {@see BoundVariable}.
 public final class LogicVariable extends AbstractSortedOperator
         implements QuantifiableVariable, ParsableVariable {
 

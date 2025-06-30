@@ -34,13 +34,9 @@ import org.key_project.util.collection.ImmutableSet;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Implements the rule which inserts operation contracts for a method call.
- */
+/// Implements the rule which inserts operation contracts for a method call.
 public final class UseOperationContractRule implements BuiltInRule {
-    /**
-     * A static instance of the (built-in) operation contract rule application.
-     */
+    /// A static instance of the (built-in) operation contract rule application.
     public static final UseOperationContractRule INSTANCE = new UseOperationContractRule();
 
     private static final Name NAME = new Name("Use Operation Contract");
@@ -149,13 +145,11 @@ public final class UseOperationContractRule implements BuiltInRule {
         return result;
     }
 
-    /**
-     * Returns the operation contracts which are applicable for the passed instantiation.
-     *
-     * @param inst the operation contract rule instantiation
-     * @param services the services object
-     * @return all applicable contracts
-     */
+    /// Returns the operation contracts which are applicable for the passed instantiation.
+    ///
+    /// @param inst the operation contract rule instantiation
+    /// @param services the services object
+    /// @return all applicable contracts
     public static ImmutableSet<FunctionalOperationContract> getApplicableContracts(
             Instantiation inst, Services services) {
         if (inst == null) {
@@ -166,15 +160,13 @@ public final class UseOperationContractRule implements BuiltInRule {
         return getApplicableContracts(services, inst.fn, inst.modality.kind());
     }
 
-    /**
-     * Returns the operation contracts which are applicable for the passed operation and the passed
-     * modality.
-     *
-     * @param services the services object
-     * @param fn the program method
-     * @param modalityKind the modality
-     * @return all applicable contracts
-     */
+    /// Returns the operation contracts which are applicable for the passed operation and the passed
+    /// modality.
+    ///
+    /// @param services the services object
+    /// @param fn the program method
+    /// @param modalityKind the modality
+    /// @return all applicable contracts
     private static ImmutableSet<FunctionalOperationContract> getApplicableContracts(
             Services services, ProgramFunction fn,
             RModality.RustyModalityKind modalityKind) {
@@ -195,10 +187,8 @@ public final class UseOperationContractRule implements BuiltInRule {
     // public interface
     // -------------------------------------------------------------------------
 
-    /**
-     * Computes instantiation for contract rule on passed focus term. Internally only serves as
-     * helper for instantiate().
-     */
+    /// Computes instantiation for contract rule on passed focus term. Internally only serves as
+    /// helper for instantiate().
     public static Instantiation computeInstantiation(Term focusTerm, Services services) {
         // leading update?
         final Term u;
@@ -387,13 +377,11 @@ public final class UseOperationContractRule implements BuiltInRule {
         return result;
     }
 
-    /**
-     * Computes the result variable for this instantiation.
-     *
-     * @param inst the instantiation for the operation contract rule
-     * @param services the services object
-     * @return the result variable
-     */
+    /// Computes the result variable for this instantiation.
+    ///
+    /// @param inst the instantiation for the operation contract rule
+    /// @param services the services object
+    /// @return the result variable
     public static ProgramVariable computeResultVar(Instantiation inst, Services services) {
         final TermBuilder tb = services.getTermBuilder();
         return tb.resultVar(inst.fn, true);
@@ -458,32 +446,28 @@ public final class UseOperationContractRule implements BuiltInRule {
     // inner classes
     // -------------------------------------------------------------------------
 
-    /**
-     * @param u The enclosing update term.
-     * @param progPost The program post condition term.
-     * @param modality The modality.
-     * @param actualResult The actual result expression.
-     * @param actualSelf The actual self term.
-     * @param call The call expression
-     * @param fn The program function.
-     * @param actualParams The actual parameter terms.
-     */
+    /// @param u The enclosing update term.
+    /// @param progPost The program post condition term.
+    /// @param modality The modality.
+    /// @param actualResult The actual result expression.
+    /// @param actualSelf The actual self term.
+    /// @param call The call expression
+    /// @param fn The program function.
+    /// @param actualParams The actual parameter terms.
     public record Instantiation(Term u, Term progPost, RModality modality, Expr actualResult,
             Term actualSelf,
             Call call, ProgramFunction fn,
             ImmutableList<Term> actualParams) {
-        /**
-         * Creates a new instantiation for the contract rule and the given variables.
-         *
-         * @param u the enclosing update term
-         * @param progPost the post condition of the program method
-         * @param modality the modality
-         * @param actualResult the result expression
-         * @param actualSelf the self term
-         * @param call the call expression
-         * @param fn the program method
-         * @param actualParams the actual parameter terms
-         */
+        /// Creates a new instantiation for the contract rule and the given variables.
+        ///
+        /// @param u the enclosing update term
+        /// @param progPost the post condition of the program method
+        /// @param modality the modality
+        /// @param actualResult the result expression
+        /// @param actualSelf the self term
+        /// @param call the call expression
+        /// @param fn the program method
+        /// @param actualParams the actual parameter terms
         public Instantiation {
             assert u != null;
             assert u.sort() == RustyDLTheory.UPDATE;

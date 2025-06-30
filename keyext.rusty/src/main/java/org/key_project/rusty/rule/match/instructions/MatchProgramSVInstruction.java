@@ -25,9 +25,7 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public MatchResultInfo match(
             RustyProgramElement instantiationCandidate,
@@ -43,11 +41,9 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction {
         return null;
     }
 
-    /**
-     * tries to add the pair <tt>(this,pe)</tt> to the match conditions. If possible the resulting
-     * match conditions are returned, otherwise <tt>null</tt>. Such an addition can fail, e.g. if
-     * already a pair <tt>(this,x)</tt> exists where <tt>x!=pe</tt>
-     */
+    /// tries to add the pair <tt>(this,pe)</tt> to the match conditions. If possible the resulting
+    /// match conditions are returned, otherwise <tt>null</tt>. Such an addition can fail, e.g. if
+    /// already a pair <tt>(this,x)</tt> exists where <tt>x!=pe</tt>
     private MatchResultInfo addInstantiation(RustyProgramElement pe, MatchResultInfo matchCond,
             Services services) {
 

@@ -46,30 +46,28 @@ public class IntermediateProofReplayer {
     private static final String NOT_APPLICABLE =
         " not available or not applicable in this context.";
 
-    /** The problem loader, for reporting errors */
+    /// The problem loader, for reporting errors
     private final AbstractProblemLoader loader;
-    /** The proof object into which to load the replayed proof */
+    /// The proof object into which to load the replayed proof
     private Proof proof = null;
 
-    /** Encountered errors */
+    /// Encountered errors
     private final List<Throwable> errors = new LinkedList<>();
-    /** Error status */
+    /// Error status
     private String status = "";
 
-    /** Stores open branches */
+    /// Stores open branches
     private final LinkedList<Pair<Node, NodeIntermediate>> queue =
         new LinkedList<>();
 
-    /** The current open goal */
+    /// The current open goal
     private Goal currGoal = null;
 
-    /**
-     * Constructs a new {@link IntermediateProofReplayer}.
-     *
-     * @param loader The problem loader, for reporting errors.
-     * @param proof The proof object into which to load the replayed proof.
-     * @param parserResult the result of the proof file parser to be replayed
-     */
+    /// Constructs a new [IntermediateProofReplayer].
+    ///
+    /// @param loader The problem loader, for reporting errors.
+    /// @param proof The proof object into which to load the replayed proof.
+    /// @param parserResult the result of the proof file parser to be replayed
     public IntermediateProofReplayer(AbstractProblemLoader loader, Proof proof,
             IntermediatePresentationProofFileParser.Result parserResult) {
         this.proof = proof;
@@ -79,31 +77,25 @@ public class IntermediateProofReplayer {
             new Pair<>(proof.root(), parserResult.parsedResult()));
     }
 
-    /**
-     * @return the lastSelectedGoal
-     */
+    /// @return the lastSelectedGoal
     public Goal getLastSelectedGoal() {
         return currGoal;
     }
 
-    /**
-     * Starts the actual replay process. Results are stored in the supplied proof object; the last
-     * selected goal may be obtained by {@link #getLastSelectedGoal()}.
-     * Note: This method deletes the intermediate proof tree!
-     */
+    /// Starts the actual replay process. Results are stored in the supplied proof object; the last
+    /// selected goal may be obtained by [#getLastSelectedGoal()].
+    /// Note: This method deletes the intermediate proof tree!
     public Result replay() {
         return replay(true);
     }
 
-    /**
-     * Starts the actual replay process. Results are stored in the supplied
-     * proof object; the last selected goal may be obtained by
-     * {@link #getLastSelectedGoal()}.
-     *
-     * @param deleteIntermediateTree indicates if the intermediate proof tree should be
-     *        deleted (set to false if it shal be kept for further use)
-     * @return result of the replay procedure (see {@link Result})
-     */
+    /// Starts the actual replay process. Results are stored in the supplied
+    /// proof object; the last selected goal may be obtained by
+    /// [#getLastSelectedGoal()].
+    ///
+    /// @param deleteIntermediateTree indicates if the intermediate proof tree should be
+    ///        deleted (set to false if it shal be kept for further use)
+    /// @return result of the replay procedure (see [Result])
     public Result replay(boolean deleteIntermediateTree) {
         // initialize progress monitoring
         int stepIndex = 0;
@@ -200,16 +192,14 @@ public class IntermediateProofReplayer {
         return new Result(status, errors, currGoal);
     }
 
-    /**
-     * Adds the pairs of proof node children and intermediate children to the queue. At the moment,
-     * they are added in the order they were parsed. For the future, it may be sensible to choose a
-     * different procedure, for instance one that minimizes the number of open goals per time
-     * interval to save memory. Note that in this case, some test cases might be adapted which
-     * depend on fixed node serial numbers.
-     *
-     * @param children Iterator of proof node children.
-     * @param intermChildren List of corresponding intermediate children.
-     */
+    /// Adds the pairs of proof node children and intermediate children to the queue. At the moment,
+    /// they are added in the order they were parsed. For the future, it may be sensible to choose a
+    /// different procedure, for instance one that minimizes the number of open goals per time
+    /// interval to save memory. Note that in this case, some test cases might be adapted which
+    /// depend on fixed node serial numbers.
+    ///
+    /// @param children Iterator of proof node children.
+    /// @param intermChildren List of corresponding intermediate children.
     private void addChildren(Iterator<Node> children, LinkedList<NodeIntermediate> intermChildren) {
         int i = 0;
         while (!currGoal.getNode().isClosed() && children.hasNext() && !intermChildren.isEmpty()) {
@@ -226,40 +216,32 @@ public class IntermediateProofReplayer {
         }
     }
 
-    /**
-     * Stores an error in the list.
-     *
-     * @param string Description text.
-     * @param e Error encountered.
-     */
+    /// Stores an error in the list.
+    ///
+    /// @param string Description text.
+    /// @param e Error encountered.
     private void reportError(String string, Throwable e) {
         status = "Errors while reading the proof. Not all branches could be load successfully.";
         errors.add(new ProblemLoaderException(loader, string, e));
     }
 
-    /**
-     * Communicates a non-fatal condition to the caller. Empty string means everything is OK. The
-     * message will be displayed to the user in the GUI after the proof has been parsed.
-     */
+    /// Communicates a non-fatal condition to the caller. Empty string means everything is OK. The
+    /// message will be displayed to the user in the GUI after the proof has been parsed.
     public String getStatus() {
         return status;
     }
 
-    /**
-     * @return errors encountered during replay.
-     */
+    /// @return errors encountered during replay.
     public Collection<Throwable> getErrors() {
         return errors;
     }
 
-    /**
-     * Constructs a taclet application from an intermediate one.
-     *
-     * @param currInterm The intermediate taclet application to create a "real" application for.
-     * @param currGoal The goal on which to apply the taclet app.
-     * @return The taclet application corresponding to the supplied intermediate representation.
-     * @throws TacletAppConstructionException In case of an error during construction.
-     */
+    /// Constructs a taclet application from an intermediate one.
+    ///
+    /// @param currInterm The intermediate taclet application to create a "real" application for.
+    /// @param currGoal The goal on which to apply the taclet app.
+    /// @return The taclet application corresponding to the supplied intermediate representation.
+    /// @throws TacletAppConstructionException In case of an error during construction.
     private TacletApp constructTacletApp(TacletAppIntermediate currInterm, Goal currGoal)
             throws TacletAppConstructionException {
         final String tacletName = currInterm.getRuleName();
@@ -359,14 +341,12 @@ public class IntermediateProofReplayer {
         return ourApp;
     }
 
-    /**
-     * Constructs a built-in rule application from an intermediate one.
-     *
-     * @param currInterm The intermediate built-in application to create a "real" application for.
-     * @param currGoal The goal on which to apply the built-in app.
-     * @return The built-in application corresponding to the supplied intermediate representation.
-     * @throws BuiltInConstructionException In case of an error during construction.
-     */
+    /// Constructs a built-in rule application from an intermediate one.
+    ///
+    /// @param currInterm The intermediate built-in application to create a "real" application for.
+    /// @param currGoal The goal on which to apply the built-in app.
+    /// @return The built-in application corresponding to the supplied intermediate representation.
+    /// @throws BuiltInConstructionException In case of an error during construction.
     private IBuiltInRuleApp constructBuiltinApp(BuiltInAppIntermediate currInterm, Goal currGoal)
             throws BuiltInConstructionException {
         final String ruleName = currInterm.getRuleName();
@@ -472,15 +452,13 @@ public class IntermediateProofReplayer {
         return ourApp;
     }
 
-    /**
-     * Retrieves all registered applications at the given goal and position for the rule
-     * corresponding to the given ruleName.
-     *
-     * @param ruleName Name of the rule to find applications for.
-     * @param g Goal to search.
-     * @param pos Position of interest in the given goal.
-     * @return All matching rule applications at pos in g.
-     */
+    /// Retrieves all registered applications at the given goal and position for the rule
+    /// corresponding to the given ruleName.
+    ///
+    /// @param ruleName Name of the rule to find applications for.
+    /// @param g Goal to search.
+    /// @param pos Position of interest in the given goal.
+    /// @return All matching rule applications at pos in g.
     public static ImmutableSet<IBuiltInRuleApp> collectAppsForRule(String ruleName, Goal g,
             PosInOccurrence pos) {
         ImmutableSet<IBuiltInRuleApp> result = DefaultImmutableSet.nil();
@@ -494,15 +472,13 @@ public class IntermediateProofReplayer {
         return result;
     }
 
-    /**
-     * Instantiates schema variables in the given taclet application.
-     *
-     * @param app The taclet application to instantiate.
-     * @param currGoal The corresponding goal.
-     * @param loadedInsts Loaded schema variable instantiations.
-     * @param services The services object.
-     * @return The instantiated taclet.
-     */
+    /// Instantiates schema variables in the given taclet application.
+    ///
+    /// @param app The taclet application to instantiate.
+    /// @param currGoal The corresponding goal.
+    /// @param loadedInsts Loaded schema variable instantiations.
+    /// @param services The services object.
+    /// @return The instantiated taclet.
     public static TacletApp constructInsts(@NonNull TacletApp app, Goal currGoal,
             Collection<String> loadedInsts, Services services) {
         if (loadedInsts == null) {
@@ -545,13 +521,11 @@ public class IntermediateProofReplayer {
         return app;
     }
 
-    /**
-     * Finds a schema variable in the given set.
-     *
-     * @param set The set to search.
-     * @param name The name to search for.
-     * @return The found schema variable, or null if it is not present in the set.
-     */
+    /// Finds a schema variable in the given set.
+    ///
+    /// @param set The set to search.
+    /// @param name The name to search for.
+    /// @return The found schema variable, or null if it is not present in the set.
     private static SchemaVariable lookupName(ImmutableSet<SchemaVariable> set, String name) {
         for (SchemaVariable v : set) {
             if (v.name().toString().equals(name)) {
@@ -561,15 +535,13 @@ public class IntermediateProofReplayer {
         return null; // handle this better!
     }
 
-    /**
-     * Parses a given term in String representation.
-     *
-     * @param value String to parse.
-     * @param proof Proof object (for namespaces and Services object).
-     * @param varNS Variable namespace.
-     * @param progVarNS Program variable namespace.
-     * @return The parsed term.
-     */
+    /// Parses a given term in String representation.
+    ///
+    /// @param value String to parse.
+    /// @param proof Proof object (for namespaces and Services object).
+    /// @param varNS Variable namespace.
+    /// @param progVarNS Program variable namespace.
+    /// @return The parsed term.
     public static Term parseTerm(String value, Proof proof,
             Namespace<@NonNull QuantifiableVariable> varNS,
             Namespace<@NonNull ProgramVariable> progVarNS, Namespace<@NonNull Function> functNS) {
@@ -577,16 +549,14 @@ public class IntermediateProofReplayer {
         return io.parseExpression(value);
     }
 
-    /**
-     * Instantiates a schema variable in the given taclet application. 1st pass: only VariableSV.
-     *
-     * @param app Application to instantiate.
-     * @param sv VariableSV to instantiate.
-     * @param value Name for the instantiated logic variable.
-     * @param services The services object.
-     * @return An instantiated taclet application, where the schema variable has been instantiated
-     *         by a logic variable of the given name.
-     */
+    /// Instantiates a schema variable in the given taclet application. 1st pass: only VariableSV.
+    ///
+    /// @param app Application to instantiate.
+    /// @param sv VariableSV to instantiate.
+    /// @param value Name for the instantiated logic variable.
+    /// @param services The services object.
+    /// @return An instantiated taclet application, where the schema variable has been instantiated
+    ///         by a logic variable of the given name.
     public static TacletApp parseSV1(TacletApp app, VariableSV sv, String value,
             Services services) {
         // TODO
@@ -595,19 +565,17 @@ public class IntermediateProofReplayer {
         return app.addCheckedInstantiation(sv, instance, services, true);
     }
 
-    /**
-     * Instantiates a schema variable in the given taclet application. 2nd pass: All other schema
-     * variables.
-     *
-     * @param app Application to instantiate.
-     * @param sv Schema variable to instantiate.
-     * @param value Name for the instantiated Skolem constant, program element or term..
-     * @param targetGoal The goal corresponding to the given application.
-     * @return An instantiated taclet application, where the schema variable has been instantiated,
-     *         depending on its type, by a Skolem constant, program element, or term of the given
-     *         name.
-     * @see #parseSV1(TacletApp, VariableSV, String, Services)
-     */
+    /// Instantiates a schema variable in the given taclet application. 2nd pass: All other schema
+    /// variables.
+    ///
+    /// @param app Application to instantiate.
+    /// @param sv Schema variable to instantiate.
+    /// @param value Name for the instantiated Skolem constant, program element or term..
+    /// @param targetGoal The goal corresponding to the given application.
+    /// @return An instantiated taclet application, where the schema variable has been instantiated,
+    ///         depending on its type, by a Skolem constant, program element, or term of the given
+    ///         name.
+    /// @see #parseSV1(TacletApp, VariableSV, String, Services)
     public static TacletApp parseSV2(TacletApp app, SchemaVariable sv, String value,
             Goal targetGoal) {
         final Proof p = targetGoal.proof();
@@ -637,9 +605,7 @@ public class IntermediateProofReplayer {
         return result;
     }
 
-    /**
-     * Signals an error during construction of a taclet app.
-     */
+    /// Signals an error during construction of a taclet app.
     public static class TacletAppConstructionException extends Exception {
         private static final long serialVersionUID = 7859543482157633999L;
 
@@ -652,9 +618,7 @@ public class IntermediateProofReplayer {
         }
     }
 
-    /**
-     * Signals an error during construction of a built-in rule app.
-     */
+    /// Signals an error during construction of a built-in rule app.
     public static class BuiltInConstructionException extends Exception {
         private static final long serialVersionUID = -735474220502290816L;
 
@@ -671,11 +635,9 @@ public class IntermediateProofReplayer {
         }
     }
 
-    /**
-     * Simple structure containing the results of the replay procedure.
-     *
-     * @author Dominic Scheurer
-     */
+    /// Simple structure containing the results of the replay procedure.
+    ///
+    /// @author Dominic Scheurer
     public static class Result {
         private final String status;
         private final List<Throwable> errors;

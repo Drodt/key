@@ -28,17 +28,15 @@ public final class ProofCollection {
         return unit;
     }
 
-    /**
-     * Create list of {@link RunAllProofsTestUnit}s from list of
-     * {@link ProofCollectionUnit}s.
-     *
-     * @return A list of {@link RunAllProofsTestUnit}s.
-     * @throws IOException Names of {@link SingletonProofCollectionUnit}s are
-     *         determined by their
-     *         corresponding file names. In case file name can't be read
-     *         {@link IOException} may be
-     *         thrown.
-     */
+    /// Create list of [RunAllProofsTestUnit]s from list of
+    /// [ProofCollectionUnit]s.
+    ///
+    /// @return A list of [RunAllProofsTestUnit]s.
+    /// @throws IOException Names of [SingletonProofCollectionUnit]s are
+    ///         determined by their
+    ///         corresponding file names. In case file name can't be read
+    ///         [IOException] may be
+    ///         thrown.
     public List<RunAllProofsTestUnit> createRunAllProofsTestUnits() throws IOException {
         List<String> activeGroups = settings.getRunOnlyOn();
 

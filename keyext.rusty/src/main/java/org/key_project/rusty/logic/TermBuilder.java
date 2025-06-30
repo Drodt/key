@@ -198,9 +198,7 @@ public class TermBuilder {
         }
     }
 
-    /**
-     * Creates a term with the correct equality symbol for the sorts involved
-     */
+    /// Creates a term with the correct equality symbol for the sorts involved
     public Term equals(Term t1, Term t2) {
         if (t1.sort() == RustyDLTheory.FORMULA) {
             if (t1.op() == Junctor.TRUE) {
@@ -440,14 +438,12 @@ public class TermBuilder {
         return services.getLDTs().getIntLDT().one();
     }
 
-    /**
-     * Creates terms to be used in Z/C/FP/DFP/R notations. The result does not have such a
-     * constructor applied yet.
-     *
-     * @param numberString a string containing the number in a decimal representation
-     * @return Term in "number" notation representing the given number
-     * @throws NumberFormatException if <code>numberString</code> is not a number
-     */
+    /// Creates terms to be used in Z/C/FP/DFP/R notations. The result does not have such a
+    /// constructor applied yet.
+    ///
+    /// @param numberString a string containing the number in a decimal representation
+    /// @return Term in "number" notation representing the given number
+    /// @throws NumberFormatException if <code>numberString</code> is not a number
     private Term numberTerm(String numberString) {
         if (numberString == null || numberString.isEmpty()) {
             throw new NumberFormatException(numberString + " is not a number.");
@@ -483,24 +479,20 @@ public class TermBuilder {
         return numberLiteralTerm;
     }
 
-    /**
-     * Get term for an integer literal.
-     *
-     * @param numberString String representing an integer with radix 10, may be negative
-     * @return Term in Z-Notation representing the given number
-     * @throws NumberFormatException if <code>numberString</code> is not a number
-     */
+    /// Get term for an integer literal.
+    ///
+    /// @param numberString String representing an integer with radix 10, may be negative
+    /// @return Term in Z-Notation representing the given number
+    /// @throws NumberFormatException if <code>numberString</code> is not a number
     public Term zTerm(String numberString) {
         return func(services.getLDTs().getIntLDT().getNumberSymbol(),
             numberTerm(numberString));
     }
 
-    /**
-     * Get term for an integer literal.
-     *
-     * @param number an integer
-     * @return Term in Z-Notation representing the given number
-     */
+    /// Get term for an integer literal.
+    ///
+    /// @param number an integer
+    /// @return Term in Z-Notation representing the given number
     public Term zTerm(long number) {
         return zTerm(Long.toString(number));
     }
@@ -526,13 +518,11 @@ public class TermBuilder {
         }
     }
 
-    /**
-     * Creates a substitution term
-     *
-     * @param substVar the QuantifiableVariable to be substituted
-     * @param substTerm the Term that replaces substVar
-     * @param origTerm the Term that is substituted
-     */
+    /// Creates a substitution term
+    ///
+    /// @param substVar the QuantifiableVariable to be substituted
+    /// @param substTerm the Term that replaces substVar
+    /// @param origTerm the Term that is substituted
     public Term subst(SubstOp op, QuantifiableVariable substVar, Term substTerm, Term origTerm) {
         return tf.createTerm(op, new ImmutableArray<>(substTerm, origTerm),
             new ImmutableArray<>(substVar));
@@ -546,17 +536,13 @@ public class TermBuilder {
         return tf.createTerm(instance, term);
     }
 
-    /**
-     * Creates a program variable for the result. Take care to register it in the namespaces.
-     */
+    /// Creates a program variable for the result. Take care to register it in the namespaces.
     public ProgramVariable resultVar(ProgramFunction fn, boolean makeNameUnique) {
         return resultVar("result", fn, makeNameUnique);
     }
 
-    /**
-     * Creates a program variable for the result with passed name. Take care to register it in the
-     * namespaces.
-     */
+    /// Creates a program variable for the result with passed name. Take care to register it in the
+    /// namespaces.
     public ProgramVariable resultVar(String name, ProgramFunction fn, boolean makeNameUnique) {
         name += "_" + fn.name();
         return progVar(name,
@@ -564,15 +550,13 @@ public class TermBuilder {
             makeNameUnique);
     }
 
-    /**
-     * Creates a program variable for example for prestate variables. Take care to register it in
-     * the namespaces.
-     *
-     * @param baseName the base name to use
-     * @param krt the type of the variable
-     * @param makeNameUnique whether to change the base name to be unique
-     * @return a program variable for the given name and type
-     */
+    /// Creates a program variable for example for prestate variables. Take care to register it in
+    /// the namespaces.
+    ///
+    /// @param baseName the base name to use
+    /// @param krt the type of the variable
+    /// @param makeNameUnique whether to change the base name to be unique
+    /// @return a program variable for the given name and type
     public ProgramVariable progVar(String baseName, KeYRustyType krt, boolean makeNameUnique) {
         if (makeNameUnique) {
             baseName = newName(baseName);
@@ -580,37 +564,33 @@ public class TermBuilder {
         return new ProgramVariable(new Name(baseName), krt);
     }
 
-    /**
-     * Returns an available name constructed by affixing a counter to the passed base name.
-     * <p>
-     * This method looks up the global {@link NamespaceSet} to check whether the {@link Name}s is
-     * free. This can be problematic, since {@link Namespace}s are now local to goals. Use
-     * {@link #newName(String, NamespaceSet)} to make sure that you have all the {@link Name}s you
-     * need available.
-     *
-     * @param baseName The base name (prefix) for the name to generate.
-     * @return An available name constructed by affixing a counter to the passed base name, or some
-     *         available free name (please consult comment above).
-     * @see #newName(String, NamespaceSet)
-     */
+    /// Returns an available name constructed by affixing a counter to the passed base name.
+    ///
+    /// This method looks up the global [NamespaceSet] to check whether the [Name]s is
+    /// free. This can be problematic, since [Namespace]s are now local to goals. Use
+    /// [#newName(String,NamespaceSet)] to make sure that you have all the [Name]s you
+    /// need available.
+    ///
+    /// @param baseName The base name (prefix) for the name to generate.
+    /// @return An available name constructed by affixing a counter to the passed base name, or some
+    ///         available free name (please consult comment above).
+    /// @see #newName(String, NamespaceSet)
     public String newName(String baseName) {
         return newName(baseName, services.getNamespaces());
     }
 
-    /**
-     * Returns an available name constructed by affixing a counter to the passed base name.
-     * <p>
-     * <p>
-     * Warning (DS): This method ignores the baseName if there are free name proposals. This can,
-     * for instance, cause troubles in loading proofs containing rule apps with more than one
-     * introduced (and saved) new name. In this case, the order of new names in the saved proof file
-     * matters (the first unused name is returned, regardless of the baseName).
-     *
-     * @param baseName The base name (prefix) for the name to generate.
-     * @param localNamespace The local {@link NamespaceSet} to check.
-     * @return An available name constructed by affixing a counter to the passed base name, or some
-     *         available free name (please consult comment above).
-     */
+    /// Returns an available name constructed by affixing a counter to the passed base name.
+    ///
+    ///
+    /// Warning (DS): This method ignores the baseName if there are free name proposals. This can,
+    /// for instance, cause troubles in loading proofs containing rule apps with more than one
+    /// introduced (and saved) new name. In this case, the order of new names in the saved proof file
+    /// matters (the first unused name is returned, regardless of the baseName).
+    ///
+    /// @param baseName The base name (prefix) for the name to generate.
+    /// @param localNamespace The local [NamespaceSet] to check.
+    /// @return An available name constructed by affixing a counter to the passed base name, or some
+    ///         available free name (please consult comment above).
     public String newName(String baseName, NamespaceSet localNamespace) {
         final Name savedName = services.getNameRecorder().getProposal();
         if (savedName != null) {
@@ -649,9 +629,7 @@ public class TermBuilder {
         return reachableValue(var(pv), pv.getKeYRustyType());
     }
 
-    /**
-     * Creates program variables for the parameters. Take care to register them in the namespaces!
-     */
+    /// Creates program variables for the parameters. Take care to register them in the namespaces!
     public ImmutableList<ProgramVariable> paramVars(ProgramFunction fn, boolean makeNamesUnique) {
         ImmutableList<ProgramVariable> result = ImmutableSLList.nil();
         for (int i = fn.getNumParams() - 1; i >= 0; i--) {
@@ -691,15 +669,13 @@ public class TermBuilder {
         return func(getMeasuredByEmpty());
     }
 
-    /**
-     * Creates a program variable for prestate variables. Take care to register it in the
-     * namespaces.
-     *
-     * @param baseName the base name to use
-     * @param krt the sort of the variable
-     * @param makeNameUnique whether to change the base name to be unique
-     * @return a location variable for the given name and type
-     */
+    /// Creates a program variable for prestate variables. Take care to register it in the
+    /// namespaces.
+    ///
+    /// @param baseName the base name to use
+    /// @param krt the sort of the variable
+    /// @param makeNameUnique whether to change the base name to be unique
+    /// @return a location variable for the given name and type
     public ProgramVariable atPreVar(String baseName, KeYRustyType krt, boolean makeNameUnique) {
         return progVar(baseName + "_at_pre", krt, makeNameUnique);
     }

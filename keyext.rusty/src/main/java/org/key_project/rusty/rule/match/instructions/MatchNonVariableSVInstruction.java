@@ -11,11 +11,9 @@ import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 
-/**
- * Matching VM instruction that matches all operator schema variables that
- * are not a {@link VariableSV} or a {@link ProgramSV}.
- * For those see {@link MatchVariableSVInstruction} and {@link MatchProgramSVInstruction}.
- */
+/// Matching VM instruction that matches all operator schema variables that
+/// are not a [VariableSV] or a [ProgramSV].
+/// For those see [MatchVariableSVInstruction] and [MatchProgramSVInstruction].
 public class MatchNonVariableSVInstruction extends MatchSchemaVariableInstruction {
     public MatchNonVariableSVInstruction(OperatorSV op) {
         super(op);

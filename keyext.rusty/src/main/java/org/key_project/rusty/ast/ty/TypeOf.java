@@ -13,16 +13,12 @@ import org.key_project.rusty.logic.op.sv.ProgramSV;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Only in SchemaRust
- */
+/// Only in SchemaRust
 public final class TypeOf implements RustType {
     private final ProgramSV sv;
     private final KeYRustyType type;
 
-    /**
-     *
-     */
+    ///
     public TypeOf(ProgramSV sv) {
         this.sv = sv;
         this.type = new KeYRustyType(sv.sort());

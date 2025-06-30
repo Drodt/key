@@ -12,21 +12,17 @@ public class PosInSequent {
 
     private Range firstRustStatementRange = null;
 
-    /**
-     * creates a PosInSequent that points to the whole sequent.
-     */
+    /// creates a PosInSequent that points to the whole sequent.
     public static PosInSequent createSequentPos() {
         return new PosInSequent(null, true);
     }
 
-    /**
-     * creates a PosInSequent that points to a SequentFormula described by a PosInOccurrence.
-     * Additionally a boolean indicates whether the the whole SequentFormula or just the formula is
-     * meant.
-     *
-     * @param posInOcc the PositionInOccurrence describing the SequentFormula and maybe a subterm of
-     *        its formula.
-     */
+    /// creates a PosInSequent that points to a SequentFormula described by a PosInOccurrence.
+    /// Additionally a boolean indicates whether the the whole SequentFormula or just the formula is
+    /// meant.
+    ///
+    /// @param posInOcc the PositionInOccurrence describing the SequentFormula and maybe a subterm of
+    ///        its formula.
     public static PosInSequent createCfmaPos(PosInOccurrence posInOcc) {
         return new PosInSequent(posInOcc, false);
     }
@@ -39,65 +35,51 @@ public class PosInSequent {
     }
 
 
-    /**
-     * sets the bounds, i.e. the start and end positions of the PosInSequent in a string
-     * representation of a sequent.
-     *
-     * @param r the range of character positions
-     */
+    /// sets the bounds, i.e. the start and end positions of the PosInSequent in a string
+    /// representation of a sequent.
+    ///
+    /// @param r the range of character positions
     public void setBounds(Range r) {
         bounds = r;
     }
 
 
-    /**
-     * returns the bounds in a string representation of a sequent
-     *
-     * @return start position
-     */
+    /// returns the bounds in a string representation of a sequent
+    ///
+    /// @return start position
     public Range getBounds() {
         return bounds;
     }
 
-    /**
-     * sets the bounds, i.e. the start and end positions of the first Java statement, of a
-     * corresponding Java program in a string representation of the sequent.
-     *
-     * @param r the range for the first statement in the corresponding program
-     */
+    /// sets the bounds, i.e. the start and end positions of the first Java statement, of a
+    /// corresponding Java program in a string representation of the sequent.
+    ///
+    /// @param r the range for the first statement in the corresponding program
     public void setFirstRustStatementRange(Range r) {
         firstRustStatementRange = r;
     }
 
-    /**
-     * returns the bounds, i.e. the start and end positions of the first Rust statement, of a
-     * corresponding Rust program in a string representation of the sequent.
-     *
-     * @return the range specifying the first statement in the corresponding program
-     */
+    /// returns the bounds, i.e. the start and end positions of the first Rust statement, of a
+    /// corresponding Rust program in a string representation of the sequent.
+    ///
+    /// @return the range specifying the first statement in the corresponding program
     public Range getFirstRustStatementRange() {
         return firstRustStatementRange;
     }
 
 
-    /**
-     * returns the PosInOccurrence if the PosInSequent marks a SequentFormula or parts of it, null
-     * otherwise.
-     */
+    /// returns the PosInOccurrence if the PosInSequent marks a SequentFormula or parts of it, null
+    /// otherwise.
     public PosInOccurrence getPosInOccurrence() {
         return posInOcc;
     }
 
-    /**
-     * returns true if the PosInSequent points to a whole Sequent
-     */
+    /// returns true if the PosInSequent points to a whole Sequent
     public boolean isSequent() {
         return sequent;
     }
 
-    /**
-     * returns a string representation of this PosInSequent
-     */
+    /// returns a string representation of this PosInSequent
     public String toString() {
         if (isSequent()) {
             return "Whole Sequent";

@@ -9,18 +9,14 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Set;
 
-/**
- * KeYResourceManager controls the access to the properties and resources used in the KeY system.
- * Use the static method getManager to get the unique instance.
- */
+/// KeYResourceManager controls the access to the properties and resources used in the KeY system.
+/// Use the static method getManager to get the unique instance.
 public class KeYResourceManager {
     private static final String DEFAULT_VERSION = "x.z.y";
     private static final Set<String> INVISIBLE_BRANCHES =
         Set.of("master", "main");
 
-    /**
-     * the unique instance
-     */
+    /// the unique instance
     private static final KeYResourceManager instance = new KeYResourceManager();
 
 
@@ -31,17 +27,13 @@ public class KeYResourceManager {
     private KeYResourceManager() {
     }
 
-    /**
-     * Return an instance of the ResourceManager
-     */
+    /// Return an instance of the ResourceManager
     public static KeYResourceManager getManager() {
         return instance;
     }
 
 
-    /**
-     * reads a version string or returns "x.z.y" in case of failures
-     */
+    /// reads a version string or returns "x.z.y" in case of failures
     private String readVersionString(URL url) {
         StringBuilder result = new StringBuilder();
         if (url != null) {
@@ -61,11 +53,9 @@ public class KeYResourceManager {
         return result.toString().trim();
     }
 
-    /**
-     * returns the SHA 1 git code from which this version has been derived
-     *
-     * @return returns the SHA1 hash uniquely identifying the version
-     */
+    /// returns the SHA 1 git code from which this version has been derived
+    ///
+    /// @return returns the SHA1 hash uniquely identifying the version
     public String getSHA1() {
         if (sha1 != null) {
             return sha1;
@@ -75,11 +65,9 @@ public class KeYResourceManager {
         return sha1;
     }
 
-    /**
-     * returns the git branch from which this version has been derived
-     *
-     * @return returns the git branch partially identifying the version
-     */
+    /// returns the git branch from which this version has been derived
+    ///
+    /// @return returns the git branch partially identifying the version
     public String getBranch() {
         if (branch != null) {
             return branch;
@@ -96,11 +84,9 @@ public class KeYResourceManager {
                 && !b.startsWith("KeY" + "-" + v);
     }
 
-    /**
-     * returns a readable customizable version number
-     *
-     * @return a readable version number
-     */
+    /// returns a readable customizable version number
+    ///
+    /// @return a readable version number
     public String getVersion() {
         if (version != null) {
             return version;
@@ -163,13 +149,11 @@ public class KeYResourceManager {
         return result;
     }
 
-    /**
-     * loads a resource and returns its URL
-     *
-     * @param cl the Class used to determine the resource
-     * @param resourcename the String that contains the name of the resource
-     * @return the URL of the resource
-     */
+    /// loads a resource and returns its URL
+    ///
+    /// @param cl the Class used to determine the resource
+    /// @param resourcename the String that contains the name of the resource
+    /// @return the URL of the resource
     public URL getResourceFile(Class<?> cl, String resourcename) {
         URL resourceURL = cl.getResource(resourcename);
         if (resourceURL == null && cl.getSuperclass() != null) {
@@ -180,23 +164,19 @@ public class KeYResourceManager {
         return resourceURL;
     }
 
-    /**
-     * loads a resource and returns its URL
-     *
-     * @param o the Object used to determine the resource
-     * @param resourcename the String that contains the name of the resource
-     * @return the URL of the resource
-     */
+    /// loads a resource and returns its URL
+    ///
+    /// @param o the Object used to determine the resource
+    /// @param resourcename the String that contains the name of the resource
+    /// @return the URL of the resource
     public URL getResourceFile(Object o, String resourcename) {
         return getResourceFile(o.getClass(), resourcename);
     }
 
-    /**
-     * All KeY "TODO"s should use a common title
-     * string when they require one, for instance for a GUI window title bar.
-     *
-     * @return the title string to be used by the KeY <code>UserInterfaces</code>
-     */
+    /// All KeY "TODO"s should use a common title
+    /// string when they require one, for instance for a GUI window title bar.
+    ///
+    /// @return the title string to be used by the KeY <code>UserInterfaces</code>
     public String getUserInterfaceTitle() {
         return String.format("KeY %s%s", this.getVersion(),
             visibleBranch() ? " [" + getBranch() + "]" : "");

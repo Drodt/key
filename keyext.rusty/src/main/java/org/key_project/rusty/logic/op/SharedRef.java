@@ -22,9 +22,7 @@ public class SharedRef extends AbstractSortedOperator {
             services.getMRefManager().getRefSort(sort, false), Modifier.RIGID);
     }
 
-    /**
-     * Returns the mut ref operator for the passed left hand side.
-     */
+    /// Returns the mut ref operator for the passed left hand side.
     public static SharedRef getInstance(Sort sort, Services services) {
         WeakReference<SharedRef> ref = instances.get(sort);
         SharedRef result = null;

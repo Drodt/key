@@ -7,13 +7,11 @@ import org.key_project.logic.Sorted;
 import org.key_project.logic.Term;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
-/**
- * A place is a program location we can borrow. See {@link org.key_project.rusty.logic.op.MutRef}
- * for its application.
- * At the moment the only places are {@link PVPlace}s.
- * <br>
- * Places are not terms and cannot be changed by updates.
- */
+/// A place is a program location we can borrow. See [org.key_project.rusty.logic.op.MutRef]
+/// for its application.
+/// At the moment the only places are [PVPlace]s.
+///
+/// Places are not terms and cannot be changed by updates.
 public abstract class Place implements Sorted {
     public static Place convertToPlace(Term t) {
         t = t.sub(0);

@@ -18,32 +18,26 @@ import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
-/**
- * A position taclet application object, contains already the information to which term/formula of
- * the sequent the taclet is attached. The position information has been determined by matching the
- * find-part of the corresponding taclet against the term described by the position information. If
- * such a match has not been performed or a taclet is a no find taclet, a no position taclet object
- * ({@link org.key_project.rusty.rule.NoPosTacletApp}) is used to keep track of the (partial)
- * instantiation information.
- */
+/// A position taclet application object, contains already the information to which term/formula of
+/// the sequent the taclet is attached. The position information has been determined by matching the
+/// find-part of the corresponding taclet against the term described by the position information. If
+/// such a match has not been performed or a taclet is a no find taclet, a no position taclet object
+/// ([org.key_project.rusty.rule.NoPosTacletApp]) is used to keep track of the (partial)
+/// instantiation information.
 public class PosTacletApp extends TacletApp {
-    /**
-     * stores the information where the Taclet is to be applied. This means where the find section
-     * of the taclet matches
-     */
+    /// stores the information where the Taclet is to be applied. This means where the find section
+    /// of the taclet matches
     private final PosInOccurrence pos;
 
-    /**
-     * creates a PosTacletApp for the given taclet with some known instantiations and a position
-     * information and CHECKS variable conditions as well as it resolves collisions The
-     * ifInstantiations parameter is not matched against the if sequence, but only stored. For
-     * matching use the method "setIfFormulaInstantiations".
-     *
-     * @param taclet the FindTaclet
-     * @param instantiations the SVInstantiations
-     * @param pos the PosInOccurrence storing the position where to apply the Taclet
-     * @return new PosTacletApp or null if conditions (assertions) have been hurted
-     */
+    /// creates a PosTacletApp for the given taclet with some known instantiations and a position
+    /// information and CHECKS variable conditions as well as it resolves collisions The
+    /// ifInstantiations parameter is not matched against the if sequence, but only stored. For
+    /// matching use the method "setIfFormulaInstantiations".
+    ///
+    /// @param taclet the FindTaclet
+    /// @param instantiations the SVInstantiations
+    /// @param pos the PosInOccurrence storing the position where to apply the Taclet
+    /// @return new PosTacletApp or null if conditions (assertions) have been hurted
     public static PosTacletApp createPosTacletApp(FindTaclet taclet,
             SVInstantiations instantiations, PosInOccurrence pos, Services services) {
         return createPosTacletApp(taclet, instantiations, null, pos, services);
@@ -67,14 +61,12 @@ public class PosTacletApp extends TacletApp {
         return createPosTacletApp(taclet, matchCond.getInstantiations(), null, pos, services);
     }
 
-    /**
-     * creates a PosTacletApp for the given taclet with some known instantiations and a position
-     * information
-     *
-     * @param taclet the FindTaclet
-     * @param instantiations the SVInstantiations
-     * @param pos the PosInOccurrence storing the position where to apply the Taclet
-     */
+    /// creates a PosTacletApp for the given taclet with some known instantiations and a position
+    /// information
+    ///
+    /// @param taclet the FindTaclet
+    /// @param instantiations the SVInstantiations
+    /// @param pos the PosInOccurrence storing the position where to apply the Taclet
     private PosTacletApp(FindTaclet taclet, SVInstantiations instantiations,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations, PosInOccurrence pos) {
         super(taclet, instantiations, ifInstantiations);
@@ -82,13 +74,11 @@ public class PosTacletApp extends TacletApp {
     }
 
 
-    /**
-     * returns the LogicVariables that are bound above the PositionInOccurrence of the PosTacletApp.
-     * __OPTIMIZE__ If this method is needed more than once caching the result should be considered.
-     *
-     * @return the set of the logicvariables that are bound for the indicated application position
-     *         of the TacletApp.
-     */
+    /// returns the LogicVariables that are bound above the PositionInOccurrence of the PosTacletApp.
+    /// __OPTIMIZE__ If this method is needed more than once caching the result should be considered.
+    ///
+    /// @return the set of the logicvariables that are bound for the indicated application position
+    ///         of the TacletApp.
     private static ImmutableSet<QuantifiableVariable> varsBoundAboveFindPos(Taclet taclet,
             PosInOccurrence pos) {
 
@@ -120,12 +110,10 @@ public class PosTacletApp extends TacletApp {
             assumesFormulaInstantiations(), posInOccurrence(), services);
     }
 
-    /**
-     * resolves collisions with the context in an SVInstantiation
-     *
-     * @param insts the original SVInstantiations
-     * @return the resolved SVInstantiations
-     */
+    /// resolves collisions with the context in an SVInstantiation
+    ///
+    /// @param insts the original SVInstantiations
+    /// @return the resolved SVInstantiations
     private static SVInstantiations resolveCollisionWithContext(Taclet taclet,
             SVInstantiations insts, PosInOccurrence pos, Services services) {
 
@@ -144,13 +132,11 @@ public class PosTacletApp extends TacletApp {
     }
 
 
-    /**
-     * adds a new instantiation to this TacletApp
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param term the Term the SchemaVariable is instantiated with
-     * @return the new TacletApp
-     */
+    /// adds a new instantiation to this TacletApp
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param term the Term the SchemaVariable is instantiated with
+    /// @return the new TacletApp
     // @Override
     public TacletApp addInstantiation(SchemaVariable sv, Term term,
             Services services) {
@@ -172,20 +158,16 @@ public class PosTacletApp extends TacletApp {
         return pos;
     }
 
-    /**
-     * returns true iff all necessary information is collected, so that the Taclet can be applied.
-     *
-     * @return true iff all necessary information is collected, so that the Taclet can be applied.
-     */
+    /// returns true iff all necessary information is collected, so that the Taclet can be applied.
+    ///
+    /// @return true iff all necessary information is collected, so that the Taclet can be applied.
     @Override
     public boolean complete() {
         return posInOccurrence() != null && uninstantiatedVars().isEmpty() && ifInstsComplete();
     }
 
-    /**
-     * creates a new Taclet application containing all the instantiations, constraints, new
-     * metavariables and if formula instantiations given and forget the old ones
-     */
+    /// creates a new Taclet application containing all the instantiations, constraints, new
+    /// metavariables and if formula instantiations given and forget the old ones
     @Override
     protected TacletApp setAllInstantiations(MatchResultInfo mc,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations, Services services) {
@@ -193,13 +175,11 @@ public class PosTacletApp extends TacletApp {
             posInOccurrence(), services);
     }
 
-    /**
-     * adds a new instantiation to this TacletApp
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param term the Term the SchemaVariable is instantiated with
-     * @return the new TacletApp
-     */
+    /// adds a new instantiation to this TacletApp
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param term the Term the SchemaVariable is instantiated with
+    /// @return the new TacletApp
     @Override
     public TacletApp addInstantiation(SchemaVariable sv, Term term, boolean interesting,
             Services services) {

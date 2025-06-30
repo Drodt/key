@@ -12,17 +12,14 @@ import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
-/**
- * Computes the pow function for literals. Computation fails if second argument is negative or
- * exceeds Integer.MAX_VALUE (the latter due to restrictions of class BigInteger).
- *
- */
+/// Computes the pow function for literals. Computation fails if second argument is negative or
+/// exceeds Integer.MAX_VALUE (the latter due to restrictions of class BigInteger).
 public final class MetaPow extends AbstractTermTransformer {
     public MetaPow() {
         super(new Name("#pow"), 2);
     }
 
-    /** calculates the resulting term. */
+    /// calculates the resulting term.
     public Term transform(Term term, SVInstantiations svInst, Services services) {
         final Term arg1 = term.sub(0);
         final Term arg2 = term.sub(1);

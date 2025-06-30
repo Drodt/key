@@ -15,13 +15,11 @@ import org.key_project.rusty.logic.sort.GenericSort;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * The objects of this class represent families of function symbols, where each family contains an
- * instantiation of a template symbol for a particular sort. The following invariant has to hold:
- * Given two sort-depending functions {@code f1} and {@code f2} then from {@code f1.isSimilar(f2)}
- * and
- * {@code f1.getSortDependingOn() == f2.getSortDependingOn()} follows {@code f1 == f2}.
- */
+/// The objects of this class represent families of function symbols, where each family contains an
+/// instantiation of a template symbol for a particular sort. The following invariant has to hold:
+/// Given two sort-depending functions `f1` and `f2` then from `f1.isSimilar(f2)`
+/// and
+/// `f1.getSortDependingOn() == f2.getSortDependingOn()` follows `f1 == f2`.
 public final class SortDependingFunction extends Function {
     private final SortDependingFunctionTemplate template;
     private final Qualifier<Sort> sortDependingOn;
@@ -84,13 +82,11 @@ public final class SortDependingFunction extends Function {
                 .lookup(instantiateName(kind, RustyDLTheory.ANY));
     }
 
-    /**
-     * returns the variant for the given sort
-     *
-     * @param sort the {@link Sort} for which to retrieve the corresponding variant of this function
-     * @param services the {@link Services}
-     * @return the variant for the given sort
-     */
+    /// returns the variant for the given sort
+    ///
+    /// @param sort the [Sort] for which to retrieve the corresponding variant of this function
+    /// @param services the [Services]
+    /// @return the variant for the given sort
     public synchronized SortDependingFunction getInstanceFor(Sort sort, Services services) {
         if (sort == this.sortDependingOn.getQualifier())
             return this;

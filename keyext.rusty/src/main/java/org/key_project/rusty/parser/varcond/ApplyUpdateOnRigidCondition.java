@@ -24,40 +24,30 @@ import org.jspecify.annotations.NonNull;
 
 import static org.key_project.rusty.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
 
-/**
- * This variable condition can be used to check whether an update can be performed on a formula or
- * term.
- * That is the case if the top-level operator is rigid and of arity greater than 0.
- *
- * @author Benjamin Weiss
- * @author Tobias Reinhold
- */
+/// This variable condition can be used to check whether an update can be performed on a formula or
+/// term.
+/// That is the case if the top-level operator is rigid and of arity greater than 0.
+///
+/// @author Benjamin Weiss
+/// @author Tobias Reinhold
 public final class ApplyUpdateOnRigidCondition implements VariableCondition {
 
-    /**
-     * The schema variable matched against an update
-     */
+    /// The schema variable matched against an update
     private final UpdateSV u;
 
-    /**
-     * The schema variable matched against a formula or term
-     */
+    /// The schema variable matched against a formula or term
     private final org.key_project.logic.op.sv.SchemaVariable phi;
 
-    /**
-     * The schema variable containing the result of applying the update <code>u</code> on the
-     * formula or term <code>phi</code>
-     */
+    /// The schema variable containing the result of applying the update <code>u</code> on the
+    /// formula or term <code>phi</code>
     private final org.key_project.logic.op.sv.SchemaVariable result;
 
-    /**
-     * Creates an instance of the variable condition.
-     *
-     * @param u the schema variable matched against an update
-     * @param phi the schema variable matched against a formula or term
-     * @param result the schema variable containing the result of applying <code>u</code> on
-     *        <code>phi</code>
-     */
+    /// Creates an instance of the variable condition.
+    ///
+    /// @param u the schema variable matched against an update
+    /// @param phi the schema variable matched against a formula or term
+    /// @param result the schema variable containing the result of applying <code>u</code> on
+    ///        <code>phi</code>
     public ApplyUpdateOnRigidCondition(UpdateSV u, org.key_project.logic.op.sv.SchemaVariable phi,
             org.key_project.logic.op.sv.SchemaVariable result) {
         this.u = u;
@@ -65,20 +55,18 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
         this.result = result;
     }
 
-    /**
-     * <p>
-     * Applies the update <code>u</code> on the rigid formula or term <code>phi</code>.
-     * </p>
-     * If there are free variables in <code>u</code>,
-     * {@link #applyUpdateOnRigidQuantifier(Term, Term, Services)} is
-     * called to take care of potential name clashes.
-     *
-     * @param u the update applied on <code>phi</code>
-     * @param phi the formula or term the update <code>u</code> is applied on
-     * @param services the {@link Services} to help create terms
-     * @return the term of the update <code>u</code> applied on all subterms of <code>phi</code> and
-     *         possible renaming
-     */
+    ///
+    /// Applies the update <code>u</code> on the rigid formula or term <code>phi</code>.
+    ///
+    /// If there are free variables in <code>u</code>,
+    /// [#applyUpdateOnRigidQuantifier(Term,Term,Services)] is
+    /// called to take care of potential name clashes.
+    ///
+    /// @param u the update applied on <code>phi</code>
+    /// @param phi the formula or term the update <code>u</code> is applied on
+    /// @param services the [Services] to help create terms
+    /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code> and
+    ///         possible renaming
     private static Term applyUpdateOnRigid(Term u, Term phi, Services services) {
         if (phi.boundVars().isEmpty() || u.freeVars().isEmpty()) {
             final TermBuilder tb = services.getTermBuilder();
@@ -95,19 +83,17 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
         return applyUpdateOnRigidQuantifier(u, phi, services);
     }
 
-    /**
-     * <p>
-     * This method is used by {@link #applyUpdateOnRigid(Term, Term, Services)} if {@code phi} is a
-     * quantifier and
-     * {@code u} contains free variables.
-     * </p>
-     *
-     * @param u the update applied on <code>phi</code>
-     * @param phi the formula or term the update <code>u</code> is applied on
-     * @param services the {@link Services} to help create terms
-     * @return the term of the update <code>u</code> applied on all subterms of <code>phi</code> and
-     *         possible renaming
-     */
+    ///
+    /// This method is used by [#applyUpdateOnRigid(Term,Term,Services)] if `phi` is a
+    /// quantifier and
+    /// `u` contains free variables.
+    ///
+    ///
+    /// @param u the update applied on <code>phi</code>
+    /// @param phi the formula or term the update <code>u</code> is applied on
+    /// @param services the [Services] to help create terms
+    /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code> and
+    ///         possible renaming
     private static Term applyUpdateOnRigidQuantifier(Term u, Term phi, Services services) {
         final TermBuilder tb = services.getTermBuilder();
 
@@ -118,15 +104,13 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
         }
 
         u.execPostOrder(new Visitor<@NonNull Term>() {
-            /**
-             * the stack contains the subterms that will be added in the next step of execPostOrder
-             * in Term
-             * in order to build the new term. A boolean value between or under the subterms on the
-             * stack
-             * indicate that a term using these subterms should build a new term instead of using
-             * the old
-             * one, because one of its subterms has been built, too.
-             */
+            /// the stack contains the subterms that will be added in the next step of execPostOrder
+            /// in Term
+            /// in order to build the new term. A boolean value between or under the subterms on the
+            /// stack
+            /// indicate that a term using these subterms should build a new term instead of using
+            /// the old
+            /// one, because one of its subterms has been built, too.
             private final Stack<Object> subStack = new Stack<>(); // of Term (and Boolean)
             private final Boolean newMarker = Boolean.TRUE;
 

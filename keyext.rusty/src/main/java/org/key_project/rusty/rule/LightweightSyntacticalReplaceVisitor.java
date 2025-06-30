@@ -31,29 +31,24 @@ import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * A lightweight version of {@link SyntacticalReplaceVisitor} which does not replace labels. This
- * saves a lot of dependencies to {@link Goal}, {@link RuleApp}, {@link PosInOccurrence} etc. and is
- * therefore useful for internal computations not having access to all these objects. Since labels
- * are not refactored, this class is *not* useful for rule applications etc.
- *
- * Note that this class is basically a stripped-down copy of {@link SyntacticalReplaceVisitor}, so
- * problems in that class would carry over to this one...
- *
- * @author Dominic Steinhoefel
- */
+/// A lightweight version of [SyntacticalReplaceVisitor] which does not replace labels. This
+/// saves a lot of dependencies to [Goal], [RuleApp], [PosInOccurrence] etc. and is
+/// therefore useful for internal computations not having access to all these objects. Since labels
+/// are not refactored, this class is *not* useful for rule applications etc.
+/// Note that this class is basically a stripped-down copy of [SyntacticalReplaceVisitor], so
+/// problems in that class would carry over to this one...
+///
+/// @author Dominic Steinhoefel
 public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
     private final SVInstantiations svInst;
     private final Services services;
     private final TermBuilder tb;
     private Term computedResult = null;
 
-    /**
-     * the stack contains the subterms that will be added in the next step of execPostOrder in Term
-     * in order to build the new term. A boolean value between or under the subterms on the stack
-     * indicate that a term using these subterms should build a new term instead of using the old
-     * one, because one of its subterms has been built, too.
-     */
+    /// the stack contains the subterms that will be added in the next step of execPostOrder in Term
+    /// in order to build the new term. A boolean value between or under the subterms on the stack
+    /// indicate that a term using these subterms should build a new term instead of using the old
+    /// one, because one of its subterms has been built, too.
     private final Stack<Object> subStack; // of Term (and Boolean)
     private final Boolean newMarker = Boolean.TRUE;
     private final Deque<Term> tacletTermStack = new ArrayDeque<>();
@@ -83,10 +78,8 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
         return be;
     }
 
-    /**
-     * the method is only still invoked to allow the
-     * {@link ConstraintAwareSyntacticalReplaceVisitor} to recursively replace meta variables
-     */
+    /// the method is only still invoked to allow the
+    /// [ConstraintAwareSyntacticalReplaceVisitor] to recursively replace meta variables
     protected Term toTerm(Term o) {
         return o;
     }
@@ -281,9 +274,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
         subStack.push(t);
     }
 
-    /**
-     * delivers the new built term
-     */
+    /// delivers the new built term
     public Term getTerm() {
         if (computedResult == null) {
             Object o = null;
@@ -299,22 +290,18 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
         return svInst;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public void subtreeEntered(Term subtreeRoot) {
         tacletTermStack.push(subtreeRoot);
     }
 
-    /**
-     * this method is called in execPreOrder and execPostOrder in class Term when leaving the
-     * subtree rooted in the term subtreeRoot. Default implementation is to do nothing. Subclasses
-     * can override this method when the visitor behaviour depends on informations bound to
-     * subtrees.
-     *
-     * @param subtreeRoot root of the subtree which the visitor leaves.
-     */
+    /// this method is called in execPreOrder and execPostOrder in class Term when leaving the
+    /// subtree rooted in the term subtreeRoot. Default implementation is to do nothing. Subclasses
+    /// can override this method when the visitor behaviour depends on informations bound to
+    /// subtrees.
+    ///
+    /// @param subtreeRoot root of the subtree which the visitor leaves.
     @Override
     public void subtreeLeft(Term subtreeRoot) {
         tacletTermStack.pop();

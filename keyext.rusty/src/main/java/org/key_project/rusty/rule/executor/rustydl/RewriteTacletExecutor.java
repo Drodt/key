@@ -27,20 +27,18 @@ public class RewriteTacletExecutor
         super(taclet);
     }
 
-    /**
-     * adds the sequent of the add part of the Taclet to the goal sequent
-     *
-     * @param add the Sequent to be added
-     * @param currentSequent the Sequent which is the current (intermediate) result of applying the
-     *        taclet
-     * @param posOfFind describes the application position of the find expression in the original
-     *        sequent
-     * @param whereToAdd the PosInOccurrence describes the place where to add the semisequent
-     * @param matchCond the MatchConditions with all required instantiations
-     * @param goal the Goal the taclet is applied to
-     * @param ruleApp the rule application to apply
-     * @param services the Services encapsulating all Rust information
-     */
+    /// adds the sequent of the add part of the Taclet to the goal sequent
+    ///
+    /// @param add the Sequent to be added
+    /// @param currentSequent the Sequent which is the current (intermediate) result of applying the
+    ///        taclet
+    /// @param posOfFind describes the application position of the find expression in the original
+    ///        sequent
+    /// @param whereToAdd the PosInOccurrence describes the place where to add the semisequent
+    /// @param matchCond the MatchConditions with all required instantiations
+    /// @param goal the Goal the taclet is applied to
+    /// @param ruleApp the rule application to apply
+    /// @param services the Services encapsulating all Rust information
     @Override
     protected void applyAdd(Sequent add,
             SequentChangeInfo currentSequent, PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
@@ -94,9 +92,7 @@ public class RewriteTacletExecutor
         }
     }
 
-    /**
-     * does the work for applyReplacewith (wraps recursion)
-     */
+    /// does the work for applyReplacewith (wraps recursion)
     private Term replace(Term term, Term with, PosInOccurrence posOfFind, IntIterator it,
             MatchConditions mc, Sort maxSort, Goal goal, Services services, RuleApp ruleApp) {
         if (it.hasNext()) {

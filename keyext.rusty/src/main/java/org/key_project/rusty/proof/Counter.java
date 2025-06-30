@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
-/** Proof-specific counter object: taclet names, var names, node numbers, etc */
+/// Proof-specific counter object: taclet names, var names, node numbers, etc
 public final class Counter {
     private final String name;
     private int count;

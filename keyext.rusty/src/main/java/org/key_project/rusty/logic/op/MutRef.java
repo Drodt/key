@@ -27,9 +27,7 @@ public class MutRef extends AbstractSortedOperator {
         this.place = p;
     }
 
-    /**
-     * Returns the mut ref operator for the passed left hand side.
-     */
+    /// Returns the mut ref operator for the passed left hand side.
     public static MutRef getInstance(Place place, Services services) {
         WeakReference<MutRef> ref = instances.get(place);
         MutRef result = null;

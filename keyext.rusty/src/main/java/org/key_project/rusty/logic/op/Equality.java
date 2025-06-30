@@ -13,25 +13,18 @@ import org.key_project.rusty.logic.RustyDLTheory;
 import org.jspecify.annotations.NonNull;
 
 
-/**
- * This class defines the logic equality operator {@code =}. It is a binary predicate accepting
- * arbitrary terms (of sort "any") as arguments.
- *
- * It also defines the formula equivalence operator {@code <->} (which could alternatively be seen
- * as a Junctor).
- */
+/// This class defines the logic equality operator `=`. It is a binary predicate accepting
+/// arbitrary terms (of sort "any") as arguments.
+/// It also defines the formula equivalence operator `<->` (which could alternatively be seen
+/// as a Junctor).
 public final class Equality extends AbstractSortedOperator {
 
-    /**
-     * the usual 'equality' operator '='
-     */
+    /// the usual 'equality' operator '='
     public static final Equality EQUALS = new Equality(new Name("equals"), RustyDLTheory.ANY);
 
-    /**
-     * the usual 'equivalence' operator {@code <->} (be {@code A, B} formulae then {@code A <-> B}
-     * is true
-     * if and only if {@code A} and {@code B} have the same truth value
-     */
+    /// the usual 'equivalence' operator `<->` (be `A, B` formulae then `A <-> B`
+    /// is true
+    /// if and only if `A` and `B` have the same truth value
     public static final Equality EQV = new Equality(new Name("equiv"), RustyDLTheory.FORMULA);
 
 

@@ -26,17 +26,13 @@ public class ProofSettings {
     private Properties lastLoadedProperties = null;
     private Configuration lastLoadedConfiguration = null;
 
-    /**
-     * all setting objects in the following order: heuristicSettings
-     */
+    /// all setting objects in the following order: heuristicSettings
     private final List<Settings> settings = new LinkedList<>();
 
     private final ChoiceSettings choiceSettings = new ChoiceSettings();
 
-    /**
-     * create a proof settings object. When you add a new settings object, PLEASE UPDATE THE LIST
-     * ABOVE AND USE THOSE CONSTANTS INSTEAD OF USING INTEGERS DIRECTLY
-     */
+    /// create a proof settings object. When you add a new settings object, PLEASE UPDATE THE LIST
+    /// ABOVE AND USE THOSE CONSTANTS INSTEAD OF USING INTEGERS DIRECTLY
     private ProofSettings() {
         addSettings(choiceSettings);
     }
@@ -70,9 +66,7 @@ public class ProofSettings {
         return ps;
     }
 
-    /**
-     * Loads the former settings from configuration file.
-     */
+    /// Loads the former settings from configuration file.
     public void loadSettings() {
         if (Boolean.getBoolean(PathConfig.DISREGARD_SETTINGS_PROPERTY)) {
             // LOGGER.warn("The settings in {} are *not* read.", PROVER_CONFIG_FILE);
@@ -114,11 +108,9 @@ public class ProofSettings {
             setting.readSettings(c);
     }
 
-    /**
-     * returns the ChoiceSettings object
-     *
-     * @return the ChoiceSettings object
-     */
+    /// returns the ChoiceSettings object
+    ///
+    /// @return the ChoiceSettings object
     public ChoiceSettings getChoiceSettings() {
         return choiceSettings;
     }

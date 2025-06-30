@@ -9,11 +9,9 @@ import org.key_project.logic.sort.Sort;
 public class SRefSort extends SortImpl {
     private final Sort inner;
 
-    /**
-     * Should only be created in {@link org.key_project.rusty.Services}
-     *
-     * @param inner inner sort
-     */
+    /// Should only be created in [org.key_project.rusty.Services]
+    ///
+    /// @param inner inner sort
     public SRefSort(Sort inner) {
         super(new Name("SRef<" + inner + ">"));
         this.inner = inner;

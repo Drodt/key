@@ -11,18 +11,14 @@ import org.key_project.logic.Name;
 
 public class NameAbstractionTable {
 
-    /**
-     * The order in which symbols are declared in the two terms or programs that are compared. The
-     * latest declaration of a symbol will be the first matching entry in the list
-     */
+    /// The order in which symbols are declared in the two terms or programs that are compared. The
+    /// latest declaration of a symbol will be the first matching entry in the list
     private List<Name> declarations0 = null, declarations1 = null;
 
-    /**
-     * adds the given two elements to the table
-     *
-     * @param name1 Name to be added
-     * @param name2 Name to be added
-     */
+    /// adds the given two elements to the table
+    ///
+    /// @param name1 Name to be added
+    /// @param name2 Name to be added
     public void add(Name name1, Name name2) {
         if (declarations0 == null) {
             declarations0 = new LinkedList<>();
@@ -33,13 +29,11 @@ public class NameAbstractionTable {
         declarations1.add(0, name2);
     }
 
-    /**
-     * tests if the given elements have been assigned to the same abstract name.
-     *
-     * @param name1 first name to test
-     * @param name2 second name to test
-     * @returns true if {@code name1} and {@code name2} are the same abstract name
-     */
+    /// tests if the given elements have been assigned to the same abstract name.
+    ///
+    /// @param name1 first name to test
+    /// @param name2 second name to test
+    /// @returns true if `name1` and `name2` are the same abstract name
     public boolean sameAbstractName(Name name1, Name name2) {
         if (declarations0 != null) {
             final Iterator<Name> it0 = declarations0.iterator();

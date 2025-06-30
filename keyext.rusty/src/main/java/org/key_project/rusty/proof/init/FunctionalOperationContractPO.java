@@ -18,28 +18,16 @@ import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * <p>
- * The proof obligation for operation contracts.
- * </p>
- * <p>
- * The generated {@link Sequent} has the following form:
- *
- * <pre>
- * {@code
- * ==>
- * <generalAssumptions> &
- * <preconditions>
- * ->
- * <updatesToStoreInitialValues>
- * <modalityStart>
- * exc=null;try {<methodBodyExpand>}catch(java.lang.Throwable e) {exc = e}
- * <modalityEnd>
- * (exc = null & <postconditions > & <optionalUninterpretedPredicate>)
- * }
- * </pre>
- * </p>
- */
+///
+/// The proof obligation for operation contracts.
+///
+///
+/// The generated [Sequent] has the following form:
+/// <pre>
+///
+/// `==><generalAssumptions> &<preconditions>-><updatesToStoreInitialValues><modalityStart>exc=null;try{<methodBodyExpand>}catch(java.lang.Throwable e){exc = e}<modalityEnd>(exc = null & <postconditions > & <optionalUninterpretedPredicate>)`
+/// </pre>
+///
 public class FunctionalOperationContractPO extends AbstractOperationPO implements ContractPO {
     private final FunctionalOperationContract contract;
     private Term mbyAtPre;
@@ -103,17 +91,13 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
             null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public FunctionalOperationContract getContract() {
         return contract;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public Term getMbyAtPre() {
         return mbyAtPre;

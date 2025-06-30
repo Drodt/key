@@ -46,13 +46,11 @@ public class HirRustyReader {
         return services;
     }
 
-    /**
-     * parses a given RustyBlock using the context to determine the right references
-     *
-     * @param block a String describing a java block
-     * @param context recoder.java.CompilationUnit in which the block has to be interprested
-     * @return the parsed and resolved JavaBlock
-     */
+    /// parses a given RustyBlock using the context to determine the right references
+    ///
+    /// @param block a String describing a java block
+    /// @param context recoder.java.CompilationUnit in which the block has to be interprested
+    /// @return the parsed and resolved JavaBlock
     public RustyBlock readBlock(String block, Context context) {
         try {
             var fn = context.buildFunction(block, true);
@@ -178,11 +176,9 @@ public class HirRustyReader {
         return readBlock(s, new Context(varNS));
     }
 
-    /**
-     * creates an empty compilation unit with a temporary name.
-     *
-     * @return the new recoder.java.CompilationUnit
-     */
+    /// creates an empty compilation unit with a temporary name.
+    ///
+    /// @return the new recoder.java.CompilationUnit
     public Context createEmptyContext() {
         return new Context(new Namespace<>());
     }

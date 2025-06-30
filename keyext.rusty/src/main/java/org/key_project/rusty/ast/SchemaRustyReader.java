@@ -25,13 +25,11 @@ public class SchemaRustyReader extends HirRustyReader {
         this.svNS = ns;
     }
 
-    /**
-     * parses a given RustyBlock using the context to determine the right references
-     *
-     * @param block a String describing a java block
-     * @param context recoder.java.CompilationUnit in which the block has to be interprested
-     * @return the parsed and resolved JavaBlock
-     */
+    /// parses a given RustyBlock using the context to determine the right references
+    ///
+    /// @param block a String describing a java block
+    /// @param context recoder.java.CompilationUnit in which the block has to be interprested
+    /// @return the parsed and resolved JavaBlock
     public RustyBlock readBlock(String block, Context context) {
         var fn = context.buildFunction(block);
         var lexer =

@@ -21,28 +21,22 @@ import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * Walks through a java AST in depth-left-first-order. This visitor replaces a number of program
- * variables by others or new ones.
- */
+/// Walks through a java AST in depth-left-first-order. This visitor replaces a number of program
+/// variables by others or new ones.
 public class ProgVarReplaceVisitor extends CreatingASTVisitor {
     protected boolean replaceallbynew = true;
 
-    /**
-     * stores the program variables to be replaced as keys and the new program variables as values
-     */
+    /// stores the program variables to be replaced as keys and the new program variables as values
     protected final Map<ProgramVariable, ProgramVariable> replaceMap;
 
     private RustyProgramElement result = null;
 
-    /**
-     * creates a visitor that replaces the program variables in the given statement by new ones with
-     * the same name
-     *
-     * @param st the statement where the prog vars are replaced
-     * @param map the HashMap with the replacements
-     * @param services the services instance
-     */
+    /// creates a visitor that replaces the program variables in the given statement by new ones with
+    /// the same name
+    ///
+    /// @param st the statement where the prog vars are replaced
+    /// @param map the HashMap with the replacements
+    /// @param services the services instance
     public ProgVarReplaceVisitor(RustyProgramElement st, Map<ProgramVariable, ProgramVariable> map,
             boolean replaceallbynew,
             Services services) {
@@ -52,17 +46,15 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
         assert services != null;
     }
 
-    /**
-     * the action that is performed just before leaving the node the last time
-     *
-     * @param node the node described above
-     */
+    /// the action that is performed just before leaving the node the last time
+    ///
+    /// @param node the node described above
     @Override
     protected void doAction(RustyProgramElement node) {
         node.visit(this);
     }
 
-    /** starts the walker */
+    /// starts the walker
     @Override
     public void start() {
         stack.push(new ExtList());

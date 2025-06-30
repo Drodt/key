@@ -16,13 +16,11 @@ import org.key_project.rusty.speclang.LoopSpecification;
 public class ProgramVariableCollector extends RustyASTVisitor {
     private final LinkedHashSet<ProgramVariable> result = new LinkedHashSet<>();
 
-    /**
-     * collects all program variables occurring in the AST <tt>root</tt> using this constructor is
-     * equivalent to <tt>ProggramVariableCollector(root, false)</tt>
-     *
-     * @param root the ProgramElement which is the root of the AST
-     * @param services the Services object
-     */
+    /// collects all program variables occurring in the AST <tt>root</tt> using this constructor is
+    /// equivalent to <tt>ProggramVariableCollector(root, false)</tt>
+    ///
+    /// @param root the ProgramElement which is the root of the AST
+    /// @param services the Services object
     public ProgramVariableCollector(RustyProgramElement root, Services services) {
         super(root, services);
         assert services != null;

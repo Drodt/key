@@ -25,19 +25,15 @@ public class KeYFileForTests extends KeYFile {
     private Namespace<@NonNull QuantifiableVariable> variables;
     private Namespace<@NonNull SchemaVariable> schemaVariables;
 
-    /**
-     * creates a new representation for a given file by indicating a name and a file representing
-     * the physical source of the .key file.
-     */
+    /// creates a new representation for a given file by indicating a name and a file representing
+    /// the physical source of the .key file.
     public KeYFileForTests(String name, File file, Profile profile) {
         super(name, file, profile);
     }
 
-    /**
-     * reads the whole .key file and modifies the initial configuration assigned to this object
-     * according to the given modification strategy. Throws an exception if no initial configuration
-     * has been set yet.
-     */
+    /// reads the whole .key file and modifies the initial configuration assigned to this object
+    /// according to the given modification strategy. Throws an exception if no initial configuration
+    /// has been set yet.
     @Override
     public ImmutableSet<String> read() throws ProofInputException {
         if (initConfig == null) {

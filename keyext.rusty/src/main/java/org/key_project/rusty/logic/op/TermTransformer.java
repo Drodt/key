@@ -10,16 +10,12 @@ import org.key_project.logic.op.SortedOperator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
-/**
- * TermTransformer perform complex term transformation which cannot be (efficiently or at all)
- * described by taclets.
- */
+/// TermTransformer perform complex term transformation which cannot be (efficiently or at all)
+/// described by taclets.
 public interface TermTransformer extends SortedOperator, Operator,
         /* TODO: check */ TerminalSyntaxElement {
 
-    /**
-     * initiates term transformation of <tt>term</tt>. Note the top level operator of parameter
-     * <tt>term</tt> has to be <em>this</em> term transformer.
-     */
+    /// initiates term transformation of <tt>term</tt>. Note the top level operator of parameter
+    /// <tt>term</tt> has to be _this_ term transformer.
     Term transform(Term term, SVInstantiations svInst, Services services);
 }

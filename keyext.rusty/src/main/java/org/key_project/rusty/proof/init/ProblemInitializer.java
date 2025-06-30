@@ -45,9 +45,7 @@ public final class ProblemInitializer {
     private final Services services;
 
     private final Set<EnvInput> alreadyParsed = new LinkedHashSet<>();
-    /**
-     * the FileRepo responsible for consistency between source code and proofs
-     */
+    /// the FileRepo responsible for consistency between source code and proofs
     private FileRepo fileRepo;
     private ImmutableSet<String> warnings = DefaultImmutableSet.nil();
 
@@ -185,9 +183,7 @@ public final class ProblemInitializer {
         }
     }
 
-    /**
-     * Helper for readEnvInput().
-     */
+    /// Helper for readEnvInput().
     private void readIncludes(EnvInput envInput, InitConfig initConfig) throws ProofInputException {
         envInput.setInitConfig(initConfig);
 
@@ -204,9 +200,7 @@ public final class ProblemInitializer {
         }
     }
 
-    /**
-     * Helper for readIncludes().
-     */
+    /// Helper for readIncludes().
     private void readLDTIncludes(Includes in, InitConfig initConfig) throws ProofInputException {
         // avoid infinite recursion
         if (in.getLDTIncludes().isEmpty()) {
@@ -233,12 +227,10 @@ public final class ProblemInitializer {
     // Why does it say here that it removes schema variables when it just removes variables?
     // And with symbols are only functions meant?
 
-    /**
-     * Removes all schema variables, all generic sorts and all sort-depending symbols for a generic
-     * sort out of the namespaces. Helper for readEnvInput().
-     * <p>
-     * See bug report #1185, #1189 (in Mantis)
-     */
+    /// Removes all schema variables, all generic sorts and all sort-depending symbols for a generic
+    /// sort out of the namespaces. Helper for readEnvInput().
+    ///
+    /// See bug report #1185, #1189 (in Mantis)
     private void cleanupNamespaces(InitConfig initConfig) {
         var newVarNS = new Namespace<@NonNull QuantifiableVariable>();
         // TODO: cover generics once they are added
@@ -321,10 +313,8 @@ public final class ProblemInitializer {
         }
     }
 
-    /**
-     * Ensures that the passed proof's namespaces contain all functions and program variables used
-     * in its root sequent.
-     */
+    /// Ensures that the passed proof's namespaces contain all functions and program variables used
+    /// in its root sequent.
     private void populateNamespaces(Proof proof) {
         final NamespaceSet namespaces = proof.getNamespaces();
         final Goal rootGoal = proof.openGoals().head();

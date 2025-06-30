@@ -30,74 +30,50 @@ import org.key_project.rusty.speclang.SLEnvInput;
 import org.key_project.util.java.IOUtil;
 
 public abstract class AbstractProblemLoader {
-    /**
-     * The file or folder to load.
-     */
+    /// The file or folder to load.
     private final File file;
 
-    /**
-     * The filename of the proof in the zipped file (null if file is not a proof bundle).
-     */
+    /// The filename of the proof in the zipped file (null if file is not a proof bundle).
     private File proofFilename;
 
-    /**
-     * The global includes to use.
-     */
+    /// The global includes to use.
     private final List<File> includes;
 
-    /**
-     * The {@link ProblemLoaderControl} to use.
-     */
+    /// The [ProblemLoaderControl] to use.
     private final ProblemLoaderControl control;
 
-    /**
-     * The {@link Profile} to use for new {@link Proof}s.
-     */
+    /// The [Profile] to use for new [Proof]s.
     private final Profile profileOfNewProofs;
 
-    /**
-     * The instantiated {@link EnvInput} which describes the file to load.
-     */
+    /// The instantiated [EnvInput] which describes the file to load.
     private EnvInput envInput;
 
-    /**
-     * The instantiated {@link ProblemInitializer} used during the loading process.
-     */
+    /// The instantiated [ProblemInitializer] used during the loading process.
     private ProblemInitializer problemInitializer;
 
-    /**
-     * The instantiated {@link InitConfig} which provides access to the loaded source elements and
-     * specifications.
-     */
+    /// The instantiated [InitConfig] which provides access to the loaded source elements and
+    /// specifications.
     private InitConfig initConfig;
 
-    /**
-     * The instantiate proof or {@code null} if no proof was instantiated during loading process.
-     */
+    /// The instantiate proof or `null` if no proof was instantiated during loading process.
     private Proof proof;
 
-    /**
-     * The {@link ReplayResult} if available or {@code null} otherwise.
-     */
+    /// The [ReplayResult] if available or `null` otherwise.
     private ReplayResult result;
 
-    /**
-     * Whether warnings (generated when loading the proof) should be ignored
-     * and not shown to the user.
-     */
+    /// Whether warnings (generated when loading the proof) should be ignored
+    /// and not shown to the user.
     private boolean ignoreWarnings = false;
 
-    /**
-     * Constructor.
-     *
-     * @param file The file or folder to load.
-     * @param includes Optional includes to consider.
-     * @param profileOfNewProofs The {@link Profile} to use for new {@link Proof}s.
-     * @param control The {@link ProblemLoaderControl} to use.
-     *        {@link ProblemLoaderControl#selectProofObligation(InitConfig)} if no {@link Proof} is
-     *        defined by the loaded proof or {@code false} otherwise which still allows to work with
-     *        the loaded {@link InitConfig}.
-     */
+    /// Constructor.
+    ///
+    /// @param file The file or folder to load.
+    /// @param includes Optional includes to consider.
+    /// @param profileOfNewProofs The [Profile] to use for new [Proof]s.
+    /// @param control The [ProblemLoaderControl] to use.
+    ///        [#selectProofObligation(InitConfig)] if no [Proof] is
+    ///        defined by the loaded proof or `false` otherwise which still allows to work with
+    ///        the loaded [InitConfig].
     protected AbstractProblemLoader(File file,
             List<File> includes, Profile profileOfNewProofs,
             ProblemLoaderControl control) {
@@ -112,28 +88,24 @@ public abstract class AbstractProblemLoader {
         this.proof = proof;
     }
 
-    /**
-     * Executes the loading process and tries to instantiate a proof and to re-apply rules on it if
-     * possible.
-     *
-     * @throws ProofInputException Occurred Exception.
-     * @throws IOException Occurred Exception.
-     * @throws ProblemLoaderException Occurred Exception.
-     */
+    /// Executes the loading process and tries to instantiate a proof and to re-apply rules on it if
+    /// possible.
+    ///
+    /// @throws ProofInputException Occurred Exception.
+    /// @throws IOException Occurred Exception.
+    /// @throws ProblemLoaderException Occurred Exception.
     public final void load() throws Exception {
         load(null);
     }
 
-    /**
-     * Executes the loading process and tries to instantiate a proof and to re-apply rules on it if
-     * possible.
-     *
-     * @param callbackProofLoaded optional callback, called when the proof is loaded but not yet
-     *        replayed
-     * @throws ProofInputException Occurred Exception.
-     * @throws IOException Occurred Exception.
-     * @throws ProblemLoaderException Occurred Exception.
-     */
+    /// Executes the loading process and tries to instantiate a proof and to re-apply rules on it if
+    /// possible.
+    ///
+    /// @param callbackProofLoaded optional callback, called when the proof is loaded but not yet
+    ///        replayed
+    /// @throws ProofInputException Occurred Exception.
+    /// @throws IOException Occurred Exception.
+    /// @throws ProblemLoaderException Occurred Exception.
     public final void load(Consumer<Proof> callbackProofLoaded)
             throws Exception {
         // control.loadingStarted(this);
@@ -156,13 +128,11 @@ public abstract class AbstractProblemLoader {
         }
     }
 
-    /**
-     * Loads and initialized the proof environment.
-     *
-     * @throws ProofInputException Occurred Exception.
-     * @throws IOException Occurred Exception.
-     * @see AbstractProblemLoader#load()
-     */
+    /// Loads and initialized the proof environment.
+    ///
+    /// @throws ProofInputException Occurred Exception.
+    /// @throws IOException Occurred Exception.
+    /// @see AbstractProblemLoader#load()
     protected void loadEnvironment() throws ProofInputException, IOException {
         FileRepo fileRepo = createFileRepo();
 
@@ -183,14 +153,12 @@ public abstract class AbstractProblemLoader {
         // }
     }
 
-    /**
-     * Loads a proof from the proof list.
-     *
-     * @param poContainer the container created by {@link #createProofObligationContainer()}.
-     * @param proofList the proof list containing the proof to load.
-     * @param callbackProofLoaded optional callback, called before the proof is replayed
-     * @see AbstractProblemLoader#load()
-     */
+    /// Loads a proof from the proof list.
+    ///
+    /// @param poContainer the container created by [#createProofObligationContainer()].
+    /// @param proofList the proof list containing the proof to load.
+    /// @param callbackProofLoaded optional callback, called before the proof is replayed
+    /// @see AbstractProblemLoader#load()
     protected void loadSelectedProof(LoadedPOContainer poContainer, ProofAggregate proofList,
             Consumer<Proof> callbackProofLoaded) {
         // try to replay first proof
@@ -206,9 +174,7 @@ public abstract class AbstractProblemLoader {
         }
     }
 
-    /**
-     * Find first 'non-wrapper' exception type in cause chain.
-     */
+    /// Find first 'non-wrapper' exception type in cause chain.
     private Throwable unwrap(Throwable e) {
         while (e instanceof ProblemLoaderException) {
             e = e.getCause();
@@ -216,13 +182,11 @@ public abstract class AbstractProblemLoader {
         return e;
     }
 
-    /**
-     * Creates a new FileRepo (with or without consistency) based on the settings.
-     *
-     * @return a FileRepo that can be used for proof bundle saving
-     * @throws IOException if for some reason the FileRepo can not be created (e.g. temporary
-     *         directory can not be created).
-     */
+    /// Creates a new FileRepo (with or without consistency) based on the settings.
+    ///
+    /// @return a FileRepo that can be used for proof bundle saving
+    /// @throws IOException if for some reason the FileRepo can not be created (e.g. temporary
+    ///         directory can not be created).
     protected FileRepo createFileRepo() throws IOException {
         // create a FileRepo depending on the settings
         /*
@@ -238,13 +202,11 @@ public abstract class AbstractProblemLoader {
         return new SimpleFileRepo();
     }
 
-    /**
-     * Instantiates the {@link EnvInput} which represents the file to load.
-     *
-     * @param fileRepo the FileRepo used to ensure consistency between proof and source code
-     * @return The created {@link EnvInput}.
-     * @throws IOException Occurred Exception.
-     */
+    /// Instantiates the [EnvInput] which represents the file to load.
+    ///
+    /// @param fileRepo the FileRepo used to ensure consistency between proof and source code
+    /// @return The created [EnvInput].
+    /// @throws IOException Occurred Exception.
     protected EnvInput createEnvInput(FileRepo fileRepo) throws IOException {
 
         final String filename = file.getName();
@@ -342,12 +304,10 @@ public abstract class AbstractProblemLoader {
         }
     }
 
-    /**
-     * Instantiates the {@link ProblemInitializer} to use.
-     *
-     * @param fileRepo the FileRepo used to ensure consistency between proof and source code
-     * @return The {@link ProblemInitializer} to use.
-     */
+    /// Instantiates the [ProblemInitializer] to use.
+    ///
+    /// @param fileRepo the FileRepo used to ensure consistency between proof and source code
+    /// @return The [ProblemInitializer] to use.
     protected ProblemInitializer createProblemInitializer(FileRepo fileRepo) {
         Profile profile = envInput.getProfile();
         ProblemInitializer pi = new ProblemInitializer(new Services(profile));
@@ -355,23 +315,19 @@ public abstract class AbstractProblemLoader {
         return pi;
     }
 
-    /**
-     * Creates the {@link InitConfig}.
-     *
-     * @return The created {@link InitConfig}.
-     * @throws ProofInputException Occurred Exception.
-     */
+    /// Creates the [InitConfig].
+    ///
+    /// @return The created [InitConfig].
+    /// @throws ProofInputException Occurred Exception.
     protected InitConfig createInitConfig() throws ProofInputException {
         return problemInitializer.prepare(envInput);
     }
 
-    /**
-     * Creates a {@link LoadedPOContainer} if available which contains the {@link ProofOblInput} for
-     * which a {@link Proof} should be instantiated.
-     *
-     * @return The {@link LoadedPOContainer} or {@code null} if not available.
-     * @throws IOException Occurred Exception.
-     */
+    /// Creates a [LoadedPOContainer] if available which contains the [ProofOblInput] for
+    /// which a [Proof] should be instantiated.
+    ///
+    /// @return The [LoadedPOContainer] or `null` if not available.
+    /// @throws IOException Occurred Exception.
     protected LoadedPOContainer createProofObligationContainer() throws Exception {
         final String chooseContract;
         final Configuration proofObligation;
@@ -399,14 +355,12 @@ public abstract class AbstractProblemLoader {
         }
     }
 
-    /**
-     * Creates a {@link Proof} for the given {@link LoadedPOContainer} and tries to apply rules
-     * again.
-     *
-     * @param poContainer The {@link LoadedPOContainer} to instantiate a {@link Proof} for.
-     * @return The instantiated {@link Proof}.
-     * @throws ProofInputException Occurred Exception.
-     */
+    /// Creates a [Proof] for the given [LoadedPOContainer] and tries to apply rules
+    /// again.
+    ///
+    /// @param poContainer The [LoadedPOContainer] to instantiate a [Proof] for.
+    /// @return The instantiated [Proof].
+    /// @throws ProofInputException Occurred Exception.
     protected ProofAggregate createProof(LoadedPOContainer poContainer) throws ProofInputException {
         ProofAggregate proofList =
             problemInitializer.startProver(initConfig, poContainer.getProofOblInput());
@@ -499,51 +453,41 @@ public abstract class AbstractProblemLoader {
         return result;
     }
 
-    /**
-     * Returns the file or folder to load.
-     *
-     * @return The file or folder to load.
-     */
+    /// Returns the file or folder to load.
+    ///
+    /// @return The file or folder to load.
     public File getFile() {
         return file;
     }
 
-    /**
-     * Returns the instantiated {@link EnvInput} which describes the file to load.
-     *
-     * @return The instantiated {@link EnvInput} which describes the file to load.
-     */
+    /// Returns the instantiated [EnvInput] which describes the file to load.
+    ///
+    /// @return The instantiated [EnvInput] which describes the file to load.
     public EnvInput getEnvInput() {
         return envInput;
     }
 
-    /**
-     * Returns the instantiated {@link InitConfig} which provides access to the loaded source
-     * elements and specifications.
-     *
-     * @return The instantiated {@link InitConfig} which provides access to the loaded source
-     *         elements and specifications.
-     */
+    /// Returns the instantiated [InitConfig] which provides access to the loaded source
+    /// elements and specifications.
+    ///
+    /// @return The instantiated [InitConfig] which provides access to the loaded source
+    ///         elements and specifications.
     public InitConfig getInitConfig() {
         return initConfig;
     }
 
-    /**
-     * Returns the instantiate proof or {@code null} if no proof was instantiated during loading
-     * process.
-     *
-     * @return The instantiate proof or {@code null} if no proof was instantiated during loading
-     *         process.
-     */
+    /// Returns the instantiate proof or `null` if no proof was instantiated during loading
+    /// process.
+    ///
+    /// @return The instantiate proof or `null` if no proof was instantiated during loading
+    ///         process.
     public Proof getProof() {
         return proof;
     }
 
-    /**
-     * Returns the {@link ReplayResult} if available.
-     *
-     * @return The {@link ReplayResult} or {@code null} if not available.
-     */
+    /// Returns the [ReplayResult] if available.
+    ///
+    /// @return The [ReplayResult] or `null` if not available.
     public ReplayResult getResult() {
         return result;
     }

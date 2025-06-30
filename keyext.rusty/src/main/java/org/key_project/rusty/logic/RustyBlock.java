@@ -39,7 +39,7 @@ public record RustyBlock(RustyProgramElement program) implements Program {
         return program1.equals(program());
     }
 
-    /** returns the hashCode */
+    /// returns the hashCode
     @Override
     public int hashCode() {
         return 17 + ((program() == null) ? 0 : program().hashCode());

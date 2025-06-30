@@ -16,10 +16,8 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
 import org.key_project.rusty.speclang.LoopSpecification;
 
-/**
- * This class is implemented by visitors/walkers. Each AST node implements a visit(Visitor) method
- * that calls the doActionAt<NodeType> method. Similar to the pretty print mechanism.
- */
+/// This class is implemented by visitors/walkers. Each AST node implements a visit(Visitor) method
+/// that calls the doActionAt<NodeType> method. Similar to the pretty print mechanism.
 public interface Visitor {
     void performActionOnAssignmentExpression(AssignmentExpression x);
 

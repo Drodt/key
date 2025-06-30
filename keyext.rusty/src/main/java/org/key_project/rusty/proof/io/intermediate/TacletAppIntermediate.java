@@ -10,11 +10,9 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.Pair;
 
-/**
- * Encapsulates intermediate information for constructing a taclet application.
- *
- * @author Dominic Scheurer
- */
+/// Encapsulates intermediate information for constructing a taclet application.
+///
+/// @author Dominic Scheurer
 public class TacletAppIntermediate extends AppIntermediate {
 
     private String tacletName = null;
@@ -24,17 +22,15 @@ public class TacletAppIntermediate extends AppIntermediate {
     private ImmutableList<String> ifDirectFormulaList = null;
     private ImmutableList<Name> newNames = null;
 
-    /**
-     * Constructs a new intermediate taclet application.
-     *
-     * @param tacletName Name of the taclet.
-     * @param posInfo Position information (Integer representing position of the target formula,
-     *        PosInTerm for relevant term inside the formula).
-     * @param insts Schema variable instantiations.
-     * @param assumesSeqFormulaList
-     * @param ifDirectFormulaList
-     * @param newNames New names registered during taclet application.
-     */
+    /// Constructs a new intermediate taclet application.
+    ///
+    /// @param tacletName Name of the taclet.
+    /// @param posInfo Position information (Integer representing position of the target formula,
+    ///        PosInTerm for relevant term inside the formula).
+    /// @param insts Schema variable instantiations.
+    /// @param assumesSeqFormulaList
+    /// @param ifDirectFormulaList
+    /// @param newNames New names registered during taclet application.
     public TacletAppIntermediate(String tacletName, Pair<Integer, PosInTerm> posInfo,
             LinkedList<String> insts, ImmutableList<String> assumesSeqFormulaList,
             ImmutableList<String> ifDirectFormulaList, ImmutableList<Name> newNames) {

@@ -39,40 +39,26 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public abstract class TacletApp implements RuleApp {
-    /**
-     * the taclet for which the application information is collected
-     */
+    /// the taclet for which the application information is collected
     private final @NonNull Taclet taclet;
 
-    /**
-     * contains the instantiations of the schema variables of the Taclet
-     */
+    /// contains the instantiations of the schema variables of the Taclet
     protected final org.key_project.rusty.rule.inst.SVInstantiations instantiations;
 
-    /**
-     * caches a created match condition {@code (instantiations, RenameTable.EMPTY)}
-     */
+    /// caches a created match condition `(instantiations, RenameTable.EMPTY)`
     private final MatchConditions matchConditions;
 
-    /**
-     * chosen instantiations for the assumes-sequent formulas
-     */
+    /// chosen instantiations for the assumes-sequent formulas
     protected final ImmutableList<AssumesFormulaInstantiation> assumesInstantiations;
 
-    /**
-     * set of schema variables that appear in the Taclet and need to be instantiated but are not
-     * instantiated yet. This means SchemaVariables in addrule-sections have to be ignored
-     */
+    /// set of schema variables that appear in the Taclet and need to be instantiated but are not
+    /// instantiated yet. This means SchemaVariables in addrule-sections have to be ignored
     private volatile ImmutableSet<SchemaVariable> missingVars = null;
 
-    /**
-     * the update context given by the current instantiations must not be changed
-     */
+    /// the update context given by the current instantiations must not be changed
     protected boolean updateContextFixed = false;
 
-    /**
-     * constructs a TacletApp for the given taclet, with an empty instantiation map
-     */
+    /// constructs a TacletApp for the given taclet, with an empty instantiation map
     TacletApp(Taclet taclet) {
         this(taclet, org.key_project.rusty.rule.inst.SVInstantiations.EMPTY_SVINSTANTIATIONS, null);
     }
@@ -85,30 +71,24 @@ public abstract class TacletApp implements RuleApp {
         this.matchConditions = new MatchConditions(this.instantiations);
     }
 
-    /**
-     * returns the taclet the application information is collected for
-     *
-     * @return the Taclet the application information is collected for
-     */
+    /// returns the taclet the application information is collected for
+    ///
+    /// @return the Taclet the application information is collected for
     public Taclet taclet() {
         return taclet;
     }
 
-    /**
-     * returns the rule the application information is collected for
-     *
-     * @return the Rule the application information is collected for
-     */
+    /// returns the rule the application information is collected for
+    ///
+    /// @return the Rule the application information is collected for
     @Override
     public Rule rule() {
         return (Rule) taclet;
     }
 
-    /**
-     * returns the instantiations for the application of the Taclet at the specified position.
-     *
-     * @return the SVInstantiations needed to instantiate the Taclet
-     */
+    /// returns the instantiations for the application of the Taclet at the specified position.
+    ///
+    /// @return the SVInstantiations needed to instantiate the Taclet
     public org.key_project.rusty.rule.inst.SVInstantiations instantiations() {
         return instantiations;
     }
@@ -121,23 +101,19 @@ public abstract class TacletApp implements RuleApp {
         return assumesInstantiations;
     }
 
-    /**
-     * creates a new Taclet application containing all the instantiations, constraints and new
-     * metavariables given by the mc object and forget the old ones
-     */
+    /// creates a new Taclet application containing all the instantiations, constraints and new
+    /// metavariables given by the mc object and forget the old ones
     public abstract TacletApp setMatchConditions(MatchResultInfo mc, Services services);
 
-    /**
-     * checks if the variable conditions of type 'x not free in y' are hold by the found
-     * instantiations. The variable conditions is used implicit in the prefix. (Used to calculate
-     * the prefix)
-     *
-     * @param taclet the Taclet that is tried to be instantiated. A match for the find (or/and if)
-     *        has been found.
-     * @param instantiations the SVInstantiations so that the find(if) expression matches
-     * @param pos the PosInOccurrence where the Taclet is applied
-     * @return true iff all variable conditions x not free in y are hold
-     */
+    /// checks if the variable conditions of type 'x not free in y' are hold by the found
+    /// instantiations. The variable conditions is used implicit in the prefix. (Used to calculate
+    /// the prefix)
+    ///
+    /// @param taclet the Taclet that is tried to be instantiated. A match for the find (or/and if)
+    ///        has been found.
+    /// @param instantiations the SVInstantiations so that the find(if) expression matches
+    /// @param pos the PosInOccurrence where the Taclet is applied
+    /// @return true iff all variable conditions x not free in y are hold
     public static boolean checkVarCondNotFreeIn(Taclet taclet, SVInstantiations instantiations,
             PosInOccurrence pos) {
         /*
@@ -199,12 +175,10 @@ public abstract class TacletApp implements RuleApp {
         return deBruijn > 0;
     }
 
-    /**
-     * resolves collisions between bound SchemaVariables in an SVInstantiation
-     *
-     * @param insts the original SVInstantiations
-     * @return the resolved SVInstantiations
-     */
+    /// resolves collisions between bound SchemaVariables in an SVInstantiation
+    ///
+    /// @param insts the original SVInstantiations
+    /// @return the resolved SVInstantiations
     protected static SVInstantiations resolveCollisionVarSV(
             org.key_project.prover.rules.Taclet taclet, SVInstantiations insts,
             Services services) {
@@ -240,10 +214,8 @@ public abstract class TacletApp implements RuleApp {
         return true;
     }
 
-    /**
-     * returns a new SVInstantiations that modifies the given SVInstantiations insts at the bound
-     * SchemaVariable varSV to a new LogicVariable.
-     */
+    /// returns a new SVInstantiations that modifies the given SVInstantiations insts at the bound
+    /// SchemaVariable varSV to a new LogicVariable.
     protected static SVInstantiations replaceInstantiation(
             org.key_project.prover.rules.Taclet taclet, SVInstantiations insts,
             SchemaVariable varSV, Services services) {
@@ -259,10 +231,8 @@ public abstract class TacletApp implements RuleApp {
          */
     }
 
-    /**
-     * returns a new SVInstantiations that modifies the given SVInstantiations insts at the bound
-     * SchemaVariable u to the Term (that is a LogicVariable) y.
-     */
+    /// returns a new SVInstantiations that modifies the given SVInstantiations insts at the bound
+    /// SchemaVariable u to the Term (that is a LogicVariable) y.
     private static SVInstantiations replaceInstantiation(SVInstantiations insts, Term t,
             SchemaVariable u, Term y, Services services) {
         throw new RuntimeException("TODO");
@@ -290,13 +260,11 @@ public abstract class TacletApp implements RuleApp {
          */
     }
 
-    /**
-     * delivers the term below the (unique) quantifier of a bound SchemaVariable in the given term.
-     *
-     * @param varSV the searched Bound Schemavariable
-     * @param term the term to be searched in
-     * @return the term below the given quantifier in the given term
-     */
+    /// delivers the term below the (unique) quantifier of a bound SchemaVariable in the given term.
+    ///
+    /// @param varSV the searched Bound Schemavariable
+    /// @param term the term to be searched in
+    /// @return the term below the given quantifier in the given term
     private static Term getTermBelowQuantifier(SchemaVariable varSV, Term term) {
         for (int i = 0; i < term.arity(); i++) {
             for (int j = 0; j < term.varsBoundHere(i).size(); j++) {
@@ -312,10 +280,7 @@ public abstract class TacletApp implements RuleApp {
         return null;
     }
 
-    /**
-     * asserts that the rule application is complete and executable
-     *
-     */
+    /// asserts that the rule application is complete and executable
     @Override
     public void checkApplicability() {
         if (!complete()) {
@@ -329,13 +294,11 @@ public abstract class TacletApp implements RuleApp {
         }
     }
 
-    /**
-     * collects all bound vars that are bound above the subterm described by the given term position
-     * information
-     *
-     * @param pos the PosInOccurrence describing a subterm in Term
-     * @return a set of logic variables that are bound above the specified subterm
-     */
+    /// collects all bound vars that are bound above the subterm described by the given term position
+    /// information
+    ///
+    /// @param pos the PosInOccurrence describing a subterm in Term
+    /// @return a set of logic variables that are bound above the specified subterm
     protected static ImmutableSet<QuantifiableVariable> collectBoundVarsAbove(PosInOccurrence pos) {
         ImmutableSet<QuantifiableVariable> result = DefaultImmutableSet.nil();
 
@@ -353,12 +316,10 @@ public abstract class TacletApp implements RuleApp {
         return result;
     }
 
-    /**
-     * calculate needed SchemaVariables that have not been instantiated yet. This means to ignore
-     * SchemaVariables that appear only in addrule-sections of Taclets
-     *
-     * @return ImmutableSet<SchemaVariable> that need to be instantiated but are not
-     */
+    /// calculate needed SchemaVariables that have not been instantiated yet. This means to ignore
+    /// SchemaVariables that appear only in addrule-sections of Taclets
+    ///
+    /// @return ImmutableSet<SchemaVariable> that need to be instantiated but are not
     protected ImmutableSet<SchemaVariable> calculateNonInstantiatedSV() {
         if (missingVars == null) {
             ImmutableSet<SchemaVariable> localMissingVars =
@@ -377,13 +338,11 @@ public abstract class TacletApp implements RuleApp {
         return missingVars;
     }
 
-    /**
-     * returns the variables that have not yet been instantiated and need to be instantiated to
-     * apply the Taclet. (These are not all SchemaVariables like the one that appear only in the
-     * addrule sections)
-     *
-     * @return ImmutableSet<SchemaVariable> with SchemaVariables that have not been instantiated yet
-     */
+    /// returns the variables that have not yet been instantiated and need to be instantiated to
+    /// apply the Taclet. (These are not all SchemaVariables like the one that appear only in the
+    /// addrule sections)
+    ///
+    /// @return ImmutableSet<SchemaVariable> with SchemaVariables that have not been instantiated yet
     public ImmutableSet<SchemaVariable> uninstantiatedVars() {
         return calculateNonInstantiatedSV();
     }
@@ -406,9 +365,7 @@ public abstract class TacletApp implements RuleApp {
         }
     }
 
-    /**
-     * @return true iff the if-instantiation list is not null or no if sequent is needed
-     */
+    /// @return true iff the if-instantiation list is not null or no if sequent is needed
     public boolean ifInstsComplete() {
         return assumesInstantiations != null || taclet().assumesSequent().isEmpty();
     }
@@ -421,9 +378,7 @@ public abstract class TacletApp implements RuleApp {
             assumesFormulaInstantiations(), pos, services);
     }
 
-    /**
-     * @return A TacletApp with this.sufficientlyComplete() or null
-     */
+    /// @return A TacletApp with this.sufficientlyComplete() or null
     public final @Nullable TacletApp tryToInstantiate(Services services) {
         TacletApp app = instantiationHelper(true, services);
         if (app == null)
@@ -516,24 +471,22 @@ public abstract class TacletApp implements RuleApp {
         return app;
     }
 
-    /**
-     * <p>
-     * Collect names which would result in a clash for a new logical variable.
-     * </p>
-     * <p>
-     * The clashing names include the names of the bound and unbound variables of "notFreeIn"
-     * clauses. Additionally, equally-named program variables are avoided.
-     * </p>
-     * <p>
-     * While this analysis is not strictly necessary (two different variables may bear the same
-     * name), it is vital not to cause confusion with the user.
-     * </p>
-     *
-     * @param sv the schema variable to instantiate with a fresh variable, not <code>null</code>
-     * @param services the services object, not <code>null</code>
-     * @return a fresh created collection of strings in which a freshly created variable name should
-     *         not fall.
-     */
+    ///
+    /// Collect names which would result in a clash for a new logical variable.
+    ///
+    ///
+    /// The clashing names include the names of the bound and unbound variables of "notFreeIn"
+    /// clauses. Additionally, equally-named program variables are avoided.
+    ///
+    ///
+    /// While this analysis is not strictly necessary (two different variables may bear the same
+    /// name), it is vital not to cause confusion with the user.
+    ///
+    ///
+    /// @param sv the schema variable to instantiate with a fresh variable, not <code>null</code>
+    /// @param services the services object, not <code>null</code>
+    /// @return a fresh created collection of strings in which a freshly created variable name should
+    ///         not fall.
     private Collection<String> collectClashNames(SchemaVariable sv, Services services) {
         Collection<String> result = new LinkedHashSet<>();
         /*
@@ -559,13 +512,11 @@ public abstract class TacletApp implements RuleApp {
         return result;
     }
 
-    /**
-     * If the sort of the given schema variable is generic, add a condition to the instantiations of
-     * the given taclet app that requires the sort to be instantiated
-     *
-     * @return the new taclet app, or <code>null</code> if the sort of <code>sv</code> is generic
-     *         and cannot be instantiated (at least at the time)
-     */
+    /// If the sort of the given schema variable is generic, add a condition to the instantiations of
+    /// the given taclet app that requires the sort to be instantiated
+    ///
+    /// @return the new taclet app, or <code>null</code> if the sort of <code>sv</code> is generic
+    ///         and cannot be instantiated (at least at the time)
     private static TacletApp forceGenericSortInstantiation(TacletApp app, OperatorSV sv,
             Services services) {
         final GenericSortCondition c = GenericSortCondition.forceInstantiation(sv.sort(), false);
@@ -579,17 +530,15 @@ public abstract class TacletApp implements RuleApp {
         return app;
     }
 
-    /**
-     * Find all possible instantiations of the assumes-sequent formulas within the sequent "seq".
-     *
-     * @param seq uninstantiated if sequent from taclet
-     * @param services the {@link Services} to access information about the logic signature or
-     *        program model
-     * @return a list of tacletapps with the found assumes-formula instantiations When the IfSequent
-     *         is
-     *         empty, it returns a tacletapp with ifInstantiations == null instead of
-     *         ifInstantiations == nil(), seemingly (LG 2022-02-07) to be more efficient.
-     */
+    /// Find all possible instantiations of the assumes-sequent formulas within the sequent "seq".
+    ///
+    /// @param seq uninstantiated if sequent from taclet
+    /// @param services the [Services] to access information about the logic signature or
+    ///        program model
+    /// @return a list of tacletapps with the found assumes-formula instantiations When the IfSequent
+    ///         is
+    ///         empty, it returns a tacletapp with ifInstantiations == null instead of
+    ///         ifInstantiations == nil(), seemingly (LG 2022-02-07) to be more efficient.
     public ImmutableList<TacletApp> findIfFormulaInstantiations(Sequent seq, Services services) {
         // TODO Why not return just the list of IfFormulaInstantiations?
 
@@ -605,22 +554,20 @@ public abstract class TacletApp implements RuleApp {
             ImmutableSLList.nil(), matchConditions(), services);
     }
 
-    /**
-     * Recursive function for matching the remaining tail of an if sequent
-     *
-     * @param ruleSuccTail tail of the current uninstantiated semisequent as list (i.e. if
-     *        succedent)
-     * @param ruleAntecTail the following uninstantiated semisequent (i.e. if antecedent) or null
-     * @param instSucc list of the formulas to match the current if semisequent formulas with
-     * @param instAntec list of the formulas of the antecedent
-     * @param instAlreadyMatched matched instantiations, for exactly those formulas that are no
-     *        longer in ruleSuccTail and ruleAntecTail
-     * @param matchCond match conditions until now, i.e. after matching the first formulas of the
-     *        assumes-sequent
-     * @param services the {@link Services} to access information about the logic signature or
-     *        program model
-     * @return a list of tacletapps with the found if formula instantiations
-     */
+    /// Recursive function for matching the remaining tail of an if sequent
+    ///
+    /// @param ruleSuccTail tail of the current uninstantiated semisequent as list (i.e. if
+    ///        succedent)
+    /// @param ruleAntecTail the following uninstantiated semisequent (i.e. if antecedent) or null
+    /// @param instSucc list of the formulas to match the current if semisequent formulas with
+    /// @param instAntec list of the formulas of the antecedent
+    /// @param instAlreadyMatched matched instantiations, for exactly those formulas that are no
+    ///        longer in ruleSuccTail and ruleAntecTail
+    /// @param matchCond match conditions until now, i.e. after matching the first formulas of the
+    ///        assumes-sequent
+    /// @param services the [Services] to access information about the logic signature or
+    ///        program model
+    /// @return a list of tacletapps with the found if formula instantiations
     private ImmutableList<TacletApp> findIfFormulaInstantiationsHelp(
             ImmutableList<SequentFormula> ruleSuccTail, ImmutableList<SequentFormula> ruleAntecTail,
             ImmutableArray<AssumesFormulaInstantiation> instSucc,
@@ -675,13 +622,11 @@ public abstract class TacletApp implements RuleApp {
         return res;
     }
 
-    /**
-     * Create a new constant named "instantiation" and instantiate "sv" with. This constant will
-     * later (by "createSkolemFunctions") be replaced by a function having the occurring
-     * metavariables as arguments
-     *
-     * @param services the Services class allowing access to the type model
-     */
+    /// Create a new constant named "instantiation" and instantiate "sv" with. This constant will
+    /// later (by "createSkolemFunctions") be replaced by a function having the occurring
+    /// metavariables as arguments
+    ///
+    /// @param services the Services class allowing access to the type model
     public TacletApp createSkolemConstant(String instantiation, OperatorSV sv,
             boolean interesting, Services services) {
         return createSkolemConstant(instantiation, sv, getRealSort(sv), interesting,
@@ -695,29 +640,23 @@ public abstract class TacletApp implements RuleApp {
         return addInstantiation(sv, services.getTermBuilder().func(c), interesting, services);
     }
 
-    /**
-     * @return p_s iff p_s is not a generic sort, the concrete sort p_s is instantiated with
-     *         currently otherwise
-     * @throws GenericSortException iff p_s is a generic sort which is not yet instantiated
-     */
+    /// @return p_s iff p_s is not a generic sort, the concrete sort p_s is instantiated with
+    ///         currently otherwise
+    /// @throws GenericSortException iff p_s is a generic sort which is not yet instantiated
     public Sort getRealSort(OperatorSV p_sv) {
         return instantiations().getGenericSortInstantiations().getRealSort(p_sv);
     }
 
-    /**
-     * creates a new Taclet application containing all the instantiations, constraints, new
-     * metavariables and if formula instantiations given and forget the old ones
-     */
+    /// creates a new Taclet application containing all the instantiations, constraints, new
+    /// metavariables and if formula instantiations given and forget the old ones
     protected abstract TacletApp setAllInstantiations(MatchResultInfo mc,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations, Services services);
 
-    /**
-     * adds a new instantiation to this TacletApp
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param term the Term the SchemaVariable is instantiated with
-     * @return the new TacletApp
-     */
+    /// adds a new instantiation to this TacletApp
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param term the Term the SchemaVariable is instantiated with
+    /// @return the new TacletApp
     public abstract TacletApp addInstantiation(SchemaVariable sv, Term term, boolean interesting,
             Services services);
 
@@ -727,12 +666,10 @@ public abstract class TacletApp implements RuleApp {
             + assumesFormulaInstantiations();
     }
 
-    /**
-     * Creates a new Taclet application by matching the given formulas against the formulas of the
-     * assumes-sequent, adding SV instantiations, constraints and metavariables as needed. This will
-     * fail
-     * if the assumes-formulas have already been instantiated.
-     */
+    /// Creates a new Taclet application by matching the given formulas against the formulas of the
+    /// assumes-sequent, adding SV instantiations, constraints and metavariables as needed. This will
+    /// fail
+    /// if the assumes-formulas have already been instantiated.
     public TacletApp setIfFormulaInstantiations(ImmutableList<AssumesFormulaInstantiation> p_list,
             Services p_services) {
         if (p_list == null) {
@@ -752,29 +689,25 @@ public abstract class TacletApp implements RuleApp {
         return mc == null ? null : setAllInstantiations(mc, p_list, p_services);
     }
 
-    /**
-     * check whether the number of if instantiations is correct
-     *
-     * @param list list of instantiations (non-null)
-     * @return true iff the list of if instantiations has the correct size
-     */
+    /// check whether the number of if instantiations is correct
+    ///
+    /// @param list list of instantiations (non-null)
+    /// @return true iff the list of if instantiations has the correct size
     public boolean ifInstsCorrectSize(ImmutableList<AssumesFormulaInstantiation> list) {
         Semisequent antec = taclet().assumesSequent().antecedent();
         Semisequent succ = taclet().assumesSequent().succedent();
         return list.size() == (antec.size() + succ.size());
     }
 
-    /**
-     * creates a new Tacletapp where the SchemaVariable sv is instantiated with the given term.
-     * Sort equality is checked. If the check fails an IllegalArgumentException is thrown.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param term the Term the SchemaVariable is instantiated with
-     * @param services the services object
-     * @param interesting whether instantiations for this schema variable should be kept in the list
-     *        of "interesting" instantiations
-     * @return the new TacletApp
-     */
+    /// creates a new Tacletapp where the SchemaVariable sv is instantiated with the given term.
+    /// Sort equality is checked. If the check fails an IllegalArgumentException is thrown.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param term the Term the SchemaVariable is instantiated with
+    /// @param services the services object
+    /// @param interesting whether instantiations for this schema variable should be kept in the list
+    ///        of "interesting" instantiations
+    /// @return the new TacletApp
     public TacletApp addCheckedInstantiation(SchemaVariable sv, Term term, Services services,
             boolean interesting) {
         // TODO
@@ -801,15 +734,13 @@ public abstract class TacletApp implements RuleApp {
         return addInstantiation(sv, term, interesting, services);
     }
 
-    /**
-     * creates a new variable namespace by adding names of the instantiations of the schema
-     * variables in the context of the given schema variable and (if the TacletApp's prefix has the
-     * context flag set) by adding names of the logic variables of the context.
-     *
-     * @param sv the schema variable to be considered
-     * @param var_ns the old variable namespace
-     * @return the new created variable namespace
-     */
+    /// creates a new variable namespace by adding names of the instantiations of the schema
+    /// variables in the context of the given schema variable and (if the TacletApp's prefix has the
+    /// context flag set) by adding names of the logic variables of the context.
+    ///
+    /// @param sv the schema variable to be considered
+    /// @param var_ns the old variable namespace
+    /// @return the new created variable namespace
     public Namespace<@NonNull QuantifiableVariable> extendVarNamespaceForSV(
             Namespace<@NonNull QuantifiableVariable> var_ns, SchemaVariable sv) {
         Namespace<@NonNull QuantifiableVariable> ns = new Namespace<>(var_ns);
@@ -828,13 +759,11 @@ public abstract class TacletApp implements RuleApp {
 
     protected abstract ImmutableSet<QuantifiableVariable> contextVars(SchemaVariable sv);
 
-    /**
-     * creates a new Taclet application containing all the instantiations given by the
-     * SVInstantiations
-     *
-     * @param svi the SVInstantiations whose entries are the needed instantiations
-     * @return the new Taclet application
-     */
+    /// creates a new Taclet application containing all the instantiations given by the
+    /// SVInstantiations
+    ///
+    /// @param svi the SVInstantiations whose entries are the needed instantiations
+    /// @return the new Taclet application
     public abstract TacletApp addInstantiation(SVInstantiations svi, Services services);
 
     public RustyProgramElement getProgramElement(String instantiation, ProgramSV sv,
@@ -872,24 +801,22 @@ public abstract class TacletApp implements RuleApp {
         return null;
     }
 
-    /**
-     * checks if the instantiation of <code>sv</code> with <code>pe</code> is possible. If the
-     * resulting instantiation is valid a new taclet application with an extended instantiation
-     * mapping is created and returned. Otherwise, an exception is thrown.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param pe the ProgramElement the SV is instantiated with
-     * @param services the Services
-     * @param interesting a boolean marking if the instantiation of this sv needs to be saved for
-     *        later proof loading (<code>interesting==true</code>) or if it can be derived
-     *        deterministically (e.g. by matching) ( <code>interesting==false</code>)
-     * @return a new taclet application equal to this one but including the newly added
-     *         instantiation entry <code>(sv, pe)</code>, if the instantiation results in a valid
-     *         taclet application otherwise an exception is thrown
-     * @throws IllegalInstantiationException exception thrown if <code>sv</code> cannot be
-     *         instantiated with <code>pe</code> no matter if in general or due to side conditions
-     *         posed by this particular application
-     */
+    /// checks if the instantiation of <code>sv</code> with <code>pe</code> is possible. If the
+    /// resulting instantiation is valid a new taclet application with an extended instantiation
+    /// mapping is created and returned. Otherwise, an exception is thrown.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param pe the ProgramElement the SV is instantiated with
+    /// @param services the Services
+    /// @param interesting a boolean marking if the instantiation of this sv needs to be saved for
+    ///        later proof loading (<code>interesting==true</code>) or if it can be derived
+    ///        deterministically (e.g. by matching) ( <code>interesting==false</code>)
+    /// @return a new taclet application equal to this one but including the newly added
+    ///         instantiation entry <code>(sv, pe)</code>, if the instantiation results in a valid
+    ///         taclet application otherwise an exception is thrown
+    /// @throws IllegalInstantiationException exception thrown if <code>sv</code> cannot be
+    ///         instantiated with <code>pe</code> no matter if in general or due to side conditions
+    ///         posed by this particular application
     public TacletApp addCheckedInstantiation(SchemaVariable sv, RustyProgramElement pe,
             Services services, boolean interesting) {
         final MatchResultInfo cond =

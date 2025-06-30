@@ -14,11 +14,9 @@ import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
 
-/**
- * Executes a Taclet which matches on a formula in the antecedent
- *
- * @author Richard Bubel
- */
+/// Executes a Taclet which matches on a formula in the antecedent
+///
+/// @author Richard Bubel
 public class AntecTacletExecutor
         extends FindTacletExecutor {
 

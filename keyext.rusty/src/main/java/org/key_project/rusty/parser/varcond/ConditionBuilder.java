@@ -8,27 +8,21 @@ import java.util.List;
 import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
 
-/**
- * A specilized {@link TacletBuilderCommand} for handling {@code \varcond}s.
- *
- * @author Alexander Weigl
- * @version 1 (12/10/19)
- */
+/// A specilized [TacletBuilderCommand] for handling `\varcond`s.
+///
+/// @author Alexander Weigl
+/// @version 1 (12/10/19)
 public interface ConditionBuilder extends TacletBuilderCommand {
-    /**
-     * Should construct a variable condition for the given arguments and parameters. The arguments
-     * are the adhering the type specified in {@link #getArgumentTypes()}.
-     * <p>
-     * For a varcond {@code \varcond(\abc[p1,p2](a1, a2))} the arguments are a1 and a2, the
-     * parameters are p1 and p2. {@code negated} is true if {@code \not} is used.
-     */
+    /// Should construct a variable condition for the given arguments and parameters. The arguments
+    /// are the adhering the type specified in [#getArgumentTypes()].
+    ///
+    /// For a varcond `\varcond(\abc[p1,p2](a1, a2))` the arguments are a1 and a2, the
+    /// parameters are p1 and p2. `negated` is true if `\not` is used.
     VariableCondition build(Object[] arguments, List<String> parameters, boolean negated);
 
-    /**
-     * This method will add the contructed {@link VariableCondition} to given {@code tacletBuilder}.
-     *
-     * @see TacletBuilderCommand#apply(TacletBuilder, Object[], List, boolean)
-     */
+    /// This method will add the contructed [VariableCondition] to given `tacletBuilder`.
+    ///
+    /// @see TacletBuilderCommand#apply(TacletBuilder, Object[], List, boolean)
     @Override
     default void apply(TacletBuilder<?> tacletBuilder, Object[] arguments, List<String> parameters,
             boolean negated) {

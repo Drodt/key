@@ -38,9 +38,7 @@ public class PrettyPrinter implements Visitor {
     private boolean usePrettyPrinting;
     private boolean useUnicodeSymbols;
 
-    /**
-     * creates a new PrettyPrinter
-     */
+    /// creates a new PrettyPrinter
     public PrettyPrinter(PosTableLayouter out) {
         this(out, SVInstantiations.EMPTY_SVINSTANTIATIONS, null, true, true);
     }
@@ -54,25 +52,19 @@ public class PrettyPrinter implements Visitor {
         this.useUnicodeSymbols = useUnicodeSymbols;
     }
 
-    /**
-     * Creates a PrettyPrinter that does not create a position table.
-     */
+    /// Creates a PrettyPrinter that does not create a position table.
     public static PrettyPrinter purePrinter() {
         return new PrettyPrinter(PosTableLayouter.pure());
     }
 
-    /**
-     * @return the result
-     */
+    /// @return the result
     public String result() {
         return layouter.result();
     }
 
-    /**
-     * Alternative entry method for this class. Omits the trailing semicolon in the output.
-     *
-     * @param s source element to print
-     */
+    /// Alternative entry method for this class. Omits the trailing semicolon in the output.
+    ///
+    /// @param s source element to print
     public void printFragment(RustyProgramElement s) {
         layouter.beginRelativeC(0);
         markStart(s);
@@ -91,11 +83,9 @@ public class PrettyPrinter implements Visitor {
         }
     }
 
-    /**
-     * Marks the start of the first executable statement ...
-     *
-     * @param stmt current statement;
-     */
+    /// Marks the start of the first executable statement ...
+    ///
+    /// @param stmt current statement;
     protected void markStart(Object stmt) {
         if (!startAlreadyMarked) {
             layouter.markStartFirstStatement();
@@ -104,9 +94,7 @@ public class PrettyPrinter implements Visitor {
         }
     }
 
-    /**
-     * Marks the end of the first executable statement ...
-     */
+    /// Marks the end of the first executable statement ...
     protected void markEnd(Object stmt) {
         if (!endAlreadyMarked && (firstStatement == stmt)) {
             layouter.markEndFirstStatement();
@@ -114,12 +102,10 @@ public class PrettyPrinter implements Visitor {
         }
     }
 
-    /**
-     * Replace all unicode characters above ? by their explicit representation.
-     *
-     * @param str the input string.
-     * @return the encoded string.
-     */
+    /// Replace all unicode characters above ? by their explicit representation.
+    ///
+    /// @param str the input string.
+    /// @return the encoded string.
     protected static String encodeUnicodeChars(String str) {
         int len = str.length();
         StringBuilder buf = new StringBuilder(len + 4);
@@ -138,11 +124,9 @@ public class PrettyPrinter implements Visitor {
         return buf.toString();
     }
 
-    /**
-     * Write comma list.
-     *
-     * @param list a program element list.
-     */
+    /// Write comma list.
+    ///
+    /// @param list a program element list.
     protected void writeCommaList(ImmutableArray<? extends RustyProgramElement> list) {
         for (int i = 0; i < list.size(); i++) {
             if (i != 0) {

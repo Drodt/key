@@ -75,11 +75,9 @@ public abstract class ProgramSVSort extends SortImpl {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * TODO: <a href=
-     * "https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions">Follow
-     * this</a>
-     */
+    /// TODO: <a href=
+    /// "https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions">Follow
+    /// this</a>
     private static class LeftHandSideSort extends ProgramSVSort {
 
         public LeftHandSideSort() {
@@ -101,20 +99,16 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that match only on
-     * program variables
-     */
+    /// This sort represents a type of program schema variables that match only on
+    /// program variables
     private static class ProgramVariableSort extends LeftHandSideSort {
         public ProgramVariableSort() {
             super(new Name("Variable"));
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that match only on
-     * program variables
-     */
+    /// This sort represents a type of program schema variables that match only on
+    /// program variables
     private static class SortedVariableSort extends LeftHandSideSort {
         private final String sortName;
 
@@ -129,13 +123,11 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that match only on
-     * <ul>
-     * <li>program variables or
-     * <li>(negated) literal expressions
-     * </ul>
-     */
+    /// This sort represents a type of program schema variables that match only on
+    ///
+    ///   - program variables or
+    ///   - (negated) literal expressions
+    ///
     private static class SimpleExpressionSort extends ProgramSVSort {
 
         public SimpleExpressionSort() {
@@ -168,10 +160,8 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that match only on all expressions
-     * which are not matched by simple expression SVs.
-     */
+    /// This sort represents a type of program schema variables that match only on all expressions
+    /// which are not matched by simple expression SVs.
     private static class NonSimpleExpressionSort extends ProgramSVSort {
 
         public NonSimpleExpressionSort() {
@@ -190,9 +180,7 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that match on all expressions only.
-     */
+    /// This sort represents a type of program schema variables that match on all expressions only.
     private static class ExpressionSort extends ProgramSVSort {
         public ExpressionSort() {
             super(new Name("Expression"));
@@ -223,9 +211,7 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that match only on statements
-     */
+    /// This sort represents a type of program schema variables that match only on statements
     private static class StatementSort extends ProgramSVSort {
         public StatementSort() {
             super(new Name("Statement"));
@@ -237,9 +223,7 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that match only on type references.
-     */
+    /// This sort represents a type of program schema variables that match only on type references.
     private static final class TypeReferenceSort extends ProgramSVSort {
         public TypeReferenceSort() {
             super(new Name("Type"));
@@ -251,10 +235,8 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
-    /**
-     * This sort represents a type of program schema variables that matches byte,
-     * char, short, int, and long.
-     */
+    /// This sort represents a type of program schema variables that matches byte,
+    /// char, short, int, and long.
     private static final class TypeReferencePrimitiveSort extends ProgramSVSort {
         public TypeReferencePrimitiveSort() {
             super(new Name("PrimitiveType"));

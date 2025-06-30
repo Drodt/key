@@ -30,21 +30,13 @@ import org.key_project.rusty.rule.inst.TermInstantiation;
 import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * Saves a proof to a given {@link OutputStream}.
- */
+/// Saves a proof to a given [OutputStream].
 public class OutputStreamProofSaver {
-    /**
-     * The proof to save.
-     */
+    /// The proof to save.
     protected final Proof proof;
-    /**
-     * Currently running KeY version (usually a git commit hash).
-     */
+    /// Currently running KeY version (usually a git commit hash).
     protected final String internalVersion;
-    /**
-     * Whether the proof steps should be output (usually true).
-     */
+    /// Whether the proof steps should be output (usually true).
     protected final boolean saveProofSteps;
 
     public OutputStreamProofSaver(Proof proof) {
@@ -57,13 +49,11 @@ public class OutputStreamProofSaver {
         this.saveProofSteps = true;
     }
 
-    /**
-     * Create a new OutputStreamProofSaver.
-     *
-     * @param proof the proof to save
-     * @param internalVersion currently running KeY version
-     * @param saveProofSteps whether to save the performed proof steps
-     */
+    /// Create a new OutputStreamProofSaver.
+    ///
+    /// @param proof the proof to save
+    /// @param internalVersion currently running KeY version
+    /// @param saveProofSteps whether to save the performed proof steps
     public OutputStreamProofSaver(Proof proof, String internalVersion, boolean saveProofSteps) {
         this.proof = proof;
         this.internalVersion = internalVersion;
@@ -159,14 +149,12 @@ public class OutputStreamProofSaver {
         }
     }
 
-    /**
-     * Print applied rule(s) for a proof node and its decendants into the passed writer such that in
-     * can be loaded again as a proof.
-     *
-     * @param node the proof node from which to be printed
-     * @param ps the writer in which the rule(s) is/are printed
-     * @throws IOException an exception thrown when printing fails
-     */
+    /// Print applied rule(s) for a proof node and its decendants into the passed writer such that in
+    /// can be loaded again as a proof.
+    ///
+    /// @param node the proof node from which to be printed
+    /// @param ps the writer in which the rule(s) is/are printed
+    /// @throws IOException an exception thrown when printing fails
     public void node2Proof(Node node, Appendable ps) throws IOException {
         ps.append("(branch \"dummy ID\"\n");
         collectProof(node, "", ps);
@@ -193,14 +181,12 @@ public class OutputStreamProofSaver {
         return "";
     }
 
-    /**
-     * Print applied taclet rule for a single taclet rule application into the passed writer.
-     *
-     * @param appliedRuleApp the rule application to be printed
-     * @param prefix a string which the printed rule is concatenated to
-     * @param output the writer in which the rule is printed
-     * @throws IOException an exception thrown when printing fails
-     */
+    /// Print applied taclet rule for a single taclet rule application into the passed writer.
+    ///
+    /// @param appliedRuleApp the rule application to be printed
+    /// @param prefix a string which the printed rule is concatenated to
+    /// @param output the writer in which the rule is printed
+    /// @throws IOException an exception thrown when printing fails
     private void printSingleTacletApp(TacletApp appliedRuleApp, Node node, String prefix,
             Appendable output) throws IOException {
         output.append(prefix);
@@ -246,14 +232,12 @@ public class OutputStreamProofSaver {
         return s.toString();
     }
 
-    /**
-     * Print applied rule (s) for a single proof node into the passed writer.
-     *
-     * @param node the proof node to be printed
-     * @param prefix a string which the printed rules are concatenated to
-     * @param output the writer in which the rule(s) is /are printed
-     * @throws IOException an exception thrown when printing fails
-     */
+    /// Print applied rule (s) for a single proof node into the passed writer.
+    ///
+    /// @param node the proof node to be printed
+    /// @param prefix a string which the printed rules are concatenated to
+    /// @param output the writer in which the rule(s) is /are printed
+    /// @throws IOException an exception thrown when printing fails
     private void printSingleNode(Node node, String prefix, Appendable output) throws IOException {
         final RuleApp appliedRuleApp = node.getAppliedRuleApp();
         if (appliedRuleApp == null && (proof.getOpenGoal(node) != null)) {
@@ -277,14 +261,12 @@ public class OutputStreamProofSaver {
            */
     }
 
-    /**
-     * Print applied rule(s) for a proof node and its decendants into the passed writer.
-     *
-     * @param node the proof node from which to be printed
-     * @param prefix a string which the printed rules are concatenated to
-     * @param output the writer in which the rule(s) is/are printed
-     * @throws IOException an exception thrown when printing fails
-     */
+    /// Print applied rule(s) for a proof node and its decendants into the passed writer.
+    ///
+    /// @param node the proof node from which to be printed
+    /// @param prefix a string which the printed rules are concatenated to
+    /// @param output the writer in which the rule(s) is/are printed
+    /// @throws IOException an exception thrown when printing fails
     private void collectProof(Node node, String prefix, Appendable output) throws IOException {
         printSingleNode(node, prefix, output);
         Iterator<Node> childrenIt;
@@ -347,12 +329,10 @@ public class OutputStreamProofSaver {
         return printer.result();
     }
 
-    /**
-     * double escapes quotation marks and backslashes to be storeable in a text file
-     *
-     * @param toEscape the String to double escape
-     * @return the escaped version of the string
-     */
+    /// double escapes quotation marks and backslashes to be storeable in a text file
+    ///
+    /// @param toEscape the String to double escape
+    /// @return the escaped version of the string
     public static String escapeCharacters(String toEscape) {
         String result = toEscape;
 

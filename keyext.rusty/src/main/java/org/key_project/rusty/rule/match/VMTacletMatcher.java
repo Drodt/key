@@ -32,33 +32,27 @@ import static org.key_project.rusty.logic.equality.RenamingTermProperty.RENAMING
 
 
 public class VMTacletMatcher implements TacletMatcher {
-    /** the matcher for the find expression of the taclet */
+    /// the matcher for the find expression of the taclet
     private final VMProgramInterpreter findMatchProgram;
-    /** the matcher for the taclet's assumes formulas */
+    /// the matcher for the taclet's assumes formulas
     private final HashMap<Term, VMProgramInterpreter> assumesMatchPrograms = new HashMap<>();
 
-    /**
-     * the variable conditions of the taclet that need to be satisfied by found schema variable
-     * instantiations
-     */
+    /// the variable conditions of the taclet that need to be satisfied by found schema variable
+    /// instantiations
     private final ImmutableList<VariableCondition> varconditions;
-    /** the built-in notFreeIn variable conditions */
+    /// the built-in notFreeIn variable conditions
     private final ImmutableList<NotFreeIn> varsNotFreeIn;
 
-    /** the assumes sequent of the taclet */
+    /// the assumes sequent of the taclet
     private final org.key_project.prover.sequent.Sequent assumesSequent;
-    /** the bound variables */
+    /// the bound variables
     private final ImmutableSet<QuantifiableVariable> boundVars;
 
-    /**
-     * flag indicating if preceding updates of the term to be matched should be ignored this
-     * requires the taclet to ignore updates and that the find term does not start with an
-     * {@link UpdateApplication} operator
-     */
+    /// flag indicating if preceding updates of the term to be matched should be ignored this
+    /// requires the taclet to ignore updates and that the find term does not start with an
+    /// [UpdateApplication] operator
     private final boolean ignoreTopLevelUpdates;
-    /**
-     * the find expression of the taclet of {@code null} if it is a {@link NoFindTaclet}
-     */
+    /// the find expression of the taclet of `null` if it is a [NoFindTaclet]
     private final Term findExp;
 
     public VMTacletMatcher(Taclet taclet) {
@@ -103,9 +97,7 @@ public class VMTacletMatcher implements TacletMatcher {
         return checkConditions(findMatchProgram.match(term, matchCond, services), services);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public final MatchConditions checkConditions(
             MatchResultInfo cond,
@@ -130,22 +122,18 @@ public class VMTacletMatcher implements TacletMatcher {
         return result;
     }
 
-    /**
-     * returns true iff the given variable is bound either in the ifSequent or in any part of the
-     * TacletGoalTemplates
-     *
-     * @param v the bound variable to be searched
-     */
+    /// returns true iff the given variable is bound either in the ifSequent or in any part of the
+    /// TacletGoalTemplates
+    ///
+    /// @param v the bound variable to be searched
     private boolean varIsBound(SchemaVariable v) {
         return (v instanceof QuantifiableVariable) && boundVars.contains(v);
     }
 
-    /**
-     * looks if a variable is declared as not free in
-     *
-     * @param var the SchemaVariable to look for
-     * @return true iff declared not free
-     */
+    /// looks if a variable is declared as not free in
+    ///
+    /// @param var the SchemaVariable to look for
+    /// @return true iff declared not free
     private boolean varDeclaredNotFree(SchemaVariable var) {
         for (final NotFreeIn nfi : varsNotFreeIn) {
             if (nfi.first() == var) {
@@ -155,9 +143,7 @@ public class VMTacletMatcher implements TacletMatcher {
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public final MatchConditions checkVariableConditions(SchemaVariable var,
             SyntaxElement instantiationCandidate,
@@ -185,15 +171,13 @@ public class VMTacletMatcher implements TacletMatcher {
         return (MatchConditions) matchCond;
     }
 
-    /**
-     * ignores a possible update prefix This method assumes that the taclet allows to ignore updates
-     * and the find expression does not start with an update application operator
-     *
-     * @param term the term to be matched
-     * @param matchCond the accumulated match conditions for a successful match
-     * @return a pair of updated match conditions and the unwrapped term without the ignored updates
-     *         (Which have been added to the update context in the match conditions)
-     */
+    /// ignores a possible update prefix This method assumes that the taclet allows to ignore updates
+    /// and the find expression does not start with an update application operator
+    ///
+    /// @param term the term to be matched
+    /// @param matchCond the accumulated match conditions for a successful match
+    /// @return a pair of updated match conditions and the unwrapped term without the ignored updates
+    ///         (Which have been added to the update context in the match conditions)
     private Pair<Term, MatchResultInfo> matchAndIgnoreUpdatePrefix(final Term term,
             MatchResultInfo matchCond) {
 
@@ -252,17 +236,15 @@ public class VMTacletMatcher implements TacletMatcher {
         return new AssumesMatchResult(resFormulas, resMC);
     }
 
-    /**
-     * the formula ensures that the update context described the update of the given formula.
-     * If it does not then {@code null} is returned, otherwise the formula without the update
-     * context.
-     *
-     * @param context the list of update label pairs describing the update context
-     * @param formula the formula whose own update context must be equal (modulo renaming) to the
-     *        given one
-     * @return {@code null} if the update context does not match the one of the formula or the
-     *         formula without the update context
-     */
+    /// the formula ensures that the update context described the update of the given formula.
+    /// If it does not then `null` is returned, otherwise the formula without the update
+    /// context.
+    ///
+    /// @param context the list of update label pairs describing the update context
+    /// @param formula the formula whose own update context must be equal (modulo renaming) to the
+    ///        given one
+    /// @return `null` if the update context does not match the one of the formula or the
+    ///         formula without the update context
     private Term matchUpdateContext(ImmutableList<Term> context, Term formula) {
         ImmutableList<Term> curContext = context;
         for (int i = 0, size = context.size(); i < size; i++) {
@@ -281,9 +263,7 @@ public class VMTacletMatcher implements TacletMatcher {
         return formula;
     }
 
-    /**
-     * @inheritDoc
-     */
+    /// @inheritDoc
     @Override
     public final MatchConditions matchAssumes(
             Iterable<AssumesFormulaInstantiation> p_toMatch,
@@ -325,9 +305,7 @@ public class VMTacletMatcher implements TacletMatcher {
         return (MatchConditions) p_matchCond;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public MatchConditions matchSV(SchemaVariable sv,
             SyntaxElement syntaxElement,

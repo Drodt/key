@@ -18,9 +18,7 @@ public class BuiltInRuleAppIndex {
         this.index = index;
     }
 
-    /**
-     * returns a list of built-in rules application applicable for the given goal and position
-     */
+    /// returns a list of built-in rules application applicable for the given goal and position
     public ImmutableList<IBuiltInRuleApp> getBuiltInRule(Goal goal, PosInOccurrence pos) {
 
         ImmutableList<IBuiltInRuleApp> result = ImmutableSLList.nil();
@@ -38,9 +36,7 @@ public class BuiltInRuleAppIndex {
     }
 
 
-    /**
-     * returns a copy of this index
-     */
+    /// returns a copy of this index
     public BuiltInRuleAppIndex copy() {
         return new BuiltInRuleAppIndex(index.copy());
     }
@@ -117,11 +113,9 @@ public class BuiltInRuleAppIndex {
         scanSimplificationRule(goal);
     }
 
-    /**
-     * called if a formula has been replaced
-     *
-     * @param sci SequentChangeInfo describing the change of the sequent
-     */
+    /// called if a formula has been replaced
+    ///
+    /// @param sci SequentChangeInfo describing the change of the sequent
     public void sequentChanged(Goal goal, SequentChangeInfo sci) {
         scanAddedFormulas(goal, true, sci);
         scanAddedFormulas(goal, false, sci);

@@ -17,9 +17,7 @@ public class SVPlace extends Place {
 
     private final ProgramSV sv;
 
-    /**
-     * Returns the mut ref operator for the passed left hand side.
-     */
+    /// Returns the mut ref operator for the passed left hand side.
     public static SVPlace getInstance(ProgramSV sv) {
         WeakReference<SVPlace> ref = instances.get(sv);
         SVPlace result = null;

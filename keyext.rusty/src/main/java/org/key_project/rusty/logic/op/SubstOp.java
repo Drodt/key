@@ -12,27 +12,21 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.Subst;
 import org.key_project.rusty.logic.TermBuilder;
 
-/**
- * Standard first-order substitution operator, resolving clashes but not preventing (usually
- * unsound) substitution of non-rigid terms across modal operators. Currently, only the subclass
- * <code>WarySubstOp</code> is used and accessible through the key parser.
- */
+/// Standard first-order substitution operator, resolving clashes but not preventing (usually
+/// unsound) substitution of non-rigid terms across modal operators. Currently, only the subclass
+/// <code>WarySubstOp</code> is used and accessible through the key parser.
 public class SubstOp extends AbstractOperator {
-    /**
-     * the wary substitution operator {@code {var<-term}'}. {@code {x<-d}'A(x)} means replace all
-     * free occurrences
-     * of variable x in A with d, however without replacing x with a non-rigid A below modalities
-     */
+    /// the wary substitution operator `{var<-term}'`. `{x<-d}'A(x)` means replace all
+    /// free occurrences
+    /// of variable x in A with d, however without replacing x with a non-rigid A below modalities
     public static final SubstOp SUBST = new SubstOp(new Name("subst"));
 
     protected SubstOp(Name name) {
         super(name, 2, new Boolean[] { false, true }, true);
     }
 
-    /**
-     * @return sort of the second subterm or throws an IllegalArgumentException if the given term
-     *         has no correct (2=) arity
-     */
+    /// @return sort of the second subterm or throws an IllegalArgumentException if the given term
+    ///         has no correct (2=) arity
     @Override
     public Sort sort(Sort[] sorts) {
         if (sorts.length == 2) {

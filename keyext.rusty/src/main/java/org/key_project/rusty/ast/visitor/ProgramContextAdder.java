@@ -16,25 +16,17 @@ import org.key_project.rusty.rule.inst.ContextBlockExpressionInstantiation;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/**
- * A context given as {@link ContextBlockExpressionInstantiation} is wrapped around a given
- * {@link RustyProgramElement}.
- */
+/// A context given as [ContextBlockExpressionInstantiation] is wrapped around a given
+/// [RustyProgramElement].
 public class ProgramContextAdder {
-    /**
-     * singleton instance of the program context adder
-     */
+    /// singleton instance of the program context adder
     public final static ProgramContextAdder INSTANCE = new ProgramContextAdder();
 
-    /**
-     * an empty private constructor to ensure the singleton property
-     */
+    /// an empty private constructor to ensure the singleton property
     private ProgramContextAdder() {
     }
 
-    /**
-     * wraps the context around the statements found in the putIn block
-     */
+    /// wraps the context around the statements found in the putIn block
     public RustyProgramElement start(RustyProgramElement context,
             ContextBlockExpression putIn, ContextBlockExpressionInstantiation ct) {
 
@@ -68,15 +60,13 @@ public class ProgramContextAdder {
         }
     }
 
-    /**
-     * Replaces the first part in the wrapper block. The replacement is optimized as it just
-     * returns the replacement block if it is the only child of the block to be
-     * constructed and the child is a block too.
-     *
-     * @param wrapper the StatementBlock where to replace the first statement
-     * @param replacement the StatementBlock that replaces the first statement of the block
-     * @return the resulting statement block
-     */
+    /// Replaces the first part in the wrapper block. The replacement is optimized as it just
+    /// returns the replacement block if it is the only child of the block to be
+    /// constructed and the child is a block too.
+    ///
+    /// @param wrapper the StatementBlock where to replace the first statement
+    /// @param replacement the StatementBlock that replaces the first statement of the block
+    /// @return the resulting statement block
     private RustyProgramElement createBlockExprWrapper(BlockExpression wrapper,
             RustyProgramElement replacement) {
         int childCount = wrapper.getChildCount();
@@ -91,25 +81,23 @@ public class ProgramContextAdder {
         return new BlockExpression(body, wrapper.getValue());
     }
 
-    /**
-     * inserts the content of the statement block <code>putIn</code> and adds succeeding children of
-     * the innermost non-terminal element (usually statement block) in the context.
-     *
-     * @param wrapper the RustyProgramElement with the context that has to be wrapped
-     *        around the content of <code>putIn</code>
-     * @param putIn the ContextBlockExpression with content that has to be wrapped by the elements
-     *        hidden in
-     *        the context
-     * @param suffix the PosInProgram describing the position of the first element before the suffix
-     *        of the context
-     * @return the BlockExpression which encloses the content of <code>putIn</code> together with
-     *         the
-     *         succeeding context elements of the innermost context block (attention: in a
-     *         case like <code>{{{oldStmnt; list of further stmnt;}} moreStmnts; }</code> only the
-     *         underscored part is returned <code>{{ __{putIn;....}__ }moreStmnts;}</code> adding
-     *         the other braces including the <code>moreStmnts;</code> part has to be done
-     *         elsewhere.
-     */
+    /// inserts the content of the statement block <code>putIn</code> and adds succeeding children of
+    /// the innermost non-terminal element (usually statement block) in the context.
+    ///
+    /// @param wrapper the RustyProgramElement with the context that has to be wrapped
+    ///        around the content of <code>putIn</code>
+    /// @param putIn the ContextBlockExpression with content that has to be wrapped by the elements
+    ///        hidden in
+    ///        the context
+    /// @param suffix the PosInProgram describing the position of the first element before the suffix
+    ///        of the context
+    /// @return the BlockExpression which encloses the content of <code>putIn</code> together with
+    ///         the
+    ///         succeeding context elements of the innermost context block (attention: in a
+    ///         case like <code>{{{oldStmnt; list of further stmnt;}} moreStmnts; }</code> only the
+    ///         underscored part is returned <code>{{ __{putIn;....}__ }moreStmnts;}</code> adding
+    ///         the other braces including the <code>moreStmnts;</code> part has to be done
+    ///         elsewhere.
     private RustyProgramElement createWrapperBody(RustyProgramElement wrapper,
             ContextBlockExpression putIn, PosInProgram suffix) {
         if (wrapper instanceof BlockExpression) {

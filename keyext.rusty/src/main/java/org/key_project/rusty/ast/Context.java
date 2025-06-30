@@ -8,10 +8,8 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * this class stores context information used to parse in program parts in which
- * non-declared variables are used
- */
+/// this class stores context information used to parse in program parts in which
+/// non-declared variables are used
 public class Context {
     public static final String TMP_FN_NAME = "__RUSTY_KEY_CTX_FN_NAME__";
     private final Namespace<@NonNull ProgramVariable> varNS;

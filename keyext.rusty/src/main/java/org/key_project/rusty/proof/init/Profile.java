@@ -8,10 +8,10 @@ import org.key_project.rusty.proof.mgt.RuleJustification;
 import org.key_project.rusty.rule.Rule;
 
 public interface Profile {
-    /** returns the rule source containg all taclets for this profile */
+    /// returns the rule source containg all taclets for this profile
     RuleCollection getStandardRules();
 
-    /** the name of this profile */
+    /// the name of this profile
     String name();
 
     RuleJustification getJustification(Rule r);

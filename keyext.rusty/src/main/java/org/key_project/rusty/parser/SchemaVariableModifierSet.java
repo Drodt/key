@@ -39,11 +39,9 @@ public abstract class SchemaVariableModifierSet {
     }
 
 
-    /**
-     * @return <code>true</code> iff <code>option</code> is a valid modifier for the considered
-     *         useKind
-     *         of schema variables
-     */
+    /// @return <code>true</code> iff <code>option</code> is a valid modifier for the considered
+    ///         useKind
+    ///         of schema variables
     public boolean addModifier(String option) {
         if ("strict".equals(option)) {
             return addStrict();

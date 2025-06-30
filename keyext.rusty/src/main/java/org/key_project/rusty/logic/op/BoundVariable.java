@@ -13,9 +13,7 @@ import org.key_project.logic.sort.Sort;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * The definition of logical variables.
- */
+/// The definition of logical variables.
 public final class BoundVariable extends AbstractSortedOperator
         implements QuantifiableVariable, ParsableVariable {
     public BoundVariable(Name name, Sort sort) {

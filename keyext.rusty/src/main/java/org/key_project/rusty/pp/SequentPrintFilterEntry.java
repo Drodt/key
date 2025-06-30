@@ -5,17 +5,11 @@ package org.key_project.rusty.pp;
 
 import org.key_project.prover.sequent.SequentFormula;
 
-/**
- * One element of a sequent as delivered by SequentPrintFilter
- */
+/// One element of a sequent as delivered by SequentPrintFilter
 public interface SequentPrintFilterEntry {
-    /**
-     * Formula to display
-     */
+    /// Formula to display
     org.key_project.prover.sequent.SequentFormula getFilteredFormula();
 
-    /**
-     * Original formula from sequent
-     */
+    /// Original formula from sequent
     SequentFormula getOriginalFormula();
 }

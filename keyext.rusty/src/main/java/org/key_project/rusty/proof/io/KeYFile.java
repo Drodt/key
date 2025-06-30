@@ -31,13 +31,9 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Represents an input from a .key file producing an environment.
- */
+/// Represents an input from a .key file producing an environment.
 public class KeYFile implements EnvInput {
-    /**
-     * the RuleSource delivering the input stream for the file.
-     */
+    /// the RuleSource delivering the input stream for the file.
     protected final RuleSource file;
 
     private final Name name;
@@ -47,69 +43,57 @@ public class KeYFile implements EnvInput {
     private Includes includes;
     private ProblemInformation problemInformation;
 
-    /**
-     * The FileRepo that will store the files.
-     */
+    /// The FileRepo that will store the files.
     private FileRepo fileRepo;
     private ProblemFinder problemFinder;
 
-    /**
-     * creates a new representation for a given file by indicating a name and a RuleSource
-     * representing the physical source of the .key file.
-     */
+    /// creates a new representation for a given file by indicating a name and a RuleSource
+    /// representing the physical source of the .key file.
     public KeYFile(String name, RuleSource file, Profile profile) {
         this.name = new Name(name);
         this.file = Objects.requireNonNull(file);
         this.profile = Objects.requireNonNull(profile);
     }
 
-    /**
-     * creates a new representation for a given file by indicating a name and a RuleSource
-     * representing the physical source of the .key file.
-     *
-     * @param name the name of the file
-     * @param file the physical rule source of the .key file
-     * @param profile the profile
-     * @param fileRepo the FileRepo which will store the file
-     */
+    /// creates a new representation for a given file by indicating a name and a RuleSource
+    /// representing the physical source of the .key file.
+    ///
+    /// @param name the name of the file
+    /// @param file the physical rule source of the .key file
+    /// @param profile the profile
+    /// @param fileRepo the FileRepo which will store the file
     public KeYFile(String name, RuleSource file, Profile profile,
             FileRepo fileRepo) {
         this(name, file, profile);
         this.fileRepo = fileRepo;
     }
 
-    /**
-     * creates a new representation for a given file by indicating a name and a file representing
-     * the physical source of the .key file.
-     */
+    /// creates a new representation for a given file by indicating a name and a file representing
+    /// the physical source of the .key file.
     public KeYFile(String name, File file, Profile profile) {
         this(name, file, profile, false);
     }
 
-    /**
-     * Creates a new representation for a given file by indicating a name and a file representing
-     * the physical source of the .key file.
-     *
-     * @param name the name of the resource
-     * @param file the file to find it
-     * @param profile the KeY profile under which the file is to be load
-     * @param compressed <code>true</code> iff the file has compressed content
-     */
+    /// Creates a new representation for a given file by indicating a name and a file representing
+    /// the physical source of the .key file.
+    ///
+    /// @param name the name of the resource
+    /// @param file the file to find it
+    /// @param profile the KeY profile under which the file is to be load
+    /// @param compressed <code>true</code> iff the file has compressed content
     public KeYFile(String name, File file, Profile profile,
             boolean compressed) {
         this(name, RuleSourceFactory.initRuleFile(file, compressed), profile);
     }
 
-    /**
-     * Creates a new representation for a given file by indicating a name and a file representing
-     * the physical source of the .key file.
-     *
-     * @param name the name of the resource
-     * @param file the file to find it
-     * @param fileRepo the FileRepo which will store the file
-     * @param profile the KeY profile under which the file is to be load
-     * @param compressed <code>true</code> iff the file has compressed content
-     */
+    /// Creates a new representation for a given file by indicating a name and a file representing
+    /// the physical source of the .key file.
+    ///
+    /// @param name the name of the resource
+    /// @param file the file to find it
+    /// @param fileRepo the FileRepo which will store the file
+    /// @param profile the KeY profile under which the file is to be load
+    /// @param compressed <code>true</code> iff the file has compressed content
     public KeYFile(String name, File file, FileRepo fileRepo,
             Profile profile, boolean compressed) {
         this(name, RuleSourceFactory.initRuleFile(file, compressed), profile);
@@ -232,11 +216,9 @@ public class KeYFile implements EnvInput {
         return warnings;
     }
 
-    /**
-     * reads sort, function and predicate declarations
-     *
-     * @return list of parser warnings
-     */
+    /// reads sort, function and predicate declarations
+    ///
+    /// @return list of parser warnings
     public ImmutableSet<String> readExtendedSignature() {
         if (initConfig == null) {
             throw new IllegalStateException("KeYFile: InitConfig not set.");
@@ -252,11 +234,9 @@ public class KeYFile implements EnvInput {
         return DefaultImmutableSet.fromCollection(warnings);
     }
 
-    /**
-     * reads contracts and rule definitions
-     *
-     * @return list of parser warnings
-     */
+    /// reads contracts and rule definitions
+    ///
+    /// @return list of parser warnings
     /*
      * public ImmutableSet<String> readContracts() {
      * SpecificationRepository specRepos = initConfig.getServices().getSpecificationRepository();
@@ -278,10 +258,8 @@ public class KeYFile implements EnvInput {
         return problemFinder;
     }
 
-    /**
-     * reads the sorts declaration of the .key file only, modifying the sort namespace of the
-     * initial configuration
-     */
+    /// reads the sorts declaration of the .key file only, modifying the sort namespace of the
+    /// initial configuration
     public Collection<String> readSorts() {
         KeYAst.File ctx = getParseContext();
         KeYIO io = new KeYIO(initConfig.getServices(), initConfig.namespaces());
@@ -293,12 +271,10 @@ public class KeYFile implements EnvInput {
         return io.getWarnings().stream().map(BuildingIssue::message).toList();
     }
 
-    /**
-     * reads the functions and predicates declared in the .key file only, modifying the function
-     * namespaces of the respective taclet options.
-     *
-     * @return warnings during the interpretation of the AST constructs
-     */
+    /// reads the functions and predicates declared in the .key file only, modifying the function
+    /// namespaces of the respective taclet options.
+    ///
+    /// @return warnings during the interpretation of the AST constructs
     public List<String> readFuncAndPred() {
         if (file == null) {
             return null;
@@ -309,12 +285,10 @@ public class KeYFile implements EnvInput {
         return io.getWarnings().stream().map(BuildingIssue::message).toList();
     }
 
-    /**
-     * reads the rules and problems declared in the .key file only, modifying the set of rules of
-     * the initial configuration
-     *
-     * @return list of issues that occurred during parsing the taclets
-     */
+    /// reads the rules and problems declared in the .key file only, modifying the set of rules of
+    /// the initial configuration
+    ///
+    /// @return list of issues that occurred during parsing the taclets
     public List<BuildingIssue> readRules() {
         KeYAst.File ctx = getParseContext();
         TacletPBuilder visitor = new TacletPBuilder(initConfig.getServices(),
@@ -332,14 +306,12 @@ public class KeYFile implements EnvInput {
         problemInformation = null;
     }
 
-    /**
-     * constructs positioned strings from {@link BuildingIssue}s such that they can be displayed
-     * like other issues
-     *
-     * @param issues the {@link BuildingIssue}s to be converted into {@link String}s
-     * @return list containing a {@link String} for each {@link BuildingIssue}
-     *         in <code>issues</code>
-     */
+    /// constructs positioned strings from [BuildingIssue]s such that they can be displayed
+    /// like other issues
+    ///
+    /// @param issues the [BuildingIssue]s to be converted into [String]s
+    /// @return list containing a [String] for each [BuildingIssue]
+    ///         in <code>issues</code>
     protected List<String> getPositionedStrings(List<BuildingIssue> issues) {
         return issues.stream().map(BuildingIssue::message)
                 .collect(Collectors.<String>toList());

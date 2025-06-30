@@ -20,20 +20,16 @@ public class NameRecorder {
         }
     }
 
-    /**
-     * Get the name proposals added using {@link #addProposal(Name)}.
-     *
-     * @return the name proposals
-     */
+    /// Get the name proposals added using [#addProposal(Name)].
+    ///
+    /// @return the name proposals
     public ImmutableList<Name> getProposals() {
         return post;
     }
 
-    /**
-     * Get the name proposals previously set using {@link #setProposals(ImmutableList)}.
-     *
-     * @return the name proposals
-     */
+    /// Get the name proposals previously set using [#setProposals(ImmutableList)].
+    ///
+    /// @return the name proposals
     public ImmutableList<Name> getSetProposals() {
         return pre;
     }
@@ -42,11 +38,9 @@ public class NameRecorder {
         post = post.append(proposal);
     }
 
-    /**
-     * Get a proposal and remove it from this recorder.
-     *
-     * @return the first proposal
-     */
+    /// Get a proposal and remove it from this recorder.
+    ///
+    /// @return the first proposal
     public Name getProposal() {
         Name proposal = null;
 

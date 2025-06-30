@@ -33,41 +33,35 @@ public class KeYUserProblemFile extends KeYFile implements ProofOblInput {
     // constructors
     // -------------------------------------------------------------------------
 
-    /**
-     * Creates a new representation of a KeYUserFile with the given name, a rule source representing
-     * the physical source of the input, and a graphical representation to call back in order to
-     * report the progress while reading.
-     *
-     * @param name the name of the file
-     * @param file the file to read from
-     * @param profile the KeY profile under which to load
-     */
+    /// Creates a new representation of a KeYUserFile with the given name, a rule source representing
+    /// the physical source of the input, and a graphical representation to call back in order to
+    /// report the progress while reading.
+    ///
+    /// @param name the name of the file
+    /// @param file the file to read from
+    /// @param profile the KeY profile under which to load
     public KeYUserProblemFile(String name, File file, Profile profile) {
         this(name, file, profile, false);
     }
 
-    /**
-     * Instantiates a new user problem file.
-     *
-     * @param name the name of the file
-     * @param file the file to read from
-     * @param profile the KeY profile under which to load
-     * @param compressed {@code true} iff the file is compressed
-     */
+    /// Instantiates a new user problem file.
+    ///
+    /// @param name the name of the file
+    /// @param file the file to read from
+    /// @param profile the KeY profile under which to load
+    /// @param compressed `true` iff the file is compressed
     public KeYUserProblemFile(String name, File file, Profile profile,
             boolean compressed) {
         super(name, file, profile, compressed);
     }
 
-    /**
-     * Instantiates a new user problem file.
-     *
-     * @param name the name of the file
-     * @param file the file tp read from
-     * @param fileRepo the fileRepo which will store the file
-     * @param profile the KeY profile under which to load
-     * @param compressed {@code true} iff the file is compressed
-     */
+    /// Instantiates a new user problem file.
+    ///
+    /// @param name the name of the file
+    /// @param file the file tp read from
+    /// @param fileRepo the fileRepo which will store the file
+    /// @param profile the KeY profile under which to load
+    /// @param compressed `true` iff the file is compressed
     public KeYUserProblemFile(String name, File file, FileRepo fileRepo, Profile profile,
             boolean compressed) {
         super(name, file, fileRepo, profile, compressed);
@@ -145,9 +139,7 @@ public class KeYUserProblemFile extends KeYFile implements ProofOblInput {
             name.toString());
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public Profile getProfile() {
         // TODO
@@ -159,9 +151,7 @@ public class KeYUserProblemFile extends KeYFile implements ProofOblInput {
         return equals(po);
     }
 
-    /**
-     * Reads a saved proof of a .key file.
-     */
+    /// Reads a saved proof of a .key file.
     public void readProof(IProofFileParser prl) throws IOException {
         KeYAst.File ctx = getParseContext();
         Token token = ctx.findProof();

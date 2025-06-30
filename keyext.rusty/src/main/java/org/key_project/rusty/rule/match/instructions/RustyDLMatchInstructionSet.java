@@ -17,7 +17,7 @@ import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.logic.sort.GenericSort;
 
-/** Class encoding the instructions of the matching vm */
+/// Class encoding the instructions of the matching vm
 public class RustyDLMatchInstructionSet {
     public static GotoNextInstruction gotoNextInstruction() {
         return GotoNextInstruction.INSTANCE;
@@ -50,12 +50,10 @@ public class RustyDLMatchInstructionSet {
         return new MatchProgramInstruction(prg);
     }
 
-    /**
-     * returns the instruction for the specified variable
-     *
-     * @param op the {@link SchemaVariable} for which to get the instruction
-     * @return the instruction for the specified variable
-     */
+    /// returns the instruction for the specified variable
+    ///
+    /// @param op the [SchemaVariable] for which to get the instruction
+    /// @return the instruction for the specified variable
     public static MatchSchemaVariableInstruction getMatchInstructionForSV(
             SchemaVariable op) {
         return switch (op) {

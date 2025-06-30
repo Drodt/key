@@ -5,16 +5,12 @@ package org.key_project.rusty.logic;
 
 import org.key_project.logic.Term;
 
-/**
- * Interface for term ordering
- */
+/// Interface for term ordering
 public interface TermOrdering {
-    /**
-     * Compare the two given terms
-     *
-     * @return a number negative, zero or a number positive if <code>p_a</code> is less than, equal,
-     *         or greater than <code>p_b</code> regarding the ordering given by the implementing
-     *         class
-     */
+    /// Compare the two given terms
+    ///
+    /// @return a number negative, zero or a number positive if <code>p_a</code> is less than, equal,
+    ///         or greater than <code>p_b</code> regarding the ordering given by the implementing
+    ///         class
     int compare(Term p_a, Term p_b);
 }

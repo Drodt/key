@@ -6,27 +6,23 @@ package org.key_project.rusty.rule.inst;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.PosInProgram;
 
-/**
- * this class is created if the scheme given by a context term has matched to a Rust program. The
- * ContextBlockExpressionInstantiation class stores the instantiations of the prefix and the suffix.
- */
+/// this class is created if the scheme given by a context term has matched to a Rust program. The
+/// ContextBlockExpressionInstantiation class stores the instantiations of the prefix and the suffix.
 public class ContextBlockExpressionInstantiation {
-    /** the end position of the prefix omega */
+    /// the end position of the prefix omega
     private final PosInProgram prefixEnd;
 
-    /** the start position of the suffix omega */
+    /// the start position of the suffix omega
     private final PosInProgram suffixStart;
 
-    /** the whole program element this context term inst refers to */
+    /// the whole program element this context term inst refers to
     private final RustyProgramElement programElement;
 
-    /**
-     * creates a ContextStatementBlockInstantiation of a context term
-     *
-     * @param prefixEnd the PosInProgram describing the first statement after the end of the prefix
-     * @param suffixStart the PosInProgram describing the statement just before the suffix begins
-     * @param pe the ProgramElement the context positions are related to
-     */
+    /// creates a ContextStatementBlockInstantiation of a context term
+    ///
+    /// @param prefixEnd the PosInProgram describing the first statement after the end of the prefix
+    /// @param suffixStart the PosInProgram describing the statement just before the suffix begins
+    /// @param pe the ProgramElement the context positions are related to
     public ContextBlockExpressionInstantiation(PosInProgram prefixEnd, PosInProgram suffixStart,
             RustyProgramElement pe) {
 
@@ -35,27 +31,21 @@ public class ContextBlockExpressionInstantiation {
         this.programElement = pe;
     }
 
-    /**
-     * returns the end position of the prefix
-     *
-     * @return the end position of the prefix
-     */
+    /// returns the end position of the prefix
+    ///
+    /// @return the end position of the prefix
     public PosInProgram prefix() {
         return prefixEnd;
     }
 
-    /**
-     * returns the PosInProgram describing the statement just before the suffix begins
-     */
+    /// returns the PosInProgram describing the statement just before the suffix begins
     public PosInProgram suffix() {
         return suffixStart;
     }
 
-    /**
-     * returns the program element this context term instantiation refers to
-     *
-     * @return returns the program element this context term instantiation refers to
-     */
+    /// returns the program element this context term instantiation refers to
+    ///
+    /// @return returns the program element this context term instantiation refers to
     public RustyProgramElement programElement() {
         return programElement;
     }
@@ -99,7 +89,7 @@ public class ContextBlockExpressionInstantiation {
         return hashCode;
     }
 
-    /** toString */
+    /// toString
     public String toString() {
         String result = "ContextStatementBlockInstantiation:\n";
         result += "Prefix ends before " + prefixEnd.toString();

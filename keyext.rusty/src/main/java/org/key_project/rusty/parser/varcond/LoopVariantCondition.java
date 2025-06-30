@@ -12,11 +12,9 @@ import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.VariableCondition;
 
-/**
- * Extracts the variant for a loop term.
- *
- * @author Dominic Steinhoefel
- */
+/// Extracts the variant for a loop term.
+///
+/// @author Dominic Steinhoefel
 public class LoopVariantCondition implements VariableCondition {
     private final SchemaVariable loopExprSV;
     private final SchemaVariable variantSV;

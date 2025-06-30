@@ -16,7 +16,7 @@ import org.jspecify.annotations.NonNull;
 public class BoolLDT extends LDT {
     public static final Name NAME = new Name("bool");
 
-    /** the boolean literals as function symbols and terms */
+    /// the boolean literals as function symbols and terms
     private final Function bool_true;
     private final Term term_bool_true;
     private final Function bool_false;
@@ -51,17 +51,13 @@ public class BoolLDT extends LDT {
     }
 
 
-    /**
-     * returns the function representing the boolean value <tt>FALSE</tt>
-     */
+    /// returns the function representing the boolean value <tt>FALSE</tt>
     public Function getFalseConst() {
         return bool_false;
     }
 
 
-    /**
-     * returns the function representing the boolean value <tt>TRUE</tt>
-     */
+    /// returns the function representing the boolean value <tt>TRUE</tt>
     public Function getTrueConst() {
         return bool_true;
     }

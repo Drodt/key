@@ -12,25 +12,20 @@ import org.key_project.util.collection.ImmutableSLList;
 public class InitialPositionTable extends PositionTable {
     private ImmutableList<Range> updateRanges = ImmutableSLList.nil();
 
-    /** Ranges of keywords */
+    /// Ranges of keywords
     private ImmutableList<Range> keywordRanges = ImmutableSLList.nil();
-    /** Ranges of java blocks */
+    /// Ranges of java blocks
     private ImmutableList<Range> rustyBlockRanges = ImmutableSLList.nil();
 
-    /**
-     * creates a new Initial PositionTable.
-     */
+    /// creates a new Initial PositionTable.
     public InitialPositionTable() {
         super(1);
     }
 
-    /**
-     * Returns the PosInSequent for a given char position in a sequent.
-     *
-     * @param index the char position that points to the wanted position in sequent
-     * @param filter the sequent print filter from that was used to print the sequent
-     *
-     */
+    /// Returns the PosInSequent for a given char position in a sequent.
+    ///
+    /// @param index the char position that points to the wanted position in sequent
+    /// @param filter the sequent print filter from that was used to print the sequent
     public PosInSequent getPosInSequent(int index, SequentPrintFilter filter) {
         if (index < startPos[0] || index >= endPos[0]) {
             return null;
@@ -49,13 +44,11 @@ public class InitialPositionTable extends PositionTable {
         return pis;
     }
 
-    /**
-     * Returns a PosInSequent for a given position list, but without filling in the bounds. It is
-     * assumed that this is the top level position table for a sequent.
-     *
-     * @param posList the position list that navigates through the position tables.
-     * @param filter the sequent print filter from that was used to print the sequent
-     */
+    /// Returns a PosInSequent for a given position list, but without filling in the bounds. It is
+    /// assumed that this is the top level position table for a sequent.
+    ///
+    /// @param posList the position list that navigates through the position tables.
+    /// @param filter the sequent print filter from that was used to print the sequent
     private PosInSequent getTopPIS(ImmutableList<Integer> posList, SequentPrintFilter filter) {
         if (posList.isEmpty() || posList.tail().isEmpty()) {
             return PosInSequent.createSequentPos();
@@ -65,15 +58,13 @@ public class InitialPositionTable extends PositionTable {
     }
 
 
-    /**
-     * Returns the path for a given PosInOccurrence. This is built up from the initial 0, the number
-     * of the SequentFormula in the sequent, the position in the constrained formula, and possibly
-     * inside a Metavariable instantiation.
-     *
-     * @param pio the given PosInOccurrence
-     * @param filter the current filter
-     * @return the path for the given pio
-     */
+    /// Returns the path for a given PosInOccurrence. This is built up from the initial 0, the number
+    /// of the SequentFormula in the sequent, the position in the constrained formula, and possibly
+    /// inside a Metavariable instantiation.
+    ///
+    /// @param pio the given PosInOccurrence
+    /// @param filter the current filter
+    /// @return the path for the given pio
     public ImmutableList<Integer> pathForPosition(PosInOccurrence pio, SequentPrintFilter filter) {
         ImmutableList<Integer> p = ImmutableSLList.nil();
         p = prependPathInFormula(p, pio);
@@ -96,13 +87,11 @@ public class InitialPositionTable extends PositionTable {
     }
 
 
-    /**
-     * Returns the index of the constrained formula in the sequent as printed.
-     *
-     * @param cfma the sequent formula
-     * @param filter the current filter
-     * @return the index of the given formula in the sequent as printed
-     */
+    /// Returns the index of the constrained formula in the sequent as printed.
+    ///
+    /// @param cfma the sequent formula
+    /// @param filter the current filter
+    /// @return the index of the given formula in the sequent as printed
     private int indexOfCfma(SequentFormula cfma, SequentPrintFilter filter) {
         ImmutableList<SequentPrintFilterEntry> list =
             filter.getFilteredAntec().append(filter.getFilteredSucc());
@@ -115,51 +104,39 @@ public class InitialPositionTable extends PositionTable {
         return -1;
     }
 
-    /**
-     * Returns the character range of the `lowest' subtable that includes <code>index</code> in its
-     * range.
-     *
-     * @param index the character index to search for.
-     */
+    /// Returns the character range of the `lowest' subtable that includes <code>index</code> in its
+    /// range.
+    ///
+    /// @param index the character index to search for.
     public Range rangeForIndex(int index) {
         return rangeForIndex(index, endPos[0]);
     }
 
-    /**
-     * Returns the character range for the subtable indicated by the given integer list.
-     */
+    /// Returns the character range for the subtable indicated by the given integer list.
     public Range rangeForPath(ImmutableList<Integer> path) {
         return rangeForPath(path, endPos[0]);
     }
 
-    /**
-     * Adds a range for a keyword to the keyword list.
-     *
-     * @param r Range of keyword to be added
-     */
+    /// Adds a range for a keyword to the keyword list.
+    ///
+    /// @param r Range of keyword to be added
     public void addKeywordRange(Range r) {
         keywordRanges = keywordRanges.prepend(r);
     }
 
-    /**
-     * @return ranges of keywords printed
-     */
+    /// @return ranges of keywords printed
     public Range[] getKeywordRanges() {
         return keywordRanges.toArray(new Range[keywordRanges.size()]);
     }
 
-    /**
-     * Adds a range for a java block to the java block list.
-     *
-     * @param r Range of keyword to be added
-     */
+    /// Adds a range for a java block to the java block list.
+    ///
+    /// @param r Range of keyword to be added
     public void addJavaBlockRange(Range r) {
         rustyBlockRanges = rustyBlockRanges.prepend(r);
     }
 
-    /**
-     * @return ranges of java blocks printed
-     */
+    /// @return ranges of java blocks printed
     public Range[] getRustyBlockRanges() {
         return rustyBlockRanges.toArray(new Range[rustyBlockRanges.size()]);
     }

@@ -21,29 +21,25 @@ import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * Walks through a Rust AST in depth-left-fist-order. This walker is used to transform a program
- * according to the given SVInstantiations.
- */
+/// Walks through a Rust AST in depth-left-fist-order. This walker is used to transform a program
+/// according to the given SVInstantiations.
 public class ProgramReplaceVisitor extends CreatingASTVisitor {
     private RustyProgramElement result = null;
 
     private final SVInstantiations svinsts;
 
-    /**
-     * create the ProgramReplaceVisitor
-     *
-     * @param root the ProgramElement where to begin
-     * @param services The Services object.
-     * @param svi Schema Variable Instantiations
-     */
+    /// create the ProgramReplaceVisitor
+    ///
+    /// @param root the ProgramElement where to begin
+    /// @param services The Services object.
+    /// @param svi Schema Variable Instantiations
     public ProgramReplaceVisitor(RustyProgramElement root, Services services,
             SVInstantiations svi) {
         super(root, false, services);
         svinsts = svi;
     }
 
-    /** starts the walker */
+    /// starts the walker
     @Override
     public void start() {
         assert result == null : "ProgramReplaceVisitor is not designed for multiple walks";
@@ -58,17 +54,13 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
         }
     }
 
-    /**
-     * @return The result.
-     */
+    /// @return The result.
     public RustyProgramElement result() {
         return result;
     }
 
-    /**
-     * the implemented default action is called if a program element is, and if it has children all
-     * its children too are left unchanged
-     */
+    /// the implemented default action is called if a program element is, and if it has children all
+    /// its children too are left unchanged
     @Override
     protected void doDefaultAction(RustyProgramElement x) {
         addChild(x);

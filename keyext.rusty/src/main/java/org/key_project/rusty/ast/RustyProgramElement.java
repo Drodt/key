@@ -31,19 +31,16 @@ public interface RustyProgramElement extends SyntaxElement {
         return mc;
     }
 
-    /**
-     * matches successively all children of this current node. Thereby the <tt>offset</tt>-th child
-     * is matched against <code>source.getSource()</code>. The call <tt>source.next</tt> has to be
-     * done in the @link ProgramElement#match method of the currently matched child in case of a
-     * successful match. This is <em>not</em> done here (rationale: schemavariables matching on
-     * lists can be implemented easy).
-     *
-     *
-     * @param source the SourceData with the children to be matched
-     * @param matchCond the MatchConditions found so far
-     * @param offset the int denoting the index of the child to start with
-     * @return the resulting match conditions or <tt>null</tt> if matching failed
-     */
+    /// matches successively all children of this current node. Thereby the <tt>offset</tt>-th child
+    /// is matched against <code>source.getSource()</code>. The call <tt>source.next</tt> has to be
+    /// done in the @link ProgramElement#match method of the currently matched child in case of a
+    /// successful match. This is _not_ done here (rationale: schemavariables matching on
+    /// lists can be implemented easy).
+    ///
+    /// @param source the SourceData with the children to be matched
+    /// @param matchCond the MatchConditions found so far
+    /// @param offset the int denoting the index of the child to start with
+    /// @return the resulting match conditions or <tt>null</tt> if matching failed
     default MatchConditions matchChildren(SourceData source, MatchConditions matchCond,
             int offset) {
         for (int i = offset, sz = getChildCount(); i < sz; i++) {
@@ -63,20 +60,16 @@ public interface RustyProgramElement extends SyntaxElement {
         return matchCond;
     }
 
-    /**
-     * used by @link matchChildren to decide if a found match is valid or if there are remaining
-     * source elements that have not been matched (in which case the match failed)
-     */
+    /// used by @link matchChildren to decide if a found match is valid or if there are remaining
+    /// source elements that have not been matched (in which case the match failed)
     default boolean compatibleBlockSize(int pos, int max) {
         return pos >= max;
     }
 
-    /**
-     * calls the corresponding method of a visitor in order to perform some action/transformation on
-     * this element
-     *
-     * @param v the Visitor
-     */
+    /// calls the corresponding method of a visitor in order to perform some action/transformation on
+    /// this element
+    ///
+    /// @param v the Visitor
     void visit(Visitor v);
 
     default int computeHashCode() {

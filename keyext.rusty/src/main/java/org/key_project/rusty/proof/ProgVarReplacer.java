@@ -25,29 +25,21 @@ import org.key_project.rusty.rule.inst.*;
 import org.key_project.util.collection.*;
 
 public final class ProgVarReplacer {
-    /**
-     * map specifying the replacements to be done
-     */
+    /// map specifying the replacements to be done
     private final Map<ProgramVariable, ProgramVariable> map;
 
 
-    /**
-     * The services object
-     */
+    /// The services object
     private final Services services;
 
 
-    /**
-     * creates a ProgVarReplacer that replaces program variables as specified by the map parameter
-     */
+    /// creates a ProgVarReplacer that replaces program variables as specified by the map parameter
     public ProgVarReplacer(Map<ProgramVariable, ProgramVariable> map, Services services) {
         this.map = map;
         this.services = services;
     }
 
-    /**
-     * replaces in a set
-     */
+    /// replaces in a set
     public ImmutableSet<ProgramVariable> replace(ImmutableSet<ProgramVariable> vars) {
         ImmutableSet<ProgramVariable> result = vars;
 
@@ -62,9 +54,7 @@ public final class ProgVarReplacer {
         return result;
     }
 
-    /**
-     * replaces in the partially instantiated apps of a taclet index
-     */
+    /// replaces in the partially instantiated apps of a taclet index
     public void replace(TacletIndex tacletIndex) {
         ImmutableList<NoPosTacletApp> noPosTacletApps = tacletIndex.getPartialInstantiatedApps();
         ImmutableSet<NoPosTacletApp> appsToBeRemoved, appsToBeAdded;
@@ -89,9 +79,7 @@ public final class ProgVarReplacer {
         tacletIndex.addTaclets(appsToBeAdded);
     }
 
-    /**
-     * replaces in an SVInstantiations
-     */
+    /// replaces in an SVInstantiations
     public SVInstantiations replace(SVInstantiations insts) {
         SVInstantiations result = insts;
 
@@ -151,9 +139,7 @@ public final class ProgVarReplacer {
         return result;
     }
 
-    /**
-     * replaces in a term
-     */
+    /// replaces in a term
     public Term replace(Term t) {
         final Operator op = t.op();
         if (op instanceof ProgramVariable) {
@@ -200,9 +186,7 @@ public final class ProgVarReplacer {
         return result;
     }
 
-    /**
-     * replaces in a sequent
-     */
+    /// replaces in a sequent
     public SequentChangeInfo replace(Sequent s) {
         return replaceInSemisequent(s.succedent(),
             replaceInSemisequent(s.antecedent(), SequentChangeInfo.createSequentChangeInfo(s),
@@ -228,9 +212,7 @@ public final class ProgVarReplacer {
         return resultInfo;
     }
 
-    /**
-     * replaces in a constrained formula
-     */
+    /// replaces in a constrained formula
     public SequentFormula replace(SequentFormula cf) {
         SequentFormula result = cf;
 
@@ -251,13 +233,11 @@ public final class ProgVarReplacer {
         return t;
     }
 
-    /**
-     * replaces a program variable on the lefthandside of an elementary update
-     * requires the given term to have an elementary update operator as top level operator
-     *
-     * @param t the Term where to replace renamed variables
-     * @return the term with all replacements done
-     */
+    /// replaces a program variable on the lefthandside of an elementary update
+    /// requires the given term to have an elementary update operator as top level operator
+    ///
+    /// @param t the Term where to replace renamed variables
+    /// @return the term with all replacements done
     private Term replaceProgramVariableInLHSOfElementaryUpdate(Term t) {
         final Term newTerm = services.getTermBuilder().elementary(
             map.get(((ElementaryUpdate) t.op()).lhs()),
@@ -265,9 +245,7 @@ public final class ProgVarReplacer {
         return newTerm;
     }
 
-    /**
-     * replaces in a statement
-     */
+    /// replaces in a statement
     public RustyProgramElement replace(RustyProgramElement pe) {
         ProgVarReplaceVisitor pvrv = new ProgVarReplaceVisitor(pe, map, false, services);
         pvrv.start();

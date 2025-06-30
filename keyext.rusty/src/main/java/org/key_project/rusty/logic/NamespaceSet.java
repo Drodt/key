@@ -94,29 +94,23 @@ public class NamespaceSet {
         functions().add(ns.functions());
     }
 
-    /**
-     * returns all namespaces in an array
-     */
+    /// returns all namespaces in an array
     private Namespace<?>[] asArray() {
         return new Namespace[] { variables(), programVariables(), sorts(), ruleSets(), functions(),
         };
     }
 
-    /**
-     * looks up if the given name is found in one of the namespaces and returns the named object or
-     * null if no object with the same name has been found
-     */
+    /// looks up if the given name is found in one of the namespaces and returns the named object or
+    /// null if no object with the same name has been found
     public Named lookup(Name name) {
         final Namespace<?>[] spaces = asArray();
         return lookup(name, spaces);
     }
 
-    /**
-     * @param name
-     * @param spaces
-     * @return the element with the given name if found in the given namespaces, otherwise
-     *         <tt>null</tt>
-     */
+    /// @param name
+    /// @param spaces
+    /// @return the element with the given name if found in the given namespaces, otherwise
+    ///         <tt>null</tt>
     private Named lookup(Name name, final Namespace<?>[] spaces) {
         for (Namespace<?> space : spaces) {
             final Named n = space.lookup(name);
@@ -140,20 +134,16 @@ public class NamespaceSet {
             + choices();
     }
 
-    /**
-     * looks up for the symbol in the namespaces sort, functions and programVariables
-     *
-     * @param name the Name to look up
-     * @return the element of the given name or null
-     */
+    /// looks up for the symbol in the namespaces sort, functions and programVariables
+    ///
+    /// @param name the Name to look up
+    /// @return the element of the given name or null
     public Named lookupLogicSymbol(Name name) {
         return lookup(name, logicAsArray());
     }
 
-    /**
-     * returns all namespaces with symbols that may occur in a real sequent (this means all
-     * namespaces without variables, choices and ruleSets)
-     */
+    /// returns all namespaces with symbols that may occur in a real sequent (this means all
+    /// namespaces without variables, choices and ruleSets)
     private Namespace<?>[] logicAsArray() {
         return new Namespace[] { programVariables(), sorts(), functions() };
     }

@@ -24,51 +24,33 @@ import org.jspecify.annotations.NonNull;
 
 
 public class Proof implements ProofObject<Goal>, Named {
-    /**
-     * name of the proof
-     */
+    /// name of the proof
     private final Name name;
 
-    /**
-     * The time when the {@link Proof} instance was created.
-     */
+    /// The time when the [Proof] instance was created.
     final long creationTime = System.currentTimeMillis();
 
-    /**
-     * the root of the proof
-     */
+    /// the root of the proof
     private Node root;
 
-    /**
-     * list with the open goals of the proof
-     */
+    /// list with the open goals of the proof
     private ImmutableList<Goal> openGoals = ImmutableSLList.nil();
 
-    /**
-     * list with the closed goals of the proof, needed to make pruning in closed branches possible.
-     * If the list needs too much memory, pruning can be disabled via the command line option
-     * "--no-pruning-closed". In this case the list will not be filled.
-     */
+    /// list with the closed goals of the proof, needed to make pruning in closed branches possible.
+    /// If the list needs too much memory, pruning can be disabled via the command line option
+    /// "--no-pruning-closed". In this case the list will not be filled.
     private ImmutableList<Goal> closedGoals = ImmutableSLList.nil();
 
-    /**
-     * the logic configuration for this proof, i.e., logic signature, rules etc.
-     */
+    /// the logic configuration for this proof, i.e., logic signature, rules etc.
     private InitConfig initConfig;
 
-    /**
-     * declarations &c, read from a problem file or otherwise
-     */
+    /// declarations &c, read from a problem file or otherwise
     private String problemHeader = "";
 
-    /**
-     * the environment of the proof with specs and java model
-     */
+    /// the environment of the proof with specs and java model
     private ProofCorrectnessMgt localMgt;
 
-    /**
-     * constructs a new empty proof with name
-     */
+    /// constructs a new empty proof with name
     private Proof(Name name, InitConfig initConfig) {
         this.name = name;
         assert initConfig != null : "Tried to create proof without valid services.";
@@ -85,9 +67,7 @@ public class Proof implements ProofObject<Goal>, Named {
         services.setProof(this);
     }
 
-    /**
-     * constructs a new empty proof with name
-     */
+    /// constructs a new empty proof with name
     public Proof(String name, InitConfig initConfig) {
         this(new Name(name), initConfig);
     }
@@ -169,21 +149,17 @@ public class Proof implements ProofObject<Goal>, Named {
         return root;
     }
 
-    /**
-     * Returns the list of open goals.
-     *
-     * @return list with the open goals
-     */
+    /// Returns the list of open goals.
+    ///
+    /// @return list with the open goals
     @Override
     public @NonNull ImmutableList<@NonNull Goal> openGoals() {
         return openGoals;
     }
 
-    /**
-     * adds a list with new goals to the list of open goals
-     *
-     * @param goals the Iterable<Goal> to be prepended
-     */
+    /// adds a list with new goals to the list of open goals
+    ///
+    /// @param goals the Iterable<Goal> to be prepended
     @Override
     public void add(@NonNull Iterable<@NonNull Goal> goals) {
         ImmutableList<Goal> addGoals;
@@ -195,11 +171,9 @@ public class Proof implements ProofObject<Goal>, Named {
         add(addGoals);
     }
 
-    /**
-     * adds a list with new goals to the list of open goals
-     *
-     * @param goals the IList<Goal> to be prepended
-     */
+    /// adds a list with new goals to the list of open goals
+    ///
+    /// @param goals the IList<Goal> to be prepended
     public void add(ImmutableList<Goal> goals) {
         ImmutableList<Goal> newOpenGoals = openGoals.prepend(goals);
         if (openGoals != newOpenGoals) {
@@ -207,13 +181,11 @@ public class Proof implements ProofObject<Goal>, Named {
         }
     }
 
-    /**
-     * removes the given goal and adds the new goals in list
-     *
-     * @param oldGoal the old goal that has to be removed from list
-     * @param newGoals the Iterable<Goal> with the new goals that were result of a rule application
-     *        on goal
-     */
+    /// removes the given goal and adds the new goals in list
+    ///
+    /// @param oldGoal the old goal that has to be removed from list
+    /// @param newGoals the Iterable<Goal> with the new goals that were result of a rule application
+    ///        on goal
     @Override
     public void replace(Goal oldGoal, @NonNull Iterable<@NonNull Goal> newGoals) {
         openGoals = openGoals.removeAll(oldGoal);
@@ -223,11 +195,9 @@ public class Proof implements ProofObject<Goal>, Named {
         }
     }
 
-    /**
-     * Close the given goals and all goals in the subtree below it.
-     *
-     * @param goalToClose the goal to close.
-     */
+    /// Close the given goals and all goals in the subtree below it.
+    ///
+    /// @param goalToClose the goal to close.
     public void closeGoal(Goal goalToClose) {
         Node closedSubtree = goalToClose.getNode().close();
 
@@ -254,11 +224,9 @@ public class Proof implements ProofObject<Goal>, Named {
         }
     }
 
-    /**
-     * returns the goal that belongs to the given node or null if the node is an inner one
-     *
-     * @return the goal that belongs to the given node or null if the node is an inner one
-     */
+    /// returns the goal that belongs to the given node or null if the node is an inner one
+    ///
+    /// @return the goal that belongs to the given node or null if the node is an inner one
     public Goal getOpenGoal(Node node) {
         for (final Goal result : openGoals) {
             if (result.getNode() == node) {
@@ -268,12 +236,10 @@ public class Proof implements ProofObject<Goal>, Named {
         return null;
     }
 
-    /**
-     * removes the given goal from the list of open goals. Take care removing the last goal will
-     * fire the proofClosed event
-     *
-     * @param goal the Goal to be removed
-     */
+    /// removes the given goal from the list of open goals. Take care removing the last goal will
+    /// fire the proofClosed event
+    ///
+    /// @param goal the Goal to be removed
     private void remove(Goal goal) {
         ImmutableList<Goal> newOpenGoals = openGoals.removeAll(goal);
         if (newOpenGoals != openGoals) {
@@ -281,9 +247,7 @@ public class Proof implements ProofObject<Goal>, Named {
         }
     }
 
-    /**
-     * returns true if the root node is marked as closed and all goals have been removed
-     */
+    /// returns true if the root node is marked as closed and all goals have been removed
     public boolean closed() {
         return root.isClosed() && openGoals.isEmpty();
     }
@@ -292,24 +256,18 @@ public class Proof implements ProofObject<Goal>, Named {
         return localMgt;
     }
 
-    /**
-     * Retrieves a bunch of statistics to the proof tree. This implementation traverses the proof
-     * tree only once. Statistics are not cached; don't call this method too often.
-     */
+    /// Retrieves a bunch of statistics to the proof tree. This implementation traverses the proof
+    /// tree only once. Statistics are not cached; don't call this method too often.
     public Statistics getStatistics() {
         return new Statistics(this);
     }
 
-    /**
-     * retrieves number of nodes
-     */
+    /// retrieves number of nodes
     public int countNodes() {
         return root.countNodes();
     }
 
-    /**
-     * toString
-     */
+    /// toString
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
@@ -332,16 +290,12 @@ public class Proof implements ProofObject<Goal>, Named {
         // TODO
     }
 
-    /**
-     * returns a collection of the namespaces valid for this proof
-     */
+    /// returns a collection of the namespaces valid for this proof
     public NamespaceSet getNamespaces() {
         return getServices().getNamespaces();
     }
 
-    /**
-     * sets the variable, function, sort, heuristics namespaces
-     */
+    /// sets the variable, function, sort, heuristics namespaces
     public void setNamespaces(NamespaceSet ns) {
         getServices().setNamespaces(ns);
         if (!root.leaf()) {

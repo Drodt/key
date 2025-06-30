@@ -12,10 +12,8 @@ import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Realises a sequent. This class implements the necessary factory methods.
- * Outside of this package only the supertype must be used.
- */
+/// Realises a sequent. This class implements the necessary factory methods.
+/// Outside of this package only the supertype must be used.
 class Sequent extends org.key_project.prover.sequent.Sequent {
     static final org.key_project.prover.sequent.Sequent EMPTY_SEQUENT =
         new Sequent(org.key_project.rusty.proof.calculus.Semisequent.EMPTY_SEMISEQUENT) {
@@ -50,12 +48,12 @@ class Sequent extends org.key_project.prover.sequent.Sequent {
             }
         };
 
-    /** creates new Sequent with antecedence and succedence */
+    /// creates new Sequent with antecedence and succedence
     Sequent(Semisequent antecedent, Semisequent succedent) {
         super(antecedent, succedent);
     }
 
-    /** used by NILSequent implementations */
+    /// used by NILSequent implementations
     Sequent(Semisequent emptySeq) {
         super(emptySeq);
     }

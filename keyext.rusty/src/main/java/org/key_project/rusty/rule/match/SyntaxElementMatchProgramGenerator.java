@@ -18,33 +18,27 @@ import org.key_project.rusty.logic.sort.GenericSort;
 
 import static org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet.*;
 
-/**
- * This class generates a matching program for a given syntax element that can be
- * interpreted by the virtual machine's interpreter
- *
- * @see VMProgramInterpreter
- */
+/// This class generates a matching program for a given syntax element that can be
+/// interpreted by the virtual machine's interpreter
+///
+/// @see VMProgramInterpreter
 public class SyntaxElementMatchProgramGenerator {
-    /**
-     * creates a matcher for the given pattern
-     *
-     * @param pattern the {@link Term} specifying the pattern
-     * @return the specialized matcher for the given pattern
-     */
+    /// creates a matcher for the given pattern
+    ///
+    /// @param pattern the [Term] specifying the pattern
+    /// @return the specialized matcher for the given pattern
     public static VMInstruction[] createProgram(Term pattern) {
         ArrayList<VMInstruction> program = new ArrayList<>();
         createProgram(pattern, program);
         return program.toArray(new VMInstruction[0]);
     }
 
-    /**
-     * creates a matching program for the given pattern. It appends the necessary match instruction
-     * to the given list of instructions
-     *
-     * @param pattern the {@link Term} used as pattern for which to create a matcher
-     * @param program the list of {@link MatchInstruction} to which the instructions for matching
-     *        {@code pattern} are added.
-     */
+    /// creates a matching program for the given pattern. It appends the necessary match instruction
+    /// to the given list of instructions
+    ///
+    /// @param pattern the [Term] used as pattern for which to create a matcher
+    /// @param program the list of [MatchInstruction] to which the instructions for matching
+    ///        `pattern` are added.
     private static void createProgram(Term pattern, ArrayList<VMInstruction> program) {
         final Operator op = pattern.op();
 

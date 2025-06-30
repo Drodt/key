@@ -8,17 +8,15 @@ import java.util.*;
 
 import org.key_project.rusty.proof.io.RuleSource;
 
-/**
- * Encapsulates 2 lists (one for LDT-include, one for "normal" includes) containing the filenames
- * parsed in the include-section of a <code>KeYFile</code>. <code>name2Source</code> maps the
- * entries of both lists to the corresponding RuleSources.
- */
+/// Encapsulates 2 lists (one for LDT-include, one for "normal" includes) containing the filenames
+/// parsed in the include-section of a <code>KeYFile</code>. <code>name2Source</code> maps the
+/// entries of both lists to the corresponding RuleSources.
 public class Includes {
-    /** a list containing the "normal" includes, represented as Strings */
+    /// a list containing the "normal" includes, represented as Strings
     private final List<String> includes;
-    /** a list containing the LDT includes, represented as Strings */
+    /// a list containing the LDT includes, represented as Strings
     private final List<String> ldtIncludes;
-    /** contains mappings from filenames to RuleSources */
+    /// contains mappings from filenames to RuleSources
     private final HashMap<String, RuleSource> name2Source;
     private final List<File> files;
 
@@ -37,19 +35,17 @@ public class Includes {
         }
     }
 
-    /** adds a "normal" include. */
+    /// adds a "normal" include.
     public void put(String name, RuleSource source) {
         put(name, source, includes);
     }
 
-    /** adds a LDT include. */
+    /// adds a LDT include.
     public void putLDT(String name, RuleSource source) {
         put(name, source, ldtIncludes);
     }
 
-    /**
-     * returns the corresponding RuleSource to the filename <code>name</name>
-     */
+    /// returns the corresponding RuleSource to the filename <code>name</name>
     public RuleSource get(String name) {
         return name2Source.get(name);
     }
@@ -58,19 +54,19 @@ public class Includes {
         return files;
     }
 
-    /** removes the filename <code>name</code> and its mapping. */
+    /// removes the filename <code>name</code> and its mapping.
     public void remove(String name) {
         includes.remove(name);
         ldtIncludes.remove(name);
         name2Source.remove(name);
     }
 
-    /** return the list of non-LDT includes */
+    /// return the list of non-LDT includes
     public List<String> getIncludes() {
         return includes;
     }
 
-    /** return the list of LDT includes */
+    /// return the list of LDT includes
     public List<String> getLDTIncludes() {
         return ldtIncludes;
     }

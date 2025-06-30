@@ -36,16 +36,13 @@ public class RuleAppIndex {
         this.builtInRuleAppIndex = builtInRuleAppIndex;
     }
 
-    /**
-     * returns the set of rule applications for the given heuristics at the given position of the
-     * given sequent.
-     *
-     * //@param filter the TacletFiler filtering the taclets of interest
-     *
-     * @param pos the PosInOccurrence to focus
-     * @param services the Services object encapsulating information about the Rust datastructures
-     *        like (static)types etc.
-     */
+    /// returns the set of rule applications for the given heuristics at the given position of the
+    /// given sequent.
+    /// //@param filter the TacletFiler filtering the taclets of interest
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @param services the Services object encapsulating information about the Rust datastructures
+    ///        like (static)types etc.
     public ImmutableList<TacletApp> getTacletAppAt(PosInOccurrence pos,
             Services services) {
         ImmutableList<TacletApp> result = ImmutableSLList.nil();
@@ -53,10 +50,8 @@ public class RuleAppIndex {
         return result;
     }
 
-    /**
-     * returns a new RuleAppIndex with a copied TacletIndex. Attention: the listener lists are not
-     * copied
-     */
+    /// returns a new RuleAppIndex with a copied TacletIndex. Attention: the listener lists are not
+    /// copied
     public RuleAppIndex copy(Goal goal) {
         TacletIndex copiedTacletIndex = tacletIndex.copy();
         return new RuleAppIndex(copiedTacletIndex, builtInRuleAppIndex().copy(), goal,
@@ -64,11 +59,9 @@ public class RuleAppIndex {
     }
 
 
-    /**
-     * adds a new Taclet with instantiation information to the Taclet Index of this TacletAppIndex.
-     *
-     * @param tacletApp the NoPosTacletApp describing a partial instantiated Taclet to add
-     */
+    /// adds a new Taclet with instantiation information to the Taclet Index of this TacletAppIndex.
+    ///
+    /// @param tacletApp the NoPosTacletApp describing a partial instantiated Taclet to add
     public void addNoPosTacletApp(NoPosTacletApp tacletApp) {
         tacletIndex.add(tacletApp);
 
@@ -79,15 +72,13 @@ public class RuleAppIndex {
         return tacletIndex;
     }
 
-    /**
-     * returns the rule applications at the given PosInOccurrence and at all Positions below this.
-     * The method calls getTacletAppAt for all the Positions below.
-     *
-     * @param pos the position where to start from
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return the possible rule applications
-     */
+    /// returns the rule applications at the given PosInOccurrence and at all Positions below this.
+    /// The method calls getTacletAppAt for all the Positions below.
+    ///
+    /// @param pos the position where to start from
+    /// @param services the Services object encapsulating information about the java datastructures
+    ///        like (static)types etc.
+    /// @return the possible rule applications
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos,
             Services services) {
         ImmutableList<TacletApp> result = ImmutableSLList.nil();
@@ -96,17 +87,13 @@ public class RuleAppIndex {
         return result;
     }
 
-    /**
-     * returns the built-in rule application index for this ruleAppIndex.
-     */
+    /// returns the built-in rule application index for this ruleAppIndex.
     public BuiltInRuleAppIndex builtInRuleAppIndex() {
         return builtInRuleAppIndex;
     }
 
-    /**
-     * returns a list of built-in rule applications applicable for the given goal, user defined
-     * constraint and position
-     */
+    /// returns a list of built-in rule applications applicable for the given goal, user defined
+    /// constraint and position
     public ImmutableList<IBuiltInRuleApp> getBuiltInRules(Goal g, PosInOccurrence pos) {
         return builtInRuleAppIndex().getBuiltInRule(g, pos);
     }

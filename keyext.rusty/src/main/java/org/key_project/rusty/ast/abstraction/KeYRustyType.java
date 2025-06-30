@@ -14,9 +14,9 @@ import org.key_project.rusty.ast.ty.SortRustType;
 import org.jspecify.annotations.NonNull;
 
 public class KeYRustyType implements Type {
-    /** the AST type */
+    /// the AST type
     private Type rustyType = null;
-    /** the logic sort */
+    /// the logic sort
     private Sort sort = null;
 
     public KeYRustyType() {

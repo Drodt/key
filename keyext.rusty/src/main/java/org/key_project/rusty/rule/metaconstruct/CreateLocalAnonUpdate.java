@@ -16,13 +16,11 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.collection.ImmutableSet;
 
-/**
- * Expects a loop body and creates the anonymizing update
- * <code>out_1:=anon_1||...||out_n:=anon_n</code>, where anon_1, ..., anon_n are the written
- * variables in the loop body visible to the outside.
- *
- * @author Dominic Steinhoefel
- */
+/// Expects a loop body and creates the anonymizing update
+/// <code>out_1:=anon_1||...||out_n:=anon_n</code>, where anon_1, ..., anon_n are the written
+/// variables in the loop body visible to the outside.
+///
+/// @author Dominic Steinhoefel
 public class CreateLocalAnonUpdate extends AbstractTermTransformer {
     public CreateLocalAnonUpdate() {
         super(new Name("#createLocalAnonUpdate"), 1);

@@ -30,15 +30,13 @@ public final class GenericSortInstantiations {
         insts = p_insts;
     }
 
-    /**
-     * Create an object that solves the conditions given by the instantiation iterator, i.e.
-     * instantiations of the generic sorts used within "p_instantiations" are sought for which are
-     * compatible with the instantiations of the SVs
-     *
-     * @param p_instantiations list of SV instantiations
-     * @param p_conditions additional conditions for sort instantiations
-     * @throws GenericSortException iff the conditions could not be solved
-     */
+    /// Create an object that solves the conditions given by the instantiation iterator, i.e.
+    /// instantiations of the generic sorts used within "p_instantiations" are sought for which are
+    /// compatible with the instantiations of the SVs
+    ///
+    /// @param p_instantiations list of SV instantiations
+    /// @param p_conditions additional conditions for sort instantiations
+    /// @throws GenericSortException iff the conditions could not be solved
     public static GenericSortInstantiations create(
             Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> p_instantiations,
             ImmutableList<GenericSortCondition> p_conditions, LogicServices services) {
@@ -68,14 +66,12 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * Create an object that holds instantiations of the generic sorts "p_sorts" satisfying the
-     * conditions "p_conditions"
-     *
-     * @param p_sorts generic sorts to instantiate
-     * @param p_conditions conditions the instantiations have to satisfy
-     * @throws GenericSortException if no instantiations has been found
-     */
+    /// Create an object that holds instantiations of the generic sorts "p_sorts" satisfying the
+    /// conditions "p_conditions"
+    ///
+    /// @param p_sorts generic sorts to instantiate
+    /// @param p_conditions conditions the instantiations have to satisfy
+    /// @throws GenericSortException if no instantiations has been found
     public static GenericSortInstantiations create(ImmutableList<GenericSort> p_sorts,
             ImmutableList<GenericSortCondition> p_conditions, LogicServices services) {
 
@@ -87,12 +83,10 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * @return {@code Boolean.TRUE} if the sorts used within "p_entry" are correct,
-     *         {@code Boolean.FALSE} if the
-     *         sorts are definitely incorrect, null if the sorts could (perhaps) be made correct by
-     *         choosing the right generic sort instantiations
-     */
+    /// @return `Boolean.TRUE` if the sorts used within "p_entry" are correct,
+    ///         `Boolean.FALSE` if the
+    ///         sorts are definitely incorrect, null if the sorts could (perhaps) be made correct by
+    ///         choosing the right generic sort instantiations
     public Boolean checkSorts(OperatorSV sv, InstantiationEntry<?> p_entry) {
         if (!(p_entry instanceof TermInstantiation) || sv instanceof ProgramSV) {
             return Boolean.TRUE;
@@ -113,11 +107,9 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * @return Boolean.TRUE if the generic sort instantiations within "this" satisfy "p_condition",
-     *         null otherwise (this means, "p_condition" could be satisfied by create a new
-     *         "GenericSortInstantiations"-object)
-     */
+    /// @return Boolean.TRUE if the generic sort instantiations within "this" satisfy "p_condition",
+    ///         null otherwise (this means, "p_condition" could be satisfied by create a new
+    ///         "GenericSortInstantiations"-object)
     public Boolean checkCondition(GenericSortCondition p_condition) {
         Sort s = insts.get(p_condition.getGenericSort());
 
@@ -142,10 +134,8 @@ public final class GenericSortInstantiations {
         return insts.isEmpty();
     }
 
-    /**
-     * Create a list of conditions establishing the instantiations stored by this object (not saying
-     * anything about further generic sorts)
-     */
+    /// Create a list of conditions establishing the instantiations stored by this object (not saying
+    /// anything about further generic sorts)
     public ImmutableList<GenericSortCondition> toConditions() {
         ImmutableList<GenericSortCondition> res = ImmutableSLList.nil();
 
@@ -159,11 +149,9 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * @return p_s iff p_s is not a generic sort, the concrete sort p_s is instantiated with
-     *         currently otherwise
-     * @throws GenericSortException iff p_s is a generic sort which is not yet instantiated
-     */
+    /// @return p_s iff p_s is not a generic sort, the concrete sort p_s is instantiated with
+    ///         currently otherwise
+    /// @throws GenericSortException iff p_s is a generic sort which is not yet instantiated
     public Sort getRealSort(OperatorSV p_sv) {
         return getRealSort(p_sv.sort());
     }
@@ -179,19 +167,17 @@ public final class GenericSortInstantiations {
         return p_s;
     }
 
-    /** exception thrown if no solution exists */
+    /// exception thrown if no solution exists
     private final static GenericSortException UNSATISFIABLE_SORT_CONSTRAINTS =
         new GenericSortException("Conditions for generic sorts could not be solved: ",
             ImmutableSLList.nil());
 
-    /**
-     * Really solve the conditions given
-     *
-     * @param p_sorts generic sorts that must be instantiated
-     * @param p_conditions conditions to be solved
-     * @throws GenericSortException no solution could be found
-     * @return the/a found solution
-     */
+    /// Really solve the conditions given
+    ///
+    /// @param p_sorts generic sorts that must be instantiated
+    /// @param p_conditions conditions to be solved
+    /// @throws GenericSortException no solution could be found
+    /// @return the/a found solution
     private static ImmutableMap<GenericSort, Sort> solve(ImmutableList<GenericSort> p_sorts,
             ImmutableList<GenericSortCondition> p_conditions, LogicServices services) {
 
@@ -222,15 +208,13 @@ public final class GenericSortInstantiations {
     private final static FailException FAIL_EXCEPTION = new FailException();
 
 
-    /**
-     * Method which is called recursively and tries to instantiate one (the first) generic sort from
-     * the "p_remainingSorts"-list
-     *
-     * @param p_remainingSorts generic sorts which needs to be instantiated (topologically sorted)
-     * @param p_curRes instantiations so far
-     * @param p_conditions conditions (see above)
-     * @return a solution if one could be found, null otherwise
-     */
+    /// Method which is called recursively and tries to instantiate one (the first) generic sort from
+    /// the "p_remainingSorts"-list
+    ///
+    /// @param p_remainingSorts generic sorts which needs to be instantiated (topologically sorted)
+    /// @param p_curRes instantiations so far
+    /// @param p_conditions conditions (see above)
+    /// @return a solution if one could be found, null otherwise
     private static ImmutableMap<GenericSort, Sort> solveHelp(
             ImmutableList<GenericSort> p_remainingSorts, ImmutableMap<GenericSort, Sort> p_curRes,
             ImmutableList<GenericSortCondition> p_conditions,
@@ -375,15 +359,13 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * Method which is called by solveHelp and tries to instantiate the generic sorts for which
-     * GSCForceInstantiation-conditions (with "maximum" parameter) are contained within
-     * "p_conditions"
-     *
-     * @param p_curRes instantiations so far
-     * @param p_conditions conditions (see above)
-     * @return a solution if one could be found, null otherwise
-     */
+    /// Method which is called by solveHelp and tries to instantiate the generic sorts for which
+    /// GSCForceInstantiation-conditions (with "maximum" parameter) are contained within
+    /// "p_conditions"
+    ///
+    /// @param p_curRes instantiations so far
+    /// @param p_conditions conditions (see above)
+    /// @return a solution if one could be found, null otherwise
     private static ImmutableMap<GenericSort, Sort> solveForcedInst(
             ImmutableList<GenericSort> p_remainingSorts, ImmutableMap<GenericSort, Sort> p_curRes,
             ImmutableList<GenericSortCondition> p_conditions, LogicServices services) {
@@ -405,15 +387,13 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * Method which is called recursively and tries to instantiate one (the first) generic sort from
-     * the "p_remainingSorts"-list
-     *
-     * @param p_remainingSorts generic sorts which needs to be instantiated (topologically sorted,
-     *        starting with the most general sort)
-     * @param p_curRes instantiations so far
-     * @return a solution if one could be found, null otherwise
-     */
+    /// Method which is called recursively and tries to instantiate one (the first) generic sort from
+    /// the "p_remainingSorts"-list
+    ///
+    /// @param p_remainingSorts generic sorts which needs to be instantiated (topologically sorted,
+    ///        starting with the most general sort)
+    /// @param p_curRes instantiations so far
+    /// @return a solution if one could be found, null otherwise
     private static ImmutableMap<GenericSort, Sort> solveForcedInstHelp(
             ImmutableList<GenericSort> p_remainingSorts, ImmutableMap<GenericSort, Sort> p_curRes,
             LogicServices services) {
@@ -481,12 +461,10 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * Sort generic sorts topologically, i.e. if sort A is a supersort of sort B, then A appears
-     * behind B within the return value
-     *
-     * @return sorted sorts
-     */
+    /// Sort generic sorts topologically, i.e. if sort A is a supersort of sort B, then A appears
+    /// behind B within the return value
+    ///
+    /// @return sorted sorts
     private static ImmutableList<GenericSort> topology(ImmutableList<GenericSort> p_sorts) {
         ImmutableList<GenericSort> res = ImmutableSLList.nil();
         Iterator<GenericSort> it;
@@ -525,11 +503,8 @@ public final class GenericSortInstantiations {
         return res;
     }
 
-    /**
-     * Find all minimal common supersorts of "p_itSorts"
-     *
-     * PRECONDITION: !p_sorts.isEmpty ()
-     */
+    /// Find all minimal common supersorts of "p_itSorts"
+    /// PRECONDITION: !p_sorts.isEmpty ()
     private static ImmutableList<Sort> minimalSupersorts(ImmutableList<Sort> p_sorts,
             LogicServices services) {
 
@@ -574,9 +549,7 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * Find all minimal elements of the given set <code>p_inside</code>
-     */
+    /// Find all minimal elements of the given set <code>p_inside</code>
     private static ImmutableList<Sort> findMinimalElements(Set<Sort> p_inside) {
         if (p_inside.size() == 1) {
             return ImmutableSLList.<Sort>nil().prepend(p_inside.iterator().next());
@@ -619,9 +592,7 @@ public final class GenericSortInstantiations {
 
 
 
-    /**
-     * @return true iff "p_s" is supersort of every sort of "p_subsorts"
-     */
+    /// @return true iff "p_s" is supersort of every sort of "p_subsorts"
     private static boolean isSupersortOf(Sort p_s, ImmutableList<Sort> p_subsorts) {
 
         for (Sort p_subsort : p_subsorts) {
@@ -634,10 +605,8 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * @return true iff "p_s" is a valid instantiation of the generic sort "p_gs", and this
-     *         instantiation is consistent with previously chosen instantiations
-     */
+    /// @return true iff "p_s" is a valid instantiation of the generic sort "p_gs", and this
+    ///         instantiation is consistent with previously chosen instantiations
     private static boolean isPossibleInstantiation(GenericSort p_gs, Sort p_s,
             ImmutableMap<GenericSort, Sort> p_curRes) {
 
@@ -674,10 +643,7 @@ public final class GenericSortInstantiations {
     }
 
 
-    /**
-     * ONLY FOR JUNIT TESTS
-     */
-
+    /// ONLY FOR JUNIT TESTS
     public ImmutableMap<GenericSort, Sort> getAllInstantiations() {
         return insts;
     }

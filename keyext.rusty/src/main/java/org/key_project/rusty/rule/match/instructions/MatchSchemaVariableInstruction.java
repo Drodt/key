@@ -26,12 +26,10 @@ public abstract class MatchSchemaVariableInstruction
         this.op = op;
     }
 
-    /**
-     * Tries to add the pair <tt>(this,term)</tt> to the match conditions. If successful the
-     * resulting conditions are returned, otherwise null. Failure is possible e.g. if this
-     * schemavariable has been already matched to a term <tt>t2</tt> which is not unifiable with the
-     * given term.
-     */
+    /// Tries to add the pair <tt>(this,term)</tt> to the match conditions. If successful the
+    /// resulting conditions are returned, otherwise null. Failure is possible e.g. if this
+    /// schemavariable has been already matched to a term <tt>t2</tt> which is not unifiable with the
+    /// given term.
     protected final MatchResultInfo addInstantiation(Term term,
             MatchResultInfo matchCond,
             LogicServices services) {
@@ -57,18 +55,16 @@ public abstract class MatchSchemaVariableInstruction
         }
     }
 
-    /**
-     * tries to match the schema variable of this instruction with the specified
-     * {@link RustyProgramElement} {@code instantiationCandidate} w.r.t. the given constraints by
-     * {@link MatchResultInfo}
-     *
-     * @param instantiationCandidate the {@link RustyProgramElement} to be matched
-     * @param mc the {@link MatchResultInfo} with additional constraints (e.g. previous matches of
-     *        this instructions {@link SchemaVariable})
-     * @param services the {@link Services}
-     * @return {@code null} if no matches have been found or the new {@link MatchResultInfo} with
-     *         the pair ({@link SchemaVariable}, {@link RustyProgramElement}) added
-     */
+    /// tries to match the schema variable of this instruction with the specified
+    /// [RustyProgramElement] `instantiationCandidate` w.r.t. the given constraints by
+    /// [MatchResultInfo]
+    ///
+    /// @param instantiationCandidate the [RustyProgramElement] to be matched
+    /// @param mc the [MatchResultInfo] with additional constraints (e.g. previous matches of
+    ///        this instructions [SchemaVariable])
+    /// @param services the [Services]
+    /// @return `null` if no matches have been found or the new [MatchResultInfo] with
+    ///         the pair ([SchemaVariable], [RustyProgramElement]) added
     public MatchResultInfo match(RustyProgramElement instantiationCandidate,
             MatchResultInfo mc,
             LogicServices services) {

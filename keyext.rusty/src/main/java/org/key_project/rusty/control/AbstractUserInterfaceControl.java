@@ -20,16 +20,12 @@ import org.key_project.rusty.proof.mgt.ProofEnvironment;
 
 public abstract class AbstractUserInterfaceControl
         implements UserInterfaceControl, ProblemLoaderControl {
-    /**
-     * Constructor.
-     */
+    /// Constructor.
     protected AbstractUserInterfaceControl() {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public Proof createProof(InitConfig initConfig, ProofOblInput input)
             throws ProofInputException {
@@ -39,20 +35,16 @@ public abstract class AbstractUserInterfaceControl
         return proofList.getFirstProof();
     }
 
-    /**
-     * registers the proof aggregate at the UI
-     *
-     * @param proofOblInput the {@link ProofOblInput}
-     * @param proofList the {@link ProofAggregate}
-     * @param initConfig the {@link InitConfig} to be used
-     * @return the new {@link ProofEnvironment} where the {@link ProofAggregate} has been registered
-     */
+    /// registers the proof aggregate at the UI
+    ///
+    /// @param proofOblInput the [ProofOblInput]
+    /// @param proofList the [ProofAggregate]
+    /// @param initConfig the [InitConfig] to be used
+    /// @return the new [ProofEnvironment] where the [ProofAggregate] has been registered
     protected abstract ProofEnvironment createProofEnvironmentAndRegisterProof(
             ProofOblInput proofOblInput, ProofAggregate proofList, InitConfig initConfig);
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public AbstractProblemLoader load(Profile profile, File file, List<File> classPath,
             File bootClassPath, List<File> includes, Properties poPropertiesToForce,
@@ -82,18 +74,16 @@ public abstract class AbstractUserInterfaceControl
         }
     }
 
-    /**
-     * <p>
-     * Creates a new {@link ProblemInitializer} instance which is configured for this
-     * {@link UserInterfaceControl}.
-     * </p>
-     * <p>
-     * This method is used by nearly all Eclipse based product that uses KeY.
-     * </p>
-     *
-     * @param profile The {@link Profile} to use.
-     * @return The instantiated {@link ProblemInitializer}.
-     */
+    ///
+    /// Creates a new [ProblemInitializer] instance which is configured for this
+    /// [UserInterfaceControl].
+    ///
+    ///
+    /// This method is used by nearly all Eclipse based product that uses KeY.
+    ///
+    ///
+    /// @param profile The [Profile] to use.
+    /// @return The instantiated [ProblemInitializer].
     protected ProblemInitializer createProblemInitializer(Profile profile) {
         return new ProblemInitializer(new Services(profile));
     }

@@ -15,16 +15,12 @@ import org.jspecify.annotations.NonNull;
 public class BoundVarsVisitor implements Visitor<@NonNull Term> {
     private ImmutableSet<QuantifiableVariable> bdVars = DefaultImmutableSet.nil();
 
-    /**
-     * creates a Visitor that collects all bound variables for the subterms of the term it is called
-     * from.
-     */
+    /// creates a Visitor that collects all bound variables for the subterms of the term it is called
+    /// from.
     public BoundVarsVisitor() {
     }
 
-    /**
-     * only called by execPostOrder in Term.
-     */
+    /// only called by execPostOrder in Term.
     public void visit(Term visited) {
         for (int i = 0, ar = visited.arity(); i < ar; i++) {
             for (int j = 0,
@@ -34,18 +30,14 @@ public class BoundVarsVisitor implements Visitor<@NonNull Term> {
         }
     }
 
-    /**
-     * visits a sequent
-     */
+    /// visits a sequent
     public void visit(Sequent visited) {
         for (var sf : visited) {
             visit(sf.formula());
         }
     }
 
-    /**
-     * returns all the bound variables that have been stored
-     */
+    /// returns all the bound variables that have been stored
     public ImmutableSet<QuantifiableVariable> getBoundVariables() {
         return bdVars;
     }

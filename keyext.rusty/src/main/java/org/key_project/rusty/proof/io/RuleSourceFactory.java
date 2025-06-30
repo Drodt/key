@@ -11,9 +11,7 @@ import org.key_project.rusty.proof.Proof;
 
 public class RuleSourceFactory {
 
-    /**
-     * Use this key to set a system property where rule resources have to be looked up.
-     */
+    /// Use this key to set a system property where rule resources have to be looked up.
     public static final String STD_TACLET_DIR_PROP_KEY = "org.key_project.stdTacletDirectory";
 
     private static final String PATH_TO_RULES = "rules/";
@@ -59,13 +57,11 @@ public class RuleSourceFactory {
         return initRuleFile(file, false);
     }
 
-    /**
-     * Initialise this object from a file
-     *
-     * @param file the non-<code>null</code> file reference
-     * @param compressed <code>true</code> iff the file is gzip-compressed
-     * @return the rule source read from the file.
-     */
+    /// Initialise this object from a file
+    ///
+    /// @param file the non-<code>null</code> file reference
+    /// @param compressed <code>true</code> iff the file is gzip-compressed
+    /// @return the rule source read from the file.
     public static RuleSource initRuleFile(final File file, boolean compressed) {
         if (compressed) {
             return new GZipFileRuleSource(file);

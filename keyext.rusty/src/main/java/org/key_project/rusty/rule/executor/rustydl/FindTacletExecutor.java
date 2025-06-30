@@ -85,54 +85,48 @@ public abstract class FindTacletExecutor
         return newGoals;
     }
 
-    /**
-     * applies the {@code add}-expressions of taclet goal descriptions
-     *
-     * @param add the {@link Sequent} with the uninstantiated {@link SequentFormula}'s to be added
-     *        to the goal's sequent
-     * @param currentSequent the {@link SequentChangeInfo} which is the current (intermediate)
-     *        result of applying the taclet
-     * @param whereToAdd the {@link PosInOccurrence} where to add the sequent or {@code null} if it
-     *        should just be added to the head of the sequent (otherwise it will be tried to add the
-     *        new formulas close to that position)
-     * @param posOfFind the {@link PosInOccurrence} providing the position information where the
-     *        match took place
-     * @param matchCond the {@link MatchConditions} with all required instantiations
-     * @param goal the Goal where the taclet is applied to
-     * @param ruleApp the {@link TacletApp} describing the current ongoing taclet application
-     * @param services the {@link Services} encapsulating all Rust model information
-     */
+    /// applies the `add`-expressions of taclet goal descriptions
+    ///
+    /// @param add the [Sequent] with the uninstantiated [SequentFormula]'s to be added
+    ///        to the goal's sequent
+    /// @param currentSequent the [SequentChangeInfo] which is the current (intermediate)
+    ///        result of applying the taclet
+    /// @param whereToAdd the [PosInOccurrence] where to add the sequent or `null` if it
+    ///        should just be added to the head of the sequent (otherwise it will be tried to add the
+    ///        new formulas close to that position)
+    /// @param posOfFind the [PosInOccurrence] providing the position information where the
+    ///        match took place
+    /// @param matchCond the [MatchConditions] with all required instantiations
+    /// @param goal the Goal where the taclet is applied to
+    /// @param ruleApp the [TacletApp] describing the current ongoing taclet application
+    /// @param services the [Services] encapsulating all Rust model information
     protected abstract void applyAdd(org.key_project.prover.sequent.Sequent add,
             SequentChangeInfo currentSequent,
             PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
             MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services);
 
-    /**
-     * applies the {@code replacewith}-expression of taclet goal descriptions
-     *
-     * @param gt the {@link TacletGoalTemplate} used to get the taclet's
-     *        {@code replacewith}-expression
-     * @param currentSequent the {@link SequentChangeInfo} which is the current (intermediate)
-     *        result of applying the taclet
-     * @param posOfFind the {@link PosInOccurrence} belonging to the find expression
-     * @param matchCond the {@link MatchConditions} with all required instantiations
-     * @param goal the {@link Goal} on which the taclet is applied
-     * @param ruleApp the {@link TacletApp} describing the current ongoing taclet application
-     * @param services the {@link Services} encapsulating all Rust model information
-     */
+    /// applies the `replacewith`-expression of taclet goal descriptions
+    ///
+    /// @param gt the [TacletGoalTemplate] used to get the taclet's
+    ///        `replacewith`-expression
+    /// @param currentSequent the [SequentChangeInfo] which is the current (intermediate)
+    ///        result of applying the taclet
+    /// @param posOfFind the [PosInOccurrence] belonging to the find expression
+    /// @param matchCond the [MatchConditions] with all required instantiations
+    /// @param goal the [Goal] on which the taclet is applied
+    /// @param ruleApp the [TacletApp] describing the current ongoing taclet application
+    /// @param services the [Services] encapsulating all Rust model information
     protected abstract void applyReplacewith(TacletGoalTemplate gt,
             SequentChangeInfo currentSequent, PosInOccurrence posOfFind, MatchConditions matchCond,
             Goal goal, RuleApp ruleApp, Services services);
 
-    /**
-     * creates a new position information object, describing where to add the formulas or
-     * {@code null} if it should just be added to the beginning
-     *
-     * @param tacletApp a TacletApp with application information
-     * @param gt the TacletGoalTemplate to be applied
-     * @param currentSequent the current sequent (the one of the new goal)
-     * @return the PosInOccurrence object describing where to add the formula
-     */
+    /// creates a new position information object, describing where to add the formulas or
+    /// `null` if it should just be added to the beginning
+    ///
+    /// @param tacletApp a TacletApp with application information
+    /// @param gt the TacletGoalTemplate to be applied
+    /// @param currentSequent the current sequent (the one of the new goal)
+    /// @return the PosInOccurrence object describing where to add the formula
     private PosInOccurrence updatePositionInformation(TacletApp tacletApp, TacletGoalTemplate gt,
             SequentChangeInfo currentSequent) {
         PosInOccurrence result = tacletApp.posInOccurrence();

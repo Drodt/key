@@ -22,13 +22,11 @@ public class SemisequentTacletAppIndex {
     private ImmutableMap<org.key_project.prover.sequent.SequentFormula, TermTacletAppIndex> termIndices =
         DefaultImmutableMap.nilMap();
 
-    /**
-     * Create an index object for the semisequent determined by <code>s</code> and
-     * <code>antec</code> that contains term indices for each formula.
-     *
-     * @param antec iff true create an index for the antecedent of <code>s</code>, otherwise for the
-     *        succedent
-     */
+    /// Create an index object for the semisequent determined by <code>s</code> and
+    /// <code>antec</code> that contains term indices for each formula.
+    ///
+    /// @param antec iff true create an index for the antecedent of <code>s</code>, otherwise for the
+    ///        succedent
     SemisequentTacletAppIndex(Sequent s, boolean antec, Services services,
             TacletIndex tacletIndex) {
         this.seq = s;
@@ -42,10 +40,8 @@ public class SemisequentTacletAppIndex {
         this.termIndices = orig.termIndices;
     }
 
-    /**
-     * Add indices for the given formulas to the map <code>termIndices</code>. Existing entries are
-     * replaced with the new indices. Note: destructive, use only when constructing new index
-     */
+    /// Add indices for the given formulas to the map <code>termIndices</code>. Existing entries are
+    /// replaced with the new indices. Note: destructive, use only when constructing new index
     private void addTermIndices(
             ImmutableList<? super org.key_project.prover.sequent.SequentFormula> cfmas,
             Services services,
@@ -58,10 +54,8 @@ public class SemisequentTacletAppIndex {
         }
     }
 
-    /**
-     * Add an index for the given formula to the map <code>termIndices</code>. An existing entry is
-     * replaced with the new one. Note: destructive, use only when constructing new index
-     */
+    /// Add an index for the given formula to the map <code>termIndices</code>. An existing entry is
+    /// replaced with the new one. Note: destructive, use only when constructing new index
     private void addTermIndex(org.key_project.prover.sequent.SequentFormula cfma, Services services,
             TacletIndex tacletIndex) {
         final PosInOccurrence pos = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
@@ -72,32 +66,24 @@ public class SemisequentTacletAppIndex {
         return new SemisequentTacletAppIndex(this);
     }
 
-    /**
-     * @return all taclet apps for the given position
-     */
+    /// @return all taclet apps for the given position
     public ImmutableList<NoPosTacletApp> getTacletAppAt(PosInOccurrence pos) {
         TermTacletAppIndex termIndex = getTermIndex(pos);
         return termIndex.getTacletAppAt(pos);
     }
 
-    /**
-     * Get term index for the formula to which position <code>pos</code> points
-     */
+    /// Get term index for the formula to which position <code>pos</code> points
     private TermTacletAppIndex getTermIndex(PosInOccurrence pos) {
         return termIndices.get(pos.sequentFormula());
     }
 
-    /**
-     * @return all taclet apps for or below the given position
-     */
+    /// @return all taclet apps for or below the given position
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos,
             Services services) {
         return getTermIndex(pos).getTacletAppAtAndBelow(pos, services);
     }
 
-    /**
-     * Create an index that additionally contains the taclet
-     */
+    /// Create an index that additionally contains the taclet
     public SemisequentTacletAppIndex addTaclet(NoPosTacletApp newTaclet, Services services,
             TacletIndex tacletIndex) {
         final SemisequentTacletAppIndex result = copy();
@@ -111,11 +97,9 @@ public class SemisequentTacletAppIndex {
         return result;
     }
 
-    /**
-     * Update the index for the given formula, which is supposed to be an element of the map
-     * <code>termIndices</code>, by adding the taclets that are selected by <code>filter</code>
-     * Note: destructive, use only when constructing new index
-     */
+    /// Update the index for the given formula, which is supposed to be an element of the map
+    /// <code>termIndices</code>, by adding the taclets that are selected by <code>filter</code>
+    /// Note: destructive, use only when constructing new index
     private void addTaclet(NoPosTacletApp newTaclet, SequentFormula cfma, Services services,
             TacletIndex tacletIndex) {
         final TermTacletAppIndex oldIndex = termIndices.get(cfma);

@@ -17,9 +17,7 @@ import org.antlr.v4.runtime.Token;
 import org.jspecify.annotations.NonNull;
 
 public class ProofReplayer {
-    /**
-     * This map is for the translation between symbols in the sexpr and the corresponding proof tag.
-     */
+    /// This map is for the translation between symbols in the sexpr and the corresponding proof tag.
     private static final Map<String, IProofFileParser.ProofElementID> proofSymbolElementId =
         new LinkedHashMap<>(32);
 
@@ -32,34 +30,30 @@ public class ProofReplayer {
     private ProofReplayer() {
     }
 
-    /**
-     * Replays the proof represented by the expression given in the {@link CharStream} after the
-     * position of the {@code token}.
-     *
-     * @param token the "\proof" with in the input stream
-     * @param input a valid input stream
-     * @param prl the proof replayer instance
-     * @param source the source of the stream, used for producing exceptions with locations
-     * @see #run(CharStream, IProofFileParser, int, URI)
-     */
+    /// Replays the proof represented by the expression given in the [CharStream] after the
+    /// position of the `token`.
+    ///
+    /// @param token the "\proof" with in the input stream
+    /// @param input a valid input stream
+    /// @param prl the proof replayer instance
+    /// @param source the source of the stream, used for producing exceptions with locations
+    /// @see #run(CharStream, IProofFileParser, int, URI)
     public static void run(@NonNull Token token, CharStream input, IProofFileParser prl,
             URI source) {
         input.seek(1 + token.getStopIndex()); // ends now on \proof|
         run(input, prl, token.getLine(), source);
     }
 
-    /**
-     * Replays the proof behind the given {@code input}. This method uses the {@link KeYLexer} to
-     * lex input stream, and parse them manually by consuming the tokens. It singals to the given
-     * {@link IProofFileParser} at start or end of an expr.
-     * <p>
-     * Avoid the usage of a parser, avoids also the construction of an ASTs.
-     *
-     * @param input a valid input stream
-     * @param prl the proof replayer interface
-     * @param startLine the starting of the sexpr needed for {@code prl}
-     * @param source the source of the stream, used for producing exceptions with locations
-     */
+    /// Replays the proof behind the given `input`. This method uses the [KeYLexer] to
+    /// lex input stream, and parse them manually by consuming the tokens. It singals to the given
+    /// [IProofFileParser] at start or end of an expr.
+    ///
+    /// Avoid the usage of a parser, avoids also the construction of an ASTs.
+    ///
+    /// @param input a valid input stream
+    /// @param prl the proof replayer interface
+    /// @param startLine the starting of the sexpr needed for `prl`
+    /// @param source the source of the stream, used for producing exceptions with locations
     public static void run(CharStream input, IProofFileParser prl, final int startLine,
             URI source) {
         KeYRustyLexer lexer = ParsingFacade.createLexer(input);

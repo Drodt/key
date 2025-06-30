@@ -20,26 +20,22 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Used to implement a Taclet that has no <I>find</I> part. This kind of taclet is not attached to
- * term or formula, but to a complete sequent. A typical representant is the <code>cut</code> rule.
- */
+/// Used to implement a Taclet that has no _find_ part. This kind of taclet is not attached to
+/// term or formula, but to a complete sequent. A typical representant is the <code>cut</code> rule.
 public class NoFindTaclet extends Taclet {
-    /**
-     * creates a {@link Taclet} (previously Schematic Theory Specific Rule) with the given
-     * parameters.
-     *
-     * @param name the name of the Taclet
-     * @param applPart contains the application part of a Taclet that is the if-sequent, the
-     *        variable conditions
-     * @param goalTemplates the IList containing all goal descriptions of the
-     *        taclet to be created
-     * @param ruleSets a list of rule sets for the Taclet
-     * @param attrs attributes for the Taclet; these are boolean values
-     * @param prefixMap a ImmutableMap that contains the prefix for each
-     *        SchemaVariable in the Taclet
-     * @param choices the SetOf<Choices> to which this taclet belongs to
-     */
+    /// creates a [Taclet] (previously Schematic Theory Specific Rule) with the given
+    /// parameters.
+    ///
+    /// @param name the name of the Taclet
+    /// @param applPart contains the application part of a Taclet that is the if-sequent, the
+    ///        variable conditions
+    /// @param goalTemplates the IList containing all goal descriptions of the
+    ///        taclet to be created
+    /// @param ruleSets a list of rule sets for the Taclet
+    /// @param attrs attributes for the Taclet; these are boolean values
+    /// @param prefixMap a ImmutableMap that contains the prefix for each
+    ///        SchemaVariable in the Taclet
+    /// @param choices the SetOf<Choices> to which this taclet belongs to
     public NoFindTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates, ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs,
@@ -54,20 +50,16 @@ public class NoFindTaclet extends Taclet {
         executor = new NoFindTacletExecutor(this);
     }
 
-    /**
-     * @return Set of schemavariables of {@code assumes} and the (optional) find part
-     */
+    /// @return Set of schemavariables of `assumes` and the (optional) find part
     @Override
     public ImmutableSet<SchemaVariable> getAssumesAndFindVariables() {
         return getAssumesVariables();
     }
 
-    /**
-     * the empty set as a no find taclet has no other entities where variables cann occur bound than
-     * in the goal templates
-     *
-     * @return empty set
-     */
+    /// the empty set as a no find taclet has no other entities where variables cann occur bound than
+    /// in the goal templates
+    ///
+    /// @return empty set
     @Override
     protected ImmutableSet<QuantifiableVariable> getBoundVariablesHelper() {
         return DefaultImmutableSet.nil();

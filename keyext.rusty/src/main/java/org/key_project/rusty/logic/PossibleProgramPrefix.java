@@ -6,33 +6,27 @@ package org.key_project.rusty.logic;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * this interface is implemented by program elements that may be matched by the inactive program
- * prefix
- */
+/// this interface is implemented by program elements that may be matched by the inactive program
+/// prefix
 public interface PossibleProgramPrefix extends RustyProgramElement {
     boolean isPrefix();
 
-    /** return true if there is a next prefix element */
+    /// return true if there is a next prefix element
     boolean hasNextPrefixElement();
 
-    /**
-     * return the next prefix element if no next prefix element is available an
-     * IndexOutOfBoundsException is thrown
-     */
+    /// return the next prefix element if no next prefix element is available an
+    /// IndexOutOfBoundsException is thrown
     PossibleProgramPrefix getNextPrefixElement();
 
-    /** return the last prefix element */
+    /// return the last prefix element
     PossibleProgramPrefix getLastPrefixElement();
 
-    /**
-     * returns an array with all prefix elements starting at this element
-     */
+    /// returns an array with all prefix elements starting at this element
     ImmutableArray<PossibleProgramPrefix> getPrefixElements();
 
-    /** returns the position of the first active child */
+    /// returns the position of the first active child
     PosInProgram getFirstActiveChildPos();
 
-    /** returns the length of the prefix */
+    /// returns the length of the prefix
     int getPrefixLength();
 }

@@ -21,9 +21,7 @@ public final class MetaDiv extends AbstractTermTransformer {
     }
 
 
-    /**
-     * checks whether the result is consistent with the axiom div_axiom
-     */
+    /// checks whether the result is consistent with the axiom div_axiom
     private boolean checkResult(BigInteger a, BigInteger b, BigInteger result) {
         // (gt(b,0) -> (leq(0,sub(a,mul(result,b))) & lt(sub(a,mul(result,b)),b)) )
         if (b.compareTo(BigInteger.ZERO) > 0) {
@@ -41,7 +39,7 @@ public final class MetaDiv extends AbstractTermTransformer {
     }
 
 
-    /** calculates the resulting term. */
+    /// calculates the resulting term.
     public Term transform(Term term, SVInstantiations svInst, Services services) {
         Term arg1 = term.sub(0);
         Term arg2 = term.sub(1);

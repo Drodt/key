@@ -16,9 +16,7 @@ import org.key_project.util.LRUCache;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/**
- * Class for analysing and modifying monomial expressions over the integers
- */
+/// Class for analysing and modifying monomial expressions over the integers
 public class Monomial {
     private final ImmutableList<Term> parts;
     private final BigInteger coefficient;
@@ -69,9 +67,7 @@ public class Monomial {
         return new Monomial(parts, coefficient.add(c));
     }
 
-    /**
-     * @return true iff the monomial <code>this</code> divides the monomial <code>m</code>
-     */
+    /// @return true iff the monomial <code>this</code> divides the monomial <code>m</code>
     public boolean divides(Monomial m) {
         if (m.coefficient.signum() == 0) {
             return true;
@@ -86,11 +82,9 @@ public class Monomial {
         return difference(this.parts, m.parts).isEmpty();
     }
 
-    /**
-     * @return true iff the variables/parts of <code>this</code> subsume the variables of
-     *         <code>m</code>, i.e., if each variable that occurs in <code>m</code> occurs in the
-     *         same or a higher power in <code>this</code>
-     */
+    /// @return true iff the variables/parts of <code>this</code> subsume the variables of
+    ///         <code>m</code>, i.e., if each variable that occurs in <code>m</code> occurs in the
+    ///         same or a higher power in <code>this</code>
     public boolean variablesSubsume(Monomial m) {
         return this.parts.size() >= m.parts.size() && difference(m.parts, this.parts).isEmpty();
     }
@@ -103,10 +97,8 @@ public class Monomial {
         return difference(m.parts, this.parts).size() == m.parts.size();
     }
 
-    /**
-     * @return true iff the coefficient of <code>m</code> can be made smaller (absolutely) by
-     *         subtracting a multiple of <code>this</code>
-     */
+    /// @return true iff the coefficient of <code>m</code> can be made smaller (absolutely) by
+    ///         subtracting a multiple of <code>this</code>
     public boolean reducible(Monomial m) {
         final BigInteger a = m.coefficient;
         final BigInteger c = this.coefficient;
@@ -119,9 +111,7 @@ public class Monomial {
         return difference(this.parts, m.parts).isEmpty();
     }
 
-    /**
-     * @return the result of dividing the monomial <code>m</code> by the monomial <code>this</code>
-     */
+    /// @return the result of dividing the monomial <code>m</code> by the monomial <code>this</code>
     public Monomial reduce(Monomial m) {
         final BigInteger a = m.coefficient;
         final BigInteger c = this.coefficient;
@@ -133,10 +123,8 @@ public class Monomial {
         return new Monomial(difference(m.parts, this.parts), LexPathOrdering.divide(a, c));
     }
 
-    /**
-     * @return the result of dividing the least common reducible (LCR) of monomial <code>m</code>
-     *         and <code>this</code> by the monomial <code>this</code>
-     */
+    /// @return the result of dividing the least common reducible (LCR) of monomial <code>m</code>
+    ///         and <code>this</code> by the monomial <code>this</code>
     public Monomial divideLCR(Monomial m) {
         assert !(coefficient.signum() == 0);
         assert !(m.coefficient.signum() == 0);
@@ -165,10 +153,8 @@ public class Monomial {
          */
     }
 
-    /**
-     * Extended euclidian algorithm for computing cofactors. This satisfies the equation
-     * <code>gcd(a,b)=a*cofactor(a,b)+b*cofactor(b,a)</code>
-     */
+    /// Extended euclidian algorithm for computing cofactors. This satisfies the equation
+    /// <code>gcd(a,b)=a*cofactor(a,b)+b*cofactor(b,a)</code>
     @SuppressWarnings("unused")
     private BigInteger cofactor(BigInteger v0, BigInteger v1) {
         final boolean neg = v0.signum() < 0;
@@ -282,10 +268,8 @@ public class Monomial {
         return res;
     }
 
-    /**
-     * @return the list of all terms that occur in <code>a</code> but not in <code>b</code>.
-     *         multiplicity is treated as well here, so this is really difference of multisets
-     */
+    /// @return the list of all terms that occur in <code>a</code> but not in <code>b</code>.
+    ///         multiplicity is treated as well here, so this is really difference of multisets
     private static ImmutableList<Term> difference(ImmutableList<Term> a, ImmutableList<Term> b) {
         ImmutableList<Term> res = a;
         final Iterator<Term> it = b.iterator();

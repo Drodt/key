@@ -13,12 +13,10 @@ import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.VariableCondition;
 
 
-/**
- * Checks whether the given statement is labeled, i.e., actual a LabeledStatement. This information
- * is obtained from the program prefix.
- *
- * @author Dominic Steinhoefel
- */
+/// Checks whether the given statement is labeled, i.e., actual a LabeledStatement. This information
+/// is obtained from the program prefix.
+///
+/// @author Dominic Steinhoefel
 public class IsLabeledCondition implements VariableCondition {
     private final boolean negated;
     private final ProgramSV exprSV;

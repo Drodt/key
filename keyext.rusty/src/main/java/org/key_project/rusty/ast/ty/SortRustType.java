@@ -8,9 +8,7 @@ import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-/**
- * Used for {@link KeYRustyType}s where there is no Rust type.
- */
+/// Used for [KeYRustyType]s where there is no Rust type.
 public record SortRustType(KeYRustyType krt) implements RustType {
     @Override
     public Type type() { return krt; }

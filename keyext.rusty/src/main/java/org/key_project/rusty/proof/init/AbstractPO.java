@@ -22,9 +22,7 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * An abstract proof obligation implementing common functionality.
- */
+/// An abstract proof obligation implementing common functionality.
 public abstract class AbstractPO implements IPersistablePO {
     protected TermBuilder tb;
     protected final InitConfig environmentConfig;
@@ -38,7 +36,7 @@ public abstract class AbstractPO implements IPersistablePO {
     private String header;
     private ProofAggregate proofAggregate;
 
-    /** number of currently visited nodes */
+    /// number of currently visited nodes
     private int index = 0;
 
     protected AbstractPO(InitConfig initConfig, Name name) {
@@ -113,12 +111,10 @@ public abstract class AbstractPO implements IPersistablePO {
         return c;
     }
 
-    /**
-     * Returns the name value from the given properties.
-     *
-     * @param properties The properties to read from.
-     * @return The name value.
-     */
+    /// Returns the name value from the given properties.
+    ///
+    /// @param properties The properties to read from.
+    /// @return The name value.
     public static String getName(Configuration properties) {
         return properties.getString(IPersistablePO.PROPERTY_NAME);
     }

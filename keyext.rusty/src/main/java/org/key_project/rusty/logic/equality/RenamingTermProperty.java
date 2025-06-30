@@ -19,27 +19,21 @@ import org.key_project.util.collection.ImmutableSLList;
 import static org.key_project.rusty.logic.equality.RenamingProgramElementProperty.RENAMING_PROGRAM_ELEMENT_PROPERTY;
 
 public class RenamingTermProperty implements Property<Term> {
-    /**
-     * The single instance of this property.
-     */
+    /// The single instance of this property.
     public static final RenamingTermProperty RENAMING_TERM_PROPERTY = new RenamingTermProperty();
 
-    /**
-     * This constructor is private as a single instance of this class should be shared. The instance
-     * can be accessed through {@link RenamingTermProperty#RENAMING_TERM_PROPERTY}.
-     */
+    /// This constructor is private as a single instance of this class should be shared. The instance
+    /// can be accessed through [#RENAMING_TERM_PROPERTY].
     private RenamingTermProperty() {}
 
-    /**
-     * Checks if {@code term2} is a term syntactically equal to {@code term1} modulo bound renaming.
-     *
-     * @param term1 a term
-     * @param term2 the term compared to {@code term1}
-     * @param v should not be used for this equality check
-     * @return {@code true} iff {@code term2} has the same values in operator, sort, arity,
-     *         varsBoundHere and RustyBlock as {@code term1} modulo bound renaming
-     * @param <V> is not needed for this equality check
-     */
+    /// Checks if `term2` is a term syntactically equal to `term1` modulo bound renaming.
+    ///
+    /// @param term1 a term
+    /// @param term2 the term compared to `term1`
+    /// @param v should not be used for this equality check
+    /// @return `true` iff `term2` has the same values in operator, sort, arity,
+    ///         varsBoundHere and RustyBlock as `term1` modulo bound renaming
+    /// @param <V> is not needed for this equality check
     @Override
     public <V> boolean equalsModThisProperty(Term term1, Term term2, V... v) {
         if (term2 == term1) {
@@ -49,12 +43,10 @@ public class RenamingTermProperty implements Property<Term> {
             ImmutableSLList.nil(), null);
     }
 
-    /**
-     * Computes the hash code of {@code term} modulo bound renaming.
-     *
-     * @param term the term to compute the hash code for
-     * @return the hash code
-     */
+    /// Computes the hash code of `term` modulo bound renaming.
+    ///
+    /// @param term the term to compute the hash code for
+    /// @return the hash code
     @Override
     public int hashCodeModThisProperty(Term term) {
         // Labels can be completely ignored
@@ -63,14 +55,12 @@ public class RenamingTermProperty implements Property<Term> {
 
     // equals modulo renaming logic
 
-    /**
-     * Compare two quantifiable variables if they are equal modulo renaming.
-     *
-     * @param ownVar first QuantifiableVariable to be compared
-     * @param cmpVar second QuantifiableVariable to be compared
-     * @param ownBoundVars variables bound above the current position
-     * @param cmpBoundVars variables bound above the current position
-     */
+    /// Compare two quantifiable variables if they are equal modulo renaming.
+    ///
+    /// @param ownVar first QuantifiableVariable to be compared
+    /// @param cmpVar second QuantifiableVariable to be compared
+    /// @param ownBoundVars variables bound above the current position
+    /// @param cmpBoundVars variables bound above the current position
     private static boolean compareBoundVariables(QuantifiableVariable ownVar,
             QuantifiableVariable cmpVar, ImmutableList<QuantifiableVariable> ownBoundVars,
             ImmutableList<QuantifiableVariable> cmpBoundVars) {
@@ -89,10 +79,8 @@ public class RenamingTermProperty implements Property<Term> {
         return ownNum == cmpNum;
     }
 
-    /**
-     * @return the index of the first occurrence of <code>var</code> in <code>list</code>, or
-     *         <code>-1</code> if the variable is not an element of the list
-     */
+    /// @return the index of the first occurrence of <code>var</code> in <code>list</code>, or
+    ///         <code>-1</code> if the variable is not an element of the list
     private static int indexOf(QuantifiableVariable var, ImmutableList<QuantifiableVariable> list) {
         int res = 0;
         while (!list.isEmpty()) {
@@ -105,15 +93,13 @@ public class RenamingTermProperty implements Property<Term> {
         return -1;
     }
 
-    /**
-     * Compares two terms modulo bound renaming.
-     *
-     * @param t0 the first term
-     * @param t1 the second term
-     * @param ownBoundVars variables bound above the current position
-     * @param cmpBoundVars variables bound above the current position
-     * @return <code>true</code> is returned iff the terms are equal modulo bound renaming
-     */
+    /// Compares two terms modulo bound renaming.
+    ///
+    /// @param t0 the first term
+    /// @param t1 the second term
+    /// @param ownBoundVars variables bound above the current position
+    /// @param cmpBoundVars variables bound above the current position
+    /// @return <code>true</code> is returned iff the terms are equal modulo bound renaming
     private boolean unifyHelp(Term t0, Term t1, ImmutableList<QuantifiableVariable> ownBoundVars,
             ImmutableList<QuantifiableVariable> cmpBoundVars, NameAbstractionTable nat) {
 
@@ -159,15 +145,13 @@ public class RenamingTermProperty implements Property<Term> {
         return descendRecursively(t0, t1, ownBoundVars, cmpBoundVars, nat);
     }
 
-    /**
-     * Handles the case where the first term is a quantifiable variable.
-     *
-     * @param t0 the first term
-     * @param t1 the second term
-     * @param ownBoundVars variables bound above the current position in {@code t0}
-     * @param cmpBoundVars variables bound above the current position in {@code t1}
-     * @return <code>true</code> iff the quantifiable variables are equal modulo renaming
-     */
+    /// Handles the case where the first term is a quantifiable variable.
+    ///
+    /// @param t0 the first term
+    /// @param t1 the second term
+    /// @param ownBoundVars variables bound above the current position in `t0`
+    /// @param cmpBoundVars variables bound above the current position in `t1`
+    /// @return <code>true</code> iff the quantifiable variables are equal modulo renaming
     private boolean handleQuantifiableVariable(Term t0, Term t1,
             ImmutableList<QuantifiableVariable> ownBoundVars,
             ImmutableList<QuantifiableVariable> cmpBoundVars) {
@@ -176,23 +160,19 @@ public class RenamingTermProperty implements Property<Term> {
                     (QuantifiableVariable) t1.op(), ownBoundVars, cmpBoundVars);
     }
 
-    /**
-     * used to encode that <tt>handleRusty</tt> results in an unsatisfiable constraint (faster than
-     * using exceptions)
-     */
+    /// used to encode that <tt>handleRusty</tt> results in an unsatisfiable constraint (faster than
+    /// using exceptions)
     private static final NameAbstractionTable FAILED = new NameAbstractionTable();
 
-    /**
-     * Checks whether the given {@link RustyBlock}s are equal modulo renaming and returns the
-     * updated
-     * {@link NameAbstractionTable} or {@link #FAILED} if the {@link RustyBlock}s are not equal.
-     *
-     * @param rb0 the first {@link RustyBlock} to compare
-     * @param rb1 the second {@link RustyBlock} to compare
-     * @param nat the {@link NameAbstractionTable} used for the comparison
-     * @return the updated {@link NameAbstractionTable} if the {@link RustyBlock}s are equal modulo
-     *         renaming or {@link #FAILED} if they are not
-     */
+    /// Checks whether the given [RustyBlock]s are equal modulo renaming and returns the
+    /// updated
+    /// [NameAbstractionTable] or [#FAILED] if the [RustyBlock]s are not equal.
+    ///
+    /// @param rb0 the first [RustyBlock] to compare
+    /// @param rb1 the second [RustyBlock] to compare
+    /// @param nat the [NameAbstractionTable] used for the comparison
+    /// @return the updated [NameAbstractionTable] if the [RustyBlock]s are equal modulo
+    ///         renaming or [#FAILED] if they are not
     private static NameAbstractionTable handleRusty(RustyBlock rb0, RustyBlock rb1,
             NameAbstractionTable nat) {
         if (!rb0.isEmpty() || !rb1.isEmpty()) {
@@ -204,14 +184,12 @@ public class RenamingTermProperty implements Property<Term> {
         return nat;
     }
 
-    /**
-     * Returns true if the given {@link RustyBlock}s are not equal modulo renaming.
-     *
-     * @param rb1 the first {@link RustyBlock}
-     * @param rb2 the second {@link RustyBlock}
-     * @param nat the {@link NameAbstractionTable} used for the comparison
-     * @return true if the given {@link RustyBlock}s are NOT equal modulo renaming
-     */
+    /// Returns true if the given [RustyBlock]s are not equal modulo renaming.
+    ///
+    /// @param rb1 the first [RustyBlock]
+    /// @param rb2 the second [RustyBlock]
+    /// @param nat the [NameAbstractionTable] used for the comparison
+    /// @return true if the given [RustyBlock]s are NOT equal modulo renaming
     public static boolean RustyBlocksNotEqualModRenaming(RustyBlock rb1, RustyBlock rb2,
             NameAbstractionTable nat) {
         RustyProgramElement pe1 = rb1.program();
@@ -224,17 +202,15 @@ public class RenamingTermProperty implements Property<Term> {
         return true;
     }
 
-    /**
-     * Recursively descends into the subterms of the given terms and checks if they are equal modulo
-     * renaming.
-     *
-     * @param t0 the first term
-     * @param t1 the second term
-     * @param ownBoundVars variables bound above the current position in {@code t0}
-     * @param cmpBoundVars variables bound above the current position in {@code t1}
-     * @param nat the {@link NameAbstractionTable} used for the comparison
-     * @return <code>true</code> iff the subterms are equal modulo renaming
-     */
+    /// Recursively descends into the subterms of the given terms and checks if they are equal modulo
+    /// renaming.
+    ///
+    /// @param t0 the first term
+    /// @param t1 the second term
+    /// @param ownBoundVars variables bound above the current position in `t0`
+    /// @param cmpBoundVars variables bound above the current position in `t1`
+    /// @param nat the [NameAbstractionTable] used for the comparison
+    /// @return <code>true</code> iff the subterms are equal modulo renaming
     private boolean descendRecursively(Term t0, Term t1,
             ImmutableList<QuantifiableVariable> ownBoundVars,
             ImmutableList<QuantifiableVariable> cmpBoundVars, NameAbstractionTable nat) {
@@ -268,13 +244,11 @@ public class RenamingTermProperty implements Property<Term> {
         return true;
     }
 
-    /**
-     * Checks if the given {@link NameAbstractionTable} is not null. If it is null, a new
-     * {@link NameAbstractionTable} is created and returned.
-     *
-     * @param nat the {@link NameAbstractionTable} to check
-     * @return the given {@code nat} if it is not null, a new {@link NameAbstractionTable} otherwise
-     */
+    /// Checks if the given [NameAbstractionTable] is not null. If it is null, a new
+    /// [NameAbstractionTable] is created and returned.
+    ///
+    /// @param nat the [NameAbstractionTable] to check
+    /// @return the given `nat` if it is not null, a new [NameAbstractionTable] otherwise
     private static NameAbstractionTable checkNat(NameAbstractionTable nat) {
         if (nat == null) {
             return new NameAbstractionTable();
@@ -286,18 +260,16 @@ public class RenamingTermProperty implements Property<Term> {
 
     /* -------- Helper methods for hashCodeModThisProperty --------- */
 
-    /**
-     * Helps to compute the hash code of a term modulo bound renaming.
-     * <p>
-     * This method takes care of the top level of the term and calls the recursive helper method
-     * {@link #recursiveHelper(Term, ImmutableList, int)} to take care of the subterms.
-     *
-     * @param term the term to compute the hash code for
-     * @param nameAbstractionList the list of bound variables that is used to abstract from the
-     *        variable names
-     * @param hashCode the accumulated hash code (should be 1 for the first call)
-     * @return the hash code
-     */
+    /// Helps to compute the hash code of a term modulo bound renaming.
+    ///
+    /// This method takes care of the top level of the term and calls the recursive helper method
+    /// [#recursiveHelper(Term,ImmutableList,int)] to take care of the subterms.
+    ///
+    /// @param term the term to compute the hash code for
+    /// @param nameAbstractionList the list of bound variables that is used to abstract from the
+    ///        variable names
+    /// @param hashCode the accumulated hash code (should be 1 for the first call)
+    /// @return the hash code
     private int hashTermHelper(Term term, ImmutableList<QuantifiableVariable> nameAbstractionList,
             int hashCode) {
         // mirrors the implementation of unifyHelp that is responsible for equality modulo renaming
@@ -318,18 +290,16 @@ public class RenamingTermProperty implements Property<Term> {
         return recursiveHelper(term, nameAbstractionList, hashCode);
     }
 
-    /**
-     * Computes the hash code of a quantifiable variable modulo bound renaming.
-     * <p>
-     * If the variable is bound, the hash code is computed based on the index of the variable in the
-     * list of bound variables.
-     * If the variable is not bound, the hash code is computed based on the variable itself.
-     *
-     * @param qv the {@link QuantifiableVariable} to compute the hash code for
-     * @param nameAbstractionList the list of bound variables that is used to abstract from the
-     *        variable names
-     * @return the hash code
-     */
+    /// Computes the hash code of a quantifiable variable modulo bound renaming.
+    ///
+    /// If the variable is bound, the hash code is computed based on the index of the variable in the
+    /// list of bound variables.
+    /// If the variable is not bound, the hash code is computed based on the variable itself.
+    ///
+    /// @param qv the [QuantifiableVariable] to compute the hash code for
+    /// @param nameAbstractionList the list of bound variables that is used to abstract from the
+    ///        variable names
+    /// @return the hash code
     private int hashQuantifiableVariable(QuantifiableVariable qv,
             ImmutableList<QuantifiableVariable> nameAbstractionList) {
         final int index = indexOf(qv, nameAbstractionList);
@@ -338,14 +308,12 @@ public class RenamingTermProperty implements Property<Term> {
         return index == -1 ? qv.hashCode() : index;
     }
 
-    /**
-     * Computes the hash code of a Rust block modulo bound renaming.
-     * <p>
-     * The hash code is computed based on the hash code of the program element of the Rust block.
-     *
-     * @param mod the {@link RModality} to compute the hash code for
-     * @return the hash code
-     */
+    /// Computes the hash code of a Rust block modulo bound renaming.
+    ///
+    /// The hash code is computed based on the hash code of the program element of the Rust block.
+    ///
+    /// @param mod the [RModality] to compute the hash code for
+    /// @return the hash code
     private int hashRustyBlock(RModality mod) {
         final RustyBlock rb = mod.programBlock();
         if (!rb.isEmpty()) {
@@ -356,18 +324,16 @@ public class RenamingTermProperty implements Property<Term> {
         return 0;
     }
 
-    /**
-     * Recursively computes the hash code of a term modulo bound renaming.
-     * <p>
-     * This method iterates over the subterms of the given term and calls
-     * {@link #hashTermHelper(Term, ImmutableList, int)} for each subterm.
-     *
-     * @param term the term to compute the hash code for
-     * @param nameAbstractionList the list of bound variables that is used to abstract from the
-     *        variable names
-     * @param hashCode the accumulated hash code
-     * @return the hash code
-     */
+    /// Recursively computes the hash code of a term modulo bound renaming.
+    ///
+    /// This method iterates over the subterms of the given term and calls
+    /// [#hashTermHelper(Term,ImmutableList,int)] for each subterm.
+    ///
+    /// @param term the term to compute the hash code for
+    /// @param nameAbstractionList the list of bound variables that is used to abstract from the
+    ///        variable names
+    /// @param hashCode the accumulated hash code
+    /// @return the hash code
     private int recursiveHelper(Term term, ImmutableList<QuantifiableVariable> nameAbstractionList,
             int hashCode) {
         for (int i = 0; i < term.arity(); i++) {

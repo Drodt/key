@@ -53,12 +53,10 @@ public class ExpressionBuilder extends DefaultBuilder {
         super(services, nss);
     }
 
-    /**
-     * Given a raw modality string, this function trims the modality information.
-     *
-     * @param raw non-null string
-     * @return non-null string
-     */
+    /// Given a raw modality string, this function trims the modality information.
+    ///
+    /// @param raw non-null string
+    /// @return non-null string
     public static String trimRustyBlock(String raw) {
         if (raw.startsWith("\\<")) {
             return StringUtil.trim(raw, "\\<>");
@@ -78,9 +76,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         return raw.substring(start, end);
     }
 
-    /**
-     * Given a raw modality string, this method determines the operator name.
-     */
+    /// Given a raw modality string, this method determines the operator name.
     public static String operatorOfRustyBlock(String raw) {
         if (raw.startsWith("\\<")) {
             return "diamond";
@@ -848,12 +844,10 @@ public class ExpressionBuilder extends DefaultBuilder {
         return mapOf(ctx.term());
     }
 
-    /**
-     * Handles "[sort]::a.name.or.something.else"
-     *
-     * @param ctx
-     * @return a Term or an operator, depending on the referenced object.
-     */
+    /// Handles "[sort]::a.name.or.something.else"
+    ///
+    /// @param ctx
+    /// @return a Term or an operator, depending on the referenced object.
     @Override
     public Object visitFuncpred_name(KeYRustyParser.Funcpred_nameContext ctx) {
         Sort sortId = accept(ctx.sortId());

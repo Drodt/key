@@ -49,14 +49,10 @@ public class TacletPBuilder extends ExpressionBuilder {
 
     private final List<Taclet> topLevelTaclets = new ArrayList<>(2048);
 
-    /**
-     * Current required choices for taclets
-     */
+    /// Current required choices for taclets
     private ChoiceExpr requiredChoices = ChoiceExpr.TRUE;
 
-    /**
-     * Required choices for taclet goals.
-     */
+    /// Required choices for taclet goals.
     private ChoiceExpr goalChoice = ChoiceExpr.TRUE;
 
     // --------------------------

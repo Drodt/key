@@ -16,24 +16,18 @@ import org.key_project.rusty.logic.RustyDLTheory;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * This class is used to represent a dynamic logic modality like diamond and box (but also
- * extensions of DL like preserves and throughout are possible in the future).
- */
+/// This class is used to represent a dynamic logic modality like diamond and box (but also
+/// extensions of DL like preserves and throughout are possible in the future).
 public class RModality extends org.key_project.logic.op.Modality {
-    /**
-     * keeps track of created modalities
-     */
+    /// keeps track of created modalities
     private static final Map<RustyProgramElement, WeakHashMap<RustyModalityKind, WeakReference<RModality>>> modalities =
         new WeakHashMap<>();
 
-    /**
-     * Retrieves the modality of the given useKind and program.
-     *
-     * @param kind the useKind of the modality such as diamond or box
-     * @param rb the program of this modality
-     * @return the modality of the given useKind and program.
-     */
+    /// Retrieves the modality of the given useKind and program.
+    ///
+    /// @param kind the useKind of the modality such as diamond or box
+    /// @param rb the program of this modality
+    /// @return the modality of the given useKind and program.
     public static synchronized RModality getModality(RustyModalityKind kind, RustyBlock rb) {
         var kind2mod = modalities.get(rb.program());
         final RModality mod;
@@ -60,11 +54,8 @@ public class RModality extends org.key_project.logic.op.Modality {
 
     private final RustyBlock block;
 
-    /**
-     * Creates a modal operator with the given name
-     * <strong>Creation must only be done by ???!</strong>
-     *
-     */
+    /// Creates a modal operator with the given name
+    /// **Creation must only be done by ???!**
     private RModality(RustyBlock prg, RustyModalityKind kind) {
         super(kind.name(), RustyDLTheory.FORMULA, kind);
         this.block = prg;
@@ -97,16 +88,12 @@ public class RModality extends org.key_project.logic.op.Modality {
 
     public static class RustyModalityKind extends Kind {
         private static final Map<String, RustyModalityKind> kinds = new HashMap<>();
-        /**
-         * The diamond operator of dynamic logic. A formula <alpha;>Phi can be read as after
-         * processing
-         * the program alpha there exists a state such that Phi holds.
-         */
+        /// The diamond operator of dynamic logic. A formula <alpha;>Phi can be read as after
+        /// processing
+        /// the program alpha there exists a state such that Phi holds.
         public static final RustyModalityKind DIA = new RustyModalityKind(new Name("diamond"));
-        /**
-         * The box operator of dynamic logic. A formula [alpha;]Phi can be read as 'In all states
-         * reachable processing the program alpha the formula Phi holds'.
-         */
+        /// The box operator of dynamic logic. A formula [alpha;]Phi can be read as 'In all states
+        /// reachable processing the program alpha the formula Phi holds'.
         public static final RustyModalityKind BOX = new RustyModalityKind(new Name("box"));
 
         public RustyModalityKind(Name name) {
@@ -118,9 +105,7 @@ public class RModality extends org.key_project.logic.op.Modality {
             return kinds.get(name);
         }
 
-        /**
-         * Whether this modality is termination sensitive, i.e., it is a "diamond-useKind" modality.
-         */
+        /// Whether this modality is termination sensitive, i.e., it is a "diamond-useKind" modality.
         public boolean terminationSensitive() {
             return (this == DIA);
         }

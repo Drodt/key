@@ -13,17 +13,15 @@ import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
-    /** term that replaces another one */
+    /// term that replaces another one
     private final Term replacewith;
 
-    /**
-     * creates new Goaldescription
-     *
-     * @param addedSeq new Sequent to be added
-     * @param addedRules IList<Taclet> contains the new allowed rules at this branch
-     * @param replacewith the Term that replaces another one
-     * @param pvs the set of schema variables
-     */
+    /// creates new Goaldescription
+    ///
+    /// @param addedSeq new Sequent to be added
+    /// @param addedRules IList<Taclet> contains the new allowed rules at this branch
+    /// @param replacewith the Term that replaces another one
+    /// @param pvs the set of schema variables
     public RewriteTacletGoalTemplate(org.key_project.prover.sequent.Sequent addedSeq,
             ImmutableList<Taclet> addedRules,
             Term replacewith, ImmutableSet<SchemaVariable> pvs) {
@@ -44,11 +42,9 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
     }
 
 
-    /**
-     * a Taclet may replace a Term by another. The new Term is returned.
-     *
-     * @return Term being paramter in the rule goal replacewith(Seq)
-     */
+    /// a Taclet may replace a Term by another. The new Term is returned.
+    ///
+    /// @return Term being paramter in the rule goal replacewith(Seq)
     public Term replaceWith() {
         return replacewith;
     }

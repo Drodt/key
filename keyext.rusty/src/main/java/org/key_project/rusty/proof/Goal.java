@@ -29,20 +29,14 @@ import org.jspecify.annotations.Nullable;
 
 public final class Goal implements ProofGoal<@NonNull Goal> {
     private Node node;
-    /**
-     * The namespaces local to this goal. This may evolve over time.
-     */
+    /// The namespaces local to this goal. This may evolve over time.
     private NamespaceSet localNamespaces;
-    /**
-     * list of all applied rule applications at this branch
-     */
+    /// list of all applied rule applications at this branch
     private ImmutableList<RuleApp> appliedRuleApps = ImmutableSLList.nil();
 
     private final RuleAppIndex ruleAppIndex;
 
-    /**
-     * creates a new goal referencing the given node
-     */
+    /// creates a new goal referencing the given node
     public Goal(Node node, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
             NamespaceSet localNamespace) {
         this.node = node;
@@ -60,9 +54,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
     }
 
-    /**
-     * copy constructor
-     */
+    /// copy constructor
     private Goal(Node node, RuleAppIndex ruleAppIndex, ImmutableList<RuleApp> appliedRuleApps,
             NamespaceSet localNamespace) {
         this.node = node;
@@ -79,11 +71,9 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         this.node = node;
     }
 
-    /**
-     * returns the namespaces for this goal.
-     *
-     * @return an up-to-date non-null namespaces-set.
-     */
+    /// returns the namespaces for this goal.
+    ///
+    /// @return an up-to-date non-null namespaces-set.
     public NamespaceSet getLocalNamespaces() {
         return localNamespaces;
     }
@@ -92,12 +82,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return ruleAppIndex;
     }
 
-    /**
-     * puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node of
-     * the goal
-     *
-     * @param app the applied rule app
-     */
+    /// puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node of
+    /// the goal
+    ///
+    /// @param app the applied rule app
     public void addAppliedRuleApp(RuleApp app) {
         // Last app first makes inserting and searching faster
         appliedRuleApps = appliedRuleApps.prepend(app);
@@ -152,13 +140,11 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return null;
     }
 
-    /**
-     * creates n new nodes as children of the referenced node and new n goals that have references
-     * to these new nodes.
-     *
-     * @param n number of goals to create
-     * @return the list of new created goals.
-     */
+    /// creates n new nodes as children of the referenced node and new n goals that have references
+    /// to these new nodes.
+    ///
+    /// @param n number of goals to create
+    /// @return the list of new created goals.
     public ImmutableList<Goal> split(int n) {
         ImmutableList<Goal> goalList = ImmutableSLList.nil();
 
@@ -193,22 +179,18 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return goalList;
     }
 
-    /**
-     * PRECONDITION: appliedRuleApps.size () > 0
-     */
+    /// PRECONDITION: appliedRuleApps.size () > 0
     public void removeLastAppliedRuleApp() {
         appliedRuleApps = appliedRuleApps.tail();
         // node ().setAppliedRuleApp ( null );
     }
 
-    /**
-     * clones the goal (with copy of tacletindex and ruleAppIndex).
-     * <p>
-     * The local symbols are reused. This is taken care of later.
-     *
-     * @param node the new Node to which the goal is attached
-     * @return Object the clone
-     */
+    /// clones the goal (with copy of tacletindex and ruleAppIndex).
+    ///
+    /// The local symbols are reused. This is taken care of later.
+    ///
+    /// @param node the new Node to which the goal is attached
+    /// @return Object the clone
     public Goal clone(Node node) {
         Goal clone;
         clone = new Goal(node, ruleAppIndex, appliedRuleApps, localNamespaces);
@@ -219,12 +201,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return node.proof();
     }
 
-    /**
-     * sets the sequent of the node
-     *
-     * @param sci SequentChangeInfo containing the sequent to be set and describing the applied
-     *        changes to the sequent of the node currently pointed to by this goal
-     */
+    /// sets the sequent of the node
+    ///
+    /// @param sci SequentChangeInfo containing the sequent to be set and describing the applied
+    ///        changes to the sequent of the node currently pointed to by this goal
     public void setSequent(SequentChangeInfo sci) {
         assert sci.getOriginalSequent() == getNode().sequent();
         if (!sci.hasChanged()) {
@@ -239,24 +219,20 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         // TODO @ DD
     }
 
-    /**
-     * puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current
-     * RuleAppIndex.
-     *
-     * @param app the TacletApp
-     */
+    /// puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current
+    /// RuleAppIndex.
+    ///
+    /// @param app the TacletApp
     public void addNoPosTacletApp(NoPosTacletApp app) {
         getNode().addNoPosTacletApp(app);
         ruleAppIndex.addNoPosTacletApp(app);
     }
 
-    /**
-     * creates a new TacletApp and puts it to the set of TacletApps at the node of the goal and to
-     * the current RuleAppIndex.
-     *
-     * @param rule the Taclet of the TacletApp to create
-     * @param insts the given instantiations of the TacletApp to be created
-     */
+    /// creates a new TacletApp and puts it to the set of TacletApps at the node of the goal and to
+    /// the current RuleAppIndex.
+    ///
+    /// @param rule the Taclet of the TacletApp to create
+    /// @param insts the given instantiations of the TacletApp to be created
     public void addTaclet(Taclet rule, SVInstantiations insts, boolean isAxiom) {
         NoPosTacletApp tacletApp =
             NoPosTacletApp.createFixedNoPosTacletApp(rule, insts, proof().getServices());
@@ -317,37 +293,31 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         localNamespaces.programVariables().addSafely(pv);
     }
 
-    /**
-     * Update the local namespaces from a namespace set.
-     * <p>
-     * The parameter is copied and stored locally.
-     *
-     * @param ns a non-null set of namesspaces which applies to this goal.
-     */
+    /// Update the local namespaces from a namespace set.
+    ///
+    /// The parameter is copied and stored locally.
+    ///
+    /// @param ns a non-null set of namesspaces which applies to this goal.
     public void makeLocalNamespacesFrom(NamespaceSet ns) {
         this.localNamespaces = ns.copyWithParent().copyWithParent();
     }
 
-    /**
-     * adds a formula to the antecedent or succedent of a sequent. Either at its front or back and
-     * informs the rule application index about this change
-     *
-     * @param sf the SequentFormula to be added
-     * @param inAntec boolean true(false) if SequentFormula has to be added to antecedent
-     *        (succedent)
-     * @param first boolean true if at the front, if false then sf is added at the back
-     */
+    /// adds a formula to the antecedent or succedent of a sequent. Either at its front or back and
+    /// informs the rule application index about this change
+    ///
+    /// @param sf the SequentFormula to be added
+    /// @param inAntec boolean true(false) if SequentFormula has to be added to antecedent
+    ///        (succedent)
+    /// @param first boolean true if at the front, if false then sf is added at the back
     public void addFormula(SequentFormula sf, boolean inAntec, boolean first) {
         setSequent(sequent().addFormula(sf, inAntec, first));
     }
 
-    /**
-     * replaces a formula at the given position and informs the rule application index about this
-     * change
-     *
-     * @param sf the SequentFormula replacing the old one
-     * @param p the PosInOccurrence encoding the position
-     */
+    /// replaces a formula at the given position and informs the rule application index about this
+    /// change
+    ///
+    /// @param sf the SequentFormula replacing the old one
+    /// @param p the PosInOccurrence encoding the position
     public void changeFormula(SequentFormula sf, PosInOccurrence p) {
         setSequent(sequent().changeFormula(sf, p));
     }

@@ -10,40 +10,28 @@ import org.key_project.logic.Namespace;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * A POJO representing the information on choices in ASTs.
- * <p>
- * Notion: A choice, e.g. {@code permission:on} contains a category {@code permission} and an option
- * {@code on}.
- *
- * @author Alexander Weigl
- * @version 1 (12/5/19)
- */
+/// A POJO representing the information on choices in ASTs.
+///
+/// Notion: A choice, e.g. `permission:on` contains a category `permission` and an option
+/// `on`.
+///
+/// @author Alexander Weigl
+/// @version 1 (12/5/19)
 public class ChoiceInformation {
-    /**
-     * A map from a found category to a set of possible (defined) options.
-     */
+    /// A map from a found category to a set of possible (defined) options.
     private final Map<String, Set<String>> foundChoicesAndOptions = new HashMap<>();
 
-    /**
-     * This set contains categories were an options was activated. Helps to prevent double
-     * activation of contradictory options.
-     */
+    /// This set contains categories were an options was activated. Helps to prevent double
+    /// activation of contradictory options.
     private final HashSet<String> activatedChoicesCategories = new LinkedHashSet<>();
 
-    /**
-     * This set contains the activated choices.
-     */
+    /// This set contains the activated choices.
     private final Set<Choice> activatedChoices = new HashSet<>();
 
-    /**
-     * This namespace contains all found choices.
-     */
+    /// This namespace contains all found choices.
     private final Namespace<Choice> choices;
 
-    /**
-     * This map contains the default option for every category.
-     */
+    /// This map contains the default option for every category.
     private final Map<String, String> defaultOptions = new TreeMap<>();
 
     public ChoiceInformation() {

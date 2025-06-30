@@ -6,8 +6,6 @@ package org.key_project.rusty.rule;
 
 public interface Rule
         extends org.key_project.prover.rules.Rule {
-    /**
-     * returns the display name of the rule
-     */
+    /// returns the display name of the rule
     String displayName();
 }

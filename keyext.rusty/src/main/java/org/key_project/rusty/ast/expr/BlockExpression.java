@@ -126,7 +126,7 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
         return prefixLength;
     }
 
-    /** computes the prefix elements for the given array of statment block */
+    /// computes the prefix elements for the given array of statment block
     public static ImmutableArray<PossibleProgramPrefix> computePrefixElements(
             PossibleProgramPrefix current) {
         final ArrayList<PossibleProgramPrefix> prefix = new ArrayList<>();

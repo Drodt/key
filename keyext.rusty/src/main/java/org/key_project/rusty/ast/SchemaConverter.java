@@ -44,10 +44,8 @@ public class SchemaConverter {
     private final Map<VariableDeclaration, ProgramVariable> programVariables = new HashMap<>();
 
     private final Services services;
-    /**
-     * Whether the converter is in declaration mode, i.e., any IdentPattern encountered must create
-     * a new PV.
-     */
+    /// Whether the converter is in declaration mode, i.e., any IdentPattern encountered must create
+    /// a new PV.
     private boolean inDeclarationMode = false;
     private ProgramVariable declaredVariable = null;
     private KeYRustyType declaredType = null;

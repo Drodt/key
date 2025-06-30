@@ -14,10 +14,8 @@ import org.key_project.util.collection.ImmutableSet;
 import org.jspecify.annotations.NonNull;
 
 
-/**
- * This singleton class implements a general conditional operator
- * <tt>\if (phi) \then (t1) \else (t2)</tt>.
- */
+/// This singleton class implements a general conditional operator
+/// <tt>\if (phi) \then (t1) \else (t2)</tt>.
 public final class IfThenElse extends AbstractOperator {
 
     public static final IfThenElse IF_THEN_ELSE = new IfThenElse();

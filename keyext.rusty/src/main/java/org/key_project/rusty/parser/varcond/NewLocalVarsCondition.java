@@ -22,35 +22,25 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/**
- * For the loop scope rule, if a local program variable that may be altered by the loop body appears
- * in the frame condition,
- * it is necessary to use the value <i>before</i> the loop first executes in the frame condition.
- * <br>
- * To achieve this, this condition generates (1) the "before" version of each variable that may be
- * written to by the loop
- * {@link MiscTools#getLocalOuts(ProgramElement, Services)}; (2) an update storing the value of each
- * such PV in its "before" version,
- * i.e., {@code {...||i_before := i||...}}; (3) the reverse of the update, to be applied to the
- * frame condition, i.e.,
- * {@code {...||i := i_before||...}}.
- */
+/// For the loop scope rule, if a local program variable that may be altered by the loop body appears
+/// in the frame condition,
+/// it is necessary to use the value _before_ the loop first executes in the frame condition.
+///
+/// To achieve this, this condition generates (1) the "before" version of each variable that may be
+/// written to by the loop
+/// [#getLocalOuts(ProgramElement,Services)]; (2) an update storing the value of each
+/// such PV in its "before" version,
+/// i.e., `{...||i_before := i||...}`; (3) the reverse of the update, to be applied to the
+/// frame condition, i.e.,
+/// `{...||i := i_before||...}`.
 public class NewLocalVarsCondition implements VariableCondition {
-    /**
-     * A SV that will store variable declarations for the "before" version of variables.
-     */
+    /// A SV that will store variable declarations for the "before" version of variables.
     private final SchemaVariable varDeclsSV;
-    /**
-     * Will store the update {@code {...||i_before := i||...}}.
-     */
+    /// Will store the update `{...||i_before := i||...}`.
     private final SchemaVariable updateBeforeSV;
-    /**
-     * Will store the update {@code {...||i := i_before||...}}.
-     */
+    /// Will store the update `{...||i := i_before||...}`.
     private final SchemaVariable updateFrameSV;
-    /**
-     * The loop body.
-     */
+    /// The loop body.
     private final SchemaVariable bodySV;
 
     public NewLocalVarsCondition(SchemaVariable varDeclsSV, SchemaVariable updateBeforeSV,

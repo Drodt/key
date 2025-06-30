@@ -15,7 +15,7 @@ import org.key_project.rusty.logic.op.sv.VariableSV;
 
 import org.jspecify.annotations.Nullable;
 
-/** This instruction matches the variable below a binder (e.g. a quantifier). */
+/// This instruction matches the variable below a binder (e.g. a quantifier).
 public class BindVariablesInstruction {
 
     public static MatchInstruction create(QuantifiableVariable var) {
@@ -29,11 +29,9 @@ public class BindVariablesInstruction {
     private record LogicVariableBinder(BoundVariable templateVar)
             implements MatchInstruction {
 
-        /**
-         * a match between two logic variables is possible if they have been assigned they are same
-         * or
-         * have been assigned to the same abstract name and the sorts are equal.
-         */
+        /// a match between two logic variables is possible if they have been assigned they are same
+        /// or
+        /// have been assigned to the same abstract name and the sorts are equal.
         private MatchResultInfo match(
                 BoundVariable instantiationCandidate, MatchResultInfo matchCond,
                 LogicServices ignoredServices) {

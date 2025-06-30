@@ -15,28 +15,20 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/**
- * Replaces operators in a term by other operators with the same signature, or subterms of the term
- * by other terms with the same sort. Does not replace in rusty blocks.
- */
+/// Replaces operators in a term by other operators with the same signature, or subterms of the term
+/// by other terms with the same sort. Does not replace in rusty blocks.
 public class OpReplacer {
-    /**
-     * Term factory.
-     */
+    /// Term factory.
     private final TermFactory tf;
 
-    /**
-     * The replacement map.
-     */
+    /// The replacement map.
     private final ReplacementMap<? extends SyntaxElement, ? extends SyntaxElement> map;
 
-    /**
-     * Creates an {@code OpReplacer}.
-     *
-     * @param map map mapping from the operators/terms to be replaced to the ones to replace them
-     *        with.
-     * @param tf a term factory.
-     */
+    /// Creates an `OpReplacer`.
+    ///
+    /// @param map map mapping from the operators/terms to be replaced to the ones to replace them
+    ///        with.
+    /// @param tf a term factory.
     public OpReplacer(Map<? extends SyntaxElement, ? extends SyntaxElement> map, TermFactory tf) {
         assert map != null;
 
@@ -47,17 +39,15 @@ public class OpReplacer {
         this.tf = tf;
     }
 
-    /**
-     * <p>
-     * Replace a sub-term.
-     * </p>
-     *
-     * @param toReplace the sub-term to replace.
-     * @param with the replacement sub-term.
-     * @param in the term in which to perform the replacement.
-     * @param tf a term factory.
-     * @return a term with all occurences of the sub-term replaced.
-     */
+    ///
+    /// Replace a sub-term.
+    ///
+    ///
+    /// @param toReplace the sub-term to replace.
+    /// @param with the replacement sub-term.
+    /// @param in the term in which to perform the replacement.
+    /// @param tf a term factory.
+    /// @return a term with all occurences of the sub-term replaced.
     public static Term replace(Term toReplace, Term with, Term in, TermFactory tf) {
         Map<Term, Term> map = new LinkedHashMap<>();
         map.put(toReplace, with);
@@ -65,17 +55,15 @@ public class OpReplacer {
         return or.replace(in);
     }
 
-    /**
-     * <p>
-     * Replace a sub-term.
-     * </p>
-     *
-     * @param toReplace the sub-term to replace.
-     * @param with the replacement sub-term.
-     * @param in the terms in which to perform the replacement.
-     * @param tf a term factory.
-     * @return the terms with all occurences of the sub-term replaced.
-     */
+    ///
+    /// Replace a sub-term.
+    ///
+    ///
+    /// @param toReplace the sub-term to replace.
+    /// @param with the replacement sub-term.
+    /// @param in the terms in which to perform the replacement.
+    /// @param tf a term factory.
+    /// @return the terms with all occurences of the sub-term replaced.
     public static ImmutableList<Term> replace(Term toReplace, Term with, ImmutableList<Term> in,
             TermFactory tf) {
         Map<Term, Term> map = new LinkedHashMap<>();
@@ -84,17 +72,15 @@ public class OpReplacer {
         return or.replace(in);
     }
 
-    /**
-     * <p>
-     * Replace an operator.
-     * </p>
-     *
-     * @param toReplace the operator to replace.
-     * @param with the replacement operator.
-     * @param in the term in which to perform the replacement.
-     * @param tf a term factory.
-     * @return a term with all occurences of the operator replaced.
-     */
+    ///
+    /// Replace an operator.
+    ///
+    ///
+    /// @param toReplace the operator to replace.
+    /// @param with the replacement operator.
+    /// @param in the term in which to perform the replacement.
+    /// @param tf a term factory.
+    /// @return a term with all occurences of the operator replaced.
     public static Term replace(Operator toReplace, Operator with, Term in, TermFactory tf) {
         Map<Operator, Operator> map = new LinkedHashMap<>();
         map.put(toReplace, with);
@@ -102,12 +88,10 @@ public class OpReplacer {
         return or.replace(in);
     }
 
-    /**
-     * Replaces in an operator.
-     *
-     * @param op the operator in which to perform the replacement.
-     * @return the replaced operator.
-     */
+    /// Replaces in an operator.
+    ///
+    /// @param op the operator in which to perform the replacement.
+    /// @return the replaced operator.
     public Operator replace(Operator op) {
         Operator newOp = (Operator) map.get(op);
         if (newOp != null) {
@@ -117,12 +101,10 @@ public class OpReplacer {
         }
     }
 
-    /**
-     * Replaces in a term.
-     *
-     * @param term the term in which to perform the replacement.
-     * @return the transformed term.
-     */
+    /// Replaces in a term.
+    ///
+    /// @param term the term in which to perform the replacement.
+    /// @return the transformed term.
     public Term replace(Term term) {
         if (term == null) {
             return null;
@@ -164,12 +146,10 @@ public class OpReplacer {
         return result;
     }
 
-    /**
-     * Replaces in a list of terms.
-     *
-     * @param terms the terms in which to perform the replacement.
-     * @return the list of transformed terms.
-     */
+    /// Replaces in a list of terms.
+    ///
+    /// @param terms the terms in which to perform the replacement.
+    /// @return the list of transformed terms.
     public ImmutableList<Term> replace(ImmutableList<Term> terms) {
         ImmutableList<Term> result = ImmutableSLList.nil();
         for (final Term term : terms) {
@@ -178,12 +158,10 @@ public class OpReplacer {
         return result;
     }
 
-    /**
-     * Replaces in an ImmutableArray<QuantifiableVariable>.
-     *
-     * @param vars the array in which to perform the replacement.
-     * @return the list of transformed variables.
-     */
+    /// Replaces in an ImmutableArray<QuantifiableVariable>.
+    ///
+    /// @param vars the array in which to perform the replacement.
+    /// @return the list of transformed variables.
     public ImmutableArray<QuantifiableVariable> replace(
             ImmutableArray<? extends QuantifiableVariable> vars) {
         QuantifiableVariable[] result = new QuantifiableVariable[vars.size()];

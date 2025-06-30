@@ -4,21 +4,13 @@
 package org.key_project.rusty.proof.mgt;
 
 public enum ProofStatus {
-    /**
-     * Proof is open.
-     */
+    /// Proof is open.
     OPEN,
-    /**
-     * Proof is closed, but depends on other contracts.
-     */
+    /// Proof is closed, but depends on other contracts.
     CLOSED_BUT_LEMMAS_LEFT,
-    /**
-     * Proof is closed, some goals are closed by reference to the cache.
-     */
+    /// Proof is closed, some goals are closed by reference to the cache.
     CLOSED_BY_CACHE,
-    /**
-     * Proof is closed.
-     */
+    /// Proof is closed.
     CLOSED;
 
     public boolean getProofClosed() {

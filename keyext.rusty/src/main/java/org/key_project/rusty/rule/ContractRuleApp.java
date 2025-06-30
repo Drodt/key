@@ -15,11 +15,9 @@ import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
-/**
- * Represents an application of a contract rule. Currently, this is only used for applications read
- * in from a proof file; fresh applications are represented as regular BuiltInRuleApps. (yes, I know
- * that this is ugly - BW)
- */
+/// Represents an application of a contract rule. Currently, this is only used for applications read
+/// in from a proof file; fresh applications are represented as regular BuiltInRuleApps. (yes, I know
+/// that this is ugly - BW)
 public class ContractRuleApp extends AbstractContractRuleApp {
     ContractRuleApp(BuiltInRule rule, PosInOccurrence pio) {
         this(rule, pio, null);

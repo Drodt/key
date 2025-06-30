@@ -34,10 +34,8 @@ public class TermFactory {
     // public interface
     // -------------------------------------------------------------------------
 
-    /**
-     * Master method for term creation. Should be the only place where terms are created in the
-     * entire system.
-     */
+    /// Master method for term creation. Should be the only place where terms are created in the
+    /// entire system.
     public Term createTerm(@NonNull Operator op, ImmutableArray<Term> subs,
             ImmutableArray<QuantifiableVariable> boundVars) {
         if (subs == null || subs.isEmpty()) {

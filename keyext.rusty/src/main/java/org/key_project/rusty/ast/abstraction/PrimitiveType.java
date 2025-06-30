@@ -72,11 +72,9 @@ public final class PrimitiveType implements Type {
         return sort;
     }
 
-    /**
-     * Gets the name of the LDT corresponding to this primitive type.
-     *
-     * @return may be null if no name set
-     */
+    /// Gets the name of the LDT corresponding to this primitive type.
+    ///
+    /// @return may be null if no name set
     public Name getCorrespondingLDTName() {
         return ldtName;
     }

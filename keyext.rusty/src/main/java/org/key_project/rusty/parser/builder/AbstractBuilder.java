@@ -15,29 +15,24 @@ import org.antlr.v4.runtime.RuleContext;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-/**
- * This class brings some nice features to the visitors of key's ast.
- *
- * <ul>
- * <li>It makes casting implicit by using {{@link #accept(RuleContext)}}
- * <li>It allows to pass arguments by an explicit stack.
- * <li>It brings handling of errors and warnings.
- * </ul>
- *
- * @param <T> return type
- * @author Alexander Weigl
- */
+/// This class brings some nice features to the visitors of key's ast.
+///
+///   - It makes casting implicit by using {[#accept(RuleContext)]}
+///   - It allows to pass arguments by an explicit stack.
+///   - It brings handling of errors and warnings.
+///
+///
+/// @param <T> return type
+/// @author Alexander Weigl
 public class AbstractBuilder<T> extends KeYRustyParserBaseVisitor<T> {
     private @Nullable List<BuildingIssue> buildingIssues = null;
     private @Nullable Stack<Object> parameters = null;
 
-    /**
-     * Helper function for avoiding cast.
-     *
-     * @param ctx
-     * @param <S>
-     * @return
-     */
+    /// Helper function for avoiding cast.
+    ///
+    /// @param ctx
+    /// @param <S>
+    /// @return
     public <S> @Nullable S accept(@Nullable RuleContext ctx) {
         if (ctx == null) {
             return null;
@@ -129,22 +124,18 @@ public class AbstractBuilder<T> extends KeYRustyParserBaseVisitor<T> {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Throws a semanticError for the given ast node and message.
-     *
-     * @param ctx
-     * @param format
-     * @param args
-     */
+    /// Throws a semanticError for the given ast node and message.
+    ///
+    /// @param ctx
+    /// @param format
+    /// @param args
     protected void semanticError(ParserRuleContext ctx, String format, Object... args) {
         throw new BuildingException(ctx, String.format(format, args));
     }
 
-    /**
-     * Wraps an exception into a {@link BuildingException}
-     *
-     * @param e
-     */
+    /// Wraps an exception into a [BuildingException]
+    ///
+    /// @param e
     protected void throwEx(Throwable e) {
         throw new BuildingException(e);
     }

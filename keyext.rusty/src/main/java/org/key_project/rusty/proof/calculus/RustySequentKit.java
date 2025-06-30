@@ -25,24 +25,20 @@ public class RustySequentKit extends SequentKit {
         return getInstance().newSequent(ante, succ);
     }
 
-    /**
-     * creates a new Sequent with empty succedent
-     *
-     * @param ante list of redundant-free formulas that plays the antecedent part
-     * @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
-     *         EMPTY_SEMISEQUENT
-     */
+    /// creates a new Sequent with empty succedent
+    ///
+    /// @param ante list of redundant-free formulas that plays the antecedent part
+    /// @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
+    ///         EMPTY_SEMISEQUENT
     public static Sequent createAnteSequent(ImmutableList<SequentFormula> ante) {
         return getInstance().newAntecedent(ante);
     }
 
-    /**
-     * creates a new Sequent with empty antecedent
-     *
-     * @param succ the Semisequent that plays the succedent part
-     * @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
-     *         EMPTY_SEMISEQUENT
-     */
+    /// creates a new Sequent with empty antecedent
+    ///
+    /// @param succ the Semisequent that plays the succedent part
+    /// @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
+    ///         EMPTY_SEMISEQUENT
     public static Sequent createSuccSequent(ImmutableList<SequentFormula> succ) {
         return getInstance().newSuccedent(succ);
     }
@@ -62,14 +58,12 @@ public class RustySequentKit extends SequentKit {
         return org.key_project.rusty.proof.calculus.Sequent.EMPTY_SEQUENT;
     }
 
-    /**
-     * creates a new Sequent
-     *
-     * @param ante the Semisequent that plays the antecedent part
-     * @param succ the Semisequent that plays the succedent part
-     * @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
-     *         EMPTY_SEMISEQUENT
-     */
+    /// creates a new Sequent
+    ///
+    /// @param ante the Semisequent that plays the antecedent part
+    /// @param succ the Semisequent that plays the succedent part
+    /// @return the new sequent or the EMPTY_SEQUENT if both antec and succ are same as
+    ///         EMPTY_SEMISEQUENT
     @Override
     protected Sequent createSequent(Semisequent ante, Semisequent succ) {
         if (ante.isEmpty() && succ.isEmpty()) {

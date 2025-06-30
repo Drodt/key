@@ -17,9 +17,7 @@ public class PVPlace extends Place {
 
     private final ProgramVariable pv;
 
-    /**
-     * Returns the mut ref operator for the passed left hand side.
-     */
+    /// Returns the mut ref operator for the passed left hand side.
     public static PVPlace getInstance(ProgramVariable pv) {
         WeakReference<PVPlace> ref = instances.get(pv);
         PVPlace result = null;

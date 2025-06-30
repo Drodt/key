@@ -23,9 +23,7 @@ import org.key_project.util.collection.ImmutableMap;
 import org.jspecify.annotations.NonNull;
 
 public class TacletPrefixBuilder {
-    /**
-     * set of all schema variables that are only allowed to be matched with quantifiable variables.
-     */
+    /// set of all schema variables that are only allowed to be matched with quantifiable variables.
     private int numberOfCurrentlyBoundVars =
         0;
     private final TacletBuilder<? extends Taclet> tacletBuilder;
@@ -46,10 +44,8 @@ public class TacletPrefixBuilder {
         prefixMap = prefixMap.put(sv, new TacletPrefix(numberOfBoundVars, false));
     }
 
-    /**
-     * removes all variables x that are declared as x not free in sv from the currently bound vars
-     * set.
-     */
+    /// removes all variables x that are declared as x not free in sv from the currently bound vars
+    /// set.
     private int removeNotFreeIn(SchemaVariable sv) {
         int result = numberOfCurrentlyBoundVars;
         Iterator<NotFreeIn> it = tacletBuilder.varsNotFreeIn();

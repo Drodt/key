@@ -9,20 +9,16 @@ import java.util.List;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.init.Profile;
 
-/**
- * This single threaded problem loader is used by the Eclipse integration of KeY.
- *
- * @author Martin Hentschel
- */
+/// This single threaded problem loader is used by the Eclipse integration of KeY.
+///
+/// @author Martin Hentschel
 public class SingleThreadProblemLoader extends AbstractProblemLoader {
-    /**
-     * Constructor.
-     *
-     * @param file The file or folder to load.
-     * @param includes Optional includes to consider.
-     * @param profileOfNewProofs The {@link Profile} to use for new {@link Proof}s.
-     * @param control The {@link ProblemLoaderControl} to use.
-     */
+    /// Constructor.
+    ///
+    /// @param file The file or folder to load.
+    /// @param includes Optional includes to consider.
+    /// @param profileOfNewProofs The [Profile] to use for new [Proof]s.
+    /// @param control The [ProblemLoaderControl] to use.
     public SingleThreadProblemLoader(File file, List<File> includes, Profile profileOfNewProofs,
             ProblemLoaderControl control) {
         super(file, includes, profileOfNewProofs,

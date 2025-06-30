@@ -32,24 +32,22 @@ import org.key_project.util.collection.ImmutableSet;
 public class TacletIndex {
     private static final Object DEFAULT_SV_KEY = new Object();
     private static final Object DEFAULT_PROGSV_KEY = new Object();
-    /** contains rewrite Taclets */
+    /// contains rewrite Taclets
     protected HashMap<Object, ImmutableList<NoPosTacletApp>> rwList = new LinkedHashMap<>();
 
-    /** contains antecedent Taclets */
+    /// contains antecedent Taclets
     protected HashMap<Object, ImmutableList<NoPosTacletApp>> antecList = new LinkedHashMap<>();
 
-    /** contains succedent Taclets */
+    /// contains succedent Taclets
     protected HashMap<Object, ImmutableList<NoPosTacletApp>> succList = new LinkedHashMap<>();
 
-    /** contains NoFind-Taclets */
+    /// contains NoFind-Taclets
     protected ImmutableList<NoPosTacletApp> noFindList = ImmutableSLList.nil();
 
-    /**
-     * keeps track of no pos taclet apps with partial instantiations
-     */
+    /// keeps track of no pos taclet apps with partial instantiations
     protected HashSet<NoPosTacletApp> partialInstantiatedRuleApps = new LinkedHashSet<>();
 
-    /** constructs empty rule index */
+    /// constructs empty rule index
     public TacletIndex() {
     }
 
@@ -74,11 +72,9 @@ public class TacletIndex {
         this.partialInstantiatedRuleApps = partialInstantiatedRuleApps;
     }
 
-    /**
-     * adds a set of NoPosTacletApp to this index
-     *
-     * @param tacletAppList the NoPosTacletApps to be added
-     */
+    /// adds a set of NoPosTacletApp to this index
+    ///
+    /// @param tacletAppList the NoPosTacletApps to be added
     public void addTaclets(Iterable<NoPosTacletApp> tacletAppList) {
         for (NoPosTacletApp taclet : tacletAppList) {
             add(taclet);
@@ -93,13 +89,11 @@ public class TacletIndex {
         return DefaultImmutableSet.fromImmutableList(result);
     }
 
-    /**
-     * returns a NoPosTacletApp whose Taclet has a name that equals the given name. If more Taclets
-     * have the same name an arbitrary Taclet with that name is returned.
-     *
-     * @param name the name to lookup
-     * @return the found NoPosTacletApp or null if no matching Taclet is there
-     */
+    /// returns a NoPosTacletApp whose Taclet has a name that equals the given name. If more Taclets
+    /// have the same name an arbitrary Taclet with that name is returned.
+    ///
+    /// @param name the name to lookup
+    /// @return the found NoPosTacletApp or null if no matching Taclet is there
     public NoPosTacletApp lookup(Name name) {
         for (NoPosTacletApp tacletApp : allNoPosTacletApps()) {
             if (tacletApp.taclet().name().equals(name)) {
@@ -134,22 +128,18 @@ public class TacletIndex {
         }
     }
 
-    /**
-     * adds a new Taclet with instantiation information to this index. If rule instance is not known
-     * rule is not added
-     *
-     * @param taclet the Taclet and its instantiation info to be added
-     */
+    /// adds a new Taclet with instantiation information to this index. If rule instance is not known
+    /// rule is not added
+    ///
+    /// @param taclet the Taclet and its instantiation info to be added
     public void add(Taclet taclet) {
         add(NoPosTacletApp.createNoPosTacletApp(taclet));
     }
 
-    /**
-     * adds a new Taclet with instantiation information to this index. If rule instance is not known
-     * rule is not added
-     *
-     * @param tacletApp the Taclet and its instantiation info to be added
-     */
+    /// adds a new Taclet with instantiation information to this index. If rule instance is not known
+    /// rule is not added
+    ///
+    /// @param tacletApp the Taclet and its instantiation info to be added
     public void add(NoPosTacletApp tacletApp) {
         Taclet taclet = tacletApp.taclet();
         if (taclet instanceof RewriteTaclet) {
@@ -222,22 +212,18 @@ public class TacletIndex {
         return indexObj;
     }
 
-    /**
-     * get all Taclets having no find expression.
-     *
-     * @param services the Services object encapsulating information about the Rust datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and an empty part for the
-     *         instantiations because no instantiations are necessary.
-     */
+    /// get all Taclets having no find expression.
+    ///
+    /// @param services the Services object encapsulating information about the Rust datastructures
+    ///        like (static)types etc.
+    /// @return IList<NoPosTacletApp> containing all applicable rules and an empty part for the
+    ///         instantiations because no instantiations are necessary.
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(Services services) {
         return matchTaclets(noFindList, null, services);
     }
 
-    /**
-     * Filter the given list of taclet apps, and match their find parts at the given position of the
-     * sequent
-     */
+    /// Filter the given list of taclet apps, and match their find parts at the given position of the
+    /// sequent
     protected ImmutableList<NoPosTacletApp> matchTaclets(
             ImmutableList<NoPosTacletApp> tacletApps,
             final PosInOccurrence pos, final Services services) {
@@ -256,29 +242,25 @@ public class TacletIndex {
         return result;
     }
 
-    /**
-     * get all Taclets for the antecedent.
-     *
-     * @param pos the PosOfOccurrence describing the formula for which to look for top level taclets
-     * @param services the Services object encapsulating information about the Rust datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
-     *         instantiations to get the rule fit.
-     */
+    /// get all Taclets for the antecedent.
+    ///
+    /// @param pos the PosOfOccurrence describing the formula for which to look for top level taclets
+    /// @param services the Services object encapsulating information about the Rust datastructures
+    ///        like (static)types etc.
+    /// @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
+    ///         instantiations to get the rule fit.
     public ImmutableList<NoPosTacletApp> getAntecedentTaclet(PosInOccurrence pos,
             Services services) {
         return getTopLevelTaclets(antecList, pos, services);
     }
 
-    /**
-     * get all Taclets for the succedent.
-     *
-     * @param pos the PosOfOccurrence describing the formula for which to look for top level taclets
-     * @param services the Services object encapsulating information about the Rust datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
-     *         instantiations to get the rule fit.
-     */
+    /// get all Taclets for the succedent.
+    ///
+    /// @param pos the PosOfOccurrence describing the formula for which to look for top level taclets
+    /// @param services the Services object encapsulating information about the Rust datastructures
+    ///        like (static)types etc.
+    /// @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
+    ///         instantiations to get the rule fit.
     public ImmutableList<NoPosTacletApp> getSuccedentTaclet(PosInOccurrence pos,
             Services services) {
 
@@ -298,26 +280,22 @@ public class TacletIndex {
                 : seqTaclets.prependReverse(rwTaclets);
     }
 
-    /**
-     * returns a list of Taclets and instantiations from the given list of taclets with respect to
-     * term and the filter object.
-     *
-     * @param services the Services object encapsulating information about the Rust datastructures
-     *        like (static)types etc.
-     */
+    /// returns a list of Taclets and instantiations from the given list of taclets with respect to
+    /// term and the filter object.
+    ///
+    /// @param services the Services object encapsulating information about the Rust datastructures
+    ///        like (static)types etc.
     private ImmutableList<NoPosTacletApp> getFindTaclet(ImmutableList<NoPosTacletApp> taclets,
             PosInOccurrence pos, Services services) {
         return matchTaclets(taclets, pos, services);
     }
 
-    /**
-     * get all Rewrite-Taclets.
-     *
-     * @param services the Services object encapsulating information about the Rust datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
-     *         instantiations to get the rule fit.
-     */
+    /// get all Rewrite-Taclets.
+    ///
+    /// @param services the Services object encapsulating information about the Rust datastructures
+    ///        like (static)types etc.
+    /// @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
+    ///         instantiations to get the rule fit.
     public ImmutableList<NoPosTacletApp> getRewriteTaclet(PosInOccurrence pos,
             Services services) {
         ImmutableList<NoPosTacletApp> result =
@@ -325,34 +303,30 @@ public class TacletIndex {
         return result;
     }
 
-    /**
-     * creates and returns a selection from the given map of NoPosTacletApps that are compatible
-     * with the given term. It is assumed that the map (key -> value mapping) (1) contains keys with
-     * the top operator of its value, if no Rust block is involved on top level of the value and no
-     * update is on top level (2) contains keys with the class of its top Rust operator of its
-     * value's Rust block, if a Rust block is involved on the top level (3) contains keys with the
-     * special 'operators' PROGSVOP and DEFAULTSVOP if the top Rust operator or top operator (resp.)
-     * of the value is a program (or variable, resp.) schema variable. (4) contains keys with the
-     * sort of the value if this is an other schema variable. If updates are on top level, they are
-     * ignored; and indexing starts on the first level beneath updates.
-     *
-     * @param map the map from where to select the taclets
-     * @param term the term that is used to find the selection
-     */
+    /// creates and returns a selection from the given map of NoPosTacletApps that are compatible
+    /// with the given term. It is assumed that the map (key -> value mapping) (1) contains keys with
+    /// the top operator of its value, if no Rust block is involved on top level of the value and no
+    /// update is on top level (2) contains keys with the class of its top Rust operator of its
+    /// value's Rust block, if a Rust block is involved on the top level (3) contains keys with the
+    /// special 'operators' PROGSVOP and DEFAULTSVOP if the top Rust operator or top operator (resp.)
+    /// of the value is a program (or variable, resp.) schema variable. (4) contains keys with the
+    /// sort of the value if this is an other schema variable. If updates are on top level, they are
+    /// ignored; and indexing starts on the first level beneath updates.
+    ///
+    /// @param map the map from where to select the taclets
+    /// @param term the term that is used to find the selection
     private ImmutableList<NoPosTacletApp> getList(
             HashMap<Object, ImmutableList<NoPosTacletApp>> map, Term term, boolean ignoreUpdates) {
         return getListHelp(map, term, ignoreUpdates, new PrefixOccurrences());
     }
 
-    /**
-     * returns a selection from the given map with NoPosTacletApps relevant for the given program
-     * element. Occurring prefix elements are tracked and taclet applications for them are added.
-     *
-     * @param map the map to select the NoPosTacletApps from
-     * @param pe the program element that is used to retrieve the taclets
-     * @param prefixOccurrences the PrefixOccurrence object used to keep track of the occurring
-     *        prefix elements
-     */
+    /// returns a selection from the given map with NoPosTacletApps relevant for the given program
+    /// element. Occurring prefix elements are tracked and taclet applications for them are added.
+    ///
+    /// @param map the map to select the NoPosTacletApps from
+    /// @param pe the program element that is used to retrieve the taclets
+    /// @param prefixOccurrences the PrefixOccurrence object used to keep track of the occurring
+    ///        prefix elements
     private ImmutableList<NoPosTacletApp> getRustyTacletList(
             HashMap<Object, ImmutableList<NoPosTacletApp>> map, RustyProgramElement pe,
             PrefixOccurrences prefixOccurrences) {
@@ -420,13 +394,11 @@ public class TacletIndex {
         return merge(res, map.get(GenericSort.class));
     }
 
-    /**
-     * merges the two list in an execution time optimal manner
-     *
-     * @param first the first list
-     * @param second the second list
-     * @return the merged list
-     */
+    /// merges the two list in an execution time optimal manner
+    ///
+    /// @param first the first list
+    /// @param second the second list
+    /// @return the merged list
     private ImmutableList<NoPosTacletApp> merge(ImmutableList<NoPosTacletApp> first,
             final ImmutableList<NoPosTacletApp> second) {
         if (second == null) {
@@ -450,11 +422,9 @@ public class TacletIndex {
             (HashSet<NoPosTacletApp>) partialInstantiatedRuleApps.clone());
     }
 
-    /**
-     * returns a list with all partial instantiated no pos taclet apps
-     *
-     * @return list with all partial instantiated NoPosTacletApps
-     */
+    /// returns a list with all partial instantiated no pos taclet apps
+    ///
+    /// @return list with all partial instantiated NoPosTacletApps
     public ImmutableList<NoPosTacletApp> getPartialInstantiatedApps() {
         ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
         for (NoPosTacletApp partialInstantiatedRuleApp : partialInstantiatedRuleApps) {
@@ -463,22 +433,18 @@ public class TacletIndex {
         return result;
     }
 
-    /**
-     * removes the given NoPosTacletApps from this index
-     *
-     * @param tacletAppList the NoPosTacletApps to be removed
-     */
+    /// removes the given NoPosTacletApps from this index
+    ///
+    /// @param tacletAppList the NoPosTacletApps to be removed
     public void removeTaclets(Iterable<NoPosTacletApp> tacletAppList) {
         for (final NoPosTacletApp tacletApp : tacletAppList) {
             remove(tacletApp);
         }
     }
 
-    /**
-     * removes a Taclet with the given instantiation information from this index.
-     *
-     * @param tacletApp the Taclet and its instantiation info to be removed
-     */
+    /// removes a Taclet with the given instantiation information from this index.
+    ///
+    /// @param tacletApp the Taclet and its instantiation info to be removed
     public void remove(NoPosTacletApp tacletApp) {
         Taclet rule = tacletApp.taclet();
         if (rule instanceof RewriteTaclet) {
@@ -514,50 +480,36 @@ public class TacletIndex {
         }
     }
 
-    /**
-     * Inner class to track the occurrences of prefix elements in Rust blocks
-     */
+    /// Inner class to track the occurrences of prefix elements in Rust blocks
     private static class PrefixOccurrences {
-        /**
-         * the classes that represent prefix elements of a Rust block
-         */
+        /// the classes that represent prefix elements of a Rust block
         static final Class<?>[] prefixClasses =
             new Class<?>[] { BlockExpression.class, ExpressionStatement.class };
 
-        /**
-         * number of prefix types
-         */
+        /// number of prefix types
         static final int PREFIXTYPES = prefixClasses.length;
 
-        /**
-         * field that marks iff the prefix elements have already occurred
-         */
+        /// field that marks iff the prefix elements have already occurred
         private final boolean[] occurred = new boolean[PREFIXTYPES];
 
-        /**
-         * fields to indicate the position of the next relevant child (the next possible prefix
-         * element or real statement
-         */
+        /// fields to indicate the position of the next relevant child (the next possible prefix
+        /// element or real statement
         static final int[] nextChild = { 0, 0 };
 
         PrefixOccurrences() {
             reset();
         }
 
-        /**
-         * resets the occurred field to 'nothing has occurred'
-         */
+        /// resets the occurred field to 'nothing has occurred'
         public void reset() {
             Arrays.fill(occurred, 0, PREFIXTYPES, false);
         }
 
-        /**
-         * notification that the given program element has occurred. The occurred fields are
-         * subsequently set.
-         *
-         * @param pe the occurred program element
-         * @return the number of the next possible prefix element
-         */
+        /// notification that the given program element has occurred. The occurred fields are
+        /// subsequently set.
+        ///
+        /// @param pe the occurred program element
+        /// @return the number of the next possible prefix element
         public int occurred(RustyProgramElement pe) {
             for (int i = 0; i < PREFIXTYPES; i++) {
                 if (prefixClasses[i].isInstance(pe)) {
@@ -568,12 +520,10 @@ public class TacletIndex {
             return -1;
         }
 
-        /**
-         * creates a selection of the given NoPosTacletApp map that comply with the occurred prefix
-         * elements
-         *
-         * @param map a map to select from
-         */
+        /// creates a selection of the given NoPosTacletApp map that comply with the occurred prefix
+        /// elements
+        ///
+        /// @param map a map to select from
         public ImmutableList<NoPosTacletApp> getList(
                 HashMap<Object, ImmutableList<NoPosTacletApp>> map) {
             ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();

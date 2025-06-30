@@ -13,11 +13,9 @@ public class ContractFactory {
     private final Services services;
     private final TermBuilder tb;
 
-    /**
-     * Creates a new contract factory.
-     *
-     * @param services the services object
-     */
+    /// Creates a new contract factory.
+    ///
+    /// @param services the services object
     public ContractFactory(Services services) {
         assert services != null;
         this.services = services;
@@ -34,20 +32,18 @@ public class ContractFactory {
         return fnName + "." + baseName;
     }
 
-    /**
-     * Creates a new functional operation contract.
-     *
-     * @param baseName base name of the contract (does not have to be unique)
-     * @param fn the function to which the contract belongs
-     * @param modalityKind the modality of the contract
-     * @param pre the precondition of the contract
-     * @param mby the measured_by clause of the contract
-     * @param post the postcondition of the contract
-     * @param modifiable the modifiable clause of the contract
-     * @param progVars the program variables
-     * @param toBeSaved TODO
-     * @return the resulting functional operation contract
-     */
+    /// Creates a new functional operation contract.
+    ///
+    /// @param baseName base name of the contract (does not have to be unique)
+    /// @param fn the function to which the contract belongs
+    /// @param modalityKind the modality of the contract
+    /// @param pre the precondition of the contract
+    /// @param mby the measured_by clause of the contract
+    /// @param post the postcondition of the contract
+    /// @param modifiable the modifiable clause of the contract
+    /// @param progVars the program variables
+    /// @param toBeSaved TODO
+    /// @return the resulting functional operation contract
     public FunctionalOperationContract func(String baseName, ProgramFunction fn,
             RModality.RustyModalityKind modalityKind,
             Term pre, Term mby,
@@ -63,20 +59,18 @@ public class ContractFactory {
             toBeSaved, services);
     }
 
-    /**
-     * Creates a new functional operation contract.
-     *
-     * @param baseName base name of the contract (does not have to be unique)
-     * @param fn the function to which the contract belongs
-     * @param terminates a boolean determining whether we also prove termination
-     * @param pre the precondition of the contract
-     * @param mby the measured_by clause of the contract
-     * @param post the postcondition of the contract
-     * @param modifiable the modifiable clause of the contract
-     * @param progVars the program variables
-     * @param toBeSaved TODO
-     * @return the resulting functional operation contract
-     */
+    /// Creates a new functional operation contract.
+    ///
+    /// @param baseName base name of the contract (does not have to be unique)
+    /// @param fn the function to which the contract belongs
+    /// @param terminates a boolean determining whether we also prove termination
+    /// @param pre the precondition of the contract
+    /// @param mby the measured_by clause of the contract
+    /// @param post the postcondition of the contract
+    /// @param modifiable the modifiable clause of the contract
+    /// @param progVars the program variables
+    /// @param toBeSaved TODO
+    /// @return the resulting functional operation contract
     public FunctionalOperationContract func(String baseName, ProgramFunction fn,
             boolean terminates,
             Term pre, Term mby,

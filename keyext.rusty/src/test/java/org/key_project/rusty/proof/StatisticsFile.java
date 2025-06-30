@@ -118,9 +118,7 @@ public class StatisticsFile {
     }
 
 
-    /**
-     * Deletes an old statistics file and sets up a new one that has column names as first row.
-     */
+    /// Deletes an old statistics file and sets up a new one that has column names as first row.
     public void setUp() throws IOException {
         setUp(true);
     }
@@ -150,13 +148,11 @@ public class StatisticsFile {
         }
     }
 
-    /**
-     * Method used for writing a new line into the table of statistics entries.
-     *
-     * @param entries List representing a line in the table. Each list entry corresponds to one
-     *        table cell.
-     * @throws IOException In case statistics file is not accessible for some reason.
-     */
+    /// Method used for writing a new line into the table of statistics entries.
+    ///
+    /// @param entries List representing a line in the table. Each list entry corresponds to one
+    ///        table cell.
+    /// @throws IOException In case statistics file is not accessible for some reason.
     private void writeLine(List<String> entries) throws IOException {
         final FileWriter statisticsFileWriter =
             new FileWriter(statisticsFile, StandardCharsets.UTF_8, true);
@@ -173,14 +169,12 @@ public class StatisticsFile {
         statisticsFileWriter.close();
     }
 
-    /**
-     * Append statistics for one proof to statistics file.
-     *
-     * @param proof {@link Proof}, whose statistics will be added.
-     * @param keyFile KeY file, from which the original proof obligation has been created, must be
-     *        mentioned explicitly.
-     * @throws IOException Thrown in case statistics file is not accessible.
-     */
+    /// Append statistics for one proof to statistics file.
+    ///
+    /// @param proof [Proof], whose statistics will be added.
+    /// @param keyFile KeY file, from which the original proof obligation has been created, must be
+    ///        mentioned explicitly.
+    /// @throws IOException Thrown in case statistics file is not accessible.
     public void appendStatistics(Proof proof, File keyFile) throws IOException {
         Statistics statistics = proof.getStatistics();
         boolean proofClosed = proof.closed();
@@ -191,9 +185,7 @@ public class StatisticsFile {
         writeLine(entries);
     }
 
-    /**
-     * Print sum for each column as last line when closing statistics file.
-     */
+    /// Print sum for each column as last line when closing statistics file.
     public void computeSumsAndAverages() throws IOException {
         try (BufferedReader br =
             new BufferedReader(new FileReader(statisticsFile, StandardCharsets.UTF_8))) {
@@ -292,9 +284,7 @@ public class StatisticsFile {
     }
 
 
-    /**
-     * A column in statistics table whose entries are values of type {@link Long} .
-     */
+    /// A column in statistics table whose entries are values of type [Long] .
     private abstract static class LongColumn extends Column<Long> {
         LongColumn(String name) {
             super(name);
@@ -318,10 +308,8 @@ public class StatisticsFile {
         abstract long getLongValueFromStatistics(Statistics statistics);
     }
 
-    /**
-     * Objects of this class represent a column in statistics file. Type of column entries is kept
-     * generic.
-     */
+    /// Objects of this class represent a column in statistics file. Type of column entries is kept
+    /// generic.
     private abstract static class Column<T> {
         final String name;
 

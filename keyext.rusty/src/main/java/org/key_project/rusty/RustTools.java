@@ -12,9 +12,7 @@ import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.RustyBlock;
 
 public class RustTools {
-    /**
-     * Returns the active expr of the passed a rust block.
-     */
+    /// Returns the active expr of the passed a rust block.
     public static RustyProgramElement getActiveExpr(RustyBlock rb) {
         assert rb.program() != null;
 

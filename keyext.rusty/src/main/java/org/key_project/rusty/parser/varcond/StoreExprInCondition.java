@@ -15,20 +15,18 @@ import org.key_project.rusty.rule.LightweightSyntacticalReplaceVisitor;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.VariableCondition;
 
-/**
- * Stores the given {@link org.key_project.rusty.ast.expr.Expr}, after substitution of
- * {@link SchemaVariable}s, into the given
- * {@link ProgramSV} for later use in other conditions and transformers. The arguments are a
- * {@link ProgramSV} and a {@link Term}, where the {@link Term} must contain a
- * {@link org.key_project.rusty.logic.RustyBlock}
- * with a {@link org.key_project.rusty.ast.expr.BlockExpression} containing <emph>a single
- * expression</emph> (that works, e.g., when
- * passing an expression like
- * <code>\modality{#allmodal}{ loop s#body }\endmodality(post)</code>); this expr is then
- * stored (in the example the loop expr).
- *
- * @author Dominic Steinhoefel
- */
+/// Stores the given [org.key_project.rusty.ast.expr.Expr], after substitution of
+/// [SchemaVariable]s, into the given
+/// [ProgramSV] for later use in other conditions and transformers. The arguments are a
+/// [ProgramSV] and a [Term], where the [Term] must contain a
+/// [org.key_project.rusty.logic.RustyBlock]
+/// with a [org.key_project.rusty.ast.expr.BlockExpression] containing <emph>a single
+/// expression</emph> (that works, e.g., when
+/// passing an expression like
+/// <code>\modality{#allmodal}{ loop s#body }\endmodality(post)</code>); this expr is then
+/// stored (in the example the loop expr).
+///
+/// @author Dominic Steinhoefel
 public class StoreExprInCondition implements VariableCondition {
     private final ProgramSV storeInSV;
     private final Term term;

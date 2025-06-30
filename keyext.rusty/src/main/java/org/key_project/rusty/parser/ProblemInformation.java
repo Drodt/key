@@ -7,37 +7,25 @@ import org.jspecify.annotations.Nullable;
 
 
 public class ProblemInformation {
-    /**
-     * Value of a "\chooseContract". If "\chooseContract" are mentioned in the file, but without a
-     * value, this field is non-null and empty.
-     */
+    /// Value of a "\chooseContract". If "\chooseContract" are mentioned in the file, but without a
+    /// value, this field is non-null and empty.
     private @Nullable String chooseContract;
 
-    /**
-     * Value of a "\proofObligation". If "\proofObligation" are mentioned in the file, but without a
-     * value, this field is non-null and empty.
-     */
+    /// Value of a "\proofObligation". If "\proofObligation" are mentioned in the file, but without a
+    /// value, this field is non-null and empty.
     private @Nullable String proofObligation;
 
 
-    /**
-     * Value of a "\profile".
-     */
+    /// Value of a "\profile".
     private @Nullable String profile;
 
-    /**
-     * Value of the "\preferences".
-     */
+    /// Value of the "\preferences".
     private @Nullable String preferences;
 
-    /**
-     * Value of the "\rustSource".
-     */
+    /// Value of the "\rustSource".
     private @Nullable String rustSource;
 
-    /**
-     *
-     */
+    ///
     private boolean hasProblemTerm;
 
     public ProblemInformation() {

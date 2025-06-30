@@ -31,27 +31,21 @@ public abstract class AbstractBuiltInRuleApp implements IBuiltInRuleApp {
         this(rule, pio, null);
     }
 
-    /**
-     * HACK: but strategies do not work otherwise at the moment; I need to have a closer look on
-     * what is going on there This restores the behaviour as it was before my previous commit for
-     * the moment
-     */
+    /// HACK: but strategies do not work otherwise at the moment; I need to have a closer look on
+    /// what is going on there This restores the behaviour as it was before my previous commit for
+    /// the moment
     public void setMutable(ImmutableList<PosInOccurrence> ifInsts) {
         this.ifInsts = ifInsts;
     }
 
-    /**
-     * returns the rule of this rule application
-     */
+    /// returns the rule of this rule application
     @Override
     public BuiltInRule rule() {
         return builtInRule;
     }
 
-    /**
-     * returns the PositionInOccurrence (representing a SequentFormula and a position in the
-     * corresponding formula) of this rule application
-     */
+    /// returns the PositionInOccurrence (representing a SequentFormula and a position in the
+    /// corresponding formula) of this rule application
     @Override
     public PosInOccurrence posInOccurrence() {
         return pio;
@@ -90,11 +84,9 @@ public abstract class AbstractBuiltInRuleApp implements IBuiltInRuleApp {
         return tryToInstantiate(goal);
     }
 
-    /**
-     * returns true if all variables are instantiated
-     *
-     * @return true if all variables are instantiated
-     */
+    /// returns true if all variables are instantiated
+    ///
+    /// @return true if all variables are instantiated
     @Override
     public boolean complete() {
         return true;

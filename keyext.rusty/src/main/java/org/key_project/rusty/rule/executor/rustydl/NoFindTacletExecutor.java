@@ -18,12 +18,10 @@ public class NoFindTacletExecutor extends TacletExecutor {
         super(taclet);
     }
 
-    /**
-     * the rule is applied on the given goal using the information of rule application.
-     *
-     * @param goal the goal that the rule application should refer to.
-     * @param ruleApp the taclet application that is executed
-     */
+    /// the rule is applied on the given goal using the information of rule application.
+    ///
+    /// @param goal the goal that the rule application should refer to.
+    /// @param ruleApp the taclet application that is executed
     @Override
     public ImmutableList<Goal> apply(Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
         // Number without the if-goal eventually needed
@@ -65,15 +63,13 @@ public class NoFindTacletExecutor extends TacletExecutor {
         return newGoals;
     }
 
-    /**
-     * adds the sequent of the add part of the Taclet to the goal sequent
-     *
-     * @param add the Sequent to be added
-     * @param currentSequent the Sequent which is the current (intermediate) result of applying the
-     *        taclet
-     * @param services the Services encapsulating all Rust information
-     * @param matchCond the MatchConditions with all required instantiations
-     */
+    /// adds the sequent of the add part of the Taclet to the goal sequent
+    ///
+    /// @param add the Sequent to be added
+    /// @param currentSequent the Sequent which is the current (intermediate) result of applying the
+    ///        taclet
+    /// @param services the Services encapsulating all Rust information
+    /// @param matchCond the MatchConditions with all required instantiations
     protected void applyAdd(Sequent add,
             SequentChangeInfo currentSequent, Services services, MatchConditions matchCond,
             Goal goal, RuleApp ruleApp) {

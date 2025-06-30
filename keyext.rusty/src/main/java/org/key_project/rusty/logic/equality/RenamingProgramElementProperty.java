@@ -18,35 +18,29 @@ import org.key_project.rusty.logic.NameAbstractionTable;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
 public class RenamingProgramElementProperty implements Property<RustyProgramElement> {
-    /**
-     * The single instance of this property.
-     */
+    /// The single instance of this property.
     public static final RenamingProgramElementProperty RENAMING_PROGRAM_ELEMENT_PROPERTY =
         new RenamingProgramElementProperty();
 
-    /**
-     * This constructor is private as a single instance of this class should be shared. The instance
-     * can be accessed through
-     * {@link RenamingProgramElementProperty#RENAMING_PROGRAM_ELEMENT_PROPERTY}.
-     */
+    /// This constructor is private as a single instance of this class should be shared. The instance
+    /// can be accessed through
+    /// [#RENAMING_PROGRAM_ELEMENT_PROPERTY].
     private RenamingProgramElementProperty() {}
 
-    /**
-     * Checks if {@code rpe2} is a {@link RustyProgramElement} syntactically equal to {@code rpe1}
-     * modulo
-     * renaming.
-     * <p>
-     * When this method is supplied with a {@link NameAbstractionTable}, it will use this table to
-     * compare the abstract names of the source elements. If no {@link NameAbstractionTable} is
-     * supplied, a new one will be created.
-     *
-     * @param rpe1 the first element of the equality check
-     * @param rpe2 the second element of the equality check
-     * @param v can be a single {@link NameAbstractionTable} for this equality check
-     * @return {@code true} iff {@code rpe2} is a source element syntactically equal to {@code rpe1}
-     *         modulo renaming
-     * @param <V> is supposed to be {@link NameAbstractionTable} for this equality check
-     */
+    /// Checks if `rpe2` is a [RustyProgramElement] syntactically equal to `rpe1`
+    /// modulo
+    /// renaming.
+    ///
+    /// When this method is supplied with a [NameAbstractionTable], it will use this table to
+    /// compare the abstract names of the source elements. If no [NameAbstractionTable] is
+    /// supplied, a new one will be created.
+    ///
+    /// @param rpe1 the first element of the equality check
+    /// @param rpe2 the second element of the equality check
+    /// @param v can be a single [NameAbstractionTable] for this equality check
+    /// @return `true` iff `rpe2` is a source element syntactically equal to `rpe1`
+    ///         modulo renaming
+    /// @param <V> is supposed to be [NameAbstractionTable] for this equality check
     @Override
     public <V> boolean equalsModThisProperty(RustyProgramElement rpe1, RustyProgramElement rpe2,
             V... v) {
@@ -129,26 +123,22 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     }
 
     /*------------- Helper methods for special cases in equalsModThisProperty --------------*/
-    /**
-     * Handles the standard case of comparing two {@link SyntaxElement}s modulo renaming.
-     *
-     * @param se1 the first {@link SyntaxElement} to be compared
-     * @param se2 the second {@link SyntaxElement} to be compared
-     * @return {@code true} iff the two source elements are equal under the standard {@code equals}
-     *         method
-     */
+    /// Handles the standard case of comparing two [SyntaxElement]s modulo renaming.
+    ///
+    /// @param se1 the first [SyntaxElement] to be compared
+    /// @param se2 the second [SyntaxElement] to be compared
+    /// @return `true` iff the two source elements are equal under the standard `equals`
+    ///         method
     private boolean handleStandard(SyntaxElement se1, SyntaxElement se2) {
         return se1.equals(se2);
     }
 
-    /**
-     * Handles the special case of comparing a {@link } to a {@link SyntaxElement}.
-     *
-     * @param rnte the rusty program element with children to be compared
-     * @param se the {@link SyntaxElement} to be compared
-     * @return {@code true} iff {@code se} is of the same class and has the same number of children
-     *         as {@code jnte}
-     */
+    /// Handles the special case of comparing a [] to a [SyntaxElement].
+    ///
+    /// @param rnte the rusty program element with children to be compared
+    /// @param se the [SyntaxElement] to be compared
+    /// @return `true` iff `se` is of the same class and has the same number of children
+    ///         as `jnte`
     private boolean handleRustyNonTerminalProgramElement(SyntaxElement rnte,
             SyntaxElement se) {
         /*
@@ -166,16 +156,14 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
         return rnte.getChildCount() == se.getChildCount();
     }
 
-    /**
-     * Handles the special case of comparing a {@link BindingPattern} to a
-     * {@link SyntaxElement}.
-     *
-     * @param bp the {@link BindingPattern} to be compared
-     * @param se the {@link SyntaxElement} to be compared
-     * @param nat the {@link NameAbstractionTable} the variable of {@code vs} should be added to
-     * @return {@code true} iff {@code se} is of the same class as {@code vs} and has the same
-     *         number of children, dimensions and type
-     */
+    /// Handles the special case of comparing a [BindingPattern] to a
+    /// [SyntaxElement].
+    ///
+    /// @param bp the [BindingPattern] to be compared
+    /// @param se the [SyntaxElement] to be compared
+    /// @param nat the [NameAbstractionTable] the variable of `vs` should be added to
+    /// @return `true` iff `se` is of the same class as `vs` and has the same
+    ///         number of children, dimensions and type
     private boolean handleBindingPattern(BindingPattern bp, SyntaxElement se,
             NameAbstractionTable nat) {
         if (se == bp) {
@@ -197,17 +185,15 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
         return true;
     }
 
-    /**
-     * Handles the special case of comparing a {@link ProgramVariable} or an
-     * {@link Identifier} to a {@link SyntaxElement}.
-     *
-     * @param se1 the first {@link SyntaxElement} which is either a {@link ProgramVariable} or an
-     *        {@link Identifier}
-     * @param se2 the second {@link SyntaxElement} to be compared
-     * @param nat the {@link NameAbstractionTable} that should be used to check whether {@code se1}
-     *        and {@code se2} have the same abstract name
-     * @return {@code true} iff {@code se1} and {@code se2} have the same abstract name
-     */
+    /// Handles the special case of comparing a [ProgramVariable] or an
+    /// [Identifier] to a [SyntaxElement].
+    ///
+    /// @param se1 the first [SyntaxElement] which is either a [ProgramVariable] or an
+    ///        [Identifier]
+    /// @param se2 the second [SyntaxElement] to be compared
+    /// @param nat the [NameAbstractionTable] that should be used to check whether `se1`
+    ///        and `se2` have the same abstract name
+    /// @return `true` iff `se1` and `se2` have the same abstract name
     private boolean handleProgramVariableOrIdentifier(SyntaxElement se1, SyntaxElement se2,
             NameAbstractionTable nat) {
         if (se1 == se2) {
@@ -232,42 +218,34 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
 
     /* ---------- End of helper methods for special cases in equalsModThisProperty ---------- */
 
-    /**
-     * A helper class to map {@link Name}s to an abstract name.
-     * <p>
-     * As names are abstracted from in this property, we need to give named elements abstract names
-     * for them to be used in the hash code. This approach is similar to
-     * {@link NameAbstractionTable}, where we collect elements with names in the order they are
-     * declared. Each element is associated with the number of previously added elements, which is
-     * then used as the abstract name.
-     */
+    /// A helper class to map [Name]s to an abstract name.
+    ///
+    /// As names are abstracted from in this property, we need to give named elements abstract names
+    /// for them to be used in the hash code. This approach is similar to
+    /// [NameAbstractionTable], where we collect elements with names in the order they are
+    /// declared. Each element is associated with the number of previously added elements, which is
+    /// then used as the abstract name.
     private static class NameAbstractionMap {
         private int nextAbstractName = 0;
 
-        /**
-         * The map that associates {@link Name}s with their abstract names.
-         */
+        /// The map that associates [Name]s with their abstract names.
         private final Map<Name, Integer> map = new HashMap<>();
 
-        /**
-         * Adds a {@link Name} to the map.
-         *
-         * @param name the {@link Name} to be added
-         */
+        /// Adds a [Name] to the map.
+        ///
+        /// @param name the [Name] to be added
         public void add(Name name) {
             map.put(name, nextAbstractName++);
         }
 
-        /**
-         * Returns the abstract name of a {@link Name} or {@code -1} if the element
-         * is not in the map.
-         * ee
-         *
-         * @param name the {@link Name} whose abstract name should be returned
-         * @return the abstract name of the {@link Name} or {@code -1} if the element
-         *         is
-         *         not in the map
-         */
+        /// Returns the abstract name of a [Name] or `-1` if the element
+        /// is not in the map.
+        /// ee
+        ///
+        /// @param name the [Name] whose abstract name should be returned
+        /// @return the abstract name of the [Name] or `-1` if the element
+        ///         is
+        ///         not in the map
         public int getAbstractName(Name name) {
             final Integer result = map.get(name);
             return result != null ? result : -1;

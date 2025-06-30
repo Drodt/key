@@ -45,9 +45,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         ImmutableSLList.nil();
     protected TacletAttributes attrs = new TacletAttributes(null, null);
 
-    /**
-     * List of additional generic conditions on the instantiations of schema variables.
-     */
+    /// List of additional generic conditions on the instantiations of schema variables.
     protected ImmutableList<VariableCondition> variableConditions =
         ImmutableSLList.nil();
     protected HashMap<TacletGoalTemplate, ChoiceExpr> goal2Choices = null;
@@ -95,55 +93,41 @@ public abstract class TacletBuilder<T extends Taclet> {
         }
     }
 
-    /**
-     * sets the trigger
-     */
+    /// sets the trigger
     public void setTrigger(Trigger trigger) {
         attrs = new TacletAttributes(attrs.displayName(), trigger);
     }
 
-    /**
-     * returns the name of the Taclet to be built
-     */
+    /// returns the name of the Taclet to be built
     public Name getName() {
         return this.name;
     }
 
-    /**
-     * sets the name of the Taclet to be built
-     */
+    /// sets the name of the Taclet to be built
     public void setName(Name name) {
         this.name = name;
     }
 
-    /**
-     * sets an optional display name (presented to the user)
-     */
+    /// sets an optional display name (presented to the user)
     public void setDisplayName(String s) {
         attrs = new TacletAttributes(s, attrs.trigger());
     }
 
-    /**
-     * sets the ifseq of the Taclet to be built
-     */
+    /// sets the ifseq of the Taclet to be built
     public void setIfSequent(org.key_project.prover.sequent.Sequent seq) {
         checkContainsFreeVarSV(seq, getName(), "sequent");
         this.ifseq = seq;
     }
 
-    /**
-     * adds a new <I>new</I> variable to the variable conditions of the Taclet: v is new and has the
-     * same type as peerSV
-     */
+    /// adds a new _new_ variable to the variable conditions of the Taclet: v is new and has the
+    /// same type as peerSV
     public void addVarsNew(org.key_project.logic.op.sv.SchemaVariable v,
             org.key_project.logic.op.sv.SchemaVariable peerSV) {
         addVarsNew(new NewVarcond(v, peerSV));
     }
 
-    /**
-     * adds a new <I>new</I> variable to the variable conditions of the Taclet: v is new and has the
-     * given type
-     */
+    /// adds a new _new_ variable to the variable conditions of the Taclet: v is new and has the
+    /// given type
     public void addVarsNew(org.key_project.logic.op.sv.SchemaVariable v, KeYRustyType type) {
         if (type == null) {
             throw new NullPointerException("given type is null");
@@ -151,9 +135,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         addVarsNew(new NewVarcond(v, type));
     }
 
-    /**
-     * adds a new <I>new</I> variable to the variable conditions of the Taclet: v is new.
-     */
+    /// adds a new _new_ variable to the variable conditions of the Taclet: v is new.
     public void addVarsNew(NewVarcond nv) {
         if (!(nv.getSchemaVariable() instanceof ProgramSV)) {
             throw new TacletBuilderException(this, "Tried to add condition:" + nv
@@ -162,10 +144,8 @@ public abstract class TacletBuilder<T extends Taclet> {
         varsNew = varsNew.prepend(nv);
     }
 
-    /**
-     * adds a new <I>NotFreeIn</I> variable pair to the variable conditions of the Taclet: v0 is not
-     * free in v1.
-     */
+    /// adds a new _NotFreeIn_ variable pair to the variable conditions of the Taclet: v0 is not
+    /// free in v1.
     public void addVarsNotFreeIn(org.key_project.logic.op.sv.SchemaVariable v0,
             org.key_project.logic.op.sv.SchemaVariable v1) {
         varsNotFreeIn = varsNotFreeIn.prepend(new NotFreeIn(v0, v1));
@@ -191,30 +171,24 @@ public abstract class TacletBuilder<T extends Taclet> {
         }
     }
 
-    /**
-     * Add a "v0 depending on v1"-statement. "v0" may not occur within the {@code if} sequent or the
-     * {@code find}
-     * formula/term, however, this is not checked
-     */
+    /// Add a "v0 depending on v1"-statement. "v0" may not occur within the `if` sequent or the
+    /// `find`
+    /// formula/term, however, this is not checked
     public void addVarsNewDependingOn(org.key_project.logic.op.sv.SchemaVariable v0,
             SchemaVariable v1) {
         varsNewDependingOn = varsNewDependingOn.prepend(new NewDependingOn(v0, v1));
     }
 
 
-    /**
-     * Add a generic condition on the instantiation of schema variables.
-     */
+    /// Add a generic condition on the instantiation of schema variables.
     public void addVariableCondition(VariableCondition vc) {
         variableConditions = variableConditions.append(vc);
     }
 
-    /**
-     * adds a new goal descriptions to the goal descriptions of the Taclet. The TacletGoalTemplate
-     * must be of the appropriate useKind (Rewrite/Ante/Succ), otherwise an IllegalArgumentException
-     * is
-     * thrown.
-     */
+    /// adds a new goal descriptions to the goal descriptions of the Taclet. The TacletGoalTemplate
+    /// must be of the appropriate useKind (Rewrite/Ante/Succ), otherwise an IllegalArgumentException
+    /// is
+    /// thrown.
     public abstract void addTacletGoalTemplate(TacletGoalTemplate goal);
 
     public org.key_project.prover.sequent.Sequent ifSequent() {
@@ -229,15 +203,13 @@ public abstract class TacletBuilder<T extends Taclet> {
         return varsNotFreeIn.iterator();
     }
 
-    /**
-     * builds and returns the Taclet that is specified by former set... / add... methods. If no name
-     * is specified then a Taclet with an empty string name is build. No specifications for
-     * variable conditions, goals or rule sets imply that the corresponding parts of the Taclet are
-     * empty. No specification for the if-sequence is represented as a sequent with two empty
-     * semisequences. No specification for the interactive or recursive flags imply that the flags
-     * are not set. No specified find part for Taclets that require a find part causes an
-     * IllegalStateException.
-     */
+    /// builds and returns the Taclet that is specified by former set... / add... methods. If no name
+    /// is specified then a Taclet with an empty string name is build. No specifications for
+    /// variable conditions, goals or rule sets imply that the corresponding parts of the Taclet are
+    /// empty. No specification for the if-sequence is represented as a sequent with two empty
+    /// semisequences. No specification for the interactive or recursive flags imply that the flags
+    /// are not set. No specified find part for Taclets that require a find part causes an
+    /// IllegalStateException.
     public abstract T getTaclet();
 
     public ChoiceExpr getChoices() {
@@ -248,9 +220,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         this.choices = choices;
     }
 
-    /**
-     * adds a mapping from GoalTemplate <code>gt</code> to SetOf<Choice> <code>soc</code>
-     */
+    /// adds a mapping from GoalTemplate <code>gt</code> to SetOf<Choice> <code>soc</code>
     public void addGoal2ChoicesMapping(TacletGoalTemplate gt, ChoiceExpr soc) {
         if (goal2Choices == null) {
             goal2Choices = new LinkedHashMap<>();

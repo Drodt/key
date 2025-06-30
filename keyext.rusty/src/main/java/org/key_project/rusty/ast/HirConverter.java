@@ -85,9 +85,7 @@ public class HirConverter {
 
     private Function currentFn = null;
 
-    /**
-     * We first convert all functions except their bodies. Then we convert those later.
-     */
+    /// We first convert all functions except their bodies. Then we convert those later.
     private final Map<Function, Fn> fnsToComplete =
         new HashMap();
 

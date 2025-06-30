@@ -14,9 +14,7 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * A schema variable standing for a type in SchemaRust
- */
+/// A schema variable standing for a type in SchemaRust
 // spotless:off
 public record SchemaRustType(SchemaType type) implements RustType {
     @Override

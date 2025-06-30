@@ -19,9 +19,7 @@ import org.key_project.util.collection.ImmutableList;
 
 
 public class ContextBlockExpression extends BlockExpression {
-    /**
-     * length of this progran prefix
-     */
+    /// length of this progran prefix
     private final int patternPrefixLength;
 
     public ContextBlockExpression(ImmutableList<Statement> statements, Expr expr) {
@@ -55,10 +53,8 @@ public class ContextBlockExpression extends BlockExpression {
         return sb.append("\n#c}").toString();
     }
 
-    /**
-     * overrides the check of the superclass as unmatched elements will disappear in the suffix of
-     * this ContextStatementBlock
-     */
+    /// overrides the check of the superclass as unmatched elements will disappear in the suffix of
+    /// this ContextStatementBlock
     @Override
     public boolean compatibleBlockSize(int pos, int max) {
         return true;
@@ -122,10 +118,8 @@ public class ContextBlockExpression extends BlockExpression {
         return mc;
     }
 
-    /**
-     * completes match of context block by adding the prefix end position and the suffix start
-     * position
-     */
+    /// completes match of context block by adding the prefix end position and the suffix start
+    /// position
     private MatchConditions makeContextInfoComplete(MatchConditions matchCond, SourceData newSource,
             PossibleProgramPrefix prefix, int pos, PosInProgram relPos, RustyProgramElement src,
             Services services) {
@@ -144,15 +138,13 @@ public class ContextBlockExpression extends BlockExpression {
         return matchCond;
     }
 
-    /**
-     * computes the PosInProgram of the first element, which is not part of the prefix
-     *
-     * @param prefix the ProgramPrefix the outermost prefix element of the source
-     * @param pos the number of elements to disappear in the context
-     * @param relPos the position of the first active statement of element
-     *        prefix.getPrefixElementAt(pos);
-     * @return the PosInProgram of the first element, which is not part of the prefix
-     */
+    /// computes the PosInProgram of the first element, which is not part of the prefix
+    ///
+    /// @param prefix the ProgramPrefix the outermost prefix element of the source
+    /// @param pos the number of elements to disappear in the context
+    /// @param relPos the position of the first active statement of element
+    ///        prefix.getPrefixElementAt(pos);
+    /// @return the PosInProgram of the first element, which is not part of the prefix
     private PosInProgram matchPrefixEnd(final PossibleProgramPrefix prefix, int pos,
             PosInProgram relPos) {
         PosInProgram prefixEnd = PosInProgram.TOP;

@@ -17,13 +17,10 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
 public class GZipFileRuleSource extends FileRuleSource {
-    /**
-     * Instantiates a new file rule source.
-     *
-     * This is only instantiated from {@link RuleSourceFactory#initRuleFile(File, boolean)}.
-     *
-     * @param ruleFile the file to read from.
-     */
+    /// Instantiates a new file rule source.
+    /// This is only instantiated from [#initRuleFile(File,boolean)].
+    ///
+    /// @param ruleFile the file to read from.
     GZipFileRuleSource(File ruleFile) {
         super(ruleFile);
     }

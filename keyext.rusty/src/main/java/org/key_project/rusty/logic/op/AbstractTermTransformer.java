@@ -23,17 +23,15 @@ import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
 import org.key_project.rusty.rule.metaconstruct.IntroAtPreDefs;
 import org.key_project.rusty.rule.metaconstruct.arith.*;
 
-/**
- * Abstract class factoring out commonalities of typical term transformer implementations. The
- * available singletons of term transformers are kept here.
- */
+/// Abstract class factoring out commonalities of typical term transformer implementations. The
+/// available singletons of term transformers are kept here.
 public abstract class AbstractTermTransformer extends AbstractSortedOperator
         implements TermTransformer {
     // must be first
-    /** The metasort sort **/
+    /// The metasort sort
     public static final Sort METASORT = new SortImpl(new Name("Meta"));
 
-    /** A map from String names to meta operators **/
+    /// A map from String names to meta operators
     public static final Map<String, AbstractTermTransformer> NAME_TO_META_OP =
         new LinkedHashMap<>(17);
 
@@ -106,9 +104,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         }
     }
 
-    /**
-     * @return String representing a logical integer literal in decimal representation
-     */
+    /// @return String representing a logical integer literal in decimal representation
     public static String convertToDecimalString(Term term, Services services) {
         StringBuilder result = new StringBuilder();
         boolean neg = false;

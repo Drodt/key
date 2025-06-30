@@ -6,14 +6,12 @@ package org.key_project.rusty.logic;
 import org.key_project.logic.IntIterator;
 import org.key_project.rusty.ast.RustyProgramElement;
 
-/**
- * this class describes the position of an expression in a program.
- */
+/// this class describes the position of an expression in a program.
 public final class PosInProgram {
-    /** pos at the beginning of the program */
+    /// pos at the beginning of the program
     public static final PosInProgram TOP = new PosInProgram();
 
-    /** often used positions */
+    /// often used positions
     public static final PosInProgram ZERO = TOP.down(0);
     public static final PosInProgram ZERO_ZERO = ZERO.down(0);
     public static final PosInProgram ZERO_ONE = ZERO.down(1);
@@ -22,25 +20,19 @@ public final class PosInProgram {
     public static final PosInProgram ONE_ONE = ONE.down(1);
 
 
-    /**
-     * the position number
-     */
+    /// the position number
     private final int[] pos;
 
-    /**
-     * pointer to the (last element + 1) in pos valid for this position
-     */
+    /// pointer to the (last element + 1) in pos valid for this position
     private final int depth;
 
-    /**
-     * returns the RustyProgramElement at the given position
-     *
-     * @param pos the PosInProgram
-     * @param prg the RustyProgramElement we walk through
-     * @return the RustyProgramElement at the given position
-     * @throws IndexOutOfBoundsException if position <code>pos</code> refers to a non-existent
-     *         program element
-     */
+    /// returns the RustyProgramElement at the given position
+    ///
+    /// @param pos the PosInProgram
+    /// @param prg the RustyProgramElement we walk through
+    /// @return the RustyProgramElement at the given position
+    /// @throws IndexOutOfBoundsException if position <code>pos</code> refers to a non-existent
+    ///         program element
     public static RustyProgramElement getProgramAt(PosInProgram pos, RustyProgramElement prg) {
         RustyProgramElement result = prg;
         for (int i = 0; i < pos.depth; i++) {
@@ -52,9 +44,7 @@ public final class PosInProgram {
         return result;
     }
 
-    /**
-     * creates a new program position
-     */
+    /// creates a new program position
     private PosInProgram(PosInProgram pip, int posNr) {
         pos = new int[pip.depth + 1];
         System.arraycopy(pip.pos, 0, pos, 0, pip.depth);
@@ -62,9 +52,7 @@ public final class PosInProgram {
         depth = pos.length;
     }
 
-    /**
-     * creates a new PosInProgram position.
-     */
+    /// creates a new PosInProgram position.
     private PosInProgram() {
         pos = new int[0];
         depth = 0;
@@ -75,25 +63,20 @@ public final class PosInProgram {
         this.depth = depth;
     }
 
-    /** size of the position list */
+    /// size of the position list
     public int depth() {
         return depth;
     }
 
-    /**
-     * descending downwards choosing the n'th statement of the program
-     *
-     * @param n the int describes the position of the statement in the block
-     * @return position of the statement
-     */
+    /// descending downwards choosing the n'th statement of the program
+    ///
+    /// @param n the int describes the position of the statement in the block
+    /// @return position of the statement
     public PosInProgram down(int n) {
         return new PosInProgram(this, n);
     }
 
-    /**
-     * ascends one AST level
-     *
-     */
+    /// ascends one AST level
     public PosInProgram up() {
         final PosInProgram up;
         if (this != TOP && depth > 1) {
@@ -127,10 +110,8 @@ public final class PosInProgram {
         return new PosInProgram(newPos, newPos.length);
     }
 
-    /**
-     * compares this PosInProgram with another PosInProgram and returns true if both describe the
-     * same position
-     */
+    /// compares this PosInProgram with another PosInProgram and returns true if both describe the
+    /// same position
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -174,9 +155,7 @@ public final class PosInProgram {
         return pos[i];
     }
 
-    /**
-     * return the last index (or -1 if this == TOP)
-     */
+    /// return the last index (or -1 if this == TOP)
     public int last() {
         return pos[depth - 1];
     }
@@ -185,18 +164,16 @@ public final class PosInProgram {
         return getProgramAt(this, pe);
     }
 
-    /**
-     * returns an iterator over the list defining the position in a term.
-     *
-     * @return an iterator over the list defining the position in a term.
-     */
+    /// returns an iterator over the list defining the position in a term.
+    ///
+    /// @return an iterator over the list defining the position in a term.
     public IntIterator iterator() {
         return new PosArrayIntIterator(this);
     }
 
 
 
-    /** toString */
+    /// toString
     public String toString() {
         final StringBuilder list = new StringBuilder("\"PosInProgram: \"[");
         for (int i = 0; i < depth - 1; i++) {

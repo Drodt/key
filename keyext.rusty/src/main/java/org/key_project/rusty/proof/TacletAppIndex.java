@@ -21,11 +21,9 @@ public class TacletAppIndex {
 
     private final Goal goal;
 
-    /**
-     * The sequent with the formulas for which taclet indices are hold by this object. Invariant:
-     * <code>seq != null</code> implies that the indices <code>antecIndex</code>,
-     * <code>succIndex</code> are up-to-date for the sequent <code>seq</code>
-     */
+    /// The sequent with the formulas for which taclet indices are hold by this object. Invariant:
+    /// <code>seq != null</code> implies that the indices <code>antecIndex</code>,
+    /// <code>succIndex</code> are up-to-date for the sequent <code>seq</code>
     private org.key_project.prover.sequent.Sequent seq;
 
     public TacletAppIndex(TacletIndex tacletIndex, Goal goal, Services services) {
@@ -66,23 +64,19 @@ public class TacletAppIndex {
     }
 
 
-    /**
-     * collects all NoFindTacletInstantiations
-     *
-     * @param services the Services object encapsulating information about the Rust datastructures
-     *        like (static)types etc.
-     * @return list of all possible instantiations
-     */
+    /// collects all NoFindTacletInstantiations
+    ///
+    /// @param services the Services object encapsulating information about the Rust datastructures
+    ///        like (static)types etc.
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(Services services) {
         return tacletIndex().getNoFindTaclet(services);
     }
 
-    /**
-     * collects all FindTaclets with instantiations and position
-     *
-     * @param pos the PosInOccurrence to focus
-     * @return list of all possible instantiations
-     */
+    /// collects all FindTaclets with instantiations and position
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getFindTaclet(PosInOccurrence pos) {
         return getIndex(pos).getTacletAppAt(pos);
     }
@@ -111,12 +105,10 @@ public class TacletAppIndex {
         return getNode().proof();
     }
 
-    /**
-     * @return true iff this index is currently outdated with respect to the sequent of the
-     *         associated goal; this does not detect other modifications
-     *         like an altered user
-     *         constraint
-     */
+    /// @return true iff this index is currently outdated with respect to the sequent of the
+    ///         associated goal; this does not detect other modifications
+    ///         like an altered user
+    ///         constraint
     private boolean isOutdated() {
         return getGoal() == null || getSequent() != getNode().sequent();
     }
@@ -146,13 +138,11 @@ public class TacletAppIndex {
         return l1;
     }
 
-    /**
-     * creates TacletApps out of each single NoPosTacletApp object
-     *
-     * @param tacletInsts the list of NoPosTacletApps the TacletApps are to be created from
-     * @param pos the PosInOccurrence to focus
-     * @return list of all created TacletApps
-     */
+    /// creates TacletApps out of each single NoPosTacletApp object
+    ///
+    /// @param tacletInsts the list of NoPosTacletApps the TacletApps are to be created from
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all created TacletApps
     static ImmutableList<TacletApp> createTacletApps(ImmutableList<NoPosTacletApp> tacletInsts,
             PosInOccurrence pos, Services services) {
         ImmutableList<TacletApp> result = ImmutableSLList.nil();
@@ -169,9 +159,7 @@ public class TacletAppIndex {
         return result;
     }
 
-    /**
-     * returns a new TacletAppIndex with a given TacletIndex
-     */
+    /// returns a new TacletAppIndex with a given TacletIndex
     TacletAppIndex copyWith(TacletIndex p_tacletIndex, Goal goal) {
         return new TacletAppIndex(p_tacletIndex, antecIndex, succIndex, goal, getSequent());
     }
@@ -183,12 +171,10 @@ public class TacletAppIndex {
             succIndex.addTaclet(newTaclet, getServices(), tacletIndex);
     }
 
-    /**
-     * updates the internal caches after a new Taclet with instantiation information has been added
-     * to the TacletIndex.
-     *
-     * @param tacletApp the partially instantiated Taclet to add
-     */
+    /// updates the internal caches after a new Taclet with instantiation information has been added
+    /// to the TacletIndex.
+    ///
+    /// @param tacletApp the partially instantiated Taclet to add
     public void addedNoPosTacletApp(NoPosTacletApp tacletApp) {
         if (tacletApp.taclet() instanceof NoFindTaclet) {
             return;
@@ -197,15 +183,13 @@ public class TacletAppIndex {
         updateIndices(tacletApp);
     }
 
-    /**
-     * returns the rule applications at the given PosInOccurrence and at all Positions below this.
-     * The method calls getTacletAppAt for all the Positions below.
-     *
-     * @param pos the position where to start from
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return the possible rule applications
-     */
+    /// returns the rule applications at the given PosInOccurrence and at all Positions below this.
+    /// The method calls getTacletAppAt for all the Positions below.
+    ///
+    /// @param pos the position where to start from
+    /// @param services the Services object encapsulating information about the java datastructures
+    ///        like (static)types etc.
+    /// @return the possible rule applications
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos,
             Services services) {
         final ImmutableList<TacletApp> findTaclets =

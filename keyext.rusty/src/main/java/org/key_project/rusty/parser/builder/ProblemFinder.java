@@ -36,19 +36,17 @@ public class ProblemFinder extends ExpressionBuilder {
         return null;
     }
 
-    /**
-     * Try to find a problem defined in the {@link de.uka.ilkd.key.proof.init.KeYUserProblemFile}
-     * located in the
-     * given AST.
-     * <p>
-     * After this method is called, you can retrieve the chosen contract via
-     * {@link #getChooseContract()} or the
-     * proof obligation information via {@link #getProofObligation()}.
-     *
-     * @param ctx the parse tree
-     * @return a term if {@code \problem} entry exists.
-     * @throws BuildingException if the
-     */
+    /// Try to find a problem defined in the [de.uka.ilkd.key.proof.init.KeYUserProblemFile]
+    /// located in the
+    /// given AST.
+    ///
+    /// After this method is called, you can retrieve the chosen contract via
+    /// [#getChooseContract()] or the
+    /// proof obligation information via [#getProofObligation()].
+    ///
+    /// @param ctx the parse tree
+    /// @return a term if `\problem` entry exists.
+    /// @throws BuildingException if the
     @Override
     public @Nullable Term visitProblem(KeYRustyParser.ProblemContext ctx) {
         if (ctx.CHOOSECONTRACT() != null) {

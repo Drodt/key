@@ -14,14 +14,12 @@ import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableSet;
 
 public final class MiscTools {
-    /**
-     * All variables read in the specified program element, excluding newly declared variables.
-     *
-     * @param pe a program element.
-     * @param services services.
-     * @return all variables read in the specified program element, excluding newly declared
-     *         variables.
-     */
+    /// All variables read in the specified program element, excluding newly declared variables.
+    ///
+    /// @param pe a program element.
+    /// @param services services.
+    /// @return all variables read in the specified program element, excluding newly declared
+    ///         variables.
     public static ImmutableSet<ProgramVariable> getLocalIns(RustyProgramElement pe,
             Services services) {
         final var rpvc = new ReadPVCollector(pe, services);
@@ -29,14 +27,12 @@ public final class MiscTools {
         return rpvc.result();
     }
 
-    /**
-     * All variables changed in the specified program element, excluding newly declared variables.
-     *
-     * @param pe a program element.
-     * @param services services.
-     * @return all variables changed in the specified program element, excluding newly declared
-     *         variables.
-     */
+    /// All variables changed in the specified program element, excluding newly declared variables.
+    ///
+    /// @param pe a program element.
+    /// @param services services.
+    /// @return all variables changed in the specified program element, excluding newly declared
+    ///         variables.
     public static ImmutableSet<ProgramVariable> getLocalOuts(RustyProgramElement pe,
             Services services) {
         final WrittenAndDeclaredPVCollector wpvc = new WrittenAndDeclaredPVCollector(pe, services);
@@ -49,14 +45,10 @@ public final class MiscTools {
     // -------------------------------------------------------------------------
 
     private static final class ReadPVCollector extends RustyASTVisitor {
-        /**
-         * The list of resulting (i.e., read) program variables.
-         */
+        /// The list of resulting (i.e., read) program variables.
         private ImmutableSet<ProgramVariable> result = DefaultImmutableSet.nil();
 
-        /**
-         * The declared program variables.
-         */
+        /// The declared program variables.
         private ImmutableSet<ProgramVariable> declaredPVs =
             DefaultImmutableSet.nil();
 
@@ -84,15 +76,11 @@ public final class MiscTools {
     }
 
     private static class WrittenAndDeclaredPVCollector extends RustyASTVisitor {
-        /**
-         * The written program variables.
-         */
+        /// The written program variables.
         private ImmutableSet<ProgramVariable> writtenPVs =
             DefaultImmutableSet.nil();
 
-        /**
-         * The declared program variables.
-         */
+        /// The declared program variables.
         private ImmutableSet<ProgramVariable> declaredPVs =
             DefaultImmutableSet.nil();
 

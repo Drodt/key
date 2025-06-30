@@ -24,26 +24,18 @@ import org.key_project.util.collection.ImmutableList;
 
 import static org.key_project.rusty.util.Assert.assertSubSort;
 
-/**
- * Standard implementation of the OperationContract interface.
- */
+/// Standard implementation of the OperationContract interface.
 public class FunctionalOperationContractImpl implements FunctionalOperationContract {
     final String baseName;
     final String name;
     final ProgramFunction fn;
     final RModality.RustyModalityKind modalityKind;
-    /**
-     * The original precondition terms.
-     */
+    /// The original precondition terms.
     final Term originalPre;
     final Term originalMby;
-    /**
-     * The original postcondition term.
-     */
+    /// The original postcondition term.
     final Term originalPost;
-    /**
-     * The original modifiable clause term.
-     */
+    /// The original modifiable clause term.
     final Term originalModifiable;
     final ImmutableList<ProgramVariable> originalParamVars;
     final ProgramVariable originalResultVar;
@@ -51,13 +43,9 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     final int id;
     final boolean toBeSaved;
 
-    /**
-     * The term builder.
-     */
+    /// The term builder.
     private final TermBuilder tb;
-    /**
-     * The services object.
-     */
+    /// The services object.
     private final Services services;
 
     // -------------------------------------------------------------------------
@@ -328,15 +316,13 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
         return tb.var(originalResultVar);
     }
 
-    /**
-     * Get the according replace-map for the given variables.
-     *
-     * @param selfVar the self variable
-     * @param paramVars the parameter variables
-     * @param resultVar the result variable
-     * @param services the services object
-     * @return the replacement map
-     */
+    /// Get the according replace-map for the given variables.
+    ///
+    /// @param selfVar the self variable
+    /// @param paramVars the parameter variables
+    /// @param resultVar the result variable
+    /// @param services the services object
+    /// @return the replacement map
     protected Map<Term, Term> getReplaceMap(Term selfVar,
             ImmutableList<Term> paramVars, Term resultVar,
             Services services) {

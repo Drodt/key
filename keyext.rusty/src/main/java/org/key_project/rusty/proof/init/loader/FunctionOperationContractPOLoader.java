@@ -14,22 +14,18 @@ import org.key_project.rusty.speclang.Contract;
 
 import org.jspecify.annotations.NullMarked;
 
-/**
- * Loader for proof obligation arises by function operation contract.
- *
- * @author Alexander Weigl
- * @version 1 (28.12.23)
- */
+/// Loader for proof obligation arises by function operation contract.
+///
+/// @author Alexander Weigl
+/// @version 1 (28.12.23)
 @NullMarked
 public class FunctionOperationContractPOLoader implements ProofObligationLoader {
-    /**
-     * Instantiates a new proof obligation with the given settings.
-     *
-     * @param initConfig The already loaded {@link InitConfig}.
-     * @param properties The settings of the proof obligation to instantiate.
-     * @return The instantiated proof obligation.
-     * @throws IOException Occurred Exception.
-     */
+    /// Instantiates a new proof obligation with the given settings.
+    ///
+    /// @param initConfig The already loaded [InitConfig].
+    /// @param properties The settings of the proof obligation to instantiate.
+    /// @return The instantiated proof obligation.
+    /// @throws IOException Occurred Exception.
     @Override
     public IPersistablePO.LoadedPOContainer loadFrom(InitConfig initConfig,
             Configuration properties) throws Exception {

@@ -23,9 +23,7 @@ import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.SpecificationRepository;
 
 public class Services implements LogicServices, ProofServices {
-    /**
-     * proof specific namespaces (functions, predicates, sorts, variables)
-     */
+    /// proof specific namespaces (functions, predicates, sorts, variables)
     private NamespaceSet namespaces = new NamespaceSet();
     private LDTs ldts;
     private RefSortManager mRefManager;
@@ -39,19 +37,13 @@ public class Services implements LogicServices, ProofServices {
     private Profile profile;
 
     private final ServiceCaches caches;
-    /**
-     * specification repository
-     */
+    /// specification repository
     private SpecificationRepository specRepos;
 
-    /**
-     * variable namer for inner renaming
-     */
+    /// variable namer for inner renaming
     private final VariableNamer innerVarNamer = new InnerVariableNamer(this);
 
-    /**
-     * map of names to counters
-     */
+    /// map of names to counters
     private final HashMap<String, Counter> counters;
     private RustModel rustModel;
 
@@ -132,9 +124,7 @@ public class Services implements LogicServices, ProofServices {
         return profile;
     }
 
-    /**
-     * returns an existing named counter, creates a new one otherwise
-     */
+    /// returns an existing named counter, creates a new one otherwise
     public Counter getCounter(String name) {
         Counter c = counters.get(name);
         if (c != null) {
@@ -145,10 +135,8 @@ public class Services implements LogicServices, ProofServices {
         return c;
     }
 
-    /**
-     * Reset all counters associated with this service.
-     * Only use this method if the proof is empty!
-     */
+    /// Reset all counters associated with this service.
+    /// Only use this method if the proof is empty!
     public void resetCounters() {
         if (proof.root().childrenCount() > 0) {
             throw new IllegalStateException("tried to reset counters on non-empty proof");
@@ -156,9 +144,7 @@ public class Services implements LogicServices, ProofServices {
         counters.clear();
     }
 
-    /**
-     * creates a new service object with the same ldt information as the actual one
-     */
+    /// creates a new service object with the same ldt information as the actual one
     public Services copyPreservesLDTInformation() {
         Services s = new Services(getProfile());
         s.setLDTs(getLDTs());

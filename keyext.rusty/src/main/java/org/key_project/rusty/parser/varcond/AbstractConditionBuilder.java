@@ -5,10 +5,8 @@ package org.key_project.rusty.parser.varcond;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * @author Alexander Weigl
- * @version 1 (12/9/19)
- */
+/// @author Alexander Weigl
+/// @version 1 (12/9/19)
 public abstract class AbstractConditionBuilder extends AbstractTacletBuilderCommand
         implements ConditionBuilder {
     protected AbstractConditionBuilder(@NonNull String triggerName,

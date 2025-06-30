@@ -13,38 +13,25 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * <p>
- * This abstract implementation of {@link ProofOblInput} extends the functionality of
- * {@link AbstractPO} to execute some code within a try catch block.
- * </p>
- * <p>
- * The generated {@link Sequent} has the following form:
- *
- * <pre>
- * {@code
- * ==>
- * <generalAssumptions> &
- * <preconditions>
- * ->
- * <updatesToStoreInitialValues>
- * <modalityStart>
- * panics=false;
- *   <customCode>
- * <modalityEnd>
- * (<postconditions > & <optionalUninterpretedPredicate>)
- * }
- * </pre>
- * </p>
- * <p>
- * If {@link #isAddUninterpretedPredicate()} an uninterpreted predicate is added to the
- * postcondition which contains the heap and all parameters as argument. This predicate can be used
- * to filter out invalid execution paths because its branches are closed while still open branches
- * contains valid execution paths.
- * </p>
- *
- * @author Martin Hentschel
- */
+///
+/// This abstract implementation of [ProofOblInput] extends the functionality of
+/// [AbstractPO] to execute some code within a try catch block.
+///
+///
+/// The generated [Sequent] has the following form:
+/// <pre>
+///
+/// `==><generalAssumptions> &<preconditions>-><updatesToStoreInitialValues><modalityStart>panics=false;<customCode><modalityEnd>(<postconditions > & <optionalUninterpretedPredicate>)`
+/// </pre>
+///
+///
+/// If [#isAddUninterpretedPredicate()] an uninterpreted predicate is added to the
+/// postcondition which contains the heap and all parameters as argument. This predicate can be used
+/// to filter out invalid execution paths because its branches are closed while still open branches
+/// contains valid execution paths.
+///
+///
+/// @author Martin Hentschel
 public abstract class AbstractOperationPO extends AbstractPO {
     protected InitConfig proofConfig;
 
@@ -84,26 +71,22 @@ public abstract class AbstractOperationPO extends AbstractPO {
         return proofConfig;
     }
 
-    /**
-     * Checks if result variable and call arguments should
-     * be renamed to make sure that their names are unique in the whole KeY application.
-     *
-     * @return {@code true} use unique names, {@code false} use original names even if they are not
-     *         unique in whole KeY application.
-     */
+    /// Checks if result variable and call arguments should
+    /// be renamed to make sure that their names are unique in the whole KeY application.
+    ///
+    /// @return `true` use unique names, `false` use original names even if they are not
+    ///         unique in whole KeY application.
     protected boolean isMakeNamesUnique() {
         // Changing this behaviour to fix #1552.
         // return true;
         return false;
     }
 
-    /**
-     * Checks if a copy of the call arguments are used instead of the original
-     * arguments.
-     *
-     * @return {@code true} use copy of method call arguments, {@code false} use original method
-     *         call arguments.
-     */
+    /// Checks if a copy of the call arguments are used instead of the original
+    /// arguments.
+    ///
+    /// @return `true` use copy of method call arguments, `false` use original method
+    ///         call arguments.
     protected boolean isCopyOfArgumentsUsed() {
         return true;
     }
@@ -160,23 +143,19 @@ public abstract class AbstractOperationPO extends AbstractPO {
         return new RustyBlock(be);
     }
 
-    /**
-     * Returns the {@link RModality.RustyModalityKind} to use as termination
-     * marker.
-     *
-     * @return The {@link RModality.RustyModalityKind} to use as termination
-     *         marker.
-     */
+    /// Returns the [RModality.RustyModalityKind] to use as termination
+    /// marker.
+    ///
+    /// @return The [RModality.RustyModalityKind] to use as termination
+    ///         marker.
     protected abstract RModality.RustyModalityKind getTerminationMarker();
 
-    /**
-     * Builds the initial updates.
-     *
-     * @param paramVars Formal parameters of method call.
-     * @param formalParamVars Arguments from formal parameters for method call.
-     * @param services The services instance.
-     * @return The {@link Term} representing the initial updates.
-     */
+    /// Builds the initial updates.
+    ///
+    /// @param paramVars Formal parameters of method call.
+    /// @param formalParamVars Arguments from formal parameters for method call.
+    /// @param services The services instance.
+    /// @return The [Term] representing the initial updates.
     protected Term buildUpdate(ImmutableList<ProgramVariable> paramVars,
             ImmutableList<ProgramVariable> formalParamVars, Services services) {
         Term update = null;
@@ -197,13 +176,11 @@ public abstract class AbstractOperationPO extends AbstractPO {
     protected abstract Term getPre(ImmutableList<ProgramVariable> paramVars,
             Services proofServices);
 
-    /**
-     * Builds the "general assumption".
-     *
-     * @param paramVars The parameters {@link ProgramVariable}s.
-     * @param services The services instance.
-     * @return The {@link Term} containing the general assumptions.
-     */
+    /// Builds the "general assumption".
+    ///
+    /// @param paramVars The parameters [ProgramVariable]s.
+    /// @param services The services instance.
+    /// @return The [Term] containing the general assumptions.
     private Term buildFreePre(ImmutableList<ProgramVariable> paramVars, Services services) {
         // conjunction of...
         // - "inBounds(p_i)" for integer parameters
@@ -218,12 +195,10 @@ public abstract class AbstractOperationPO extends AbstractPO {
     protected abstract Term generateMbyAtPreDef(ImmutableList<ProgramVariable> paramVars,
             Services services);
 
-    /**
-     * Generates the general assumption that all parameter arguments are valid.
-     *
-     * @param paramVars The parameters {@link ProgramVariable}s.
-     * @return The term representing the general assumption.
-     */
+    /// Generates the general assumption that all parameter arguments are valid.
+    ///
+    /// @param paramVars The parameters [ProgramVariable]s.
+    /// @return The term representing the general assumption.
     protected Term generateParamsOk(ImmutableList<ProgramVariable> paramVars) {
         Term paramsOK = tb.tt();
         for (var paramVar : paramVars) {

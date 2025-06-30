@@ -19,22 +19,18 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * Walks through a Rust AST in depth-left-fist-order.
- */
+/// Walks through a Rust AST in depth-left-fist-order.
 public abstract class CreatingASTVisitor extends RustyASTVisitor {
     protected static final Boolean CHANGED = Boolean.TRUE;
     protected final Deque<ExtList> stack = new ArrayDeque<>();
 
     boolean preservesPositionInfo = true;
 
-    /**
-     * create the CreatingASTVisitor
-     *
-     * @param root the ProgramElement where to begin
-     * @param preservesPos whether the position should be preserved
-     * @param services the services instance
-     */
+    /// create the CreatingASTVisitor
+    ///
+    /// @param root the ProgramElement where to begin
+    /// @param preservesPos whether the position should be preserved
+    /// @param services the services instance
     protected CreatingASTVisitor(RustyProgramElement root, boolean preservesPos,
             Services services) {
         super(root, services);
@@ -59,11 +55,9 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
         return stack.peek().toString();
     }
 
-    /**
-     * called if the program element x is unchanged
-     *
-     * @param x The {@link RustyProgramElement}.
-     */
+    /// called if the program element x is unchanged
+    ///
+    /// @param x The [RustyProgramElement].
     @Override
     protected void doDefaultAction(RustyProgramElement x) {
         addChild(x);

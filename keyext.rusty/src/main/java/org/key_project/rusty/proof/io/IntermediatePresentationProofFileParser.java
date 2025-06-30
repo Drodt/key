@@ -30,9 +30,7 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
     private NodeIntermediate currNode;
     private final LinkedList<Throwable> errors = new LinkedList<>();
 
-    /**
-     * @param proof Proof object for storing meta information about the parsed proof.
-     */
+    /// @param proof Proof object for storing meta information about the parsed proof.
     public IntermediatePresentationProofFileParser(Proof proof) {
         this.proof = proof;
     }
@@ -214,9 +212,7 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
         }
     }
 
-    /**
-     * @return The results of the parsing procedure.
-     */
+    /// @return The results of the parsing procedure.
     public Result getResult() {
         return new Result(getErrors(), getStatus(), root);
     }
@@ -231,9 +227,7 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
         return errors;
     }
 
-    /**
-     * @return An intermediate taclet application generated from previously parsed information.
-     */
+    /// @return An intermediate taclet application generated from previously parsed information.
     private TacletAppIntermediate constructTacletApp() {
         TacletInformation tacletInfo = (TacletInformation) ruleInfo;
         return new TacletAppIntermediate(tacletInfo.currRuleName,
@@ -243,10 +237,8 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
             tacletInfo.currNewNames);
     }
 
-    /**
-     * @return An intermediate built-in rule application generated from previously parsed
-     *         information.
-     */
+    /// @return An intermediate built-in rule application generated from previously parsed
+    ///         information.
     private BuiltInAppIntermediate constructBuiltInApp() {
         BuiltinRuleInformation builtinInfo = (BuiltinRuleInformation) ruleInfo;
         return new BuiltInAppIntermediate(builtinInfo.currRuleName,
@@ -255,31 +247,25 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
             builtinInfo.builtinIfInsts, builtinInfo.currNewNames);
     }
 
-    /**
-     * Loads proof settings.
-     *
-     * @param preferences The preferences to load.
-     */
+    /// Loads proof settings.
+    ///
+    /// @param preferences The preferences to load.
     private void loadPreferences(String preferences) {
         // final ProofSettings proofSettings = new ProofSettings(ProofSettings.DEFAULT_SETTINGS);
         // proofSettings.loadSettingsFromPropertyString(preferences);
     }
 
-    /**
-     * @return True iff we are currently parsing a built-in rule and are inside an if-insts sub
-     *         expression.
-     */
+    /// @return True iff we are currently parsing a built-in rule and are inside an if-insts sub
+    ///         expression.
     private boolean insideBuiltinIfInsts() {
         // return ruleInfo.isBuiltinInfo()
         // && ((BuiltinRuleInformation) ruleInfo).builtinIfInsts != null;
         return false;
     }
 
-    /**
-     * General information about taclet and built-in rule applications.
-     *
-     * @author Dominic Scheurer
-     */
+    /// General information about taclet and built-in rule applications.
+    ///
+    /// @author Dominic Scheurer
     private static abstract class RuleInformation {
         /* + General Information */
         protected String currRuleName;
@@ -293,11 +279,9 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
         }
     }
 
-    /**
-     * Information about taclet applications.
-     *
-     * @author Dominic Scheurer
-     */
+    /// Information about taclet applications.
+    ///
+    /// @author Dominic Scheurer
     private static class TacletInformation extends RuleInformation {
         /* + Taclet Information */
         protected LinkedList<String> loadedInsts = null;
@@ -310,11 +294,9 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
 
     }
 
-    /**
-     * Information about built-in rule applications.
-     *
-     * @author Dominic Scheurer
-     */
+    /// Information about built-in rule applications.
+    ///
+    /// @author Dominic Scheurer
     private static class BuiltinRuleInformation extends RuleInformation {
         /* + Built-In Formula Information */
         protected ImmutableList<Pair<Integer, PosInTerm>> builtinIfInsts;
@@ -329,11 +311,9 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
         }
     }
 
-    /**
-     * Simple structure comprising the results of the parser.
-     *
-     * @author Dominic Scheurer
-     */
+    /// Simple structure comprising the results of the parser.
+    ///
+    /// @author Dominic Scheurer
     public record Result(List<Throwable> errors, String status,
             BranchNodeIntermediate parsedResult) {
     }

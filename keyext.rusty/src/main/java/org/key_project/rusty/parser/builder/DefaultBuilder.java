@@ -135,19 +135,15 @@ public class DefaultBuilder extends AbstractBuilder<Object> {
         namespaces().setVariables(orig);
     }
 
-    /**
-     * looks up and returns the sort of the given name or null if none has been found
-     */
+    /// looks up and returns the sort of the given name or null if none has been found
     protected Sort lookupSort(String name) {
         return sorts().lookup(new Name(name));
     }
 
-    /**
-     * looks up a function, (program) variable or static query of the given name varfunc_id and the
-     * argument terms args in the namespaces and Rust info.
-     *
-     * @param varfuncName the String with the symbols name
-     */
+    /// looks up a function, (program) variable or static query of the given name varfunc_id and the
+    /// argument terms args in the namespaces and Rust info.
+    ///
+    /// @param varfuncName the String with the symbols name
     protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName, String sortName,
             Sort sort) {
         Name name = new Name(varfuncName);

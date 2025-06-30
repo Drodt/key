@@ -9,12 +9,10 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.Nullable;
 
-/**
- * This class represents range patterns.
- * <p>
- * <a href="https://doc.rust-lang.org/reference/patterns.html#range-patterns">RangePattern
- * Grammar</a>
- */
+/// This class represents range patterns.
+///
+/// <a href="https://doc.rust-lang.org/reference/patterns.html#range-patterns">RangePattern
+/// Grammar</a>
 // spotless:off
 public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatExpr right) implements Pattern {
     public enum Bounds

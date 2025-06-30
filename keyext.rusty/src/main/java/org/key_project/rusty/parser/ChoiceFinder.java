@@ -12,15 +12,13 @@ import org.key_project.rusty.parser.builder.AbstractBuilder;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * This visitor gathers the choice information in {@link org.key_project.rusty.parser.KeYAst.File}
- * and
- * provide {@link ChoiceInformation}.
- *
- * @author Alexander Weigl
- * @version 1 (28.10.19)
- * @see ChoiceInformation
- */
+/// This visitor gathers the choice information in [org.key_project.rusty.parser.KeYAst.File]
+/// and
+/// provide [ChoiceInformation].
+///
+/// @author Alexander Weigl
+/// @version 1 (28.10.19)
+/// @see ChoiceInformation
 public class ChoiceFinder extends AbstractBuilder<Object> {
     private final @NonNull ChoiceInformation choiceInformation;
 

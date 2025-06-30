@@ -8,13 +8,11 @@ import org.key_project.logic.op.ParsableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 
-/**
- * Argument types for {@link TacletBuilderCommand}s.
- *
- * @author Alexander Weigl
- * @version 1 (12/9/19)
- * @see TacletBuilderCommand
- */
+/// Argument types for [TacletBuilderCommand]s.
+///
+/// @author Alexander Weigl
+/// @version 1 (12/9/19)
+/// @see TacletBuilderCommand
 public enum ArgumentType {
     /* TYPE_RESOLVER(TypeResolver.class), */ SORT(Sort.class), TERM(Term.class),
     RUST_TYPE(KeYRustyType.class), VARIABLE(ParsableVariable.class), STRING(String.class);

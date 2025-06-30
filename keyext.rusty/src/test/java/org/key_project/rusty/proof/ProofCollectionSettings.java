@@ -23,30 +23,22 @@ public class ProofCollectionSettings {
     public static final String VERBOSE_OUTPUT_KEY = "verboseOutput";
     public static final String IGNORE_KEY = "ignore";
 
-    /**
-     * The time at which the corresponding runallproofs run has been started.
-     */
+    /// The time at which the corresponding runallproofs run has been started.
     public final Date runStart;
 
-    /**
-     * String {@link Map} containing all settings entries.
-     */
+    /// String [Map] containing all settings entries.
     private final Map<String, String> settingsMap;
 
-    /**
-     * File in which statistics are written.
-     */
+    /// File in which statistics are written.
     private StatisticsFile statisticsFile;
 
-    /**
-     * In order to ensure that the implementation is independent of working directory, this method
-     * can be used to return an absolute {@link File} object.
-     *
-     * @param baseDirectory Base directory that will be used as start location in case given path
-     *        name is a relative path.
-     * @param pathName Path whose associated {@link File} object will be returned.
-     * @return {@link File} object pointing to given path name relative to given base directory.
-     */
+    /// In order to ensure that the implementation is independent of working directory, this method
+    /// can be used to return an absolute [File] object.
+    ///
+    /// @param baseDirectory Base directory that will be used as start location in case given path
+    ///        name is a relative path.
+    /// @param pathName Path whose associated [File] object will be returned.
+    /// @return [File] object pointing to given path name relative to given base directory.
     static File getAbsoluteFile(File baseDirectory, String pathName) {
 
         /*
@@ -75,20 +67,16 @@ public class ProofCollectionSettings {
         return ret;
     }
 
-    /**
-     * Creates a {@link ProofCollectionSettings} object from the specified
-     * parameters with no parent
-     * settings.
-     */
+    /// Creates a [ProofCollectionSettings] object from the specified
+    /// parameters with no parent
+    /// settings.
     public ProofCollectionSettings(Date runStart) {
         this.runStart = runStart;
         settingsMap = new LinkedHashMap<>();
     }
 
-    /**
-     * Creates a {@link ProofCollectionSettings} object that overrides an existing
-     * {@link ProofCollectionSettings} object.
-     */
+    /// Creates a [ProofCollectionSettings] object that overrides an existing
+    /// [ProofCollectionSettings] object.
     public ProofCollectionSettings(ProofCollectionSettings parentSettings) {
         this.runStart = parentSettings.runStart;
         settingsMap = new HashMap<>(parentSettings.settingsMap);
@@ -99,13 +87,11 @@ public class ProofCollectionSettings {
         statisticsFile = parentSettings.getStatisticsFile();
     }
 
-    /**
-     * Reads out generic settings, which were be specified as (key, value) pairs
-     * during object
-     * creation.
-     *
-     * @see Map.Entry
-     */
+    /// Reads out generic settings, which were be specified as (key, value) pairs
+    /// during object
+    /// creation.
+    ///
+    /// @see Map.Entry
     private String get(String key) {
         return settingsMap.get(key);
     }
@@ -115,11 +101,9 @@ public class ProofCollectionSettings {
         return this;
     }
 
-    /**
-     * Settings must specify a base directory. Relative
-     * {@link ProofCollectionSettings} paths will
-     * be treated as relative to directory returned by this method.
-     */
+    /// Settings must specify a base directory. Relative
+    /// [ProofCollectionSettings] paths will
+    /// be treated as relative to directory returned by this method.
     public File getBaseDirectory() {
         String baseDirectoryName = get(BASE_DIRECTORY_KEY);
         return baseDirectoryName == null
@@ -127,10 +111,8 @@ public class ProofCollectionSettings {
                 : new File(baseDirectoryName).getAbsoluteFile();
     }
 
-    /**
-     * Returns location of statistics file. Can be null. In this case no statistics
-     * are saved.
-     */
+    /// Returns location of statistics file. Can be null. In this case no statistics
+    /// are saved.
     public StatisticsFile getStatisticsFile() {
         if (statisticsFile == null) {
             // Compute location of statistics file.
@@ -164,11 +146,9 @@ public class ProofCollectionSettings {
         return tempDir;
     }
 
-    /**
-     * Check whether proof reloading is enabled or disabled. If enabled, closed
-     * proofs will be saved
-     * and reloaded after prover is finished.
-     */
+    /// Check whether proof reloading is enabled or disabled. If enabled, closed
+    /// proofs will be saved
+    /// and reloaded after prover is finished.
     public boolean reloadEnabled() {
         String reloadEnabled = get(RELOAD_ENABLED);
         if (reloadEnabled == null || reloadEnabled.equals("true") || reloadEnabled.isEmpty()) {
@@ -177,13 +157,10 @@ public class ProofCollectionSettings {
             return !reloadEnabled.equals("false");
     }
 
-    /**
-     * Gets the list of groups on which the test should be run.
-     *
-     * <code>null</code> means all of them, otherwise a list of group names
-     *
-     * @return <code>null</code> or a list.
-     */
+    /// Gets the list of groups on which the test should be run.
+    /// <code>null</code> means all of them, otherwise a list of group names
+    ///
+    /// @return <code>null</code> or a list.
     public List<String> getRunOnlyOn() {
         String runOnly = get(RUN_ONLY_ON);
         if (runOnly == null) {
@@ -193,15 +170,13 @@ public class ProofCollectionSettings {
         }
     }
 
-    /**
-     * Gets the directory for a group.
-     * <p>
-     * If the groups has its own directory key, take it into consideration, return
-     * the base
-     * directory otherwise
-     *
-     * @return the directory for the current group.
-     */
+    /// Gets the directory for a group.
+    ///
+    /// If the groups has its own directory key, take it into consideration, return
+    /// the base
+    /// directory otherwise
+    ///
+    /// @return the directory for the current group.
     public File getGroupDirectory() {
         String localDir = get(DIRECTORY);
         if (localDir != null) {

@@ -21,25 +21,21 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * An AntecTaclet represents a taclet whose find part has to match a top level formula in the
- * antecedent of the sequent.
- */
+/// An AntecTaclet represents a taclet whose find part has to match a top level formula in the
+/// antecedent of the sequent.
 public class AntecTaclet extends FindTaclet {
-    /**
-     * creates a Schematic Theory Specific Rule (Taclet) with the given parameters.
-     *
-     * @param name the name of the Taclet
-     * @param applPart contains the application part of a Taclet that is the if-sequent, the
-     *        variable conditions
-     * @param goalTemplates a list of goal descriptions.
-     * @param ruleSets a list of rule sets for the Taclet
-     * @param attrs attributes for the Taclet; these are boolean values indicating a non-interactive
-     *        or recursive use of the Taclet.
-     * @param find the find sequent of the Taclet
-     * @param prefixMap a ImmutableMap that contains the prefix for each
-     *        SchemaVariable in the Taclet
-     */
+    /// creates a Schematic Theory Specific Rule (Taclet) with the given parameters.
+    ///
+    /// @param name the name of the Taclet
+    /// @param applPart contains the application part of a Taclet that is the if-sequent, the
+    ///        variable conditions
+    /// @param goalTemplates a list of goal descriptions.
+    /// @param ruleSets a list of rule sets for the Taclet
+    /// @param attrs attributes for the Taclet; these are boolean values indicating a non-interactive
+    ///        or recursive use of the Taclet.
+    /// @param find the find sequent of the Taclet
+    /// @param prefixMap a ImmutableMap that contains the prefix for each
+    ///        SchemaVariable in the Taclet
     public AntecTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates, ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs, Sequent find,
@@ -55,7 +51,7 @@ public class AntecTaclet extends FindTaclet {
         return (Term) ((Sequent) find).antecedent().getFirst().formula();
     }
 
-    /** toString for the find part */
+    /// toString for the find part
     @Override
     protected StringBuffer toStringFind(StringBuffer sb) {
         return sb.append("\\find(").append(find().toString()).append("==>)\n");

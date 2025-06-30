@@ -7,22 +7,16 @@ import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * Node in an intermediate proof representation. Responsible for storing information about children
- * of nodes.
- *
- * @author Dominic Scheurer
- */
+/// Node in an intermediate proof representation. Responsible for storing information about children
+/// of nodes.
+///
+/// @author Dominic Scheurer
 public abstract class NodeIntermediate {
 
-    /**
-     * Children nodes of this node.
-     */
+    /// Children nodes of this node.
     private LinkedList<NodeIntermediate> children = new LinkedList<>();
-    /**
-     * Number of nodes in the node tree rooted at this object.
-     * Cached value, computed on first request.
-     */
+    /// Number of nodes in the node tree rooted at this object.
+    /// Cached value, computed on first request.
     private int subtreeSize = -1;
 
     public LinkedList<NodeIntermediate> getChildren() {
@@ -39,9 +33,7 @@ public abstract class NodeIntermediate {
         this.subtreeSize = -1;
     }
 
-    /**
-     * @return number of NodeIntermediates in this tree of nodes (including this node)
-     */
+    /// @return number of NodeIntermediates in this tree of nodes (including this node)
     public int countAllChildren() {
         if (subtreeSize != -1) {
             return subtreeSize;

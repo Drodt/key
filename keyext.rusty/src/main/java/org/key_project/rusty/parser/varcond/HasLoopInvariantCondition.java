@@ -14,11 +14,9 @@ import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.speclang.LoopSpecification;
 
-/**
- * Checks whether a loop has an invariant.
- *
- * @author Dominic Steinhoefel
- */
+/// Checks whether a loop has an invariant.
+///
+/// @author Dominic Steinhoefel
 public class HasLoopInvariantCondition implements VariableCondition {
     private final ProgramSV loopExprSV;
     private final SchemaVariable modalitySV;

@@ -23,16 +23,14 @@ public class MatchGenericSortInstruction implements MatchInstruction {
         this.genericSortOfOp = sort;
     }
 
-    /**
-     * matches the depending sort of this instructions sort depending function against the given
-     * sort. If a match is possible the resulting match conditions are returned otherwise
-     * {@code null} is returned.
-     *
-     * @param dependingSortToMatch the depending {@link Sort} of the concrete function to be matched
-     * @param matchConditions the {@link MatchResultInfo} accumulated so far
-     * @return <code>null</code> if failed the resulting match conditions otherwise the resulting
-     *         {@link MatchResultInfo}
-     */
+    /// matches the depending sort of this instructions sort depending function against the given
+    /// sort. If a match is possible the resulting match conditions are returned otherwise
+    /// `null` is returned.
+    ///
+    /// @param dependingSortToMatch the depending [Sort] of the concrete function to be matched
+    /// @param matchConditions the [MatchResultInfo] accumulated so far
+    /// @return <code>null</code> if failed the resulting match conditions otherwise the resulting
+    ///         [MatchResultInfo]
     private MatchResultInfo matchSorts(Sort dependingSortToMatch, MatchResultInfo matchConditions,
             LogicServices services) {
         // This restriction has been dropped for free generic sorts to prove taclets correct

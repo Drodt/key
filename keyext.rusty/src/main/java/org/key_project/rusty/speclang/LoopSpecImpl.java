@@ -16,9 +16,7 @@ import org.key_project.rusty.proof.OpReplacer;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.java.MapUtil;
 
-/**
- * Standard implementation of the LoopInvariant interface.
- */
+/// Standard implementation of the LoopInvariant interface.
 public final class LoopSpecImpl implements LoopSpecification {
     private final LoopExpression loop;
 
@@ -29,9 +27,7 @@ public final class LoopSpecImpl implements LoopSpecification {
     private final ImmutableList<Term> localIns;
     private final ImmutableList<Term> localOuts;
 
-    /**
-     * The mapping of the pre-state variables.
-     */
+    /// The mapping of the pre-state variables.
     private final Map<ProgramVariable, Term> originalAtPres;
 
     public LoopSpecImpl(LoopExpression loop, Term invariant, Term variant,

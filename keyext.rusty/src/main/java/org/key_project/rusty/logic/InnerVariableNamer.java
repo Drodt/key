@@ -49,10 +49,8 @@ public class InnerVariableNamer extends VariableNamer {
         return newVar;
     }
 
-    /**
-     * returns the maximum counter for the passed basename in the passed globals and the passed
-     * program
-     */
+    /// returns the maximum counter for the passed basename in the passed globals and the passed
+    /// program
     private int getMaxCounterInGlobalsAndProgram(String basename,
             Iterable<Name> globals, RustyProgramElement program,
             PosInProgram posOfDeclaration) {

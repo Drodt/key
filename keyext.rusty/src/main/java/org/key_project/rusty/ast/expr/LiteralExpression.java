@@ -8,9 +8,7 @@ import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.rule.MatchConditions;
 
 public abstract class LiteralExpression implements Expr {
-    /**
-     * Return the Name of the LDT, which this Literal belongs to.
-     */
+    /// Return the Name of the LDT, which this Literal belongs to.
     public abstract Name getLDTName();
 
     @Override

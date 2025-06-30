@@ -126,11 +126,9 @@ public final class RustInfo {
         return fnToProgFn.get(function);
     }
 
-    /**
-     * returns all known KeYRustyTypes of the current program type model
-     *
-     * @return all known KeYRustyTypes of the current program type model
-     */
+    /// returns all known KeYRustyTypes of the current program type model
+    ///
+    /// @return all known KeYRustyTypes of the current program type model
     public Set<KeYRustyType> getAllKeYJavaTypes() {
         final Set<KeYRustyType> result = new LinkedHashSet<>();
         for (final var ty : allTypes) {

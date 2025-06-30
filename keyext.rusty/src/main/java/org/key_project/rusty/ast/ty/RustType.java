@@ -8,9 +8,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.abstraction.Type;
 
-/**
- * A type occurring in Rust code.
- */
+/// A type occurring in Rust code.
 public interface RustType extends RustyProgramElement {
     Type type();
 

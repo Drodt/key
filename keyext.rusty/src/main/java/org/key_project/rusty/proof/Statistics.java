@@ -240,11 +240,9 @@ public class Statistics {
         return sb.toString();
     }
 
-    /**
-     * Helper class to add up all rule applications for some nodes
-     *
-     * @author Michael Kirsten
-     */
+    /// Helper class to add up all rule applications for some nodes
+    ///
+    /// @author Michael Kirsten
     private static class TemporaryStatistics {
         int nodes = 0; // proof nodes
         int branches = 1; // proof branches
@@ -261,13 +259,11 @@ public class Statistics {
         int block = 0; // block and loop contract apps
         int inv = 0; // loop invariants
 
-        /**
-         * Increment numbers of rule applications according to given node and (already collected)
-         * interactive rule applications
-         *
-         * @param node the given node
-         *        //@param interactiveAppsDetails already collected interactive rule applications
-         */
+        /// Increment numbers of rule applications according to given node and (already collected)
+        /// interactive rule applications
+        ///
+        /// @param node the given node
+        ///        //@param interactiveAppsDetails already collected interactive rule applications
         private void changeOnNode(final Node node) {
             nodes++;
 
@@ -302,12 +298,10 @@ public class Statistics {
             }
         }
 
-        /**
-         * Add the node's children's branches (minus one) to current number of branches
-         *
-         * @param node the node of which we compute its children's branches
-         * @return the children's branches minus one
-         */
+        /// Add the node's children's branches (minus one) to current number of branches
+        ///
+        /// @param node the node of which we compute its children's branches
+        /// @return the children's branches minus one
         private int childBranches(final Node node) {
             final int c = node.childrenCount();
             if (c > 1) {
@@ -316,25 +310,21 @@ public class Statistics {
             return 0;
         }
 
-        /**
-         * Check whether this node is closed by cache.
-         *
-         * @param node a goal node
-         * @return 1 if the node is cached, 0 otherwise
-         */
+        /// Check whether this node is closed by cache.
+        ///
+        /// @param node a goal node
+        /// @return 1 if the node is cached, 0 otherwise
         private int cachedBranches(final Node node) {
             // node has to be an open goal and needs to have cache info
             return 0; // node.getAppliedRuleApp() == null && node.lookup(ClosedBy.class) != null ? 1
                       // : 0;
         }
 
-        /**
-         * Compute number of interactive rule applications and collect their names.
-         *
-         * @param node the considered node
-         *        //@param intAppsDetails the already collected interactive rule applications
-         * @return the number of interactive rule apllications
-         */
+        /// Compute number of interactive rule applications and collect their names.
+        ///
+        /// @param node the considered node
+        ///        //@param intAppsDetails the already collected interactive rule applications
+        /// @return the number of interactive rule apllications
         private int interactiveRuleApps(final Node node) {
             /*
              * final int res;
@@ -354,22 +344,18 @@ public class Statistics {
             return 1;
         }
 
-        /**
-         * Returns 1 if ruleApp is a loop scope invariant taclet application, and 0 otherwise.
-         *
-         * @param ruleApp The {@link RuleApp} to check.
-         * @return 1 or 0.
-         */
+        /// Returns 1 if ruleApp is a loop scope invariant taclet application, and 0 otherwise.
+        ///
+        /// @param ruleApp The [RuleApp] to check.
+        /// @return 1 or 0.
         private int tmpLoopScopeInvTacletRuleApps(final RuleApp ruleApp) {
             return tacletHasRuleSet(ruleApp, "loop_scope_inv_taclet");
         }
 
-        /**
-         * Returns 1 if ruleApp belongs to the given rule set, and 0 otherwise.
-         *
-         * @param ruleApp The {@link RuleApp} to check.
-         * @return 1 or 0.
-         */
+        /// Returns 1 if ruleApp belongs to the given rule set, and 0 otherwise.
+        ///
+        /// @param ruleApp The [RuleApp] to check.
+        /// @return 1 or 0.
         private int tacletHasRuleSet(final RuleApp ruleApp, final String ruleSet) {
             return 1; /*
                        * ((TacletApp) ruleApp).taclet().getRuleSets().stream()
@@ -377,12 +363,10 @@ public class Statistics {
                        */
         }
 
-        /**
-         * Compute all rule applications regarding quantifiers
-         *
-         * @param ruleApp the considered rule application
-         * @return the number of quantifier rules
-         */
+        /// Compute all rule applications regarding quantifiers
+        ///
+        /// @param ruleApp the considered rule application
+        /// @return the number of quantifier rules
         private int tmpQuantificationRuleApps(final RuleApp ruleApp) {
             final int res;
             final String tName = ((TacletApp) ruleApp).taclet().name().toString();
