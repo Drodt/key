@@ -17,6 +17,7 @@ import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class BinaryExpression implements Expr {
     private final Operator op;
@@ -30,18 +31,18 @@ public final class BinaryExpression implements Expr {
     }
 
     public BinaryExpression(ExtList children) {
-        op = children.removeFirstOccurrence(Operator.class);
+        op = Objects.requireNonNull(children.removeFirstOccurrence(Operator.class));
         if (children.getFirst() instanceof LitPatExpr lpe) {
             left = lpe.toExpr();
             children.removeFirst();
         } else {
-            left = children.removeFirstOccurrence(Expr.class);
+            left = Objects.requireNonNull(children.removeFirstOccurrence(Expr.class));
         }
         if (children.getFirst() instanceof LitPatExpr lpe) {
             right = lpe.toExpr();
             children.removeFirst();
         } else {
-            right = children.removeFirstOccurrence(Expr.class);
+            right = Objects.requireNonNull(children.removeFirstOccurrence(Expr.class));
         }
         assert left != null && right != null;
     }
@@ -93,7 +94,7 @@ public final class BinaryExpression implements Expr {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())
@@ -157,7 +158,8 @@ public final class BinaryExpression implements Expr {
         }
 
         @Override
-        public MatchConditions match(SourceData sourceData, MatchConditions mc) {
+        public @Nullable MatchConditions match(SourceData sourceData,
+                @Nullable MatchConditions mc) {
             final var src = sourceData.getSource();
 
             if (src == null)

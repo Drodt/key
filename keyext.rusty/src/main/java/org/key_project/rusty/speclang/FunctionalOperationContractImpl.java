@@ -22,6 +22,8 @@ import org.key_project.rusty.proof.init.FunctionalOperationContractPO;
 import org.key_project.rusty.proof.init.InitConfig;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 import static org.key_project.rusty.util.Assert.assertSubSort;
 
 /// Standard implementation of the OperationContract interface.
@@ -52,9 +54,9 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     // constructors
     // -------------------------------------------------------------------------
 
-    FunctionalOperationContractImpl(String baseName, String name,
+    FunctionalOperationContractImpl(String baseName, @Nullable String name,
             ProgramFunction fn, RModality.RustyModalityKind modalityKind,
-            Term pre, Term mby, Term post, Term modifiables,
+            Term pre, @Nullable Term mby, Term post, @Nullable Term modifiables,
             ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar, Term globalDefs,
             int id, boolean toBeSaved,
             Services services) {

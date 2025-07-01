@@ -15,9 +15,11 @@ import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ast.ty.TupleRustType;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.jspecify.annotations.Nullable;
+
 public class TupleType implements Type {
     public static final TupleType UNIT = new TupleType(new ArrayList<>());
-    private static Map<List<Type>, TupleType> TYPES = null;
+    private static @Nullable Map<List<Type>, TupleType> TYPES = null;
 
     private List<Type> types;
 
@@ -41,12 +43,12 @@ public class TupleType implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Name name() {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

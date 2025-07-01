@@ -9,6 +9,8 @@ import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.RModality;
 
+import org.jspecify.annotations.Nullable;
+
 public class ContractFactory {
     private final Services services;
     private final TermBuilder tb;
@@ -46,9 +48,9 @@ public class ContractFactory {
     /// @return the resulting functional operation contract
     public FunctionalOperationContract func(String baseName, ProgramFunction fn,
             RModality.RustyModalityKind modalityKind,
-            Term pre, Term mby,
+            Term pre, @Nullable Term mby,
             Term post,
-            Term modifiable,
+            @Nullable Term modifiable,
             ProgramVariableCollection progVars, boolean toBeSaved) {
         return new FunctionalOperationContractImpl(baseName, null, fn,
             modalityKind, pre, mby, post,
@@ -73,9 +75,9 @@ public class ContractFactory {
     /// @return the resulting functional operation contract
     public FunctionalOperationContract func(String baseName, ProgramFunction fn,
             boolean terminates,
-            Term pre, Term mby,
+            Term pre, @Nullable Term mby,
             Term post,
-            Term modifiable,
+            @Nullable Term modifiable,
             ProgramVariableCollection progVars, boolean toBeSaved) {
         return func(baseName, fn,
             terminates ? RModality.RustyModalityKind.DIA : RModality.RustyModalityKind.BOX, pre,

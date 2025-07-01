@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
@@ -23,6 +22,8 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.proof.*;
 import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.SpecificationRepository;
+
+import org.jspecify.annotations.Nullable;
 
 public class Services implements LogicServices, ProofServices {
     /// proof specific namespaces (functions, predicates, sorts, variables)
@@ -43,7 +44,7 @@ public class Services implements LogicServices, ProofServices {
     private SpecificationRepository specRepos;
 
     /// variable namer for inner renaming
-    @SuppressWarnings({"assignment.type.incompatible", "argument.type.incompatible"})
+    @SuppressWarnings({ "assignment.type.incompatible", "argument.type.incompatible" })
     private final VariableNamer innerVarNamer = new InnerVariableNamer(this);
 
     /// map of names to counters
@@ -51,7 +52,8 @@ public class Services implements LogicServices, ProofServices {
     private RustModel rustModel;
 
     // TODO: Fix checker annotations?
-    @SuppressWarnings({"argument.type.incompatible", "assignment.type.incompatible", "initialization.fields.uninitialized"})
+    @SuppressWarnings({ "argument.type.incompatible", "assignment.type.incompatible",
+        "initialization.fields.uninitialized" })
     public Services() {
         this.tf = new TermFactory();
         this.tb = new TermBuilder(tf, this);
@@ -69,7 +71,8 @@ public class Services implements LogicServices, ProofServices {
         this.profile = profile;
     }
 
-    @SuppressWarnings({"argument.type.incompatible", "assignment.type.incompatible", "initialization.fields.uninitialized"})
+    @SuppressWarnings({ "argument.type.incompatible", "assignment.type.incompatible",
+        "initialization.fields.uninitialized" })
     public Services(Services services) {
         this.namespaces = services.namespaces;
         this.ldts = services.ldts;
@@ -220,7 +223,7 @@ public class Services implements LogicServices, ProofServices {
     }
 
     public static @Nullable LDT getResponsibleLDT(BinaryExpression.Operator op, Term[] subs,
-                                                  Services services) {
+            Services services) {
         for (LDT ldt : services.getLDTs()) {
             if (ldt.isResponsible(op, subs, services)) {
                 return ldt;
@@ -229,7 +232,8 @@ public class Services implements LogicServices, ProofServices {
         return null;
     }
 
-    public static @Nullable Term convertLiteralExpression(LiteralExpression lit, Services services) {
+    public static @Nullable Term convertLiteralExpression(LiteralExpression lit,
+            Services services) {
         LDT ldt = services.getLDTs().get(lit.getLDTName());
         if (ldt != null) {
             return ldt.translateLiteral(lit, services);

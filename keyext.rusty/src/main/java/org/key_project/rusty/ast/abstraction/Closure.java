@@ -11,16 +11,16 @@ import org.key_project.rusty.ast.ty.RustType;
 public record Closure() implements Type {
     @Override
     public Sort getSort(Services services) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public RustType toRustType(Services services) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Name name() {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

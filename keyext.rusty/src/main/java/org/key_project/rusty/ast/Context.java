@@ -3,23 +3,27 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast;
 
+import java.nio.file.Path;
+import java.util.Objects;
+
 import org.key_project.logic.Namespace;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /// this class stores context information used to parse in program parts in which
 /// non-declared variables are used
 public class Context {
     public static final String TMP_FN_NAME = "__RUSTY_KEY_CTX_FN_NAME__";
     private final Namespace<@NonNull ProgramVariable> varNS;
-    private final Path rustPath;
+    private final @Nullable Path rustPath;
 
     public Context(Namespace<@NonNull ProgramVariable> varNS) {
         this(varNS, null);
     }
 
-    public Context(Namespace<@NonNull ProgramVariable> varNS, Path rustPath) {
+    public Context(Namespace<@NonNull ProgramVariable> varNS, @Nullable Path rustPath) {
         this.varNS = varNS;
         this.rustPath = rustPath;
     }
@@ -48,10 +52,10 @@ public class Context {
     }
 
     private String getType(ProgramVariable pv) {
-        return pv.getKeYRustyType().getRustyType().toString();
+        return Objects.requireNonNull(pv.getKeYRustyType().getRustyType()).toString();
     }
 
-    public Path getRustPath() {
+    public @Nullable Path getRustPath() {
         return rustPath;
     }
 }

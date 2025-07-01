@@ -14,6 +14,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class UnaryExpression implements Expr {
     private final Operator op;
@@ -25,8 +26,8 @@ public final class UnaryExpression implements Expr {
     }
 
     public UnaryExpression(ExtList children) {
-        op = children.removeFirstOccurrence(Operator.class);
-        expr = children.removeFirstOccurrence(Expr.class);
+        op = Objects.requireNonNull(children.removeFirstOccurrence(Operator.class));
+        expr = Objects.requireNonNull(children.removeFirstOccurrence(Expr.class));
     }
 
     public enum Operator implements RustyProgramElement {
@@ -100,12 +101,12 @@ public final class UnaryExpression implements Expr {
         return switch (op) {
         case Neg -> expr.type(services);
         case Not -> PrimitiveType.BOOL;
-        case Deref -> null;
+        case Deref -> throw new UnsupportedOperationException();
         };
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())

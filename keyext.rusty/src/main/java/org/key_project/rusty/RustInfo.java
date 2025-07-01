@@ -5,7 +5,6 @@ package org.key_project.rusty;
 
 import java.util.*;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.sort.Sort;
@@ -15,6 +14,7 @@ import org.key_project.rusty.ast.ty.FnDefType;
 import org.key_project.rusty.logic.op.ProgramFunction;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class RustInfo {
     private final Map<Type, KeYRustyType> type2KRTCache;

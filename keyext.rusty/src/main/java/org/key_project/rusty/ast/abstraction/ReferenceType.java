@@ -14,6 +14,7 @@ import org.key_project.rusty.ast.ty.ReferenceRustType;
 import org.key_project.rusty.ast.ty.RustType;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class ReferenceType implements Type {
     private final boolean isMut;
@@ -37,7 +38,7 @@ public final class ReferenceType implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        return services.getNamespaces().sorts().lookup(name);
+        return Objects.requireNonNull(services.getNamespaces().sorts().lookup(name));
     }
 
     @Override
@@ -54,7 +55,7 @@ public final class ReferenceType implements Type {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())

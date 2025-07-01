@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Choice;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
@@ -15,6 +14,7 @@ import org.key_project.prover.rules.RuleSet;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class NamespaceSet {
     private Namespace<@NonNull QuantifiableVariable> varNS = new Namespace<>();

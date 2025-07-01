@@ -5,11 +5,10 @@ package org.key_project.rusty.ast;
 
 import org.key_project.logic.SyntaxElement;
 
-// spotless:off
 public record PathExprSegment(PathIdentSegment segment) implements SyntaxElement {
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException();
     }
 
     @Override
@@ -22,4 +21,3 @@ public record PathExprSegment(PathIdentSegment segment) implements SyntaxElement
         return segment.toString();
     }
 }
-//spotless:on

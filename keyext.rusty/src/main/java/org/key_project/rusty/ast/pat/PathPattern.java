@@ -15,7 +15,7 @@ public record PathPattern() implements Pattern {
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException("No child " + n);
     }
 
     @Override

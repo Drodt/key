@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.ty;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.key_project.logic.SyntaxElement;
@@ -35,7 +36,7 @@ public class TupleRustType implements RustType {
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        return Objects.requireNonNull(types.get(n));
     }
 
     @Override

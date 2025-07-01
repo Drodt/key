@@ -8,11 +8,13 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.abstraction.Type;
 
+import org.jspecify.annotations.Nullable;
+
 /// A type occurring in Rust code.
 public interface RustType extends RustyProgramElement {
     Type type();
 
-    default Sort getSort(Services services) {
+    default @Nullable Sort getSort(Services services) {
         return type().getSort(services);
     }
 }

@@ -5,14 +5,14 @@ package org.key_project.rusty.ast.abstraction;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.PrimitiveRustType;
 import org.key_project.rusty.ast.ty.RustType;
-import org.key_project.rusty.ldt.BoolLDT;
-import org.key_project.rusty.ldt.IntLDT;
+import org.key_project.rusty.ldt.*;
 
 import org.jspecify.annotations.NonNull;
 
@@ -34,9 +34,9 @@ public final class PrimitiveType implements Type {
     public static final PrimitiveType I128 = new PrimitiveType(new Name("i128"), IntLDT.NAME);
     public static final PrimitiveType ISIZE = new PrimitiveType(new Name("isize"), IntLDT.NAME);
     public static final PrimitiveType BOOL = new PrimitiveType(new Name("bool"), BoolLDT.NAME);
-    public static final PrimitiveType CHAR = new PrimitiveType(new Name("char"), null);
-    public static final PrimitiveType STR = new PrimitiveType(new Name("str"), null);
-    public static final PrimitiveType NEVER = new PrimitiveType(new Name("!"), null);
+    public static final PrimitiveType CHAR = new PrimitiveType(new Name("char"), CharLDT.NAME);
+    public static final PrimitiveType STR = new PrimitiveType(new Name("str"), StrLDT.NAME);
+    public static final PrimitiveType NEVER = new PrimitiveType(new Name("!"), NeverLDT.NAME);
 
     private final Name name;
     private final Name ldtName;
@@ -51,7 +51,7 @@ public final class PrimitiveType implements Type {
     }
 
     public static PrimitiveType get(String name) {
-        return typeMap.get(new Name(name));
+        return Objects.requireNonNull(typeMap.get(new Name(name)));
     }
 
     @Override

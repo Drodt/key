@@ -6,12 +6,17 @@ package org.key_project.rusty.ast;
 import org.key_project.rusty.ast.expr.FunctionFrame;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.jspecify.annotations.Nullable;
+
 public class ProgramPrefixUtil {
-    public record ProgramPrefixInfo(int length, FunctionFrame innermostFunctionFrame) {
+    public record ProgramPrefixInfo(int length, @Nullable FunctionFrame innermostFunctionFrame) {
     }
 
-    public static ProgramPrefixInfo computeEssentials(PossibleProgramPrefix prefix) {
+    public static ProgramPrefixInfo computeEssentials(
+            @UnknownInitialization PossibleProgramPrefix prefix) {
         int length = 1;
+        @SuppressWarnings("instanceof.pattern.unsafe")
         FunctionFrame innermostFunctionFrame = (prefix instanceof FunctionFrame ff ? ff : null);
         while (prefix.hasNextPrefixElement()) {
             prefix = prefix.getNextPrefixElement();

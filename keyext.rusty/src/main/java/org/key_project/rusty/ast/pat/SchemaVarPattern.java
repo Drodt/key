@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.pat;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
@@ -14,6 +16,7 @@ import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 // spotless:off
 public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operatorSV) implements Pattern {
@@ -29,10 +32,11 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
     }
 
     @Override
-    public MatchConditions match(SourceData source, MatchConditions mc) {
+    public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions mc) {
         final Services services = source.getServices();
-        final RustyProgramElement src = source.getSource();
+        final RustyProgramElement src = Objects.requireNonNull(source.getSource());
 
+        assert mc != null;
         final SVInstantiations instantiations = mc.getInstantiations();
         final Object instant = instantiations.getInstantiation(operatorSV);
         if (instant == null || instant.equals(src) || (instant instanceof Term t && t.op().equals(src))) {
@@ -47,7 +51,7 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
         return mc;
     }
 
-    private MatchConditions addPatternInstantiation(RustyProgramElement pe, MatchConditions mc, SVInstantiations insts, Object foundInst, Services services) {
+    private @Nullable MatchConditions addPatternInstantiation(RustyProgramElement pe, @Nullable MatchConditions mc, SVInstantiations insts, @Nullable Object foundInst, Services services) {
         if (mc == null) {
             return null;
         }

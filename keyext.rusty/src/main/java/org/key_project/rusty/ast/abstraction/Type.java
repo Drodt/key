@@ -8,7 +8,10 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.RustType;
 
+import org.jspecify.annotations.Nullable;
+
 public interface Type extends Named {
+    @Nullable
     Sort getSort(Services services);
 
     RustType toRustType(Services services);

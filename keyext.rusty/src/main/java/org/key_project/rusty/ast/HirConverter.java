@@ -50,8 +50,8 @@ import static org.key_project.rusty.parser.hir.expr.AssignOpKind.AddAssign;
 public class HirConverter {
     private final Services services;
 
-    private final Map<DefId, FnSpec> fnSpecs;
-    private final Map<HirId, LoopSpec> loopSpecs;
+    private final @Nullable Map<DefId, FnSpec> fnSpecs;
+    private final @Nullable Map<HirId, LoopSpec> loopSpecs;
     private final FnSpecConverter fnSpecConverter;
     private final LoopSpecConverter loopSpecConverter;
 
@@ -83,7 +83,7 @@ public class HirConverter {
     private final Map<LocalDefId, Function> localFns = new HashMap<>();
     private final Map<Function, FnSpec> fn2Spec = new HashMap<>();
 
-    private Function currentFn = null;
+    private @Nullable Function currentFn = null;
 
     /// We first convert all functions except their bodies. Then we convert those later.
     private final Map<Function, Fn> fnsToComplete =
@@ -119,7 +119,7 @@ public class HirConverter {
                 var ty = hirFn.sig().decl().inputs()[i];
                 var pat = hirFn.body().params()[i].pat();
                 RustType type = convertHirTy(ty);
-                params.add(new FunctionParamPattern(convertPat(pat, isCtxFn), type,
+                params.add(new FunctionParamPattern(convertPat(pat, isCtxFn, type.type()), type,
                     services.getRustInfo().getKeYRustyType(type.type())));
             }
             fn.setParams(new ImmutableArray<>(params));
@@ -127,7 +127,8 @@ public class HirConverter {
             services.getRustInfo().registerFunction(fn);
             if (spec != null) {
                 var contracts =
-                    fnSpecConverter.convert(spec, services.getRustInfo().getFunction(fn));
+                    fnSpecConverter.convert(spec,
+                        Objects.requireNonNull(services.getRustInfo().getFunction(fn)));
                 for (var contract : contracts) {
                     services.getSpecificationRepository().addContract(contract);
                 }
@@ -172,11 +173,12 @@ public class HirConverter {
         var ident = fn.ident().name();
         var name = new Name(ident);
         var retTy = convertFnRetTy(fn.sig().decl().output());
+        @SuppressWarnings("argument.type.incompatible")
         Function function = new Function(name, Function.ImplicitSelfKind.None,
             null, retTy, null);
         if (fnSpecs != null) {
             var spec = fnSpecs.get(new DefId(id.localDefIndex(), 0));
-            fn2Spec.put(function, spec);
+            fn2Spec.put(function, Objects.requireNonNull(spec));
         }
         localFns.put(id, function);
         fnsToComplete.put(function, fn);
@@ -258,9 +260,9 @@ public class HirConverter {
     }
 
     private LetExpression convertLetExpr(LetExpr let) {
-        var pat = convertPat(let.pat());
-        var ty = let.ty() == null ? null : convertHirTy(let.ty());
         var init = convertExpr(let.init());
+        var pat = convertPat(let.pat(), init.type(services));
+        var ty = let.ty() == null ? null : convertHirTy(let.ty());
         return new LetExpression(pat, ty, init);
     }
 
@@ -274,7 +276,8 @@ public class HirConverter {
         var le = new InfiniteLoopExpression(null, body);
 
         if (loopSpecs != null && loopSpecs.containsKey(id)) {
-            var ls = loopSpecConverter.convert(loopSpecs.get(id), currentFn, le, pvs);
+            var ls = loopSpecConverter.convert(loopSpecs.get(id), Objects.requireNonNull(currentFn),
+                le, pvs);
             services.getSpecificationRepository().addLoopSpec(ls);
         }
 
@@ -299,7 +302,7 @@ public class HirConverter {
     }
 
     private BreakExpression convertBreakExpr(ExprKind.Break b) {
-        return new BreakExpression(null, convertExpr(b.expr()));
+        return new BreakExpression(null, b.expr() != null ? convertExpr(b.expr()) : null);
     }
 
     private AssignmentExpression convertAssign(ExprKind.Assign assign, Type type) {
@@ -373,7 +376,7 @@ public class HirConverter {
     }
 
     private LetStatement convertLet(LetStmt let) {
-        var pat = convertPat(let.pat());
+        var pat = convertPat(let.pat(), null);
         var ty = let.ty() == null ? null : convertHirTy(let.ty());
         var init = let.init() == null ? null : convertExpr(let.init());
         return new LetStatement(pat, ty, init);
@@ -417,11 +420,11 @@ public class HirConverter {
         return new PrimitiveRustType(primTy);
     }
 
-    private Pattern convertPat(Pat pat) {
-        return convertPat(pat, false);
+    private Pattern convertPat(Pat pat, Type ty) {
+        return convertPat(pat, false, ty);
     }
 
-    private Pattern convertPat(Pat pat, boolean isCtxFnParam) {
+    private Pattern convertPat(Pat pat, boolean isCtxFnParam, Type ty) {
         return switch (pat.kind()) {
         case PatKind.Binding p -> {
             boolean ref = false;
@@ -435,13 +438,15 @@ public class HirConverter {
             var id = p.hirId();
             ProgramVariable pv;
             if (isCtxFnParam) {
-                pv = services.getNamespaces().programVariables().lookup(name);
+                pv = Objects
+                        .requireNonNull(services.getNamespaces().programVariables().lookup(name));
             } else {
                 pv = new ProgramVariable(name,
-                    services.getRustInfo().getKeYRustyType(types.get(id)));
+                    services.getRustInfo().getKeYRustyType(Objects.requireNonNull(types.get(id))));
             }
             declarePV(id, pv);
-            Pattern opt = p.pat() == null ? null : convertPat(p.pat());
+            Pattern opt =
+                p.pat() == null ? null : convertPat(p.pat(), pv.getKeYRustyType().getRustyType());
             yield new BindingPattern(ref, mutRef, mut, pv, opt);
         }
         case PatKind.Wild w -> WildCardPattern.WILDCARD;
@@ -449,8 +454,8 @@ public class HirConverter {
             yield new PathPattern();
         }
         case PatKind.Range r -> {
-            var left = r.lhs() == null ? null : convertPatExpr(r.lhs());
-            var right = r.rhs() == null ? null : convertPatExpr(r.rhs());
+            var left = r.lhs() == null ? null : convertPatExpr(r.lhs(), ty);
+            var right = r.rhs() == null ? null : convertPatExpr(r.rhs(), ty);
             var bounds =
                 r.inclusive() ? RangePattern.Bounds.Inclusive : RangePattern.Bounds.Exclusive;
             yield new RangePattern(left, bounds, right);
@@ -459,9 +464,9 @@ public class HirConverter {
         };
     }
 
-    private PatExpr convertPatExpr(org.key_project.rusty.parser.hir.pat.PatExpr pe) {
+    private PatExpr convertPatExpr(org.key_project.rusty.parser.hir.pat.PatExpr pe, Type ty) {
         return switch (pe.kind()) {
-        case PatExprKind.Lit(var l, var n) -> new LitPatExpr(convertLitExpr(l, null), n);
+        case PatExprKind.Lit(var l, var n) -> new LitPatExpr(convertLitExpr(l, ty), n);
         default -> throw new IllegalArgumentException("Unknown patExpr: " + pe);
         };
     }

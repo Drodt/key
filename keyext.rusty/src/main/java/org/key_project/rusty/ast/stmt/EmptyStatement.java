@@ -6,6 +6,8 @@ package org.key_project.rusty.ast.stmt;
 import org.key_project.logic.TerminalSyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 
+import org.jspecify.annotations.Nullable;
+
 /// Empty statement.
 public class EmptyStatement implements Statement, TerminalSyntaxElement {
     /// Constructor for the transformation of COMPOST ASTs to KeY. May contain: Comments
@@ -28,10 +30,8 @@ public class EmptyStatement implements Statement, TerminalSyntaxElement {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass())
-            return false;
-        return true;
+    public boolean equals(@Nullable Object o) {
+        return o != null && getClass() == o.getClass();
     }
 
     @Override

@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
-import org.jspecify.annotations.Nullable;
+import java.util.Objects;
+
 import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-import java.util.Objects;
+import org.jspecify.annotations.Nullable;
 
 public class NameRecorder {
     private ImmutableList<Name> pre = ImmutableSLList.nil();

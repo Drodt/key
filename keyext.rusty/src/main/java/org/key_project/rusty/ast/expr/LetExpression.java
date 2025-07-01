@@ -29,9 +29,9 @@ public final class LetExpression implements Expr {
     }
 
     public LetExpression(ExtList children) {
-        pat = children.removeFirstOccurrence(Pattern.class);
+        pat = Objects.requireNonNull(children.removeFirstOccurrence(Pattern.class));
         ty = children.removeFirstOccurrence(RustType.class);
-        init = children.removeFirstOccurrence(Expr.class);
+        init = Objects.requireNonNull(children.removeFirstOccurrence(Expr.class));
     }
 
     @Override
@@ -90,7 +90,7 @@ public final class LetExpression implements Expr {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())

@@ -11,7 +11,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 public record EmptyPanic() implements Expr {
     @Override
     public Type type(Services services) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -21,7 +21,7 @@ public record EmptyPanic() implements Expr {
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException("No child " + n);
     }
 
     @Override

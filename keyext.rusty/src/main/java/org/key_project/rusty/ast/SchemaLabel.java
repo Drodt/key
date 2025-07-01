@@ -14,8 +14,12 @@ public record SchemaLabel(ProgramSV sv) implements Label {
     }
 
     @Override
-    public SyntaxElement getChild(int n) { return null; }
+    public SyntaxElement getChild(int n) {
+        if (n == 0)
+            return sv;
+        throw new IndexOutOfBoundsException();
+    }
 
     @Override
-    public int getChildCount() { return 0; }
+    public int getChildCount() { return 1; }
 }

@@ -13,6 +13,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.ldt.IntLDT;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class IntegerLiteralExpression extends LiteralExpression {
     public enum IntegerSuffix {
@@ -81,7 +82,7 @@ public class IntegerLiteralExpression extends LiteralExpression {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
         }

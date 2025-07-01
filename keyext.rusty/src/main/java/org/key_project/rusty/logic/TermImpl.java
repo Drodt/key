@@ -5,7 +5,6 @@ package org.key_project.rusty.logic;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
 import org.key_project.logic.op.Modality;
@@ -19,6 +18,7 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 // TODO: Basically everything here can be moved tpo ncore.
 class TermImpl implements Term {

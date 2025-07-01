@@ -6,7 +6,6 @@ package org.key_project.rusty.ast;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-// spotless:off
 public record ResDef(Def def) implements Res {
     @Override
     public void visit(Visitor v) {
@@ -15,7 +14,7 @@ public record ResDef(Def def) implements Res {
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException("No child " + n);
     }
 
     @Override
@@ -23,4 +22,3 @@ public record ResDef(Def def) implements Res {
         return 0;
     }
 }
-//spotless:on

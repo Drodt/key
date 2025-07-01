@@ -7,11 +7,10 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-// spotless:off
 public record PathRustType() implements RustType {
     @Override
     public Type type() {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -21,7 +20,7 @@ public record PathRustType() implements RustType {
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -29,4 +28,3 @@ public record PathRustType() implements RustType {
         return 0;
     }
 }
-//spotless:on

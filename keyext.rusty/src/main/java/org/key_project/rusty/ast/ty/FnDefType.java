@@ -17,10 +17,14 @@ public record FnDefType(Function fn) implements Type {
     }
 
     @Override
-    public Sort getSort(Services services) { return null; }
+    public Sort getSort(Services services) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     @Override
-    public RustType toRustType(Services services) { return null; }
+    public RustType toRustType(Services services) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     @Override
     public @NonNull Name name() { return fn.name(); }

@@ -42,9 +42,9 @@ checkerFramework {
                 "org.checkerframework.checker.nullness.NullnessChecker",
         ]
         extraJavacArgs = [
-                "-AonlyDefs=^org\\.key_project\\.rusty",
+                "-AonlyDefs=^org\\.key_project\\.rusty\\.ast",
                 "-AassumeAssertionsAreEnabled",
-                "-Xmaxerrs", "10",
+                "-Xmaxerrs", "1000",
                 "-Astubs=$rootDir/key.util/src/main/checkerframework:permit-nullness-assertion-exception.astub",
                 "-AstubNoWarnIfNotFound",
                 "-Werror",

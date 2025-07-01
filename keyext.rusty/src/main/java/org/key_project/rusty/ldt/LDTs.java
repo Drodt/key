@@ -7,24 +7,33 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class LDTs implements Iterable<LDT> {
     private final BoolLDT boolLDT;
     private final IntLDT intLDT;;
+    private final CharLDT charLDT;
+    private final StrLDT strLDT;
+    private final NeverLDT neverLDT;
     private final Map<Name, LDT> map;
 
     public LDTs(Services services) {
         boolLDT = new BoolLDT(services);
         intLDT = new IntLDT(services);
+        charLDT = new CharLDT(services);
+        strLDT = new StrLDT(services);
+        neverLDT = new NeverLDT(services);
         map = new HashMap<>();
         map.put(boolLDT.name(), boolLDT);
         map.put(intLDT.name(), intLDT);
+        map.put(charLDT.name(), charLDT);
+        map.put(strLDT.name(), strLDT);
+        map.put(neverLDT.name(), neverLDT);
     }
 
     public BoolLDT getBoolLDT() {
@@ -33,6 +42,18 @@ public class LDTs implements Iterable<LDT> {
 
     public IntLDT getIntLDT() {
         return intLDT;
+    }
+
+    public CharLDT getCharLDT() {
+        return charLDT;
+    }
+
+    public StrLDT getStrLDT() {
+        return strLDT;
+    }
+
+    public NeverLDT getNeverLDT() {
+        return neverLDT;
     }
 
     public @Nullable LDT get(Name name) {

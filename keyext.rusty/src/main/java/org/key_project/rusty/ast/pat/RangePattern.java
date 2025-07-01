@@ -32,7 +32,7 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
 
         @Override
         public SyntaxElement getChild(int n) {
-            return null;
+           throw  new IndexOutOfBoundsException();
         }
 
         @Override

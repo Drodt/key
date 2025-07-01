@@ -12,13 +12,13 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /// Only in SchemaRust
 public final class TypeOf implements RustType {
     private final ProgramSV sv;
     private final KeYRustyType type;
 
-    ///
     public TypeOf(ProgramSV sv) {
         this.sv = sv;
         this.type = new KeYRustyType(sv.sort());
@@ -52,7 +52,7 @@ public final class TypeOf implements RustType {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())

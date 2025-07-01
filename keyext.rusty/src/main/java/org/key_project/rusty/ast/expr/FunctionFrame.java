@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.expr;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ProgramPrefixUtil;
@@ -16,6 +18,7 @@ import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.Nullable;
 
 public class FunctionFrame implements Expr, PossibleProgramPrefix {
@@ -44,8 +47,8 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
 
     public FunctionFrame(ExtList children) {
         resultVar = children.get(IProgramVariable.class);
-        function = children.get(ProgramFunction.class);
-        body = children.get(BlockExpression.class);
+        function = Objects.requireNonNull(children.get(ProgramFunction.class));
+        body = Objects.requireNonNull(children.get(BlockExpression.class));
 
         firstActiveChildPos = body.getChildCount() == 0 ? PosInProgram.TOP
                 : PosInProgram.TOP.down(getChildCount() - 1).down(0);
@@ -64,17 +67,20 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
     }
 
     @Override
-    public boolean isPrefix() {
+    public boolean isPrefix(@UnknownInitialization FunctionFrame this) {
+        assert body != null;
         return body.getChildCount() != 0;
     }
 
     @Override
-    public boolean hasNextPrefixElement() {
+    public boolean hasNextPrefixElement(@UnknownInitialization FunctionFrame this) {
+        assert body != null;
         return body.getChildCount() != 0 && body.getChild(0) instanceof PossibleProgramPrefix;
     }
 
     @Override
-    public PossibleProgramPrefix getNextPrefixElement() {
+    public PossibleProgramPrefix getNextPrefixElement(@UnknownInitialization FunctionFrame this) {
+        assert body != null;
         if (hasNextPrefixElement())
             return (PossibleProgramPrefix) body.getChild(0);
         throw new IndexOutOfBoundsException("No next prefix element " + this);
@@ -130,7 +136,7 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
     }
 
     @Override
-    public int getChildCount() {
+    public int getChildCount(@UnknownInitialization FunctionFrame this) {
         int result = 0;
         if (resultVar != null)
             result += 1;

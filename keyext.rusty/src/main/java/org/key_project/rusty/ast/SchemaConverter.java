@@ -60,36 +60,22 @@ public class SchemaConverter {
         return services;
     }
 
-    private void declareVariable(Pattern pat, LetStatement decl) {
-        if (pat instanceof IdentPattern ip) {
-            Name name = ip.name();
-            variables.put(name.toString(), decl);
-            programVariables.put(decl, new ProgramVariable(name,
-                new KeYRustyType(decl.type().getSort(services))));
-        }
-    }
-
-    private void declareVariable(String name, VariableDeclaration decl) {
-        variables.put(name, decl);
-        programVariables.put(decl, new ProgramVariable(new Name(name),
-            new KeYRustyType(decl.type().getSort(services))));
-    }
-
     private VariableDeclaration getDecl(PathInExpression path) {
         // TODO: For now, only use local vars, i.e., ignore all but the last segment
-        return variables.get(path.segments().last().segment().ident().name().toString());
+        return Objects.requireNonNull(variables.get(
+            Objects.requireNonNull(path.segments().last()).segment().ident().name().toString()));
     }
 
     private ProgramVariable getProgramVariable(PathInExpression path) {
-        return programVariables.get(getDecl(path));
+        return Objects.requireNonNull(programVariables.get(getDecl(path)));
     }
 
     private @NonNull ProgramVariable getProgramVariable(Identifier path) {
-        return programVariables.get(getDecl(path));
+        return Objects.requireNonNull(programVariables.get(getDecl(path)));
     }
 
     private VariableDeclaration getDecl(Identifier path) {
-        return variables.get(path.name().toString());
+        return Objects.requireNonNull(variables.get(path.name().toString()));
     }
 
     private Label getLabel(String name) {
@@ -238,7 +224,10 @@ public class SchemaConverter {
         if (ctx instanceof RustySchemaParser.FnFrameContext ff) {
             var resultVar =
                 (ProgramSV) lookupSchemaVariable(ff.schemaVariable().getText().substring(2));
-            return new FunctionFrame(resultVar, null, convertBlockExpr(ff.blockExpr()));
+            @SuppressWarnings("argument.type.incompatible")
+            FunctionFrame functionFrame =
+                new FunctionFrame(resultVar, null, convertBlockExpr(ff.blockExpr()));
+            return functionFrame;
         }
         throw new UnsupportedOperationException(
             "Unknown expr: " + ctx.getText() + " class: " + ctx.getClass());
@@ -269,19 +258,19 @@ public class SchemaConverter {
         var value = new BigInteger(
             lit);
         var ty = switch (suffix) {
-            case None -> throw new RuntimeException("Missing suffix");
-            case u8 -> PrimitiveType.U8;
-            case u16 -> PrimitiveType.U16;
-            case u32 -> PrimitiveType.U32;
-            case u64 -> PrimitiveType.U64;
-            case u128 -> PrimitiveType.U128;
-            case usize -> PrimitiveType.USIZE;
-            case IntegerLiteralExpression.IntegerSuffix.i8 -> PrimitiveType.I8;
-            case IntegerLiteralExpression.IntegerSuffix.i16 -> PrimitiveType.I16;
-            case IntegerLiteralExpression.IntegerSuffix.i32 -> PrimitiveType.I32;
-            case IntegerLiteralExpression.IntegerSuffix.i64 -> PrimitiveType.I64;
-            case IntegerLiteralExpression.IntegerSuffix.i128 -> PrimitiveType.I128;
-            case isize -> PrimitiveType.ISIZE;
+        case None -> throw new RuntimeException("Missing suffix");
+        case u8 -> PrimitiveType.U8;
+        case u16 -> PrimitiveType.U16;
+        case u32 -> PrimitiveType.U32;
+        case u64 -> PrimitiveType.U64;
+        case u128 -> PrimitiveType.U128;
+        case usize -> PrimitiveType.USIZE;
+        case IntegerLiteralExpression.IntegerSuffix.i8 -> PrimitiveType.I8;
+        case IntegerLiteralExpression.IntegerSuffix.i16 -> PrimitiveType.I16;
+        case IntegerLiteralExpression.IntegerSuffix.i32 -> PrimitiveType.I32;
+        case IntegerLiteralExpression.IntegerSuffix.i64 -> PrimitiveType.I64;
+        case IntegerLiteralExpression.IntegerSuffix.i128 -> PrimitiveType.I128;
+        case isize -> PrimitiveType.ISIZE;
         };
         return new IntegerLiteralExpression(value, suffix, ty);
     }
@@ -705,7 +694,8 @@ public class SchemaConverter {
                                         ? (ProgramSV) lookupSchemaVariable(
                                             ctx.elseSV.getText().substring(2))
                                         : null;
-        return new IfExpression(new LetExpression(pat, null, expr), then, else_, then.type(services));
+        return new IfExpression(new LetExpression(pat, null, expr), then, else_,
+            then.type(services));
     }
 
     private MatchExpression convertMatchExpr(
@@ -763,17 +753,19 @@ public class SchemaConverter {
     private Statement convertLetStmt(
             RustySchemaParser.LetStmtContext ctx) {
         RustType type = ctx.type_() == null ? null : convertRustType(ctx.type_());
-        declaredType = type == null ? null : new KeYRustyType(type.getSort(services));
+        declaredType =
+            type == null ? null : new KeYRustyType(Objects.requireNonNull(type.getSort(services)));
         inDeclarationMode = true;
         Pattern pat = convertPatternNoTopAlt(ctx.patternNoTopAlt());
         inDeclarationMode = false;
         Expr init = ctx.expr() == null ? null : convertExpr(ctx.expr());
+        assert declaredVariable != null;
         LetStatement letStatement = new LetStatement(pat,
             type,
             init);
         if (!(pat instanceof SchemaVarPattern)) {
             variables.put(declaredVariable.name().toString(), letStatement);
-            programVariables.put(letStatement, declaredVariable);
+            programVariables.put(letStatement, Objects.requireNonNull(declaredVariable));
         }
         declaredVariable = null;
         declaredType = null;
@@ -830,9 +822,10 @@ public class SchemaConverter {
                     var ident = convertIdentifier(pat.identifierPattern().identifier());
                     ProgramVariable pv;
                     if (inDeclarationMode) {
-                        assert declaredType != null;
                         assert declaredVariable == null;
-                        declaredVariable = new ProgramVariable(ident.name(), declaredType);
+                        assert declaredType != null;
+                        declaredVariable =
+                            new ProgramVariable(ident.name(), Objects.requireNonNull(declaredType));
                         pv = declaredVariable;
                     } else if (inContextFunction) {
                         pv = services.getNamespaces().programVariables().lookup(ident.name());
@@ -1008,7 +1001,7 @@ public class SchemaConverter {
         assert declaredVariable != null;
         FunctionParamPattern param = new FunctionParamPattern(pat, type, declaredType);
         variables.put(declaredVariable.name().toString(), param);
-        programVariables.put(param, declaredVariable);
+        programVariables.put(param, Objects.requireNonNull(declaredVariable));
         declaredVariable = null;
         declaredType = null;
         return param;

@@ -5,6 +5,8 @@ package org.key_project.rusty.ast;
 
 import org.key_project.rusty.Services;
 
+import org.jspecify.annotations.Nullable;
+
 /// This class keeps track of the next element to match, which is provided by calling method
 /// [#getSource()]. The rough idea is to store the parent ast node and the index of the child
 /// which has to be matched (for convenience reasons <tt>-1</tt> encodes that the parent node itself
@@ -77,7 +79,7 @@ public class SourceData {
     /// if the returned child position is out of bound.
     ///
     /// @return the ProgramElement to be matched next or <tt>null</tt> if there is no such element
-    public RustyProgramElement getSource() {
+    public @Nullable RustyProgramElement getSource() {
         if (childPos == -1) {
             return element;
         }

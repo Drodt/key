@@ -22,7 +22,7 @@ public record ExternCrate(String ident, @Nullable String origIdent) implements I
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException();
     }
 
     @Override

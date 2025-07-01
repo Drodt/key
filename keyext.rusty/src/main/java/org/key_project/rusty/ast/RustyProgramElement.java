@@ -7,9 +7,11 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.rule.MatchConditions;
 
+import org.jspecify.annotations.Nullable;
+
 
 public interface RustyProgramElement extends SyntaxElement {
-    default MatchConditions match(SourceData sourceData, MatchConditions mc) {
+    default @Nullable MatchConditions match(SourceData sourceData, @Nullable MatchConditions mc) {
         final var src = sourceData.getSource();
 
         if (src == null)
@@ -41,7 +43,8 @@ public interface RustyProgramElement extends SyntaxElement {
     /// @param matchCond the MatchConditions found so far
     /// @param offset the int denoting the index of the child to start with
     /// @return the resulting match conditions or <tt>null</tt> if matching failed
-    default MatchConditions matchChildren(SourceData source, MatchConditions matchCond,
+    default @Nullable MatchConditions matchChildren(SourceData source,
+            @Nullable MatchConditions matchCond,
             int offset) {
         for (int i = offset, sz = getChildCount(); i < sz; i++) {
             var child = (RustyProgramElement) getChild(i);

@@ -12,12 +12,13 @@ import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ast.ty.SortRustType;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class KeYRustyType implements Type {
     /// the AST type
-    private Type rustyType = null;
+    private @Nullable Type rustyType = null;
     /// the logic sort
-    private Sort sort = null;
+    private @Nullable Sort sort = null;
 
     public KeYRustyType() {
     }
@@ -36,11 +37,11 @@ public class KeYRustyType implements Type {
     }
 
     @Override
-    public Sort getSort(Services services) {
+    public @Nullable Sort getSort(Services services) {
         return sort;
     }
 
-    public Sort getSort() {
+    public @Nullable Sort getSort() {
         return sort;
     }
 
@@ -48,7 +49,7 @@ public class KeYRustyType implements Type {
         this.sort = sort;
     }
 
-    public Type getRustyType() {
+    public @Nullable Type getRustyType() {
         return rustyType;
     }
 
@@ -58,11 +59,11 @@ public class KeYRustyType implements Type {
 
     @Override
     public @NonNull Name name() {
-        return rustyType == null ? sort.name() : rustyType.name();
+        return rustyType == null ? Objects.requireNonNull(sort).name() : rustyType.name();
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this) {
             return true;
         }

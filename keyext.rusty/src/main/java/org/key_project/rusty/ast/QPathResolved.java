@@ -9,7 +9,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
 public record QPathResolved(@Nullable RustType selfTy, Path<Res> path) implements QPath {
     @Override
     public void visit(Visitor v) {
@@ -18,7 +17,7 @@ public record QPathResolved(@Nullable RustType selfTy, Path<Res> path) implement
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException("No child " + n + " of " + this);
     }
 
     @Override
@@ -26,4 +25,3 @@ public record QPathResolved(@Nullable RustType selfTy, Path<Res> path) implement
         return 0;
     }
 }
-//spotless:on

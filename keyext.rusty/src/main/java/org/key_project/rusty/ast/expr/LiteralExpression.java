@@ -7,12 +7,14 @@ import org.key_project.logic.Name;
 import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.rule.MatchConditions;
 
+import org.jspecify.annotations.Nullable;
+
 public abstract class LiteralExpression implements Expr {
     /// Return the Name of the LDT, which this Literal belongs to.
     public abstract Name getLDTName();
 
     @Override
-    public MatchConditions match(SourceData source, MatchConditions matchCond) {
+    public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions matchCond) {
         final var src = source.getSource();
         if (this.equals(src)) {
             source.next();

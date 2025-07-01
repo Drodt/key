@@ -6,6 +6,9 @@ package org.key_project.rusty.speclang;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.util.collection.ImmutableList;
 
-public record ProgramVariableCollection(ProgramVariable self, ImmutableList<ProgramVariable> params,
-        ProgramVariable result) {
+import org.jspecify.annotations.Nullable;
+
+public record ProgramVariableCollection(@Nullable ProgramVariable self,
+        ImmutableList<ProgramVariable> params,
+        @Nullable ProgramVariable result) {
 }

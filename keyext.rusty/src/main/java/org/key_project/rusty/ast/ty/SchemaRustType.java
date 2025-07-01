@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.ty;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -13,6 +15,7 @@ import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /// A schema variable standing for a type in SchemaRust
 // spotless:off
@@ -38,18 +41,17 @@ public record SchemaRustType(SchemaType type) implements RustType {
     }
 
     @Override
-    public MatchConditions match(SourceData source, MatchConditions mc) {
+    public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions mc) {
         final Services services = source.getServices();
         final RustyProgramElement src = source.getSource();
-        SVInstantiations instantiations = mc.getInstantiations();
+        SVInstantiations instantiations = Objects.requireNonNull(mc).getInstantiations();
 
         final Object instant = instantiations.getInstantiation(type.sv());
         if (instant == null) {
-            instantiations = instantiations.add(type.sv(), src, services);
+            instantiations = instantiations.add(type.sv(), Objects.requireNonNull(src), services);
             mc = mc.setInstantiations(instantiations);
-            if (mc == null) {
-                return mc;
-            }
+            // TODO: is this true?
+            assert mc != null;
         } else if (!instant.equals(src)) {
             return null;
         }

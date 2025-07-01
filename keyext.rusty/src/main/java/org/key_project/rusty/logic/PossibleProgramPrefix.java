@@ -6,17 +6,19 @@ package org.key_project.rusty.logic;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+
 /// this interface is implemented by program elements that may be matched by the inactive program
 /// prefix
 public interface PossibleProgramPrefix extends RustyProgramElement {
-    boolean isPrefix();
+    boolean isPrefix(@UnknownInitialization PossibleProgramPrefix this);
 
     /// return true if there is a next prefix element
-    boolean hasNextPrefixElement();
+    boolean hasNextPrefixElement(@UnknownInitialization PossibleProgramPrefix this);
 
     /// return the next prefix element if no next prefix element is available an
     /// IndexOutOfBoundsException is thrown
-    PossibleProgramPrefix getNextPrefixElement();
+    PossibleProgramPrefix getNextPrefixElement(@UnknownInitialization PossibleProgramPrefix this);
 
     /// return the last prefix element
     PossibleProgramPrefix getLastPrefixElement();

@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.expr;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ProgramPrefixUtil;
@@ -13,6 +15,8 @@ import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.op.IProgramVariable;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
+
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 
 public class LoopScope implements LoopExpression, PossibleProgramPrefix {
     private final IProgramVariable index;
@@ -25,15 +29,15 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
         this.block = block;
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.length();
-        functionFrame = info.innermostFunctionFrame();
+        functionFrame = Objects.requireNonNull(info.innermostFunctionFrame());
     }
 
     public LoopScope(ExtList list) {
-        index = list.get(IProgramVariable.class);
-        block = list.get(BlockExpression.class);
+        index = Objects.requireNonNull(list.get(IProgramVariable.class));
+        block = Objects.requireNonNull(list.get(BlockExpression.class));
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.length();
-        functionFrame = info.innermostFunctionFrame();
+        functionFrame = Objects.requireNonNull(info.innermostFunctionFrame());
     }
 
     @Override
@@ -71,17 +75,20 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
     }
 
     @Override
-    public boolean isPrefix() {
+    public boolean isPrefix(@UnknownInitialization LoopScope this) {
+        assert block != null;
         return block.isPrefix();
     }
 
     @Override
-    public boolean hasNextPrefixElement() {
+    public boolean hasNextPrefixElement(@UnknownInitialization LoopScope this) {
+        assert block != null;
         return block.getChildCount() != 0 && block.getChild(0) instanceof PossibleProgramPrefix;
     }
 
     @Override
-    public PossibleProgramPrefix getNextPrefixElement() {
+    public PossibleProgramPrefix getNextPrefixElement(@UnknownInitialization LoopScope this) {
+        assert block != null;
         if (hasNextPrefixElement()) {
             return (PossibleProgramPrefix) block.getChild(0);
         } else {

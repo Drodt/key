@@ -5,7 +5,6 @@ package org.key_project.rusty.proof;
 
 import java.util.Iterator;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.Term;
@@ -22,6 +21,7 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 
 public class Proof implements ProofObject<Goal>, Named {

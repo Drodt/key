@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast;
 
+import java.util.Objects;
+
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
@@ -13,12 +15,14 @@ import org.key_project.rusty.logic.RustyBlock;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class SchemaRustyReader extends HirRustyReader {
-    private Namespace<@NonNull SchemaVariable> svNS;
+    private @Nullable Namespace<@NonNull SchemaVariable> svNS;
 
     public SchemaRustyReader(Services services, NamespaceSet nss) {
         super(services, nss);
+        svNS = null;
     }
 
     public void setSVNamespace(Namespace<@NonNull SchemaVariable> ns) {
@@ -36,7 +40,7 @@ public class SchemaRustyReader extends HirRustyReader {
             new org.key_project.rusty.parsing.RustySchemaLexer(CharStreams.fromString(fn));
         var ts = new CommonTokenStream(lexer);
         var parser = new org.key_project.rusty.parsing.RustySchemaParser(ts);
-        var converter = new SchemaConverter(svNS, getServices());
+        var converter = new SchemaConverter(Objects.requireNonNull(svNS), getServices());
         var converted = converter.convertFunction(parser.function_());
         var firstStmt = (ExpressionStatement) converted.body().getStatements().get(0);
         return new RustyBlock(firstStmt.getExpression());

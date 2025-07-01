@@ -30,8 +30,8 @@ public final class IfExpression implements Expr, ElseBranch {
     }
 
     public IfExpression(Services services, ExtList children) {
-        condition = children.removeFirstOccurrence(Expr.class);
-        thenExpr = children.removeFirstOccurrence(ThenBranch.class);
+        condition = Objects.requireNonNull(children.removeFirstOccurrence(Expr.class));
+        thenExpr = Objects.requireNonNull(children.removeFirstOccurrence(ThenBranch.class));
         elseExpr = children.removeFirstOccurrence(ElseBranch.class);
         type = thenExpr.type(services);
     }
@@ -84,7 +84,7 @@ public final class IfExpression implements Expr, ElseBranch {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())

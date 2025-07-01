@@ -5,13 +5,13 @@ package org.key_project.rusty.logic;
 
 import java.util.Map;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class TermFactory {
     private static final ImmutableArray<Term> NO_SUBTERMS = new ImmutableArray<>();
@@ -68,7 +68,8 @@ public class TermFactory {
     // -------------------------------------------------------------------------
 
     private ImmutableArray<Term> createSubtermArray(@Nullable Term[] subs) {
-        if (subs == null || subs.length == 0) return NO_SUBTERMS;
+        if (subs == null || subs.length == 0)
+            return NO_SUBTERMS;
         // Checker framework is imprecise here
         @SuppressWarnings("type.arguments.not.inferred")
         ImmutableArray<Term> terms = new ImmutableArray<>(subs);
