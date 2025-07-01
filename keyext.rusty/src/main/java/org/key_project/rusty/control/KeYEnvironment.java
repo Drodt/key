@@ -17,6 +17,8 @@ import org.key_project.rusty.proof.io.AbstractProblemLoader.ReplayResult;
 import org.key_project.rusty.proof.io.ProblemLoaderException;
 import org.key_project.rusty.proof.io.SingleThreadProblemLoader;
 
+import org.jspecify.annotations.Nullable;
+
 /// Instances of this class are used to collect and access all relevant information for verification
 /// with KeY.
 ///
@@ -90,10 +92,10 @@ public class KeYEnvironment {
     /// new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
-    public static KeYEnvironment load(Profile profile, File location,
-            List<File> includes,
-            Properties poPropertiesToForce,
-            Consumer<Proof> callbackProofLoaded,
+    public static KeYEnvironment load(@Nullable Profile profile, File location,
+            @Nullable List<File> includes,
+            @Nullable Properties poPropertiesToForce,
+            @Nullable Consumer<Proof> callbackProofLoaded,
             boolean forceNewProfileOfNewProofs) throws ProblemLoaderException {
         AbstractProblemLoader loader = null;
         try {
@@ -135,9 +137,9 @@ public class KeYEnvironment {
     /// new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
-    public static KeYEnvironment load(Profile profile, File location,
-            List<File> includes,
-            Properties poPropertiesToForce,
+    public static KeYEnvironment load(@Nullable Profile profile, File location,
+            @Nullable List<File> includes,
+            @Nullable Properties poPropertiesToForce,
             boolean forceNewProfileOfNewProofs) throws ProblemLoaderException {
         return load(profile, location, includes, poPropertiesToForce,
             null, forceNewProfileOfNewProofs);
@@ -155,8 +157,8 @@ public class KeYEnvironment {
     /// will be used for new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
-    public static KeYEnvironment load(Profile profile, File location,
-            List<File> includes,
+    public static KeYEnvironment load(@Nullable Profile profile, File location,
+            @Nullable List<File> includes,
             boolean forceNewProfileOfNewProofs) throws ProblemLoaderException {
         return load(profile, location, includes, null,
             forceNewProfileOfNewProofs);
@@ -170,7 +172,7 @@ public class KeYEnvironment {
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
     public static KeYEnvironment load(File location,
-            List<File> includes)
+            @Nullable List<File> includes)
             throws ProblemLoaderException {
         return load(null, location, includes, false);
     }

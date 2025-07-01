@@ -29,6 +29,8 @@ import org.key_project.rusty.settings.Configuration;
 import org.key_project.rusty.speclang.SLEnvInput;
 import org.key_project.util.java.IOUtil;
 
+import org.jspecify.annotations.Nullable;
+
 public abstract class AbstractProblemLoader {
     /// The file or folder to load.
     private final File file;
@@ -37,10 +39,10 @@ public abstract class AbstractProblemLoader {
     private File proofFilename;
 
     /// The global includes to use.
-    private final List<File> includes;
+    private final @Nullable List<File> includes;
 
     /// The [ProblemLoaderControl] to use.
-    private final ProblemLoaderControl control;
+    private final @Nullable ProblemLoaderControl control;
 
     /// The [Profile] to use for new [Proof]s.
     private final Profile profileOfNewProofs;
@@ -75,8 +77,8 @@ public abstract class AbstractProblemLoader {
     /// defined by the loaded proof or `false` otherwise which still allows to work with
     /// the loaded [InitConfig].
     protected AbstractProblemLoader(File file,
-            List<File> includes, Profile profileOfNewProofs,
-            ProblemLoaderControl control) {
+            @Nullable List<File> includes, @Nullable Profile profileOfNewProofs,
+            @Nullable ProblemLoaderControl control) {
         this.file = file;
         this.control = control;
         this.profileOfNewProofs =
