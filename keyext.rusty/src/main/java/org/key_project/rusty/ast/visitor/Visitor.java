@@ -152,4 +152,6 @@ public interface Visitor {
     void performActionOnSortRustType(SortRustType x);
 
     void performActionOnLitPatExpr(LitPatExpr x);
+
+    void performActionOnGhostLetExpression()    
 }
