@@ -5,6 +5,7 @@ package org.key_project.rusty.ast.visitor;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Objects;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
@@ -18,6 +19,8 @@ import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
+
+import org.jspecify.annotations.Nullable;
 
 /// Walks through a Rust AST in depth-left-fist-order.
 public abstract class CreatingASTVisitor extends RustyASTVisitor {
@@ -51,8 +54,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
 
     @Override
     public String toString() {
-        assert stack.peek() != null;
-        return stack.peek().toString();
+        return getTop().toString();
     }
 
     /// called if the program element x is unchanged
@@ -76,7 +78,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
 
     @Override
     public void performActionOnBlockExpression(BlockExpression x) {
-        ExtList changeList = stack.peek();
+        ExtList changeList = getTop();
         if (changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             if (!preservesPositionInfo) {
@@ -92,7 +94,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
 
     @Override
     public void performActionOnContextBlockExpression(ContextBlockExpression x) {
-        ExtList changeList = stack.peek();
+        ExtList changeList = getTop();
         if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             if (!preservesPositionInfo) {
@@ -104,6 +106,10 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
         } else {
             doDefaultAction(x);
         }
+    }
+
+    protected ExtList getTop() {
+        return Objects.requireNonNull(stack.peek());
     }
 
     @Override
@@ -133,10 +139,10 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
 
     @Override
     public void performActionOnExpressionStatement(ExpressionStatement x) {
-        ExtList changeList = stack.peek();
+        ExtList changeList = getTop();
         if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
-            Expr expr = changeList.removeFirstOccurrence(Expr.class);
+            Expr expr = Objects.requireNonNull(changeList.removeFirstOccurrence(Expr.class));
             addChild(new ExpressionStatement(expr, x.hasSemi()));
             changed();
         } else {
@@ -229,11 +235,11 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
 
     @Override
     public void performActionOnInfiniteLoop(InfiniteLoopExpression x) {
-        ExtList changeList = stack.peek();
+        ExtList changeList = getTop();
         if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             Label l = changeList.removeFirstOccurrence(Label.class);
-            Expr body = changeList.removeFirstOccurrence(Expr.class);
+            Expr body = Objects.requireNonNull(changeList.removeFirstOccurrence(Expr.class));
 
             var nl = new InfiniteLoopExpression(l, body);
             performActionOnLoopInvariant(x, nl);
@@ -293,20 +299,20 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     protected void changed() {
-        ExtList list = stack.peek();
+        ExtList list = getTop();
         if (list.isEmpty() || list.getFirst() != CHANGED) {
             list.addFirst(CHANGED);
         }
     }
 
-    protected void addToTopOfStack(RustyProgramElement x) {
+    protected void addToTopOfStack(@Nullable RustyProgramElement x) {
         if (x != null) {
-            ExtList list = stack.peek();
+            ExtList list = getTop();
             list.add(x);
         }
     }
 
-    protected void addChild(RustyProgramElement x) {
+    protected void addChild(@Nullable RustyProgramElement x) {
         stack.pop();
         addToTopOfStack(x);
     }

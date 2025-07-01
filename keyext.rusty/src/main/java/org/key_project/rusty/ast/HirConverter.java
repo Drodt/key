@@ -20,6 +20,7 @@ import org.key_project.rusty.ast.stmt.ItemStatement;
 import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.ty.*;
+import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.parser.hir.*;
 import org.key_project.rusty.parser.hir.expr.*;
@@ -87,7 +88,7 @@ public class HirConverter {
 
     /// We first convert all functions except their bodies. Then we convert those later.
     private final Map<Function, Fn> fnsToComplete =
-        new HashMap();
+        new HashMap<>();
 
     private ProgramVariable getPV(HirId id) {
         return Objects.requireNonNull(pvs.get(id), "Unknown variable " + id);
@@ -420,11 +421,11 @@ public class HirConverter {
         return new PrimitiveRustType(primTy);
     }
 
-    private Pattern convertPat(Pat pat, Type ty) {
+    private Pattern convertPat(Pat pat, @Nullable Type ty) {
         return convertPat(pat, false, ty);
     }
 
-    private Pattern convertPat(Pat pat, boolean isCtxFnParam, Type ty) {
+    private Pattern convertPat(Pat pat, boolean isCtxFnParam, @Nullable Type ty) {
         return switch (pat.kind()) {
         case PatKind.Binding p -> {
             boolean ref = false;
@@ -464,9 +465,11 @@ public class HirConverter {
         };
     }
 
-    private PatExpr convertPatExpr(org.key_project.rusty.parser.hir.pat.PatExpr pe, Type ty) {
+    private PatExpr convertPatExpr(org.key_project.rusty.parser.hir.pat.PatExpr pe,
+            @Nullable Type ty) {
         return switch (pe.kind()) {
-        case PatExprKind.Lit(var l, var n) -> new LitPatExpr(convertLitExpr(l, ty), n);
+        case PatExprKind.Lit(var l, var n) ->
+            new LitPatExpr(convertLitExpr(l, Objects.requireNonNull(ty)), n);
         default -> throw new IllegalArgumentException("Unknown patExpr: " + pe);
         };
     }
@@ -502,9 +505,12 @@ public class HirConverter {
 
     private Def convertDef(org.key_project.rusty.parser.hir.Def def) {
         return switch (def.kind()) {
-        case DefKind.Fn f ->
-            services.getRustInfo().getFunction(localFns.get(new LocalDefId(def.id().index())));
-        case DefKind.Mod m -> null;
+        case DefKind.Fn f -> {
+            Function lfn = Objects.requireNonNull(localFns.get(new LocalDefId(def.id().index())));
+            ProgramFunction fn = services.getRustInfo().getFunction(lfn);
+            yield Objects.requireNonNull(fn);
+        }
+        case DefKind.Mod m -> throw new UnsupportedOperationException("Not supported yet.");
         default -> throw new IllegalArgumentException("Unknown def: " + def);
         };
     }
@@ -531,7 +537,7 @@ public class HirConverter {
         case Ty.Ref(var t, var m) -> ReferenceType.get(convertTy(t), m);
         case Ty.FnDef(var id) -> {
             assert id.krate() == 0 : "only local FnDef tys allowed";
-            var fn = localFns.get(new LocalDefId(id.index()));
+            var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())));
             yield new FnDefType(fn);
         }
         case Ty.Closure c -> new Closure();

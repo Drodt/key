@@ -5,6 +5,7 @@ package org.key_project.rusty.ast.visitor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
@@ -21,15 +22,17 @@ import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.jspecify.annotations.Nullable;
+
 /// Walks through a java AST in depth-left-first-order. This visitor replaces a number of program
 /// variables by others or new ones.
 public class ProgVarReplaceVisitor extends CreatingASTVisitor {
-    protected boolean replaceallbynew = true;
+    protected boolean replaceAllByNew = true;
 
     /// stores the program variables to be replaced as keys and the new program variables as values
     protected final Map<ProgramVariable, ProgramVariable> replaceMap;
 
-    private RustyProgramElement result = null;
+    private @Nullable RustyProgramElement result = null;
 
     /// creates a visitor that replaces the program variables in the given statement by new ones
     /// with
@@ -39,10 +42,10 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
     /// @param map the HashMap with the replacements
     /// @param services the services instance
     public ProgVarReplaceVisitor(RustyProgramElement st, Map<ProgramVariable, ProgramVariable> map,
-            boolean replaceallbynew,
+            boolean replaceAllByNew,
             Services services) {
         super(st, true, services);
-        this.replaceallbynew = replaceallbynew;
+        this.replaceAllByNew = replaceAllByNew;
         this.replaceMap = map;
         assert services != null;
     }
@@ -61,15 +64,16 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
         stack.push(new ExtList());
         walk(root());
         ExtList el = stack.peek();
+        assert el != null;
         int i = 0;
         while (!(el.get(i) instanceof RustyProgramElement)) {
             i++;
         }
-        result = (RustyProgramElement) stack.peek().get(i);
+        result = (RustyProgramElement) Objects.requireNonNull(stack.peek()).get(i);
     }
 
     public RustyProgramElement result() {
-        return result;
+        return Objects.requireNonNull(result);
     }
 
     @Override
@@ -93,9 +97,11 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
 
         var atPres = inv.getInternalAtPres();
 
-        var newInv = replaceVariablesInTerm(inv.getInvariant(atPres, services));
+        var newInv =
+            Objects.requireNonNull(replaceVariablesInTerm(inv.getInvariant(atPres, services)));
 
-        var newVar = replaceVariablesInTerm(inv.getVariant(atPres, services));
+        var newVar =
+            Objects.requireNonNull(replaceVariablesInTerm(inv.getVariant(atPres, services)));
 
         Map<ProgramVariable, Term> saveCopy = new HashMap<>(atPres);
         for (var e : saveCopy.entrySet()) {
@@ -107,7 +113,7 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
                 atPres.remove(pv);
                 pv = replaceMap.get(pv);
             }
-            atPres.put(pv, replaceVariablesInTerm(t));
+            atPres.put(pv, Objects.requireNonNull(replaceVariablesInTerm(t)));
         }
 
         var newLocalIns = tb.var(MiscTools.getLocalIns(newLoop, services));
@@ -116,7 +122,7 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
         services.getSpecificationRepository().addLoopSpec(newSpec);
     }
 
-    private Term replaceVariablesInTerm(Term t) {
+    private @Nullable Term replaceVariablesInTerm(@Nullable Term t) {
         if (t == null)
             return null;
         if (t.op() instanceof ProgramVariable pv) {
@@ -130,7 +136,7 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
             boolean changed = false;
             Term[] subTerms = new Term[t.arity()];
             for (int i = 0, n = t.arity(); i < n; i++) {
-                subTerms[i] = replaceVariablesInTerm(t.sub(i));
+                subTerms[i] = Objects.requireNonNull(replaceVariablesInTerm(t.sub(i)));
                 changed = changed || subTerms[i] != t.sub(i);
             }
             Operator op = t.op();

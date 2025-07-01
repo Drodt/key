@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.visitor;
 
+import java.util.Objects;
+
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -21,10 +23,12 @@ import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.jspecify.annotations.Nullable;
+
 /// Walks through a Rust AST in depth-left-fist-order. This walker is used to transform a program
 /// according to the given SVInstantiations.
 public class ProgramReplaceVisitor extends CreatingASTVisitor {
-    private RustyProgramElement result = null;
+    private @Nullable RustyProgramElement result = null;
 
     private final SVInstantiations svinsts;
 
@@ -45,7 +49,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
         assert result == null : "ProgramReplaceVisitor is not designed for multiple walks";
         stack.push(new ExtList());
         walk(root());
-        final ExtList astList = stack.pop();
+        final ExtList astList = getTop();
         for (int i = 0, sz = astList.size(); result == null && i < sz; i++) {
             final Object element = astList.get(i);
             if (element instanceof RustyProgramElement pe) {
@@ -56,7 +60,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
 
     /// @return The result.
     public RustyProgramElement result() {
-        return result;
+        return Objects.requireNonNull(result);
     }
 
     /// the implemented default action is called if a program element is, and if it has children all
@@ -68,7 +72,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
 
     @Override
     public void performActionOnAssignmentExpression(AssignmentExpression x) {
-        ExtList changeList = stack.peek();
+        ExtList changeList = getTop();
         if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             Pattern pat = changeList.removeFirstOccurrence(Pattern.class);
@@ -90,13 +94,14 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
 
     @Override
     public void performActionOnLetStatement(LetStatement x) {
-        ExtList changeList = stack.peek();
+        ExtList changeList = getTop();
         if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             Pattern pat = changeList.get(Pattern.class);
             if (pat == null) {
                 // We probably put an expression first and have to convert it to a patter
-                var pv = changeList.removeFirstOccurrence(ProgramVariable.class);
+                var pv =
+                    Objects.requireNonNull(changeList.removeFirstOccurrence(ProgramVariable.class));
                 var el = new ExtList();
                 el.add(new BindingPattern(false, false, false, pv, null));
                 el.addAll(changeList);
@@ -170,7 +175,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
 
     @Override
     public void performActionOnProgramMetaConstruct(ProgramTransformer x) {
-        final ExtList changeList = stack.peek();
+        final ExtList changeList = getTop();
 
         RustyProgramElement body = null;
         for (Object element : changeList) {

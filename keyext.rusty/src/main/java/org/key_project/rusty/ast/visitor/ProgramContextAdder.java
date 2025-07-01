@@ -4,6 +4,7 @@
 package org.key_project.rusty.ast.visitor;
 
 import java.rmi.UnexpectedException;
+import java.util.Objects;
 
 import org.key_project.logic.IntIterator;
 import org.key_project.logic.SyntaxElement;
@@ -15,6 +16,8 @@ import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.rule.inst.ContextBlockExpressionInstantiation;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
+
+import org.jspecify.annotations.Nullable;
 
 /// A context given as [ContextBlockExpressionInstantiation] is wrapped around a given
 /// [RustyProgramElement].
@@ -34,29 +37,30 @@ public class ProgramContextAdder {
             ct.suffix());
     }
 
-    protected RustyProgramElement wrap(RustyProgramElement context, ContextBlockExpression putIn,
+    protected RustyProgramElement wrap(@Nullable RustyProgramElement context,
+            ContextBlockExpression putIn,
             IntIterator prefixPos, PosInProgram suffix) {
         RustyProgramElement body;
 
         RustyProgramElement next =
-            prefixPos.hasNext() ? (RustyProgramElement) context.getChild(prefixPos.next()) : null;
+            prefixPos.hasNext()
+                    ? (RustyProgramElement) Objects.requireNonNull(context)
+                            .getChild(prefixPos.next())
+                    : null;
 
         if (!prefixPos.hasNext()) {
             return createWrapperBody(context, putIn, suffix);
         } else {
             body = wrap(next, putIn, prefixPos, suffix);
-            if (context instanceof BlockExpression be) {
-                return createBlockExprWrapper(be, body);
-            } else if (context instanceof ExpressionStatement es) {
-                return createExpressionStatementWrapper(es, body);
-            } else if (context instanceof FunctionFrame ff) {
-                return createFunctionFrameWrapper(ff, (BlockExpression) body);
-            } else if (context instanceof LoopScope ls) {
-                return createLoopScopeWrapper(ls, (BlockExpression) body);
-            } else {
-                throw new RuntimeException(
-                    new UnexpectedException("Unexpected block type: " + context.getClass()));
-            }
+            return switch (context) {
+            case BlockExpression be -> createBlockExprWrapper(be, body);
+            case ExpressionStatement es -> createExpressionStatementWrapper(es, body);
+            case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
+            case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
+            case null, default -> throw new RuntimeException(
+                new UnexpectedException(
+                    "Unexpected block type: " + (context != null ? context.getClass() : null)));
+            };
         }
     }
 
@@ -100,9 +104,9 @@ public class ProgramContextAdder {
     /// underscored part is returned <code>{{ __{putIn;....}__ }moreStmnts;}</code> adding
     /// the other braces including the <code>moreStmnts;</code> part has to be done
     /// elsewhere.
-    private RustyProgramElement createWrapperBody(RustyProgramElement wrapper,
+    private RustyProgramElement createWrapperBody(@Nullable RustyProgramElement wrapper,
             ContextBlockExpression putIn, PosInProgram suffix) {
-        if (wrapper instanceof BlockExpression) {
+        if (wrapper instanceof BlockExpression be) {
             final int putInLength = putIn.getChildCount();
 
             // ATTENTION: may be -1
@@ -112,7 +116,7 @@ public class ProgramContextAdder {
 
             int childrenToAdd = putInLength + childLeft;
 
-            if (wrapper instanceof BlockExpression be && be.getValue() != null)
+            if (be.getValue() != null)
                 --childrenToAdd;
 
             if (childLeft == 0 || lastChild == -1) {
@@ -129,7 +133,7 @@ public class ProgramContextAdder {
                 }
             }
 
-            Expr value = ((BlockExpression) wrapper).getValue();
+            Expr value = be.getValue();
             if (putIn.getValue() != null && childrenToAdd < putInLength) {
                 value = putIn.getValue();
             }
@@ -137,10 +141,7 @@ public class ProgramContextAdder {
             return new BlockExpression(body, value);
         } else if (wrapper instanceof ExpressionStatement es) {
             assert putIn.getStatements().isEmpty();
-            if (putIn.getValue() == null) {
-                assert putIn.getValue() != null;
-            }
-            return new ExpressionStatement(putIn.getValue(), es.hasSemi());
+            return new ExpressionStatement(Objects.requireNonNull(putIn.getValue()), es.hasSemi());
         } else {
             throw new RuntimeException("Unexpected context : " + wrapper);
         }
@@ -158,7 +159,8 @@ public class ProgramContextAdder {
             RustyProgramElement replacement) {
         return new ExpressionStatement(
             replacement instanceof BlockExpression be && be.getChildCount() == 1
-                    && be.getValue() != null ? be.getValue() : (Expr) replacement,
+                    && be.getValue() != null ? Objects.requireNonNull(be.getValue())
+                            : (Expr) replacement,
             wrapper.hasSemi());
     }
 
