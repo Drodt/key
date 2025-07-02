@@ -16,6 +16,8 @@ import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
+import org.jspecify.annotations.Nullable;
+
 import static org.key_project.rusty.logic.equality.RenamingProgramElementProperty.RENAMING_PROGRAM_ELEMENT_PROPERTY;
 
 public class RenamingTermProperty implements Property<Term> {
@@ -102,7 +104,7 @@ public class RenamingTermProperty implements Property<Term> {
     /// @param cmpBoundVars variables bound above the current position
     /// @return <code>true</code> is returned iff the terms are equal modulo bound renaming
     private boolean unifyHelp(Term t0, Term t1, ImmutableList<QuantifiableVariable> ownBoundVars,
-            ImmutableList<QuantifiableVariable> cmpBoundVars, NameAbstractionTable nat) {
+            ImmutableList<QuantifiableVariable> cmpBoundVars, @Nullable NameAbstractionTable nat) {
 
         if (t0 == t1 && ownBoundVars.equals(cmpBoundVars)) {
             return true;
@@ -174,8 +176,8 @@ public class RenamingTermProperty implements Property<Term> {
     /// @param nat the [NameAbstractionTable] used for the comparison
     /// @return the updated [NameAbstractionTable] if the [RustyBlock]s are equal modulo
     /// renaming or [#FAILED] if they are not
-    private static NameAbstractionTable handleRusty(RustyBlock rb0, RustyBlock rb1,
-            NameAbstractionTable nat) {
+    private static @Nullable NameAbstractionTable handleRusty(RustyBlock rb0, RustyBlock rb1,
+            @Nullable NameAbstractionTable nat) {
         if (!rb0.isEmpty() || !rb1.isEmpty()) {
             nat = checkNat(nat);
             if (RustyBlocksNotEqualModRenaming(rb0, rb1, nat)) {
@@ -192,7 +194,7 @@ public class RenamingTermProperty implements Property<Term> {
     /// @param nat the [NameAbstractionTable] used for the comparison
     /// @return true if the given [RustyBlock]s are NOT equal modulo renaming
     public static boolean RustyBlocksNotEqualModRenaming(RustyBlock rb1, RustyBlock rb2,
-            NameAbstractionTable nat) {
+            @Nullable NameAbstractionTable nat) {
         RustyProgramElement pe1 = rb1.program();
         RustyProgramElement pe2 = rb2.program();
         if (pe1 == null && pe2 == null) {
@@ -215,7 +217,7 @@ public class RenamingTermProperty implements Property<Term> {
     /// @return <code>true</code> iff the subterms are equal modulo renaming
     private boolean descendRecursively(Term t0, Term t1,
             ImmutableList<QuantifiableVariable> ownBoundVars,
-            ImmutableList<QuantifiableVariable> cmpBoundVars, NameAbstractionTable nat) {
+            ImmutableList<QuantifiableVariable> cmpBoundVars, @Nullable NameAbstractionTable nat) {
 
         for (int i = 0; i < t0.arity(); i++) {
             ImmutableList<QuantifiableVariable> subOwnBoundVars = ownBoundVars;
@@ -251,7 +253,7 @@ public class RenamingTermProperty implements Property<Term> {
     ///
     /// @param nat the [NameAbstractionTable] to check
     /// @return the given `nat` if it is not null, a new [NameAbstractionTable] otherwise
-    private static NameAbstractionTable checkNat(NameAbstractionTable nat) {
+    private static NameAbstractionTable checkNat(@Nullable NameAbstractionTable nat) {
         if (nat == null) {
             return new NameAbstractionTable();
         }

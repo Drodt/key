@@ -23,6 +23,8 @@ import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
 import org.key_project.rusty.rule.metaconstruct.IntroAtPreDefs;
 import org.key_project.rusty.rule.metaconstruct.arith.*;
 
+import org.jspecify.annotations.Nullable;
+
 /// Abstract class factoring out commonalities of typical term transformer implementations. The
 /// available singletons of term transformers are kept here.
 public abstract class AbstractTermTransformer extends AbstractSortedOperator
@@ -63,6 +65,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
 
     public static final AbstractTermTransformer INTRODUCE_AT_PRE_DEFINITIONS = new IntroAtPreDefs();
 
+    @SuppressWarnings("argument.type.incompatible")
     protected AbstractTermTransformer(Name name, int arity, Sort sort) {
         super(name, createMetaSortArray(arity), sort, Modifier.NONE);
         NAME_TO_META_OP.put(name.toString(), this);
@@ -78,7 +81,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         return result;
     }
 
-    public static TermTransformer name2metaop(String s) {
+    public static @Nullable TermTransformer name2metaop(String s) {
         return NAME_TO_META_OP.get(s);
     }
 

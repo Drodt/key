@@ -9,6 +9,8 @@ import org.key_project.rusty.logic.op.BoundVariable;
 import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.jspecify.annotations.Nullable;
+
 public class Subst {
     private final BoundVariable v;
     private final Term s;
@@ -62,8 +64,8 @@ public class Subst {
         index = oldIndex;
     }
 
-    protected static ImmutableArray<QuantifiableVariable> getSingleArray(
-            ImmutableArray<QuantifiableVariable>[] bv) {
+    protected static @Nullable ImmutableArray<QuantifiableVariable> getSingleArray(
+            @Nullable ImmutableArray<QuantifiableVariable> @Nullable [] bv) {
         if (bv == null) {
             return null;
         }

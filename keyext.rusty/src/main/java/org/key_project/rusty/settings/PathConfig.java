@@ -5,8 +5,9 @@ package org.key_project.rusty.settings;
 
 import java.io.File;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.util.java.IOUtil;
+
+import org.jspecify.annotations.Nullable;
 
 ///
 /// Keeps some central paths to files and directories.
@@ -28,13 +29,13 @@ public final class PathConfig {
     public static final String KEY_DIRECTORY_NAME = ".rusty-key";
 
     /// In which file to store the recent files.
-    private static @Nullable String recentFileStorage=null;
+    private static @Nullable String recentFileStorage = null;
 
     /// In which file to store the proof-independent settings.
-    private static @Nullable String proofIndependentSettings=null;
+    private static @Nullable String proofIndependentSettings = null;
 
     /// directory where to find the KeY configuration files
-    private static @Nullable String keyConfigDir=null;
+    private static @Nullable String keyConfigDir = null;
 
     private PathConfig() {
     }

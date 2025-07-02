@@ -27,6 +27,8 @@ public class TestProperties {
         var t1 = TacletForTests.parseTerm(termString1);
         var t2 = TacletForTests.parseTerm(termString2);
 
+        assert t1 != null && t2 != null;
+
         var p1 = ((RModality) t1.op()).programBlock().program();
         var p2 = ((RModality) t2.op()).programBlock().program();
 

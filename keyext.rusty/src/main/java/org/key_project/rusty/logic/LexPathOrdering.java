@@ -12,6 +12,8 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.op.RFunction;
 
+import org.jspecify.annotations.Nullable;
+
 public class LexPathOrdering implements TermOrdering {
     public int compare(Term p_a, Term p_b) {
         final CompRes res = compareHelp(p_a, p_b);
@@ -279,7 +281,7 @@ public class LexPathOrdering implements TermOrdering {
             }
         }
 
-        protected abstract Integer getWeight(Operator p_op);
+        protected abstract @Nullable Integer getWeight(Operator p_op);
     }
 
     /// Explicit ordering of literals (symbols assigned a weight by this class are regarded as
@@ -311,7 +313,7 @@ public class LexPathOrdering implements TermOrdering {
 
 
 
-        protected Integer getWeight(Operator p_op) {
+        protected @Nullable Integer getWeight(Operator p_op) {
             final String opStr = p_op.name().toString();
 
             if (intFunctionNames.contains(opStr) || theoryFunctionNames.contains(opStr)) {
@@ -338,7 +340,7 @@ public class LexPathOrdering implements TermOrdering {
     /// Explicit ordering for different kinds of function symbols; symbols like C::<get> or
     /// C.<nextToCreate> should be smaller than other symbols
     private static class FunctionWeighter extends Weighter {
-        protected Integer getWeight(Operator p_op) {
+        protected @Nullable Integer getWeight(Operator p_op) {
             final String opStr = p_op.name().toString();
 
             if (p_op instanceof RFunction rf && rf.isUnique()) {

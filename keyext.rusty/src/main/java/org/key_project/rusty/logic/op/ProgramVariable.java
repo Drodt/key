@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.op;
 
+import java.util.Objects;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.AbstractSortedOperator;
@@ -19,6 +21,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.rule.MatchConditions;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class ProgramVariable extends AbstractSortedOperator
         implements Expr, UpdateableOperator, Res, IProgramVariable {
@@ -30,7 +33,7 @@ public class ProgramVariable extends AbstractSortedOperator
     }
 
     public ProgramVariable(Name name, KeYRustyType type) {
-        this(name, type.getSort(), type);
+        this(name, Objects.requireNonNull(type.getSort()), type);
     }
 
     @Override
@@ -49,7 +52,7 @@ public class ProgramVariable extends AbstractSortedOperator
 
 
     @Override
-    public MatchConditions match(SourceData source, MatchConditions mc) {
+    public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions mc) {
         final var src = source.getSource();
         source.next();
         if (src == this) {
@@ -66,6 +69,6 @@ public class ProgramVariable extends AbstractSortedOperator
 
     @Override
     public Type type(Services services) {
-        return type.getRustyType();
+        return Objects.requireNonNull(type.getRustyType());
     }
 }

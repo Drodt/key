@@ -33,6 +33,8 @@ import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 
 /// Responsible for program variable naming issues.
 public abstract class VariableNamer implements InstantiationProposer {
@@ -72,8 +74,8 @@ public abstract class VariableNamer implements InstantiationProposer {
     /// @param undoAnchor not used
     /// @param previousProposals list of names which should be considered taken, or null
     /// @return the name proposal, or null if no proposal is available
-    public String getProposal(TacletApp app, org.key_project.logic.op.sv.SchemaVariable var,
-            Services services, Node undoAnchor,
+    public @Nullable String getProposal(TacletApp app, SchemaVariable var,
+            Services services, @Nullable Node undoAnchor,
             ImmutableList<String> previousProposals) {
         ContextInstantiationEntry cie = app.instantiations().getContextInstantiation();
         PosInProgram posOfDeclaration = (cie == null ? null : cie.prefix());
@@ -86,7 +88,7 @@ public abstract class VariableNamer implements InstantiationProposer {
             if (type != null) {
                 basename = getBaseNameProposal(type);
             } else {
-                org.key_project.logic.op.sv.SchemaVariable psv = nv.getPeerSchemaVariable();
+                SchemaVariable psv = nv.getPeerSchemaVariable();
                 Object inst = app.instantiations().getInstantiation(psv);
                 if (inst instanceof Expr e) {
                     Type ty = e.type(services);
@@ -105,8 +107,8 @@ public abstract class VariableNamer implements InstantiationProposer {
     }
 
     // precondition: sv.sort()==ProgramSVSort.VARIABLE
-    public String getSuggestiveNameProposalForProgramVariable(
-            org.key_project.logic.op.sv.SchemaVariable sv, TacletApp app,
+    public @Nullable String getSuggestiveNameProposalForProgramVariable(
+            SchemaVariable sv, TacletApp app,
             Services services, ImmutableList<String> previousProposals) {
         if (suggestiveOff) {
             return getProposal(app, sv, services, null, previousProposals);
@@ -161,8 +163,8 @@ public abstract class VariableNamer implements InstantiationProposer {
     /// pessimistic about the scope)
     /// @param previousProposals list of names which should be considered taken, or null
     /// @return the name proposal, or null if no proposal is available
-    protected String getNameProposalForSchemaVariable(String basename,
-            SchemaVariable sv, PosInOccurrence posOfFind, PosInProgram posOfDeclaration,
+    protected @Nullable String getNameProposalForSchemaVariable(@Nullable String basename,
+            SchemaVariable sv, PosInOccurrence posOfFind, @Nullable PosInProgram posOfDeclaration,
             ImmutableList<String> previousProposals, Services services) {
         String result = null;
 
@@ -208,12 +210,12 @@ public abstract class VariableNamer implements InstantiationProposer {
     /// returns the maximum counter value already associated with the passed basename in the passed
     /// program (ignoring temporary counters), or -1
     protected int getMaxCounterInProgram(String basename, RustyProgramElement program,
-            PosInProgram posOfDeclaration) {
+            @Nullable PosInProgram posOfDeclaration) {
         class MyWalker extends CustomRustASTWalker {
             public String basename;
             public int maxCounter = -1;
 
-            public MyWalker(RustyProgramElement program, PosInProgram posOfDeclaration,
+            public MyWalker(RustyProgramElement program, @Nullable PosInProgram posOfDeclaration,
                     Services services) {
                 super(program, posOfDeclaration, services);
             }
@@ -295,11 +297,11 @@ public abstract class VariableNamer implements InstantiationProposer {
 
     /// a customized RustASTWalker
     private abstract static class CustomRustASTWalker extends RustyASTVisitor {
-        private RustyProgramElement declarationNode = null;
+        private @Nullable RustyProgramElement declarationNode = null;
         private int declarationScopeDepth = -2;
         private int currentScopeDepth = -2;
 
-        CustomRustASTWalker(RustyProgramElement program, PosInProgram posOfDeclaration,
+        CustomRustASTWalker(RustyProgramElement program, @Nullable PosInProgram posOfDeclaration,
                 Services services) {
             super(program, services);
             if (posOfDeclaration != null) {
@@ -345,7 +347,7 @@ public abstract class VariableNamer implements InstantiationProposer {
     }
 
     /// returns the subterm containing a java block, or null (helper for getProgramFromPIO())
-    private Term findProgramInTerm(Term term) {
+    private @Nullable Term findProgramInTerm(Term term) {
         if (term.op() instanceof RModality) {
             return term;
         }

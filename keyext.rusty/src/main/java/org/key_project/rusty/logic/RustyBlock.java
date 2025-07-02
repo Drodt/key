@@ -8,6 +8,7 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.RustyProgramElement;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 // spotless:off
 public record RustyBlock(RustyProgramElement program) implements Program {
@@ -32,7 +33,7 @@ public record RustyBlock(RustyProgramElement program) implements Program {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this) return true;
         if (!(o instanceof RustyBlock(RustyProgramElement program1))) return false;
         if (program1 == null) return program() == null;

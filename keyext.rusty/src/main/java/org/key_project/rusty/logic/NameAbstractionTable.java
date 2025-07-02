@@ -9,11 +9,13 @@ import java.util.List;
 
 import org.key_project.logic.Name;
 
+import org.jspecify.annotations.Nullable;
+
 public class NameAbstractionTable {
 
     /// The order in which symbols are declared in the two terms or programs that are compared. The
     /// latest declaration of a symbol will be the first matching entry in the list
-    private List<Name> declarations0 = null, declarations1 = null;
+    private @Nullable List<Name> declarations0 = null, declarations1 = null;
 
     /// adds the given two elements to the table
     ///
@@ -26,6 +28,7 @@ public class NameAbstractionTable {
         }
 
         declarations0.add(0, name1);
+        assert declarations1 != null;
         declarations1.add(0, name2);
     }
 
@@ -33,10 +36,11 @@ public class NameAbstractionTable {
     ///
     /// @param name1 first name to test
     /// @param name2 second name to test
-    /// @returns true if `name1` and `name2` are the same abstract name
+    /// @return true if `name1` and `name2` are the same abstract name
     public boolean sameAbstractName(Name name1, Name name2) {
         if (declarations0 != null) {
             final Iterator<Name> it0 = declarations0.iterator();
+            assert declarations1 != null;
             final Iterator<Name> it1 = declarations1.iterator();
 
             while (it0.hasNext()) {

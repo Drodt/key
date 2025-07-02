@@ -6,6 +6,8 @@ package org.key_project.rusty.logic;
 import org.key_project.logic.IntIterator;
 import org.key_project.rusty.ast.RustyProgramElement;
 
+import org.jspecify.annotations.Nullable;
+
 /// this class describes the position of an expression in a program.
 public final class PosInProgram {
     /// pos at the beginning of the program
@@ -112,7 +114,7 @@ public final class PosInProgram {
 
     /// compares this PosInProgram with another PosInProgram and returns true if both describe the
     /// same position
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj) {
             return true;
         }

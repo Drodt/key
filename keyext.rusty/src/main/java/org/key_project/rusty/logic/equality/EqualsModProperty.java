@@ -5,7 +5,9 @@ package org.key_project.rusty.logic.equality;
 
 import org.key_project.logic.Property;
 
-public interface EqualsModProperty<T> {
+import org.jspecify.annotations.NonNull;
+
+public interface EqualsModProperty<T extends @NonNull Object> {
     <V> boolean equalsModProperty(Object o, Property<T> property, V... v);
 
     /// Computes the hash code according to the given ignored `property`.

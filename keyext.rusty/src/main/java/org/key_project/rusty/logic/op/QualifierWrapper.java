@@ -7,6 +7,8 @@ import java.util.WeakHashMap;
 
 import org.key_project.logic.TerminalSyntaxElement;
 
+import org.jspecify.annotations.NonNull;
+
 ///
 /// This class is a wrapper primarily used in logic operations where qualifiers, i.e., objects that
 /// partly define a function but are not part of the syntax tree,
@@ -25,7 +27,7 @@ import org.key_project.logic.TerminalSyntaxElement;
 ///
 ///
 /// @param <T> The type of the qualifier object being wrapped.
-public class QualifierWrapper<T> implements TerminalSyntaxElement {
+public class QualifierWrapper<T extends @NonNull Object> implements TerminalSyntaxElement {
     private final T qualifier;
 
     private static final WeakHashMap<Object, QualifierWrapper<?>> INSTANCES = new WeakHashMap<>();
@@ -39,8 +41,9 @@ public class QualifierWrapper<T> implements TerminalSyntaxElement {
     /// @param qualifier the qualifier for which we create an instance
     /// @return new instance
     /// @param <T> The type of the qualifier object being wrapped.
-    synchronized static <T> QualifierWrapper<T> get(T qualifier) {
+    synchronized static <T extends @NonNull Object> QualifierWrapper<T> get(T qualifier) {
         if (INSTANCES.containsKey(qualifier)) {
+            // noinspection unchecked
             return (QualifierWrapper<T>) INSTANCES.get(qualifier);
         }
         var q = new QualifierWrapper<>(qualifier);

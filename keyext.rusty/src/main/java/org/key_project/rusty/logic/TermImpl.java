@@ -17,6 +17,7 @@ import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -37,7 +38,7 @@ class TermImpl implements Term {
     private final ImmutableArray<Term> subs;
     private final ImmutableArray<QuantifiableVariable> boundVars;
 
-    private Sort sort;
+    private @MonotonicNonNull Sort sort;
     private int depth = -1;
 
     private enum ThreeValuedTruth {
@@ -50,7 +51,7 @@ class TermImpl implements Term {
     /// A cached value for computing the term's rigidness.
     private ThreeValuedTruth rigid = ThreeValuedTruth.UNKNOWN;
     private ThreeValuedTruth containsCodeBlockRecursive = ThreeValuedTruth.UNKNOWN;
-    private ImmutableSet<QuantifiableVariable> freeVars = null;
+    private @MonotonicNonNull ImmutableSet<QuantifiableVariable> freeVars = null;
 
     /// Constructs a term for the given operator, with the given sub terms, bounded variables and
     /// (if
@@ -276,7 +277,7 @@ class TermImpl implements Term {
 
     /// true iff <code>o</code> is syntactically equal to this term
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this) {
             return true;
         }

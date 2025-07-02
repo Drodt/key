@@ -60,6 +60,7 @@ public abstract class ProgramSVSort extends SortImpl {
 
     public static final ProgramSVSort NON_MODEL_FUNCTION_BODY = new NonModelFunctionBodySort();
 
+    @SuppressWarnings("argument.type.incompatible")
     protected ProgramSVSort(Name name) {
         super(name, false, DefaultImmutableSet.nil());
         NAME2SORT.put(name, this);

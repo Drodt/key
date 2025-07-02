@@ -4,6 +4,7 @@
 package org.key_project.rusty.logic;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
@@ -615,11 +616,13 @@ public class TermBuilder {
     }
 
     public Term reachableValue(Term t, KeYRustyType krt) {
-        assert t.sort().extendsTrans(krt.getSort()) || t.sort() instanceof ProgramSVSort;
-        final Sort s = t.sort() instanceof ProgramSVSort ? krt.getSort() : t.sort();
+        Sort krtSort = krt.getSort();
+        assert krtSort != null;
+        assert t.sort().extendsTrans(krtSort) || t.sort() instanceof ProgramSVSort;
+        final Sort s = t.sort() instanceof ProgramSVSort ? krtSort : t.sort();
         final var intLDT = services.getLDTs().getIntLDT();
         if (s.extendsTrans(intLDT.targetSort())) {
-            return func(intLDT.getInBounds(krt.getRustyType()), t);
+            return func(intLDT.getInBounds(Objects.requireNonNull(krt.getRustyType())), t);
         } else {
             return tt();
         }

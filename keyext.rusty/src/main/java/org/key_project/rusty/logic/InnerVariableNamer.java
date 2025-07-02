@@ -14,6 +14,8 @@ import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 public class InnerVariableNamer extends VariableNamer {
     public InnerVariableNamer(Services services) {
         super(services);
@@ -53,7 +55,7 @@ public class InnerVariableNamer extends VariableNamer {
     /// program
     private int getMaxCounterInGlobalsAndProgram(String basename,
             Iterable<Name> globals, RustyProgramElement program,
-            PosInProgram posOfDeclaration) {
+            @Nullable PosInProgram posOfDeclaration) {
         int maxInGlobals = getMaxCounterInGlobals(basename, globals);
         int maxInProgram = getMaxCounterInProgram(basename, program, posOfDeclaration);
 
@@ -62,7 +64,8 @@ public class InnerVariableNamer extends VariableNamer {
 
 
     @Override
-    public String getProposal(TacletApp app, SchemaVariable var, Services services, Node undoAnchor,
+    public @Nullable String getProposal(TacletApp app, SchemaVariable var, Services services,
+            @Nullable Node undoAnchor,
             ImmutableList<String> previousProposals) {
         return super.getProposal(app, var, services, undoAnchor, previousProposals);
         // return "";

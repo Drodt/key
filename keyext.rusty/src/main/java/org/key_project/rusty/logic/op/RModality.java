@@ -15,6 +15,7 @@ import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.RustyDLTheory;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /// This class is used to represent a dynamic logic modality like diamond and box (but also
 /// extensions of DL like preserves and throughout are possible in the future).
@@ -47,6 +48,7 @@ public class RModality extends org.key_project.logic.op.Modality {
                 modalities.put(rb.program(), kind2mod);
             } else {
                 mod = modRef.get();
+                assert mod != null;
             }
         }
         return mod;
@@ -92,16 +94,17 @@ public class RModality extends org.key_project.logic.op.Modality {
         /// processing
         /// the program alpha there exists a state such that Phi holds.
         public static final RustyModalityKind DIA = new RustyModalityKind(new Name("diamond"));
-        /// The box operator of dynamic logic. A formula [alpha;]Phi can be read as 'In all states
+        /// The box operator of dynamic logic. A formula \[alpha;]Phi can be read as 'In all states
         /// reachable processing the program alpha the formula Phi holds'.
         public static final RustyModalityKind BOX = new RustyModalityKind(new Name("box"));
 
+        @SuppressWarnings("argument.type.incompatible")
         public RustyModalityKind(Name name) {
             super(name);
             kinds.put(name.toString(), this);
         }
 
-        public static RustyModalityKind getKind(String name) {
+        public static @Nullable RustyModalityKind getKind(String name) {
             return kinds.get(name);
         }
 

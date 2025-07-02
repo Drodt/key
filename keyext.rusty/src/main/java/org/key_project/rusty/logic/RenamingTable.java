@@ -8,10 +8,12 @@ import java.util.Map;
 
 import org.key_project.rusty.ast.RustyProgramElement;
 
-public abstract class RenamingTable {
-    public abstract RustyProgramElement getRenaming(RustyProgramElement pe);
+import org.jspecify.annotations.Nullable;
 
-    public static RenamingTable getRenamingTable(
+public abstract class RenamingTable {
+    public abstract @Nullable RustyProgramElement getRenaming(RustyProgramElement pe);
+
+    public static @Nullable RenamingTable getRenamingTable(
             HashMap<? extends RustyProgramElement, ? extends RustyProgramElement> hmap) {
         if (hmap.isEmpty()) {
             return null;

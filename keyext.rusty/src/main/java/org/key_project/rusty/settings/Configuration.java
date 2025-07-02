@@ -9,11 +9,11 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.*;
 
-import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.key_project.rusty.parser.ParsingFacade;
 import org.key_project.rusty.util.Position;
 
 import org.antlr.v4.runtime.CharStream;
+import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
