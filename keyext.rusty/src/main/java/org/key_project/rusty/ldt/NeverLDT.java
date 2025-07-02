@@ -23,12 +23,12 @@ public class NeverLDT extends LDT {
 
     @Override
     public Term translateLiteral(LiteralExpression lit, Services services) {
-        return null;
+        throw new UnsupportedOperationException("No term can have the never sort");
     }
 
     @Override
     public Function getFunctionFor(BinaryExpression.Operator op, Services services) {
-        return null;
+        throw new UnsupportedOperationException("No term can have the never sort");
     }
 
     @Override

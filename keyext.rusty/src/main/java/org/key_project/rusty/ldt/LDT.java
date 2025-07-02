@@ -14,6 +14,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -57,7 +58,7 @@ public abstract class LDT implements Named {
     /// adds a function to the LDT
     ///
     /// @return the added function (for convenience reasons)
-    protected final Function addFunction(Function f) {
+    protected final Function addFunction(@UnknownInitialization LDT this, Function f) {
         functions.addSafely(f);
         return f;
     }
@@ -66,7 +67,8 @@ public abstract class LDT implements Named {
     ///
     /// @param funcName the String with the name of the function to look up
     /// @return the added function (for convenience reasons)
-    protected final Function addFunction(Services services, String funcName) {
+    protected final Function addFunction(@UnknownInitialization LDT this, Services services,
+            String funcName) {
         final Namespace<@NonNull Function> funcNS = services.getNamespaces().functions();
         final Function f = funcNS.lookup(new Name(funcName));
         if (f == null) {
@@ -76,9 +78,10 @@ public abstract class LDT implements Named {
         return addFunction(f);
     }
 
-    public abstract Term translateLiteral(LiteralExpression lit, Services services);
+    public abstract @Nullable Term translateLiteral(LiteralExpression lit, Services services);
 
-    public abstract Function getFunctionFor(BinaryExpression.Operator op, Services services);
+    public abstract @Nullable Function getFunctionFor(BinaryExpression.Operator op,
+            Services services);
 
     public abstract boolean isResponsible(BinaryExpression.Operator op, Term[] subs,
             Services services);

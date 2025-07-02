@@ -23,12 +23,12 @@ public class StrLDT extends LDT {
 
     @Override
     public Term translateLiteral(LiteralExpression lit, Services services) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Function getFunctionFor(BinaryExpression.Operator op, Services services) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

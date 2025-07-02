@@ -12,6 +12,7 @@ import org.key_project.rusty.ast.expr.BooleanLiteralExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class BoolLDT extends LDT {
     public static final Name NAME = new Name("bool");
@@ -70,7 +71,7 @@ public class BoolLDT extends LDT {
 
 
     @Override
-    public Term translateLiteral(LiteralExpression lit, Services services) {
+    public @Nullable Term translateLiteral(LiteralExpression lit, Services services) {
         if (lit instanceof BooleanLiteralExpression b) {
             return b.getValue() ? term_bool_true : term_bool_false;
         }
@@ -79,8 +80,7 @@ public class BoolLDT extends LDT {
 
     @Override
     public Function getFunctionFor(BinaryExpression.Operator op, Services services) {
-        assert false;
-        return null;
+        throw new UnsupportedOperationException("No bool functions");
     }
 
     @Override

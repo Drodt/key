@@ -15,6 +15,7 @@ import org.key_project.rusty.ast.expr.IntegerLiteralExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 import org.key_project.rusty.logic.TermBuilder;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -112,7 +113,7 @@ public class IntLDT extends LDT {
         return false;
     }
 
-    private Term makeDigit(int digit, TermBuilder tb) {
+    private Term makeDigit(@UnknownInitialization IntLDT this, int digit, TermBuilder tb) {
         return tb.func(getNumberSymbol(),
             tb.func(getNumberLiteralFor(digit), tb.func(getNumberTerminator())));
     }
@@ -126,16 +127,18 @@ public class IntLDT extends LDT {
     // public interface
     // -------------------------------------------------------------------------
 
-    public Function getNumberSymbol() {
+    public Function getNumberSymbol(@UnknownInitialization IntLDT this) {
+        assert numbers != null;
         return numbers;
     }
 
-    public Function getNumberTerminator() {
+    public Function getNumberTerminator(@UnknownInitialization IntLDT this) {
+        assert sharp != null;
         return sharp;
     }
 
 
-    public Function getNumberLiteralFor(int number) {
+    public Function getNumberLiteralFor(@UnknownInitialization IntLDT this, int number) {
         if (number < 0 || number > 9) {
             throw new IllegalArgumentException(
                 "Number literal symbols range from 0 to 9. Requested was:" + number);
@@ -202,7 +205,7 @@ public class IntLDT extends LDT {
 
 
     @Override
-    public Term translateLiteral(LiteralExpression lit, Services services) {
+    public @Nullable Term translateLiteral(LiteralExpression lit, Services services) {
         if (lit instanceof IntegerLiteralExpression i) {
             return services.getTermBuilder().zTerm(i.getValue().toString());
         }
@@ -210,7 +213,7 @@ public class IntLDT extends LDT {
     }
 
     @Override
-    public Function getFunctionFor(BinaryExpression.Operator op, Services services) {
+    public @Nullable Function getFunctionFor(BinaryExpression.Operator op, Services services) {
         return null;
     }
 
