@@ -14,13 +14,14 @@ import org.key_project.rusty.proof.init.InitConfig;
 import org.key_project.rusty.proof.init.ProofOblInput;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 /// A contractual agreement about an ObserverFunction.
 public interface Contract extends SpecificationElement {
     int INVALID_ID = Integer.MIN_VALUE;
 
     /// @return `true` if any only if this contract does not necessarily need to be proven in
-    /// its own proof obligation. E.g., this is true for [FunctionalBlockContract]s and
-    /// [FunctionalLoopContract]s.
+    /// its own proof obligation. E.g., this is true for [LoopSpecification]s.
     default boolean isAuxiliary() {
         return false;
     }
@@ -46,6 +47,7 @@ public interface Contract extends SpecificationElement {
     /// Tells whether the contract contains a measured_by clause.
     boolean hasMby();
 
+    @Nullable
     Term getMby();
 
     /// Returns the contract in pretty HTML format.
@@ -72,6 +74,7 @@ public interface Contract extends SpecificationElement {
 
     Contract setID(int newId);
 
+    @Nullable
     Term getGlobalDefs();
 
     /// Returns the measured_by clause of the contract.
@@ -80,6 +83,7 @@ public interface Contract extends SpecificationElement {
     /// @param paramVars the parameter variables
     /// @param services services object
     /// @return the measured-by term
+    @Nullable
     Term getMby(ProgramVariable selfVar, ImmutableList<ProgramVariable> paramVars,
             Services services);
 

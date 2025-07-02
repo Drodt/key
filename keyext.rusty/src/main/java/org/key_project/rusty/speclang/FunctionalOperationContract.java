@@ -12,6 +12,8 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 /// A contract about an operation (i.e., a method or a constructor), consisting of a precondition, a
 /// postcondition, a modifiable clause, a measured-by clause, and a modality.
 public interface FunctionalOperationContract extends OperationContract {
@@ -52,14 +54,18 @@ public interface FunctionalOperationContract extends OperationContract {
 
     Term getPost();
 
+    @Nullable
     Term getModifiable();
 
     @Override
+    @Nullable
     Term getMby();
 
+    @Nullable
     Term getSelf();
 
     ImmutableList<Term> getParams();
 
+    @Nullable
     Term getResult();
 }

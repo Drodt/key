@@ -11,6 +11,8 @@ import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 public interface OperationContract extends Contract {
     @Override
     ProgramFunction getTarget();
@@ -31,9 +33,11 @@ public interface OperationContract extends Contract {
     /// @param paramVars the list of parameter variables.
     /// @param services the services object.
     /// @return the modifiable clause.
+    @Nullable
     Term getModifiable(Term selfVar,
             ImmutableList<Term> paramVars, Services services);
 
+    @Nullable
     Term getFreePre(ProgramVariable selfVar, ImmutableList<ProgramVariable> paramVars,
             Services services);
 }

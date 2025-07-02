@@ -35,7 +35,7 @@ public final class SLEnvInput extends AbstractEnvInput {
 
         // TODO
         // return createSpecs(new JMLSpecExtractor(initConfig.getServices()));
-        return null;
+        throw new UnsupportedOperationException("Not implemented yet.");
     }
 
     // -------------------------------------------------------------------------
@@ -56,7 +56,7 @@ public final class SLEnvInput extends AbstractEnvInput {
 
     @Override
     public File getInitialFile() {
-        return null;
+        throw new UnsupportedOperationException("Not implemented yet.");
     }
 
 }

@@ -70,8 +70,7 @@ public class FnSpecConverter {
                 RModality.RustyModalityKind.BOX, pre, variant, post, null, paramVars, result,
                 null, 0, true, services));
         }
-        // TODO
-        return null;
+        throw new UnsupportedOperationException("TODO: Unsupported diverges: " + diverges);
     }
 
     private Term mapAndJoinTerms(WithParams<org.key_project.rusty.speclang.spec.Term>[] terms,

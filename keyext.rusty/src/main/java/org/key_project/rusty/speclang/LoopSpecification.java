@@ -12,6 +12,8 @@ import org.key_project.rusty.ast.expr.LoopExpression;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
+import org.jspecify.annotations.Nullable;
+
 /// A loop invariant, consisting of an invariant formula, a set of loop predicates, a modifiable
 /// clause, and a variant term.
 public interface LoopSpecification extends SpecificationElement {
@@ -22,6 +24,7 @@ public interface LoopSpecification extends SpecificationElement {
     LoopExpression getLoop();
 
     /// Returns the contracted function symbol.
+    @Nullable
     ProgramFunction getTarget();
 
     /// Returns the invariant formula.
@@ -40,12 +43,14 @@ public interface LoopSpecification extends SpecificationElement {
     ///
     /// @param services the Services object.
     /// @return The variant term.
+    @Nullable
     Term getVariant(Services services);
 
     /// Returns the variant term.
     ///
     /// @param services the Services object.
     /// @return The variant term.
+    @Nullable
     Term getVariant(Map<ProgramVariable, Term> atPres, Services services);
 
     /// Returns operators internally used for the pre-heap.

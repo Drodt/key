@@ -16,13 +16,15 @@ import org.key_project.rusty.proof.OpReplacer;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.java.MapUtil;
 
+import org.jspecify.annotations.Nullable;
+
 /// Standard implementation of the LoopInvariant interface.
 public final class LoopSpecImpl implements LoopSpecification {
     private final LoopExpression loop;
 
     private final Term originalInvariant;
 
-    private final Term originalVariant;
+    private final @Nullable Term originalVariant;
 
     private final ImmutableList<Term> localIns;
     private final ImmutableList<Term> localOuts;
@@ -30,7 +32,7 @@ public final class LoopSpecImpl implements LoopSpecification {
     /// The mapping of the pre-state variables.
     private final Map<ProgramVariable, Term> originalAtPres;
 
-    public LoopSpecImpl(LoopExpression loop, Term invariant, Term variant,
+    public LoopSpecImpl(LoopExpression loop, Term invariant, @Nullable Term variant,
             ImmutableList<Term> localIns, ImmutableList<Term> localOuts,
             Map<ProgramVariable, Term> atPres) {
         assert loop != null;
@@ -58,7 +60,8 @@ public final class LoopSpecImpl implements LoopSpecification {
         var newLocalOuts = localOuts.map(op);
         var newAtPres = originalAtPres.entrySet().stream()
                 .collect(MapUtil.collector(Map.Entry::getKey, e -> op.apply(e.getValue())));
-        return new LoopSpecImpl(loop, op.apply(originalInvariant), op.apply(originalVariant),
+        return new LoopSpecImpl(loop, op.apply(originalInvariant),
+            originalVariant == null ? null : op.apply(originalVariant),
             newLocalIns, newLocalOuts, newAtPres);
     }
 
@@ -68,7 +71,7 @@ public final class LoopSpecImpl implements LoopSpecification {
     }
 
     @Override
-    public ProgramFunction getTarget() {
+    public @Nullable ProgramFunction getTarget() {
         return null;
     }
 
@@ -85,12 +88,15 @@ public final class LoopSpecImpl implements LoopSpecification {
     }
 
     @Override
-    public Term getVariant(Services services) {
+    public @Nullable Term getVariant(Services services) {
         return originalVariant;
     }
 
     @Override
-    public Term getVariant(Map<ProgramVariable, Term> atPres, Services services) {
+    public @Nullable Term getVariant(Map<ProgramVariable, Term> atPres, Services services) {
+        if (originalVariant == null) {
+            return null;
+        }
         Map<Term, Term> replaceMap = getReplaceMap(atPres);
         var or = new OpReplacer(replaceMap, services.getTermFactory());
         return or.replace(originalVariant);

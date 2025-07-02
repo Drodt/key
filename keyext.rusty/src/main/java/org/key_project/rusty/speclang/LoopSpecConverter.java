@@ -43,7 +43,7 @@ public class LoopSpecConverter {
     public LoopSpecification convert(LoopSpec loopSpec, Function fn, LoopExpression target,
             Map<HirId, ProgramVariable> pvs) {
         var invariant = Arrays.stream(loopSpec.invariants()).map(wp -> convert(wp.value(), pvs))
-                .reduce(tb.tt(), (a, b) -> tb.and(a, b));
+                .reduce(tb.tt(), tb::and);
         var variant = loopSpec.variant() == null ? null : convert(loopSpec.variant().value(), pvs);
         var localIns = tb.var(MiscTools.getLocalIns(target, services));
         var localOuts = tb.var(MiscTools.getLocalOuts(target, services));

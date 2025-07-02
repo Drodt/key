@@ -9,6 +9,8 @@ import org.key_project.rusty.parser.hir.expr.BinOp;
 import org.key_project.rusty.parser.hir.expr.Lit;
 import org.key_project.rusty.parser.hir.expr.UnOp;
 
+import org.jspecify.annotations.Nullable;
+
 public interface TermKind {
     record Binary(BinOp op, Term left, Term right) implements TermKind {
     }
@@ -24,7 +26,7 @@ public interface TermKind {
 
     class Adapter extends HirAdapter<TermKind> {
         @Override
-        public Class<? extends TermKind> getType(String tag) {
+        public @Nullable Class<? extends TermKind> getType(String tag) {
             return switch (tag) {
             case "Binary" -> Binary.class;
             case "Unary" -> Unary.class;
