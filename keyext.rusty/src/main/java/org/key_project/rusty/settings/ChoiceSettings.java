@@ -5,6 +5,7 @@ package org.key_project.rusty.settings;
 
 import java.util.*;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Choice;
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
@@ -132,6 +133,7 @@ public class ChoiceSettings extends AbstractSettings {
     @Override
     public void writeSettings(Configuration props) {
         var category = props.getOrCreateSection(CATEGORY);
+        assert category != null;
         category2Default.forEach(category::set);
     }
 
@@ -144,7 +146,7 @@ public class ChoiceSettings extends AbstractSettings {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }

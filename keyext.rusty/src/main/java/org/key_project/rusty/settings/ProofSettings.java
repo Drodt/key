@@ -10,6 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.jspecify.annotations.Nullable;
 import org.key_project.rusty.util.KeYResourceManager;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -20,11 +22,11 @@ public class ProofSettings {
     public static final File PROVER_CONFIG_FILE_NEW =
         new File(PathConfig.getKeyConfigDir(), "proof-settings.json");
 
-    public static final URL PROVER_CONFIG_FILE_TEMPLATE = KeYResourceManager.getManager()
+    public static final @Nullable URL PROVER_CONFIG_FILE_TEMPLATE = KeYResourceManager.getManager()
             .getResourceFile(ProofSettings.class, "default-proof-settings.json");
 
-    private Properties lastLoadedProperties = null;
-    private Configuration lastLoadedConfiguration = null;
+    private  @Nullable Properties lastLoadedProperties = null;
+    private @Nullable Configuration lastLoadedConfiguration = null;
 
     /// all setting objects in the following order: heuristicSettings
     private final List<Settings> settings = new LinkedList<>();
@@ -53,7 +55,8 @@ public class ProofSettings {
         }
     }
 
-    public void addSettings(Settings settings) {
+    public void addSettings(@UnknownInitialization ProofSettings this, Settings settings) {
+        assert settings != null;
         this.settings.add(settings);
         if (lastLoadedConfiguration != null) {
             settings.readSettings(lastLoadedConfiguration);

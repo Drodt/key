@@ -11,13 +11,13 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.google.code.gson:gson:2.11.0'
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    antlr 'org.antlr:antlr4:4.13.1'
-    api project(':key.ncore')
-    api project(':key.ncore.calculus')
-    api project(':key.util')
+    implementation('com.google.code.gson:gson:2.11.0')
+    testImplementation(platform('org.junit:junit-bom:5.10.0'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    antlr('org.antlr:antlr4:4.13.1')
+    api(project(':key.ncore'))
+    api(project(':key.ncore.calculus'))
+    api(project(':key.util'))
 }
 
 test {
@@ -29,10 +29,10 @@ generateGrammarSource {
 }
 
 tasks.register('testRunAllProofs', Test) {
-    description 'Prove/reload all .key/.proof files tagged for regression testing'
-    group "verification"
+    description = 'Prove/reload all .key/.proof files tagged for regression testing'
+    group = "verification"
     filter {
-        includeTestsMatching "RunAllProofs"
+        includeTestsMatching("RunAllProofs")
     }
 }
 
@@ -42,7 +42,7 @@ checkerFramework {
                 "org.checkerframework.checker.nullness.NullnessChecker",
         ]
         extraJavacArgs = [
-                "-AonlyDefs=^org\\.key_project\\.rusty\\.ldt",
+                "-AonlyDefs=^org\\.key_project\\.rusty\\.settings",
                 "-AassumeAssertionsAreEnabled",
                 "-Xmaxerrs", "1000",
                 "-Astubs=$rootDir/key.util/src/main/checkerframework:permit-nullness-assertion-exception.astub",

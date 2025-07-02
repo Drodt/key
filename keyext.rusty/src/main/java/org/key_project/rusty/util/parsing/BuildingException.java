@@ -22,16 +22,17 @@ public class BuildingException extends RuntimeException {
         offendingSymbol = null;
     }
 
-    public BuildingException(ParserRuleContext ctx, String message, Throwable e) {
+    public BuildingException(@Nullable ParserRuleContext ctx, String message,
+            @Nullable Throwable e) {
         this(ctx == null ? null : ctx.start, message, e);
     }
 
-    public BuildingException(@Nullable Token t, String message, Throwable e) {
+    public BuildingException(@Nullable Token t, @Nullable String message, @Nullable Throwable e) {
         super(message + " at " + getPosition(t), e);
         offendingSymbol = t;
     }
 
-    private static String getPosition(Token t) {
+    private static String getPosition(@Nullable Token t) {
         if (t != null) {
             var p = Position.make(t);
             return t.getTokenSource().getSourceName() + ":" + p.line() + ":" + p.charInLine();

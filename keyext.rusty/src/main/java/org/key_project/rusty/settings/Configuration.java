@@ -9,6 +9,7 @@ import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.*;
 
+import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.key_project.rusty.parser.ParsingFacade;
 import org.key_project.rusty.util.Position;
 
@@ -83,9 +84,11 @@ public class Configuration {
     /// @param name property name
     /// @param defaultValue the returned instead of `null`.
     public <T> @NonNull T get(String name, Class<T> clazz, @NonNull T defaultValue) {
-        if (exists(name, defaultValue.getClass()))
-            return clazz.cast(data.get(name));
-        else
+        if (exists(name, defaultValue.getClass())) {
+            T res = clazz.cast(data.get(name));
+            assert res != null;
+            return res;
+        } else
             return defaultValue;
     }
 
@@ -120,7 +123,7 @@ public class Configuration {
     /// @throws ClassCastException if the entry is not a [Long]
     /// @throws NullPointerException if no such value entry exists
     public long getLong(String name) {
-        return get(name, Long.class);
+        return Objects.requireNonNull(get(name, Long.class));
     }
 
     /// Returns a long value for the given name. `defaultValue` if no such value is present.
@@ -138,7 +141,7 @@ public class Configuration {
     /// @throws ClassCastException if the entry is not a [Boolean]
     /// @throws NullPointerException if no such value entry exists
     public boolean getBool(String name) {
-        return get(name, Boolean.class);
+        return Objects.requireNonNull(get(name, Boolean.class));
     }
 
     /// Returns a boolean value for the given name. `defaultValue` if no such value is present.
@@ -156,15 +159,14 @@ public class Configuration {
     /// @throws ClassCastException if the entry is not an [Double]
     /// @throws NullPointerException if no such value entry exists
     public double getDouble(String name) {
-        return get(name, Double.class);
+        return Objects.requireNonNull(get(name, Double.class));
     }
 
     /// Returns a string value for the given name.
     ///
     /// @param name property name
     /// @throws ClassCastException if the entry is not a [String]
-    @Nullable
-    public String getString(String name) {
+    public @Nullable String getString(String name) {
         return get(name, String.class);
     }
 
@@ -180,8 +182,7 @@ public class Configuration {
     ///
     /// @param name property name
     /// @throws ClassCastException if the entry is not a [Configuration]
-    @Nullable
-    public Configuration getTable(String name) {
+    public @Nullable Configuration getTable(String name) {
         return get(name, Configuration.class);
     }
 
@@ -189,8 +190,7 @@ public class Configuration {
     ///
     /// @param name property name
     /// @throws ClassCastException if the entry is not a [List]
-    @Nullable
-    public List<Object> getList(String name) {
+    public @Nullable List<Object> getList(String name) {
         return getList(name, Object.class);
     }
 
@@ -239,8 +239,7 @@ public class Configuration {
     /// @param name a string identifying the entry
     /// @param defaultValue a default value
     /// @throws ClassCastException if the given entry has non-string elements
-    @NonNull
-    public String[] getStringArray(String name, @NonNull String[] defaultValue) {
+    public @NonNull String[] getStringArray(String name, @NonNull String[] defaultValue) {
         if (exists(name)) {
             return getStringList(name).toArray(String[]::new);
         } else
@@ -273,70 +272,68 @@ public class Configuration {
     }
 
     /// Returns the metadata corresponding to the given entry.
-    @Nullable
-    public ConfigurationMeta getMeta(String name) {
+    public @Nullable ConfigurationMeta getMeta(String name) {
         return meta.get(name);
     }
 
     /// Returns the metadata corresponding to the given entry, creates the entry if not existing.
-    @NonNull
-    private ConfigurationMeta getOrCreateMeta(String name) {
+    private @NonNull ConfigurationMeta getOrCreateMeta(String name) {
         return Objects.requireNonNull(meta.putIfAbsent(name, new ConfigurationMeta()));
     }
 
     /// @see #getTable(String)
-    public Configuration getSection(String name) {
+    public @Nullable Configuration getSection(String name) {
         return getTable(name);
     }
 
-    public Configuration getOrCreateSection(String name) {
+    public @Nullable Configuration getOrCreateSection(String name) {
         return getSection(name, true);
     }
 
-    public Configuration getSection(String name, boolean createIfNotExists) {
+    public @Nullable Configuration getSection(String name, boolean createIfNotExists) {
         if (!exists(name) && createIfNotExists) {
             set(name, new Configuration());
         }
         return getSection(name);
     }
 
-    public Object set(String name, Object obj) {
+    public @Nullable Object set(String name, Object obj) {
         return data.put(name, obj);
     }
 
-    public Object set(String name, Boolean obj) {
+    public @Nullable Object set(String name, Boolean obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, String obj) {
+    public @Nullable Object set(String name, String obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, Long obj) {
+    public @Nullable Object set(String name, Long obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, int obj) {
+    public @Nullable Object set(String name, int obj) {
         return set(name, (long) obj);
     }
 
-    public Object set(String name, Double obj) {
+    public @Nullable Object set(String name, Double obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, Configuration obj) {
+    public @Nullable Object set(String name, Configuration obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, List<?> obj) {
+    public @Nullable Object set(String name, List<?> obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, String[] seq) {
+    public @Nullable Object set(String name, String[] seq) {
         return set(name, (Object) Arrays.asList(seq));
     }
 
-    public Set<Map.Entry<String, Object>> getEntries() {
+    public Set<Map.Entry<@KeyFor("data") String, Object>> getEntries() {
         return data.entrySet();
     }
 
@@ -356,12 +353,12 @@ public class Configuration {
     /// POJO for metadata of configuration entries.
     public static class ConfigurationMeta {
         /// Position of declaration within a file
-        private Position position;
+        private @Nullable Position position;
 
         /// documentation given in the file
-        private String documentation;
+        private @Nullable String documentation;
 
-        public Position getPosition() {
+        public @Nullable Position getPosition() {
             return position;
         }
 
@@ -369,7 +366,7 @@ public class Configuration {
             this.position = position;
         }
 
-        public String getDocumentation() {
+        public @Nullable String getDocumentation() {
             return documentation;
         }
 
@@ -403,7 +400,7 @@ public class Configuration {
             return this;
         }
 
-        private ConfigurationWriter printKeyValue(String key, Object value) {
+        private ConfigurationWriter printKeyValue(String key, @Nullable Object value) {
             return printKey(key).printValue(value);
         }
 
@@ -412,7 +409,7 @@ public class Configuration {
             return this;
         }
 
-        public ConfigurationWriter printValue(Object value) {
+        public ConfigurationWriter printValue(@Nullable Object value) {
             if (value instanceof String) {
                 // TODO What about '"' inside value?
                 out.format("\"%s\"", value);
@@ -444,7 +441,7 @@ public class Configuration {
             for (Iterator<? extends Map.Entry<?, ?>> iterator =
                 value.entrySet().iterator(); iterator.hasNext();) {
                 Map.Entry<?, ?> entry = iterator.next();
-                String k = entry.getKey().toString();
+                String k = Objects.requireNonNull(entry.getKey()).toString();
                 Object v = entry.getValue();
                 printKeyValue(k, v);
                 if (iterator.hasNext()) {
@@ -496,12 +493,12 @@ public class Configuration {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof Configuration that))
+        if (o == null || getClass() != o.getClass())
             return false;
-        return Objects.equals(data, that.data);
+        return Objects.equals(data, o);
     }
 
     @Override

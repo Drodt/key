@@ -19,6 +19,7 @@ import org.key_project.rusty.proof.io.RuleSourceFactory;
 import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.key_project.rusty.proof.io.RuleSource.LDT_FILE;
@@ -32,12 +33,12 @@ public class TacletForTests {
     public static String standardFile = testRules;
 
     public static NamespaceSet nss = new NamespaceSet();
-    public static TacletIndex rules = null;
-    public static Services services;
-    public static InitConfig initConfig;
-    public static File lastFile = null;
+    public static @Nullable TacletIndex rules = null;
+    public static @Nullable Services services;
+    public static @Nullable InitConfig initConfig;
+    public static @Nullable File lastFile = null;
 
-    private static Namespace<@NonNull SchemaVariable> schemaVariables;
+    private static @Nullable Namespace<@NonNull SchemaVariable> schemaVariables;
 
     // private static Namespace<QuantifiableVariable> variables = null;
 
@@ -58,7 +59,7 @@ public class TacletForTests {
         TacletForTests.standardFile = standardFile;
     }
 
-    public static TacletIndex getRules() {
+    public static @Nullable TacletIndex getRules() {
         return rules;
     }
 
@@ -109,6 +110,7 @@ public class TacletForTests {
     public static InitConfig initConfig() {
         if (initConfig == null) {
             parse();
+            assert initConfig != null;
         }
         // return initConfig.deepCopy();
         return initConfig;
@@ -117,11 +119,12 @@ public class TacletForTests {
     public static Services services() {
         if (services == null) {
             parse();
+            assert services != null;
         }
         return services;
     }
 
-    public static Term parseTerm(String termstr, Services services) {
+    public static @Nullable Term parseTerm(String termstr, Services services) {
         if (termstr.isEmpty()) {
             return null;
         }
@@ -136,18 +139,18 @@ public class TacletForTests {
         }
     }
 
-    public static Term parseTerm(String termstr, NamespaceSet set) {
+    public static @Nullable Term parseTerm(String termstr, NamespaceSet set) {
         if (termstr.isEmpty()) {
             return null;
         }
         return new KeYIO(services(), set).parseExpression(termstr);
     }
 
-    public static Term parseTerm(String termstr) {
+    public static @Nullable Term parseTerm(String termstr) {
         return parseTerm(termstr, services());
     }
 
-    public static Namespace<@NonNull SchemaVariable> getSchemaVariables() {
+    public static @Nullable Namespace<@NonNull SchemaVariable> getSchemaVariables() {
         return schemaVariables;
     }
 
