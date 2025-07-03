@@ -7,6 +7,8 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.hirty.IntTy;
 import org.key_project.rusty.parser.hir.hirty.UintTy;
 
+import org.jspecify.annotations.Nullable;
+
 public interface LitIntTy {
     record Signed(IntTy ty) implements LitIntTy {
     }
@@ -19,7 +21,7 @@ public interface LitIntTy {
 
     class Adapter extends HirAdapter<LitIntTy> {
         @Override
-        public Class<? extends LitIntTy> getType(String tag) {
+        public @Nullable Class<? extends LitIntTy> getType(String tag) {
             return switch (tag) {
             case "Signed" -> Signed.class;
             case "Unsigned" -> Unsigned.class;

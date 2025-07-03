@@ -5,6 +5,8 @@ package org.key_project.rusty.parser.hir.expr;
 
 import org.key_project.rusty.parser.hir.HirAdapter;
 
+import org.jspecify.annotations.Nullable;
+
 public interface LitKind {
     record Int(int value, LitIntTy ty) implements LitKind {
     }
@@ -14,7 +16,7 @@ public interface LitKind {
 
     class Adapter extends HirAdapter<LitKind> {
         @Override
-        public Class<? extends LitKind> getType(String tag) {
+        public @Nullable Class<? extends LitKind> getType(String tag) {
             return switch (tag) {
             case "Int" -> Int.class;
             case "Bool" -> Bool.class;

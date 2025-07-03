@@ -6,6 +6,8 @@ package org.key_project.rusty.parser.hir.pat;
 import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.QPath;
 
+import org.jspecify.annotations.Nullable;
+
 public interface PatExprKind {
     record Lit(org.key_project.rusty.parser.hir.expr.Lit lit, boolean negated)
             implements PatExprKind {
@@ -16,7 +18,7 @@ public interface PatExprKind {
 
     class Adapter extends HirAdapter<PatExprKind> {
         @Override
-        public Class<? extends PatExprKind> getType(String tag) {
+        public @Nullable Class<? extends PatExprKind> getType(String tag) {
             return switch (tag) {
             case "Lit" -> PatExprKind.Lit.class;
             case "Path" -> PatExprKind.Path.class;

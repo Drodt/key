@@ -55,7 +55,7 @@ public interface ExprKind {
 
     class Adapter extends HirAdapter<ExprKind> {
         @Override
-        public Class<? extends ExprKind> getType(String tag) {
+        public @Nullable Class<? extends ExprKind> getType(String tag) {
             return switch (tag) {
             case "Call" -> Call.class;
             case "Binary" -> Binary.class;

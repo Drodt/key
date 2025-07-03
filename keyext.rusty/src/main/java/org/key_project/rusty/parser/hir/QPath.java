@@ -19,7 +19,7 @@ public interface QPath {
 
     class Adapter extends HirAdapter<QPath> {
         @Override
-        public Class<? extends QPath> getType(String tag) {
+        public @Nullable Class<? extends QPath> getType(String tag) {
             return switch (tag) {
             case "Resolved" -> Resolved.class;
             case "TypeRelative" -> TypeRelative.class;

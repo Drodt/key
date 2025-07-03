@@ -5,6 +5,8 @@ package org.key_project.rusty.parser.hir.hirty;
 
 import org.key_project.rusty.parser.hir.HirAdapter;
 
+import org.jspecify.annotations.Nullable;
+
 public interface PrimHirTy {
     record Int(IntTy ty) implements PrimHirTy {
     }
@@ -17,7 +19,7 @@ public interface PrimHirTy {
 
     class Adapter extends HirAdapter<PrimHirTy> {
         @Override
-        public Class<? extends PrimHirTy> getType(String tag) {
+        public @Nullable Class<? extends PrimHirTy> getType(String tag) {
             return switch (tag) {
             case "Int" -> Int.class;
             case "Uint" -> Uint.class;

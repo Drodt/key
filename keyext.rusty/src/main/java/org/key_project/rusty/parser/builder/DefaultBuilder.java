@@ -31,8 +31,9 @@ import org.key_project.rusty.parser.KeYRustyParser;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class DefaultBuilder extends AbstractBuilder<Object> {
+public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     protected final Services services;
     protected final NamespaceSet nss;
     private Namespace<@NonNull SchemaVariable> schemaVariablesNamespace = new Namespace<>();

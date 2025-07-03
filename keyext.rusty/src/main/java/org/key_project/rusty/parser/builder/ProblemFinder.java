@@ -19,6 +19,7 @@ import org.key_project.rusty.settings.Configuration;
 import org.key_project.rusty.util.parsing.BuildingException;
 import org.key_project.util.collection.ImmutableSLList;
 
+import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.jspecify.annotations.Nullable;
 
 public class ProblemFinder extends ExpressionBuilder {
@@ -36,7 +37,7 @@ public class ProblemFinder extends ExpressionBuilder {
         return null;
     }
 
-    /// Try to find a problem defined in the [de.uka.ilkd.key.proof.init.KeYUserProblemFile]
+    /// Try to find a problem defined in the [KeYUserProblemFile]
     /// located in the
     /// given AST.
     ///
@@ -68,7 +69,10 @@ public class ProblemFinder extends ExpressionBuilder {
                     value = value.substring(1, value.length() - 1).replace("\\\\", "\\");
                     p.load(new StringReader(value));
                     proofObligation = new Configuration();
-                    p.forEach((k, v) -> proofObligation.set(k.toString(), v.toString()));
+                    p.forEach((@KeyFor("p") Object k, Object v) -> {
+                        assert proofObligation != null;
+                        proofObligation.set(k.toString(), v.toString());
+                    });
                 } catch (IOException e) {
                     throw new BuildingException(ctx,
                         "Could not load the proof obligation given " +

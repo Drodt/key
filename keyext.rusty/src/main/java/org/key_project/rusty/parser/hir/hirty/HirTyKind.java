@@ -6,6 +6,8 @@ package org.key_project.rusty.parser.hir.hirty;
 import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.QPath;
 
+import org.jspecify.annotations.Nullable;
+
 public interface HirTyKind {
     record Path(QPath path) implements HirTyKind {
     }
@@ -15,7 +17,7 @@ public interface HirTyKind {
 
     class Adapter extends HirAdapter<HirTyKind> {
         @Override
-        public Class<? extends HirTyKind> getType(String tag) {
+        public @Nullable Class<? extends HirTyKind> getType(String tag) {
             return switch (tag) {
             case "Path" -> Path.class;
             case "Ref" -> Ref.class;

@@ -8,6 +8,8 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.hirty.IntTy;
 import org.key_project.rusty.parser.hir.hirty.UintTy;
 
+import org.jspecify.annotations.Nullable;
+
 public interface Ty {
     record Bool() implements Ty {
     }
@@ -41,7 +43,7 @@ public interface Ty {
 
     class Adapter extends HirAdapter<Ty> {
         @Override
-        public Class<? extends Ty> getType(String tag) {
+        public @Nullable Class<? extends Ty> getType(String tag) {
             return switch (tag) {
             case "Bool" -> Bool.class;
             case "Char" -> Char.class;

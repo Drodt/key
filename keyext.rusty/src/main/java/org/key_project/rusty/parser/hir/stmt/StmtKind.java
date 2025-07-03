@@ -7,6 +7,8 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.expr.Expr;
 import org.key_project.rusty.parser.hir.item.Item;
 
+import org.jspecify.annotations.Nullable;
+
 public interface StmtKind {
     record Let(LetStmt let) implements StmtKind {
     }
@@ -22,7 +24,7 @@ public interface StmtKind {
 
     class Adapter extends HirAdapter<StmtKind> {
         @Override
-        public Class<? extends StmtKind> getType(String tag) {
+        public @Nullable Class<? extends StmtKind> getType(String tag) {
             return switch (tag) {
             case "Let" -> Let.class;
             case "Item" -> ItemStmt.class;

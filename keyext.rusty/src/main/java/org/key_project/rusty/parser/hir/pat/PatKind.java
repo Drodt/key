@@ -30,7 +30,7 @@ public interface PatKind {
 
     class Adapter extends HirAdapter<PatKind> {
         @Override
-        public Class<? extends PatKind> getType(String tag) {
+        public @Nullable Class<? extends PatKind> getType(String tag) {
             return switch (tag) {
             case "Wild" -> Wild.class;
             case "Binding" -> Binding.class;

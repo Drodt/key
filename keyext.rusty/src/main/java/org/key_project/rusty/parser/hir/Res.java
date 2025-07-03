@@ -5,6 +5,8 @@ package org.key_project.rusty.parser.hir;
 
 import org.key_project.rusty.parser.hir.hirty.PrimHirTy;
 
+import org.jspecify.annotations.Nullable;
+
 // spotless:off
 public interface Res {
     record PrimTy(PrimHirTy ty) implements Res {
@@ -21,7 +23,7 @@ public interface Res {
 
     class Adapter extends HirAdapter<Res> {
         @Override
-        public Class<? extends Res> getType(String tag) {
+        public @Nullable Class<? extends Res> getType(String tag) {
             return switch (tag) {
                 case "PrimTy" -> PrimTy.class;
                 case "Local" -> Local.class;

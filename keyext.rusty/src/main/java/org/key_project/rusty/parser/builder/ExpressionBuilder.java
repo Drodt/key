@@ -109,31 +109,33 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitTermEOF(KeYRustyParser.TermEOFContext ctx) {
+    public @Nullable Term visitTermEOF(KeYRustyParser.TermEOFContext ctx) {
         return accept(ctx.term());
     }
 
     @Override
-    public Term visitElementary_update_term(KeYRustyParser.Elementary_update_termContext ctx) {
+    public @Nullable Term visitElementary_update_term(
+            KeYRustyParser.Elementary_update_termContext ctx) {
         Term a = accept(ctx.a);
         Term b = accept(ctx.b);
         if (b != null) {
-            return getServices().getTermBuilder().elementary(a, b);
+            return getServices().getTermBuilder().elementary(Objects.requireNonNull(a), b);
         }
         return a;
     }
 
-    public Term visitMutating_update_term(KeYRustyParser.Mutating_update_termContext ctx) {
+    public @Nullable Term visitMutating_update_term(
+            KeYRustyParser.Mutating_update_termContext ctx) {
         Term a = accept(ctx.a);
         Term b = accept(ctx.b);
         if (b != null) {
-            return getServices().getTermBuilder().mutating(a, b);
+            return getServices().getTermBuilder().mutating(Objects.requireNonNull(a), b);
         }
         return a;
     }
 
     @Override
-    public Term visitEquivalence_term(KeYRustyParser.Equivalence_termContext ctx) {
+    public @Nullable Term visitEquivalence_term(KeYRustyParser.Equivalence_termContext ctx) {
         Term a = accept(ctx.a);
         if (ctx.b.isEmpty()) {
             return a;
@@ -148,23 +150,24 @@ public class ExpressionBuilder extends DefaultBuilder {
         return cur;
     }
 
-    private Term binaryTerm(ParserRuleContext ctx, Operator operator, Term left, Term right) {
+    private @Nullable Term binaryTerm(ParserRuleContext ctx, Operator operator, @Nullable Term left,
+            @Nullable Term right) {
         if (right == null) {
             return left;
         }
         return capsulateTf(ctx,
-            () -> getTermFactory().createTerm(operator, left, right));
+            () -> getTermFactory().createTerm(operator, Objects.requireNonNull(left), right));
     }
 
     @Override
-    public Term visitImplication_term(KeYRustyParser.Implication_termContext ctx) {
+    public @Nullable Term visitImplication_term(KeYRustyParser.Implication_termContext ctx) {
         Term termL = accept(ctx.a);
         Term termR = accept(ctx.b);
         return binaryTerm(ctx, Junctor.IMP, termL, termR);
     }
 
     @Override
-    public Term visitDisjunction_term(KeYRustyParser.Disjunction_termContext ctx) {
+    public @Nullable Term visitDisjunction_term(KeYRustyParser.Disjunction_termContext ctx) {
         Term t = accept(ctx.a);
         for (KeYRustyParser.Conjunction_termContext c : ctx.b) {
             t = binaryTerm(ctx, Junctor.OR, t, accept(c));
@@ -173,7 +176,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitConjunction_term(KeYRustyParser.Conjunction_termContext ctx) {
+    public @Nullable Term visitConjunction_term(KeYRustyParser.Conjunction_termContext ctx) {
         Term t = accept(ctx.a);
         for (KeYRustyParser.Term60Context c : ctx.b) {
             t = binaryTerm(ctx, Junctor.AND, t, accept(c));
@@ -191,6 +194,7 @@ public class ExpressionBuilder extends DefaultBuilder {
                 // weigl: rewrite neg(Z(1(#)) to Z(neglit(1(#))
                 // This mimics the old KeYRustyParser behaviour. Unknown if necessary.
                 final Function neglit = functions().lookup("neglit");
+                assert neglit != null;
                 final Term num = result.sub(0);
                 return capsulateTf(ctx,
                     () -> getTermFactory().createTerm(Z, getTermFactory().createTerm(neglit, num)));
@@ -217,7 +221,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitNegation_term(KeYRustyParser.Negation_termContext ctx) {
+    public @Nullable Term visitNegation_term(KeYRustyParser.Negation_termContext ctx) {
         Term termL = accept(ctx.sub);
         if (ctx.NOT() != null) {
             return capsulateTf(ctx, () -> getTermFactory().createTerm(Junctor.NOT, termL));
@@ -227,7 +231,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitEquality_term(KeYRustyParser.Equality_termContext ctx) {
+    public @Nullable Term visitEquality_term(KeYRustyParser.Equality_termContext ctx) {
         Term termL = accept(ctx.a);
         Term termR = accept(ctx.b);
         Term eq = binaryTerm(ctx, Equality.EQUALS, termL, termR);
@@ -238,7 +242,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Object visitComparison_term(KeYRustyParser.Comparison_termContext ctx) {
+    public @Nullable Object visitComparison_term(KeYRustyParser.Comparison_termContext ctx) {
         Term termL = accept(ctx.a);
         Term termR = accept(ctx.b);
 
@@ -263,7 +267,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Object visitWeak_arith_term(KeYRustyParser.Weak_arith_termContext ctx) {
+    public @Nullable Object visitWeak_arith_term(KeYRustyParser.Weak_arith_termContext ctx) {
         Term termL = Objects.requireNonNull(accept(ctx.a));
         if (ctx.op.isEmpty()) {
             return termL;
@@ -574,7 +578,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Object visitTermorseq(KeYRustyParser.TermorseqContext ctx) {
+    public @Nullable Object visitTermorseq(KeYRustyParser.TermorseqContext ctx) {
         Term head = accept(ctx.head);
         Sequent s = accept(ctx.s);
         ImmutableList<SequentFormula> ss = accept(ctx.ss);

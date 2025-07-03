@@ -5,6 +5,8 @@ package org.key_project.rusty.parser.hir.pat;
 
 import org.key_project.rusty.parser.hir.HirAdapter;
 
+import org.jspecify.annotations.Nullable;
+
 public interface ByRef {
     record Yes(boolean mut) implements ByRef {
     }
@@ -14,7 +16,7 @@ public interface ByRef {
 
     class Adapter extends HirAdapter<ByRef> {
         @Override
-        public Class<? extends ByRef> getType(String tag) {
+        public @Nullable Class<? extends ByRef> getType(String tag) {
             return switch (tag) {
             case "Yes" -> Yes.class;
             case "No" -> No.class;
