@@ -19,10 +19,14 @@ import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.rusty.logic.sort.SortImpl;
 import org.key_project.rusty.parser.KeYRustyParser;
+import org.key_project.rusty.parser.ParsingFacade;
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Immutables;
+import org.key_project.util.java.CollectionUtil;
 
 import org.antlr.v4.runtime.Token;
 
@@ -59,8 +63,24 @@ public class DeclarationBuilder extends DefaultBuilder {
     public Object visitDatatype_decl(KeYRustyParser.Datatype_declContext ctx) {
         // boolean freeAdt = ctx.FREE() != null;
         var name = ctx.name.getText();
-        var s = new SortImpl(new Name(name), false);
-        sorts().addSafely(s);
+        var doc = ctx.DOC_COMMENT() != null
+                ? ctx.DOC_COMMENT().getText()
+                : null;
+        List<GenericSort> typeParameters = accept(ctx.formal_sort_parameters());
+        if (typeParameters == null) {
+            var s = new SortImpl(new Name(name), false);
+            sorts().addSafely(s);
+        } else {
+            var doubled = CollectionUtil.findDuplicates(typeParameters);
+            if (!doubled.isEmpty()) {
+                semanticError(ctx.formal_sort_parameters(),
+                    "Type parameters must be unique within a declaration. Found duplicate: %s",
+                    doubled.getFirst());
+            }
+            var s = new ParametricSortDecl(new Name(name), false,
+                ImmutableList.fromList(typeParameters), doc);
+            namespaces().parametricSorts().addSafely(s);
+        }
         return null;
     }
 
@@ -133,37 +153,74 @@ public class DeclarationBuilder extends DefaultBuilder {
         boolean isGenericSort = ctx.GENERIC() != null;
         boolean isAbstractSort = ctx.ABSTRACT() != null;
         List<Sort> createdSorts = new LinkedList<>();
-        for (var idCtx : ctx.sortIds.simple_ident_dots()) {
-            String sortId = accept(idCtx);
-            Name sortName = new Name(sortId);
+        var doc = ParsingFacade.getValueDocumentation(ctx.DOC_COMMENT());
 
-            ImmutableSet<Sort> ext = sortExt == null ? ImmutableSet.empty()
-                    : Immutables.createSetFrom(sortExt);
-            ImmutableSet<Sort> oneOf = sortOneOf == null ? ImmutableSet.empty()
-                    : Immutables.createSetFrom(sortOneOf);
+        if (ctx.sortIds != null) {
+            for (var idCtx : ctx.sortIds.simple_ident_dots()) {
+                String sortId = accept(idCtx);
+                Name sortName = new Name(sortId);
 
-            Sort existingSort = sorts().lookup(sortName);
-            if (existingSort == null) {
-                Sort s;
-                if (isGenericSort) {
-                    s = new GenericSort(sortName, ext, oneOf);
-                } else if (new Name("any").equals(sortName)) {
-                    s = RustyDLTheory.ANY;
+                ImmutableSet<Sort> ext = sortExt == null ? ImmutableSet.empty()
+                        : Immutables.createSetFrom(sortExt);
+                ImmutableSet<Sort> oneOf = sortOneOf == null ? ImmutableSet.empty()
+                        : Immutables.createSetFrom(sortOneOf);
+
+                Sort existingSort = sorts().lookup(sortName);
+                if (existingSort == null) {
+                    Sort s;
+                    if (isGenericSort) {
+                        s = new GenericSort(sortName, ext, oneOf);
+                    } else if (new Name("any").equals(sortName)) {
+                        s = RustyDLTheory.ANY;
+                    } else {
+                        s = new SortImpl(sortName, isAbstractSort, ext);
+                    }
+                    sorts().add(s);
+                    createdSorts.add(s);
                 } else {
-                    s = new SortImpl(sortName, isAbstractSort, ext);
+                    // weigl: agreement on KaKeY meeting: this should be ignored until we finally
+                    // have
+                    // local namespaces for generic sorts
+                    // addWarning(ctx, "Sort declaration is ignored, due to collision.");
+                    // LOGGER.info("Sort declaration of {} in {} is ignored due to collision
+                    // (already "
+                    // + "present in {}).", sortName, BuilderHelpers.getPosition(ctx),
+                    // existingSort.getOrigin());
                 }
-                sorts().add(s);
-                createdSorts.add(s);
-            } else {
-                // weigl: agreement on KaKeY meeting: this should be ignored until we finally have
-                // local namespaces for generic sorts
-                // addWarning(ctx, "Sort declaration is ignored, due to collision.");
-                // LOGGER.info("Sort declaration of {} in {} is ignored due to collision (already "
-                // + "present in {}).", sortName, BuilderHelpers.getPosition(ctx),
-                // existingSort.getOrigin());
             }
+        } else {
+            // parametric sort
+            var declCtx = ctx.parametric_sort_decl();
+            assert declCtx != null : "One of the two must be present";
+            List<GenericSort> typeParams = mapOf(declCtx.formal_sort_param_decl());
+            ImmutableList<GenericSort> params = ImmutableList.fromList(typeParams);
+            var doubled = CollectionUtil.findDuplicates(params);
+            if (!doubled.isEmpty()) {
+                semanticError(declCtx,
+                    "Type parameters must be unique within a declaration. Found duplicate: %s",
+                    doubled.getFirst());
+            }
+            String name = declCtx.simple_ident_dots().getText();
+            Name sortName = new Name(name);
+            var sortDecl = new ParametricSortDecl(sortName, isAbstractSort, params, doc);
+            namespaces().parametricSorts().add(sortDecl);
         }
         return createdSorts;
+    }
+
+    @Override
+    public GenericSort visitFormal_sort_param_decl(
+            KeYRustyParser.Formal_sort_param_declContext ctx) {
+        var name = ctx.simple_ident().getText();
+        Sort paramSort = sorts().lookup(name);
+        if (paramSort == null) {
+            semanticError(ctx, "Parameter sort %s not found", name);
+        }
+        if (!(paramSort instanceof GenericSort)) {
+            semanticError(ctx, "Parameter sort %s is not a generic sort", name);
+        }
+
+        return (GenericSort) paramSort;
     }
 
     @Override

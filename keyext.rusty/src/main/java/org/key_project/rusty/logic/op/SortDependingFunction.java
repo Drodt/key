@@ -12,6 +12,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.ImmutableArray;
 
@@ -33,7 +34,8 @@ public final class SortDependingFunction extends Function {
     private SortDependingFunction(SortDependingFunctionTemplate template, Sort sortDependingOn) {
         super(instantiateName(template.kind, sortDependingOn),
             instantiateArgSorts(template, sortDependingOn),
-            instantiateResultSort(template, sortDependingOn), null, template.unique, false, false);
+            instantiateSort(template.sortDependingOn, sortDependingOn, template.sort), null,
+            template.unique, false, false);
         this.template = template;
         this.sortDependingOn = QualifierWrapper.get(sortDependingOn);
     }
@@ -47,9 +49,10 @@ public final class SortDependingFunction extends Function {
     }
 
 
-    private static Sort instantiateResultSort(SortDependingFunctionTemplate template,
-            Sort sortDependingOn) {
-        return template.sort == template.sortDependingOn ? sortDependingOn : template.sort;
+    private static Sort instantiateSort(GenericSort genericSort, Sort instanatiation,
+            Sort toInstantiate) {
+        // Replaces the generic sort and all occurrences in parametric sorts
+        return ParametricSortInstance.instantiate(genericSort, instanatiation, toInstantiate);
     }
 
 
@@ -57,8 +60,8 @@ public final class SortDependingFunction extends Function {
             Sort sortDependingOn) {
         Sort[] result = new Sort[template.argSorts.size()];
         for (int i = 0; i < result.length; i++) {
-            result[i] = (template.argSorts.get(i) == template.sortDependingOn ? sortDependingOn
-                    : template.argSorts.get(i));
+            result[i] = ParametricSortInstance.instantiate(template.sortDependingOn,
+                sortDependingOn, template.argSorts.get(i));
         }
         return new ImmutableArray<>(result);
     }

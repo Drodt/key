@@ -43,3 +43,51 @@ mRef_term : REF_M LESS simple_ident GREATER;
 
 typemapping
     : (AND MUT?)? simple_ident;
+
+one_sort_decl
+:
+  doc=DOC_COMMENT?
+  (
+     GENERIC  sortIds=simple_ident_dots_comma_list
+        (ONEOF sortOneOf = oneof_sorts)?
+        (EXTENDS sortExt = extends_sorts)? SEMI
+    | PROXY  sortIds=simple_ident_dots_comma_list (EXTENDS sortExt=extends_sorts)? SEMI
+    | ABSTRACT? (sortIds=simple_ident_dots_comma_list |
+                 parametric_sort_decl) (EXTENDS sortExt=extends_sorts)?  SEMI
+  )
+;
+
+parametric_sort_decl
+:
+    simple_ident_dots
+    OPENTYPEPARAMS
+    formal_sort_param_decl (COMMA formal_sort_param_decl)*
+    CLOSETYPEPARAMS
+;
+
+formal_sort_param_decl
+:
+    simple_ident
+;
+
+datatype_decl:
+  doc=DOC_COMMENT?
+  // weigl: all datatypes are free!
+  // FREE?
+  name=simple_ident formal_sort_parameters?
+  EQUALS
+  datatype_constructor (OR datatype_constructor)*
+  SEMI
+;
+
+sortId
+:
+    id=simple_ident_dots (EMPTYBRACKETS)* formal_sort_parameters?
+;
+
+formal_sort_parameters
+:
+    OPENTYPEPARAMS
+    sortId (COMMA sortId)*
+    CLOSETYPEPARAMS
+;

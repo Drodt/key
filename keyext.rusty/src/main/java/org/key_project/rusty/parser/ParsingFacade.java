@@ -20,7 +20,9 @@ import org.key_project.rusty.settings.Configuration;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.PredictionMode;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class ParsingFacade {
     private ParsingFacade() {
@@ -178,5 +180,19 @@ public final class ParsingFacade {
     public static Configuration getConfiguration(KeYRustyParser.TableContext ctx) {
         final var cfg = new ConfigurationBuilder();
         return cfg.visitTable(ctx);
+    }
+
+    public static @NonNull String getValueDocumentation(KeYRustyParser.String_valueContext ctx) {
+        return ctx.getText().substring(1, ctx.getText().length() - 1).replace("\\\"", "\"")
+                .replace("\\\\", "\\");
+    }
+
+    public static @Nullable String getValueDocumentation(
+            @Nullable TerminalNode docComment) {
+        if (docComment == null) {
+            return null;
+        }
+        String value = docComment.getText();
+        return value.substring(3, value.length() - 2);// remove leading "/*!" and trailing "*/"
     }
 }

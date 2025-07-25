@@ -22,3 +22,6 @@ GET_INVARIANT : '\\getInvariant';
 GET_VARIANT   : '\\getVariant';
 IS_LABELED    : '\\isLabeled';
 DIFFERENT     : '\\different';
+
+OPENTYPEPARAMS:'<' '[';
+CLOSETYPEPARAMS:']' '>';

@@ -27,7 +27,10 @@ import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
+import org.key_project.rusty.logic.sort.ParametricSortDecl;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.parser.KeYRustyParser;
+import org.key_project.util.collection.ImmutableList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jspecify.annotations.NonNull;
@@ -252,7 +255,35 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
 
     @Override
     public Sort visitSortId(KeYRustyParser.SortIdContext ctx) {
-        return lookupSort(ctx.id.getText());
+        String name = ctx.id.getText();
+        Sort s;
+        if (ctx.formal_sort_parameters() != null) {
+            // parametric sorts should be instantiated
+            ParametricSortDecl sortDecl = services.getNamespaces().parametricSorts().lookup(name);
+            if (sortDecl == null) {
+                semanticError(ctx, "Could not find polymorphic sort: %s", name);
+            }
+            ImmutableList<Sort> parameters = getSorts(ctx.formal_sort_parameters());
+            s = ParametricSortInstance.get(sortDecl, parameters);
+        } else {
+            s = lookupSort(name);
+            if (s == null) {
+                semanticError(ctx, "Could not find sort: %s", ctx.getText());
+            }
+        }
+        return s;
+    }
+
+    private ImmutableList<Sort> getSorts(KeYRustyParser.Formal_sort_parametersContext ctx) {
+        List<Sort> seq = accept(ctx);
+        assert seq != null;
+        return ImmutableList.fromList(seq);
+    }
+
+    @Override
+    public List<Sort> visitFormal_sort_parameters(
+            KeYRustyParser.Formal_sort_parametersContext ctx) {
+        return mapOf(ctx.sortId());
     }
 
     public KeYRustyType visitTypemapping(KeYRustyParser.TypemappingContext ctx) {
