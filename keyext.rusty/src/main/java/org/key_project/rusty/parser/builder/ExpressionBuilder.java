@@ -193,8 +193,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             if (result.op() == Z) {
                 // weigl: rewrite neg(Z(1(#)) to Z(neglit(1(#))
                 // This mimics the old KeYRustyParser behaviour. Unknown if necessary.
-                final Function neglit = functions().lookup("neglit");
-                assert neglit != null;
+                final Function neglit = services.getLDTs().getIntLDT().getNegativeNumberSign();
                 final Term num = result.sub(0);
                 return capsulateTf(ctx,
                     () -> getTermFactory().createTerm(Z, getTermFactory().createTerm(neglit, num)));
@@ -208,6 +207,7 @@ public class ExpressionBuilder extends DefaultBuilder {
                     // falling back to integer ldt (for instance for untyped schema variables)
                     ldt = services.getLDTs().getIntLDT();
                 }
+                // TODO(DD): Can this be simplified?
                 Function op = ldt.getFunctionFor("neg", services);
                 if (op == null) {
                     semanticError(ctx, "Could not find function symbol 'neg' for sort '%s'.", sort);
