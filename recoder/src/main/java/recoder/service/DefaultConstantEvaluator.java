@@ -1195,8 +1195,7 @@ public class DefaultConstantEvaluator extends AbstractService implements Constan
                         ubo = LOGICAL_NOT;
                     }
                 }
-                case 2 -> { // binary
-                            // operations
+                case 2 -> { // binary operations
                     if (!isCompileTimeConstant(op.getExpressionAt(0), res)) {
                         return false;
                     }
@@ -1284,10 +1283,7 @@ public class DefaultConstantEvaluator extends AbstractService implements Constan
                         return false;
                     }
                     matchConditionalTypes(lhs, rhs);
-                    switch (lhs.getTypeCode()) { // matches
-                                                 // type
-                                                 // of
-                                                 // rhs
+                    switch (lhs.getTypeCode()) { // matches type of rhs
                         case BOOLEAN_TYPE ->
                             res.setBoolean(cond ? lhs.getBoolean() : rhs.getBoolean());
                         case BYTE_TYPE -> res.setByte(cond ? lhs.getByte() : rhs.getByte());

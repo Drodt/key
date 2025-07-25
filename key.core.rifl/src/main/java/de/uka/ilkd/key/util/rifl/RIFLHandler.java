@@ -207,13 +207,7 @@ class RIFLHandler extends DefaultHandler {
         switch (localName) {
             case "sourcedompair", "source" -> startSources();
             case "sinkdompair", "sink" -> startSinks();
-            case "category" -> // TODO:
-                               // different
-                               // semantics
-                               // in
-                               // "domains"
-                               // and
-                               // "sinkdompair"
+            case "category" -> // TODO: different semantics in "domains" and "sinkdompair"
                 setCategory(attributes);
             case "assign" -> assignHandle(attributes);
 

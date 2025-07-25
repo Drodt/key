@@ -74,8 +74,7 @@ public class ProofReplayer {
             URI source) {
         KeYLexer lexer = ParsingFacade.createLexer(input);
         CommonTokenStream stream = new CommonTokenStream(lexer);
-        ArrayDeque<IProofFileParser.ProofElementID> stack = new ArrayDeque<>(); // currently
-                                                                                // open
+        ArrayDeque<IProofFileParser.ProofElementID> stack = new ArrayDeque<>(); // currently open
                                                                                 // proof
         // elements
         Deque<Integer> posStack = new ArrayDeque<>(); // stack of opened commands position
@@ -102,9 +101,7 @@ public class ProofReplayer {
                         // argument was given
                         arg = stream.LT(1).getText();
                         arg = unescape(arg.substring(1, arg.length() - 1));
-                        stream.consume();// throw
-                                         // string
-                                         // away
+                        stream.consume();// throw string away
                     }
                     prl.beginExpr(cur, arg);
                     stack.push(cur);

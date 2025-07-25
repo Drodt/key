@@ -4,9 +4,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package recoder.parser;
 
-import java.io.IOException;
-import java.io.PrintStream;
-
 public class JavaCCParserTokenManager implements JavaCCParserConstants {
     public static final String[] jjstrLiteralImages = { "", null, null, null, null, null, null,
         null, null, null, null, null, null, "\141\142\163\164\162\141\143\164",
@@ -161,7 +158,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
     static final long[] jjtoMore = { 0x11c0L, 0x0L, };
     static private final int[] jjrounds = new int[52];
     static private final int[] jjstateSet = new int[104];
-    public static PrintStream debugStream = System.out;
+    public static java.io.PrintStream debugStream = System.out;
     static protected JavaCharStream input_stream;
     static protected char curChar;
     static StringBuffer image;
@@ -188,7 +185,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         SwitchTo(lexState);
     }
 
-    public static void setDebugStream(PrintStream ds) {
+    public static void setDebugStream(java.io.PrintStream ds) {
         debugStream = ds;
     }
 
@@ -332,7 +329,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         jjmatchedPos = pos;
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             return pos + 1;
         }
         return jjMoveNfa_0(state, pos + 1);
@@ -443,7 +440,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
     static private final int jjMoveStringLiteralDfa1_0(long active0, long active1) {
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(0, active0, active1);
             return 1;
         }
@@ -573,7 +570,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(1, active0, active1);
             return 2;
         }
@@ -654,7 +651,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(2, active0, active1);
             return 3;
         }
@@ -741,7 +738,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(3, active0, active1);
             return 4;
         }
@@ -819,7 +816,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(4, active0, active1);
             return 5;
         }
@@ -889,7 +886,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(5, active0, active1);
             return 6;
         }
@@ -946,7 +943,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(6, active0, active1);
             return 7;
         }
@@ -985,7 +982,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(7, active0, 0L);
             return 8;
         }
@@ -1021,7 +1018,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(8, active0, 0L);
             return 9;
         }
@@ -1050,7 +1047,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(9, active0, 0L);
             return 10;
         }
@@ -1069,7 +1066,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         }
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             jjStopStringLiteralDfa_0(10, active0, 0L);
             return 11;
         }
@@ -1586,7 +1583,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
             }
             try {
                 curChar = JavaCharStream.readChar();
-            } catch (IOException e) {
+            } catch (java.io.IOException e) {
                 return curPos;
             }
         }
@@ -1604,7 +1601,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
     static private final int jjMoveStringLiteralDfa1_3(long active0) {
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             return 1;
         }
         switch (curChar) {
@@ -1694,7 +1691,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
             }
             try {
                 curChar = JavaCharStream.readChar();
-            } catch (IOException e) {
+            } catch (java.io.IOException e) {
                 return curPos;
             }
         }
@@ -1712,7 +1709,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
     static private final int jjMoveStringLiteralDfa1_2(long active0) {
         try {
             curChar = JavaCharStream.readChar();
-        } catch (IOException e) {
+        } catch (java.io.IOException e) {
             return 1;
         }
         switch (curChar) {
@@ -1949,7 +1946,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
         EOFLoop: for (;;) {
             try {
                 curChar = JavaCharStream.BeginToken();
-            } catch (IOException e) {
+            } catch (java.io.IOException e) {
                 jjmatchedKind = 0;
                 matchedToken = jjFillToken();
                 matchedToken.specialToken = specialToken;
@@ -1966,7 +1963,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
                             while (curChar <= 32 && (0x100003600L & (1L << curChar)) != 0L) {
                                 curChar = JavaCharStream.BeginToken();
                             }
-                        } catch (IOException e1) {
+                        } catch (java.io.IOException e1) {
                             continue EOFLoop;
                         }
                         jjmatchedKind = 0x7fffffff;
@@ -2039,7 +2036,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
                     try {
                         curChar = JavaCharStream.readChar();
                         continue;
-                    } catch (IOException e1) {
+                    } catch (java.io.IOException e1) {
                     }
                 }
                 int error_line = JavaCharStream.getEndLine();
@@ -2049,7 +2046,7 @@ public class JavaCCParserTokenManager implements JavaCCParserConstants {
                 try {
                     JavaCharStream.readChar();
                     JavaCharStream.backup(1);
-                } catch (IOException e1) {
+                } catch (java.io.IOException e1) {
                     EOFSeen = true;
                     error_after = curPos <= 1 ? "" : JavaCharStream.GetImage();
                     if (curChar == '\n' || curChar == '\r') {

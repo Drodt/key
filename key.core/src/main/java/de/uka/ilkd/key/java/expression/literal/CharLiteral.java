@@ -125,8 +125,8 @@ public class CharLiteral extends AbstractIntegerLiteral {
                 case '\"' -> '\"';
                 case '\'' -> '\'';
                 case '\\' -> '\\';
-                case '0', '1', '2', '3', '4', '5', '6', '7' ->
-                    (char) Integer.parseInt(valStr.substring(1), 8);
+                case '0', '1', '2', '3', '4', '5', '6', '7' -> (char) Integer
+                        .parseInt(valStr.substring(1), 8);
                 case 'u' -> (char) Integer.parseInt(valStr.substring(2), 16);
                 default -> throw new NumberFormatException("Invalid char: " + sourceStr);
             };
