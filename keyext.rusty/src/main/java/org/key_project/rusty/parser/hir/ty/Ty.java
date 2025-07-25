@@ -41,6 +41,9 @@ public interface Ty {
     record Adt() implements Ty {
     }
 
+    record Array(Ty ty, TyConst len) implements Ty {
+    }
+
     class Adapter extends HirAdapter<Ty> {
         @Override
         public @Nullable Class<? extends Ty> getType(String tag) {
@@ -55,6 +58,7 @@ public interface Ty {
                 case "Never" -> Never.class;
                 case "Tuple" -> Tuple.class;
                 case "Adt" -> Adt.class;
+                case "Array" -> Array.class;
                 default -> null;
             };
         }

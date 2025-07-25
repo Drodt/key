@@ -36,6 +36,8 @@ import org.key_project.rusty.parser.hir.stmt.LetStmt;
 import org.key_project.rusty.parser.hir.stmt.Stmt;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
 import org.key_project.rusty.parser.hir.ty.Ty;
+import org.key_project.rusty.parser.hir.ty.TyConst;
+import org.key_project.rusty.parser.hir.ty.ValTree;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
@@ -45,8 +47,6 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
-
-import static org.key_project.rusty.parser.hir.expr.AssignOpKind.AddAssign;
 
 public class HirConverter {
     private final Services services;
@@ -216,6 +216,8 @@ public class HirConverter {
             case ExprKind.AssignOp e -> convertAssignOp(e);
             case ExprKind.Binary e -> convertBinary(e);
             case ExprKind.Unary e -> convertUnary(e, ty);
+            case ExprKind.Repeat e -> convertRepeat(e, ty);
+            case ExprKind.Index e -> convertIndexExpr(e, ty);
             default -> throw new IllegalArgumentException("Unknown expression: " + expr);
         };
     }
@@ -326,6 +328,20 @@ public class HirConverter {
             case Not -> UnaryExpression.Operator.Not;
             case Neg -> UnaryExpression.Operator.Neg;
         }, convertExpr(unary.expr()));
+    }
+
+    private RepeatedArrayExpression convertRepeat(ExprKind.Repeat repeat, Type type) {
+        return new RepeatedArrayExpression(convertExpr(repeat.expr()),
+            convertConstArg(repeat.len()), type);
+    }
+
+    private Expr convertConstArg(org.key_project.rusty.parser.hir.ConstArg len) {
+        var ac = ((ConstArgKind.Anon) len.kind()).ac();
+        return convertExpr(ac.body().value());
+    }
+
+    private IndexExpression convertIndexExpr(ExprKind.Index index, Type type) {
+        return new IndexExpression(convertExpr(index.base()), convertExpr(index.idx()), type);
     }
 
     private BinaryExpression.Operator convertBinOp(BinOpKind binOp) {
@@ -551,9 +567,22 @@ public class HirConverter {
             case Ty.Never n -> Never.INSTANCE;
             case Ty.Tuple(var ts) ->
                 TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList());
+            case Ty.Array(var arrTy, var len) -> {
+                Type elementType = convertTy(arrTy);
+                yield ArrayType.getInstance(elementType, convertTyConst(len), services);
+            }
             default -> throw new IllegalArgumentException("Unknown ty: " + ty);
         };
         services.getRustInfo().registerType(type);
         return type;
+    }
+
+    // TODO: something other than int
+    private int convertTyConst(TyConst tc) {
+        var vc = (TyConst.ValueConst) tc;
+        return (int) switch (vc.value().valtree()) {
+            case ValTree.Leaf(var si) -> si.data();
+            default -> throw new IllegalArgumentException("Unknown ty const: " + tc);
+        };
     }
 }

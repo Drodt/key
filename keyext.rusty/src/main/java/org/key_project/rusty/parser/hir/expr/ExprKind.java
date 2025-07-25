@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.expr;
 
-import org.key_project.rusty.parser.hir.HirAdapter;
-import org.key_project.rusty.parser.hir.Label;
-import org.key_project.rusty.parser.hir.QPath;
-import org.key_project.rusty.parser.hir.Span;
+import org.key_project.rusty.parser.hir.*;
 
 import org.jspecify.annotations.Nullable;
 
@@ -53,6 +50,12 @@ public interface ExprKind {
     record Break(Destination dest, @Nullable Expr expr) implements ExprKind {
     }
 
+    record Repeat(Expr expr, ConstArg len) implements ExprKind {
+    }
+
+    record Index(Expr base, Expr idx, Span span) implements ExprKind {
+    }
+
     class Adapter extends HirAdapter<ExprKind> {
         @Override
         public @Nullable Class<? extends ExprKind> getType(String tag) {
@@ -71,6 +74,8 @@ public interface ExprKind {
                 case "Path" -> Path.class;
                 case "AddrOf" -> AddrOf.class;
                 case "Break" -> Break.class;
+                case "Repeat" -> Repeat.class;
+                case "Index" -> Index.class;
                 default -> null;
             };
         }

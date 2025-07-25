@@ -70,6 +70,11 @@ public final class RustInfo {
             type2KRTCache.put(type, krt);
             return krt;
         }
+        if (type instanceof ArrayType at) {
+            var krt = new KeYRustyType(at, at.getSort(services));
+            type2KRTCache.put(type, krt);
+            return krt;
+        }
         throw new IllegalArgumentException("Unsupported type: " + type);
     }
 

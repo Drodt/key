@@ -50,3 +50,9 @@ pub fn mul(a: u64, mut b: u64) -> u64 {
         b -= 1;
     }
 }
+
+#[spec(name = "array", ensures(true))]
+pub fn test_array() {
+    let mut a = [0; 4];
+    a[0] = 1;
+}

@@ -1,0 +1,12 @@
+\programSource "./rustSrc";
+
+\proofObligation
+{
+    "class": "org.key_project.rusty.proof.init.loader.FunctionOperationContractPOLoader",
+    "contract": "test_array.array.0",
+    "name": "array_test.array"
+}
+
+\proof {
+
+}

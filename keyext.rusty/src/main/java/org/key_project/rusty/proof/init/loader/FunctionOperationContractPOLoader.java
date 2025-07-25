@@ -13,6 +13,7 @@ import org.key_project.rusty.speclang.Contract;
 
 import org.jspecify.annotations.NullMarked;
 
+
 /// Loader for proof obligation arises by function operation contract.
 ///
 /// @author Alexander Weigl

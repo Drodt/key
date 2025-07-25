@@ -172,6 +172,8 @@ public abstract class AbstractOperationPO extends AbstractPO {
                     update = tb.parallel(update, paramUpdate);
             }
         }
+        if (update == null)
+            update = tb.skip();
         return update;
     }
 

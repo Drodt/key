@@ -325,7 +325,7 @@ public class SchemaConverter {
             RustySchemaParser.IndexExpressionContext ctx) {
         var base = convertExpr(ctx.expr(0));
         var idx = convertExpr(ctx.expr(1));
-        return new IndexExpression(base, idx);
+        return new IndexExpression(base, idx, null);
     }
 
     private ErrorPropagationExpression convertErrorPropagationExpression(
@@ -502,7 +502,7 @@ public class SchemaConverter {
     private RepeatedArrayExpression convertRepeatedArrayExpression(
             RustySchemaParser.ArrayExpressionContext ctx) {
         return new RepeatedArrayExpression(convertExpr(ctx.arrayElements().expr(0)),
-            convertExpr(ctx.arrayElements().expr(1)));
+            convertExpr(ctx.arrayElements().expr(1)), null);
     }
 
     private TupleExpression convertTupleExpression(

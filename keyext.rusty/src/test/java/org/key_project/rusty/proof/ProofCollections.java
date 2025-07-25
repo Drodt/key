@@ -58,6 +58,9 @@ public class ProofCollections {
         rustSrc.loadable("mut-ref-src.proof");
         rustSrc.loadable("if-src.proof");
 
+        var array = c.group("array");
+        array.loadable("array-test.proof");
+
         return c;
     }
 }
