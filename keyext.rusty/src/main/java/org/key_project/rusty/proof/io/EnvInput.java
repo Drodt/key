@@ -38,6 +38,7 @@ public interface EnvInput extends Named {
     /// the initial configuration while others do.
     ///
     /// @return The found warnings or an empty [ImmutableSet] if no warnings occurred.
+    @Nullable
     ImmutableSet<String> read() throws ProofInputException;
 
     /// Returns the [Profile] to use.

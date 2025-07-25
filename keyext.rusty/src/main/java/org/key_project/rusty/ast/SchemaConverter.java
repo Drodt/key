@@ -677,7 +677,7 @@ public class SchemaConverter {
                                 ? (ProgramSV) lookupSchemaVariable(
                                     ctx.elseSV.getText().substring(2))
                                 : null;
-        return new IfExpression(cond, then, else_, then.type(services));
+        return new IfExpression(cond, then, else_, null);
     }
 
     private IfExpression convertIfLetExpr(
@@ -695,7 +695,7 @@ public class SchemaConverter {
                                             ctx.elseSV.getText().substring(2))
                                         : null;
         return new IfExpression(new LetExpression(pat, null, expr), then, else_,
-            then.type(services));
+            null);
     }
 
     private MatchExpression convertMatchExpr(
@@ -759,11 +759,12 @@ public class SchemaConverter {
         Pattern pat = convertPatternNoTopAlt(ctx.patternNoTopAlt());
         inDeclarationMode = false;
         Expr init = ctx.expr() == null ? null : convertExpr(ctx.expr());
-        assert declaredVariable != null;
+
         LetStatement letStatement = new LetStatement(pat,
             type,
             init);
         if (!(pat instanceof SchemaVarPattern)) {
+            assert declaredVariable != null;
             variables.put(declaredVariable.name().toString(), letStatement);
             programVariables.put(letStatement, Objects.requireNonNull(declaredVariable));
         }

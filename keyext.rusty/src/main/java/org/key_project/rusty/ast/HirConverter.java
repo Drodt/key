@@ -513,9 +513,11 @@ public class HirConverter {
                 Function lfn =
                     Objects.requireNonNull(localFns.get(new LocalDefId(def.id().index())));
                 ProgramFunction fn = services.getRustInfo().getFunction(lfn);
-                yield Objects.requireNonNull(fn);
+                // TODO: We might have to resolve this in a 2nd step to avoid this being done before
+                // the fn is loaded
+                yield fn;
             }
-            case DefKind.Mod m -> throw new UnsupportedOperationException("Not supported yet.");
+            case DefKind.Mod m -> null;
             default -> throw new IllegalArgumentException("Unknown def: " + def);
         };
     }

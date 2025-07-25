@@ -47,7 +47,8 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
 
     public FunctionFrame(ExtList children) {
         resultVar = children.get(IProgramVariable.class);
-        function = Objects.requireNonNull(children.get(ProgramFunction.class));
+        function =
+            (children.get(ProgramFunction.class));
         body = Objects.requireNonNull(children.get(BlockExpression.class));
 
         firstActiveChildPos = body.getChildCount() == 0 ? PosInProgram.TOP

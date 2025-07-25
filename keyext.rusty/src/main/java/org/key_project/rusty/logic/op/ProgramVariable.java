@@ -69,6 +69,6 @@ public class ProgramVariable extends AbstractSortedOperator
 
     @Override
     public Type type(Services services) {
-        return Objects.requireNonNull(type.getRustyType());
+        return type.getRustyType();
     }
 }

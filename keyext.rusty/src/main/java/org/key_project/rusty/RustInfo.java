@@ -50,7 +50,7 @@ public final class RustInfo {
             return krt;
         }
         if (type instanceof ReferenceType rt) {
-            Sort sort = services.getMRefManager().getRefSort(rt.getSort(services), rt.isMut());
+            Sort sort = services.getRefSortManager().getRefSort(rt.getSort(services), rt.isMut());
             var krt = new KeYRustyType(type, sort);
             type2KRTCache.put(type, krt);
             return krt;

@@ -19,7 +19,7 @@ public class SharedRef extends AbstractSortedOperator {
 
     private SharedRef(Sort sort, Services services) {
         super(new Name("refS_" + sort.name()), new Sort[] { sort },
-            services.getMRefManager().getRefSort(sort, false), Modifier.RIGID);
+            services.getRefSortManager().getRefSort(sort, false), Modifier.RIGID);
     }
 
     /// Returns the mut ref operator for the passed left hand side.

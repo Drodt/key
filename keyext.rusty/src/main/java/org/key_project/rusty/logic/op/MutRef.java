@@ -22,7 +22,7 @@ public class MutRef extends AbstractSortedOperator {
 
     private MutRef(Place p, Services services) {
         super(new Name("refM<" + p + ">"), new Sort[] {},
-            services.getMRefManager().getRefSort(p.sort(), true),
+            services.getRefSortManager().getRefSort(p.sort(), true),
             Modifier.RIGID);
         this.place = p;
     }

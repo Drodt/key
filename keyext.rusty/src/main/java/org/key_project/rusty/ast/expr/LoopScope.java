@@ -17,11 +17,13 @@ import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.jspecify.annotations.Nullable;
 
 public class LoopScope implements LoopExpression, PossibleProgramPrefix {
     private final IProgramVariable index;
     private final BlockExpression block;
-    private final FunctionFrame functionFrame;
+    /// Only null for schema Rust
+    private final @Nullable FunctionFrame functionFrame;
     private final int prefixLength;
 
     public LoopScope(IProgramVariable index, BlockExpression block) {
@@ -29,7 +31,7 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
         this.block = block;
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.length();
-        functionFrame = Objects.requireNonNull(info.innermostFunctionFrame());
+        functionFrame = info.innermostFunctionFrame();
     }
 
     public LoopScope(ExtList list) {
@@ -37,7 +39,7 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
         block = Objects.requireNonNull(list.get(BlockExpression.class));
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.length();
-        functionFrame = Objects.requireNonNull(info.innermostFunctionFrame());
+        functionFrame = info.innermostFunctionFrame();
     }
 
     @Override

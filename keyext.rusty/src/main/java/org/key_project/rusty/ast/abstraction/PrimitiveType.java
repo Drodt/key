@@ -15,6 +15,7 @@ import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ldt.*;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class PrimitiveType implements Type {
     private static final Map<Name, PrimitiveType> typeMap =
@@ -50,8 +51,8 @@ public final class PrimitiveType implements Type {
         }
     }
 
-    public static PrimitiveType get(String name) {
-        return Objects.requireNonNull(typeMap.get(new Name(name)));
+    public static @Nullable PrimitiveType get(String name) {
+        return typeMap.get(new Name(name));
     }
 
     @Override
@@ -66,10 +67,8 @@ public final class PrimitiveType implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        var sort = services.getNamespaces().sorts().lookup(name);
-        if (sort == null)
-            throw new RuntimeException("Unknown type " + this);
-        return sort;
+        return Objects.requireNonNull(services.getLDTs().get(ldtName), "unknown ldt " + ldtName)
+                .targetSort();
     }
 
     /// Gets the name of the LDT corresponding to this primitive type.

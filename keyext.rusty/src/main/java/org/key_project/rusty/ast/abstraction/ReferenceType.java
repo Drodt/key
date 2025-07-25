@@ -38,7 +38,7 @@ public final class ReferenceType implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        return Objects.requireNonNull(services.getNamespaces().sorts().lookup(name));
+        return services.getRefSortManager().getRefSort(inner().getSort(services), isMut);
     }
 
     @Override

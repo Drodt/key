@@ -11,7 +11,7 @@ import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 
 public class NeverLDT extends LDT {
-    public static final Name NAME = new Name("!");
+    public static final Name NAME = new Name("never");
 
     // -------------------------------------------------------------------------
     // constructors

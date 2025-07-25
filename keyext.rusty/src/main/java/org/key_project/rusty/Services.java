@@ -29,7 +29,7 @@ public class Services implements LogicServices, ProofServices {
     /// proof specific namespaces (functions, predicates, sorts, variables)
     private NamespaceSet namespaces = new NamespaceSet();
     private LDTs ldts;
-    private RefSortManager mRefManager;
+    private RefSortManager refSortManager;
     private RustInfo rustInfo;
     private NameRecorder nameRecorder;
 
@@ -60,7 +60,7 @@ public class Services implements LogicServices, ProofServices {
         this.specRepos = new SpecificationRepository(this);
         this.caches = new ServiceCaches();
         counters = new LinkedHashMap<>();
-        mRefManager = new RefSortManager(this);
+        refSortManager = new RefSortManager(this);
         rustInfo = new RustInfo(this);
         nameRecorder = new NameRecorder();
     }
@@ -81,7 +81,7 @@ public class Services implements LogicServices, ProofServices {
         this.proof = services.proof;
         this.profile = services.profile;
         this.counters = services.counters;
-        this.mRefManager = services.mRefManager;
+        this.refSortManager = services.refSortManager;
         this.caches = services.caches;
         this.specRepos = services.specRepos;
         this.rustModel = services.rustModel;
@@ -105,8 +105,8 @@ public class Services implements LogicServices, ProofServices {
         return tf;
     }
 
-    public RefSortManager getMRefManager() {
-        return mRefManager;
+    public RefSortManager getRefSortManager() {
+        return refSortManager;
     }
 
     public void initLDTs() {
