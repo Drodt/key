@@ -18,9 +18,9 @@ public interface BlockCheckMode {
         @Override
         public @Nullable Class<? extends BlockCheckMode> getType(String tag) {
             return switch (tag) {
-            case "DefaultBlock" -> DefaultBlock.class;
-            case "UnsafeBlock" -> UnsafeBlock.class;
-            default -> null;
+                case "DefaultBlock" -> DefaultBlock.class;
+                case "UnsafeBlock" -> UnsafeBlock.class;
+                default -> null;
             };
         }
     }

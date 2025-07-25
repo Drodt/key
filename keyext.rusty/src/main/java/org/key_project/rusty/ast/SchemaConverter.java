@@ -258,19 +258,19 @@ public class SchemaConverter {
         var value = new BigInteger(
             lit);
         var ty = switch (suffix) {
-        case None -> throw new RuntimeException("Missing suffix");
-        case u8 -> PrimitiveType.U8;
-        case u16 -> PrimitiveType.U16;
-        case u32 -> PrimitiveType.U32;
-        case u64 -> PrimitiveType.U64;
-        case u128 -> PrimitiveType.U128;
-        case usize -> PrimitiveType.USIZE;
-        case IntegerLiteralExpression.IntegerSuffix.i8 -> PrimitiveType.I8;
-        case IntegerLiteralExpression.IntegerSuffix.i16 -> PrimitiveType.I16;
-        case IntegerLiteralExpression.IntegerSuffix.i32 -> PrimitiveType.I32;
-        case IntegerLiteralExpression.IntegerSuffix.i64 -> PrimitiveType.I64;
-        case IntegerLiteralExpression.IntegerSuffix.i128 -> PrimitiveType.I128;
-        case isize -> PrimitiveType.ISIZE;
+            case None -> throw new RuntimeException("Missing suffix");
+            case u8 -> PrimitiveType.U8;
+            case u16 -> PrimitiveType.U16;
+            case u32 -> PrimitiveType.U32;
+            case u64 -> PrimitiveType.U64;
+            case u128 -> PrimitiveType.U128;
+            case usize -> PrimitiveType.USIZE;
+            case IntegerLiteralExpression.IntegerSuffix.i8 -> PrimitiveType.I8;
+            case IntegerLiteralExpression.IntegerSuffix.i16 -> PrimitiveType.I16;
+            case IntegerLiteralExpression.IntegerSuffix.i32 -> PrimitiveType.I32;
+            case IntegerLiteralExpression.IntegerSuffix.i64 -> PrimitiveType.I64;
+            case IntegerLiteralExpression.IntegerSuffix.i128 -> PrimitiveType.I128;
+            case isize -> PrimitiveType.ISIZE;
         };
         return new IntegerLiteralExpression(value, suffix, ty);
     }
@@ -958,23 +958,23 @@ public class SchemaConverter {
         assert ctx.typePathSegment().size() == 1;
         var text = ctx.typePathSegment(0).pathIdentSegment().identifier().getText();
         var pt = switch (text) {
-        case "bool" -> PrimitiveType.BOOL;
-        case "u8" -> PrimitiveType.U8;
-        case "u16" -> PrimitiveType.U16;
-        case "u32" -> PrimitiveType.U32;
-        case "u64" -> PrimitiveType.U64;
-        case "u128" -> PrimitiveType.U128;
-        case "usize" -> PrimitiveType.USIZE;
-        case "i8" -> PrimitiveType.I8;
-        case "i16" -> PrimitiveType.I16;
-        case "i32" -> PrimitiveType.I32;
-        case "i64" -> PrimitiveType.I64;
-        case "i128" -> PrimitiveType.I128;
-        case "isize" -> PrimitiveType.ISIZE;
-        case "char" -> PrimitiveType.CHAR;
-        case "str" -> PrimitiveType.STR;
-        case "!" -> PrimitiveType.NEVER;
-        default -> throw new IllegalArgumentException("Unknown type '" + text + "'");
+            case "bool" -> PrimitiveType.BOOL;
+            case "u8" -> PrimitiveType.U8;
+            case "u16" -> PrimitiveType.U16;
+            case "u32" -> PrimitiveType.U32;
+            case "u64" -> PrimitiveType.U64;
+            case "u128" -> PrimitiveType.U128;
+            case "usize" -> PrimitiveType.USIZE;
+            case "i8" -> PrimitiveType.I8;
+            case "i16" -> PrimitiveType.I16;
+            case "i32" -> PrimitiveType.I32;
+            case "i64" -> PrimitiveType.I64;
+            case "i128" -> PrimitiveType.I128;
+            case "isize" -> PrimitiveType.ISIZE;
+            case "char" -> PrimitiveType.CHAR;
+            case "str" -> PrimitiveType.STR;
+            case "!" -> PrimitiveType.NEVER;
+            default -> throw new IllegalArgumentException("Unknown type '" + text + "'");
         };
         return new PrimitiveRustType(pt);
     }

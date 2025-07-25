@@ -12,11 +12,11 @@ public interface ItemKind {
         @Override
         public @Nullable Class<? extends ItemKind> getType(String tag) {
             return switch (tag) {
-            case "Use" -> Use.class;
-            case "ExternCrate" -> ExternCrate.class;
-            case "Fn" -> Fn.class;
-            case "Const" -> Const.class;
-            default -> null;
+                case "Use" -> Use.class;
+                case "ExternCrate" -> ExternCrate.class;
+                case "Fn" -> Fn.class;
+                case "Const" -> Const.class;
+                default -> null;
             };
         }
     }

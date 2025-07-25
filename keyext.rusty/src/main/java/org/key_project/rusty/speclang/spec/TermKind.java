@@ -28,11 +28,11 @@ public interface TermKind {
         @Override
         public @Nullable Class<? extends TermKind> getType(String tag) {
             return switch (tag) {
-            case "Binary" -> Binary.class;
-            case "Unary" -> Unary.class;
-            case "Lit" -> Lit.class;
-            case "Path" -> Path.class;
-            default -> null;
+                case "Binary" -> Binary.class;
+                case "Unary" -> Unary.class;
+                case "Lit" -> Lit.class;
+                case "Path" -> Path.class;
+                default -> null;
             };
         }
 

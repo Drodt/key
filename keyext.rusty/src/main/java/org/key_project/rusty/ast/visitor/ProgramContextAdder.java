@@ -53,13 +53,13 @@ public class ProgramContextAdder {
         } else {
             body = wrap(next, putIn, prefixPos, suffix);
             return switch (context) {
-            case BlockExpression be -> createBlockExprWrapper(be, body);
-            case ExpressionStatement es -> createExpressionStatementWrapper(es, body);
-            case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
-            case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
-            case null, default -> throw new RuntimeException(
-                new UnexpectedException(
-                    "Unexpected block type: " + (context != null ? context.getClass() : null)));
+                case BlockExpression be -> createBlockExprWrapper(be, body);
+                case ExpressionStatement es -> createExpressionStatementWrapper(es, body);
+                case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
+                case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
+                case null, default -> throw new RuntimeException(
+                    new UnexpectedException(
+                        "Unexpected block type: " + (context != null ? context.getClass() : null)));
             };
         }
     }

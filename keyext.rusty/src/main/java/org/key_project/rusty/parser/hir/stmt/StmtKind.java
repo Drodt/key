@@ -26,11 +26,11 @@ public interface StmtKind {
         @Override
         public @Nullable Class<? extends StmtKind> getType(String tag) {
             return switch (tag) {
-            case "Let" -> Let.class;
-            case "Item" -> ItemStmt.class;
-            case "Expr" -> ExprStmt.class;
-            case "Semi" -> Semi.class;
-            default -> null;
+                case "Let" -> Let.class;
+                case "Item" -> ItemStmt.class;
+                case "Expr" -> ExprStmt.class;
+                case "Semi" -> Semi.class;
+                default -> null;
             };
         }
     }

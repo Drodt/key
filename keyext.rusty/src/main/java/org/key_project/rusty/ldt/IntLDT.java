@@ -237,17 +237,17 @@ public class IntLDT extends LDT {
     @Override
     public @Nullable Function getFunctionFor(String operationName, Services services) {
         return switch (operationName) {
-        case "gt" -> getGreaterThan();
-        case "geq" -> getGreaterOrEquals();
-        case "lt" -> getLessThan();
-        case "leq" -> getLessOrEquals();
-        case "div" -> getDiv();
-        case "mul" -> getMul();
-        case "add" -> getAdd();
-        case "sub" -> getSub();
-        case "mod" -> getMod();
-        case "neg" -> getNeg();
-        default -> null;
+            case "gt" -> getGreaterThan();
+            case "geq" -> getGreaterOrEquals();
+            case "lt" -> getLessThan();
+            case "leq" -> getLessOrEquals();
+            case "div" -> getDiv();
+            case "mul" -> getMul();
+            case "add" -> getAdd();
+            case "sub" -> getSub();
+            case "mod" -> getMod();
+            case "neg" -> getNeg();
+            default -> null;
         };
     }
 

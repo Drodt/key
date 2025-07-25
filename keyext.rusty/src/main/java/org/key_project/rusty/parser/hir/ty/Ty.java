@@ -45,17 +45,17 @@ public interface Ty {
         @Override
         public @Nullable Class<? extends Ty> getType(String tag) {
             return switch (tag) {
-            case "Bool" -> Bool.class;
-            case "Char" -> Char.class;
-            case "Int" -> Int.class;
-            case "Uint" -> Uint.class;
-            case "Ref" -> Ref.class;
-            case "FnDef" -> FnDef.class;
-            case "Closure" -> Closure.class;
-            case "Never" -> Never.class;
-            case "Tuple" -> Tuple.class;
-            case "Adt" -> Adt.class;
-            default -> null;
+                case "Bool" -> Bool.class;
+                case "Char" -> Char.class;
+                case "Int" -> Int.class;
+                case "Uint" -> Uint.class;
+                case "Ref" -> Ref.class;
+                case "FnDef" -> FnDef.class;
+                case "Closure" -> Closure.class;
+                case "Never" -> Never.class;
+                case "Tuple" -> Tuple.class;
+                case "Adt" -> Adt.class;
+                default -> null;
             };
         }
     }

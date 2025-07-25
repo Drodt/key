@@ -25,11 +25,11 @@ public interface LocalSource {
         @Override
         public @Nullable Class<? extends LocalSource> getType(String tag) {
             return switch (tag) {
-            case "Normal" -> Normal.class;
-            case "AsyncFn" -> AsyncFn.class;
-            case "AwaitDesugar" -> AwaitDesugar.class;
-            case "AssignDesugar" -> AssignDesugar.class;
-            default -> null;
+                case "Normal" -> Normal.class;
+                case "AsyncFn" -> AsyncFn.class;
+                case "AwaitDesugar" -> AwaitDesugar.class;
+                case "AssignDesugar" -> AssignDesugar.class;
+                default -> null;
             };
         }
     }

@@ -18,9 +18,9 @@ public interface ByRef {
         @Override
         public @Nullable Class<? extends ByRef> getType(String tag) {
             return switch (tag) {
-            case "Yes" -> Yes.class;
-            case "No" -> No.class;
-            default -> null;
+                case "Yes" -> Yes.class;
+                case "No" -> No.class;
+                default -> null;
             };
         }
     }

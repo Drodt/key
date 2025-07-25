@@ -57,21 +57,21 @@ public interface ExprKind {
         @Override
         public @Nullable Class<? extends ExprKind> getType(String tag) {
             return switch (tag) {
-            case "Call" -> Call.class;
-            case "Binary" -> Binary.class;
-            case "Unary" -> Unary.class;
-            case "Lit" -> LitExpr.class;
-            case "DropTemps" -> DropTemps.class;
-            case "Let" -> Let.class;
-            case "If" -> If.class;
-            case "Loop" -> Loop.class;
-            case "Block" -> BlockExpr.class;
-            case "Assign" -> Assign.class;
-            case "AssignOp" -> AssignOp.class;
-            case "Path" -> Path.class;
-            case "AddrOf" -> AddrOf.class;
-            case "Break" -> Break.class;
-            default -> null;
+                case "Call" -> Call.class;
+                case "Binary" -> Binary.class;
+                case "Unary" -> Unary.class;
+                case "Lit" -> LitExpr.class;
+                case "DropTemps" -> DropTemps.class;
+                case "Let" -> Let.class;
+                case "If" -> If.class;
+                case "Loop" -> Loop.class;
+                case "Block" -> BlockExpr.class;
+                case "Assign" -> Assign.class;
+                case "AssignOp" -> AssignOp.class;
+                case "Path" -> Path.class;
+                case "AddrOf" -> AddrOf.class;
+                case "Break" -> Break.class;
+                default -> null;
             };
         }
     }

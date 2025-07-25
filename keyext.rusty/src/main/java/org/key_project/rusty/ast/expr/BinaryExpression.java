@@ -55,10 +55,10 @@ public final class BinaryExpression implements Expr {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
         return switch (n) {
-        case 0 -> left;
-        case 1 -> op;
-        case 2 -> right;
-        default -> throw new IndexOutOfBoundsException("BinaryExpression has only 3 children");
+            case 0 -> left;
+            case 1 -> op;
+            case 2 -> right;
+            default -> throw new IndexOutOfBoundsException("BinaryExpression has only 3 children");
         };
     }
 
@@ -88,8 +88,8 @@ public final class BinaryExpression implements Expr {
     public Type type(Services services) {
         // TODO: nicer
         return switch (op) {
-        case Add, Sub, Mul, Div, Rem, BitAnd, BitOr, BitXor, Shr, Shl -> left.type(services);
-        case And, Or, Eq, Ne, Lt, Gt, Le, Ge -> PrimitiveType.BOOL;
+            case Add, Sub, Mul, Div, Rem, BitAnd, BitOr, BitXor, Shr, Shl -> left.type(services);
+            case And, Or, Eq, Ne, Lt, Gt, Le, Ge -> PrimitiveType.BOOL;
         };
     }
 

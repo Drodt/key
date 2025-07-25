@@ -21,10 +21,10 @@ public interface QPath {
         @Override
         public @Nullable Class<? extends QPath> getType(String tag) {
             return switch (tag) {
-            case "Resolved" -> Resolved.class;
-            case "TypeRelative" -> TypeRelative.class;
-            case "LangItem" -> LangItem.class;
-            default -> null;
+                case "Resolved" -> Resolved.class;
+                case "TypeRelative" -> TypeRelative.class;
+                case "LangItem" -> LangItem.class;
+                default -> null;
             };
         }
     }

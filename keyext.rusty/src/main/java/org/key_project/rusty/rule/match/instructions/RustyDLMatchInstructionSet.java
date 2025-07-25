@@ -57,11 +57,11 @@ public class RustyDLMatchInstructionSet {
     public static MatchSchemaVariableInstruction getMatchInstructionForSV(
             SchemaVariable op) {
         return switch (op) {
-        case VariableSV variableSV -> matchVariableSV(variableSV);
-        case ProgramSV programSV -> matchProgramSV(programSV);
-        case OperatorSV operatorSV -> matchNonVariableSV(operatorSV);
-        default -> throw new IllegalArgumentException(
-            "Do not know how to match " + op + " of type " + op.getClass());
+            case VariableSV variableSV -> matchVariableSV(variableSV);
+            case ProgramSV programSV -> matchProgramSV(programSV);
+            case OperatorSV operatorSV -> matchNonVariableSV(operatorSV);
+            default -> throw new IllegalArgumentException(
+                "Do not know how to match " + op + " of type " + op.getClass());
         };
     }
 

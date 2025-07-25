@@ -18,9 +18,9 @@ public interface LitKind {
         @Override
         public @Nullable Class<? extends LitKind> getType(String tag) {
             return switch (tag) {
-            case "Int" -> Int.class;
-            case "Bool" -> Bool.class;
-            default -> null;
+                case "Int" -> Int.class;
+                case "Bool" -> Bool.class;
+                default -> null;
             };
         }
     }

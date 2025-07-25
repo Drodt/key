@@ -20,9 +20,9 @@ public interface PatExprKind {
         @Override
         public @Nullable Class<? extends PatExprKind> getType(String tag) {
             return switch (tag) {
-            case "Lit" -> PatExprKind.Lit.class;
-            case "Path" -> PatExprKind.Path.class;
-            default -> null;
+                case "Lit" -> PatExprKind.Lit.class;
+                case "Path" -> PatExprKind.Path.class;
+                default -> null;
             };
         }
     }

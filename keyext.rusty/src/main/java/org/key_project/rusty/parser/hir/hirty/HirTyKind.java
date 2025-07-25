@@ -19,9 +19,9 @@ public interface HirTyKind {
         @Override
         public @Nullable Class<? extends HirTyKind> getType(String tag) {
             return switch (tag) {
-            case "Path" -> Path.class;
-            case "Ref" -> Ref.class;
-            default -> null;
+                case "Path" -> Path.class;
+                case "Ref" -> Ref.class;
+                default -> null;
             };
         }
     }

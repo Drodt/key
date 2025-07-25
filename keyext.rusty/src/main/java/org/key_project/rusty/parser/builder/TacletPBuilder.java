@@ -345,12 +345,12 @@ public class TacletPBuilder extends ExpressionBuilder {
         }
 
         return switch (expectedType) {
-        // case TYPE_RESOLVER -> buildTypeResolver(ctx);
-        case SORT -> visitSortId(ctx.term().getText(), ctx.term());
-        case RUST_TYPE -> getOrCreateRustyType(ctx.term().getText(), ctx);
-        case VARIABLE -> varId(ctx, ctx.getText());
-        case STRING -> ctx.getText();
-        case TERM -> accept(ctx.term());
+            // case TYPE_RESOLVER -> buildTypeResolver(ctx);
+            case SORT -> visitSortId(ctx.term().getText(), ctx.term());
+            case RUST_TYPE -> getOrCreateRustyType(ctx.term().getText(), ctx);
+            case VARIABLE -> varId(ctx, ctx.getText());
+            case STRING -> ctx.getText();
+            case TERM -> accept(ctx.term());
         };
     }
 

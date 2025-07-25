@@ -34,15 +34,15 @@ public interface DefKind {
         @Override
         public @Nullable Class<? extends DefKind> getType(String tag) {
             return switch (tag) {
-            case "Mod" -> Mod.class;
-            case "Fn" -> Fn.class;
-            case "AssocFn" -> AssocFn.class;
-            case "Trait" -> Trait.class;
-            case "Struct" -> Struct.class;
-            case "Enum" -> Enum.class;
-            case "Const" -> Const.class;
-            case "Union" -> Union.class;
-            default -> null;
+                case "Mod" -> Mod.class;
+                case "Fn" -> Fn.class;
+                case "AssocFn" -> AssocFn.class;
+                case "Trait" -> Trait.class;
+                case "Struct" -> Struct.class;
+                case "Enum" -> Enum.class;
+                case "Const" -> Const.class;
+                case "Union" -> Union.class;
+                default -> null;
             };
         }
     }

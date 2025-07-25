@@ -64,27 +64,27 @@ public final class UseOperationContractRule implements BuiltInRule {
         // active expr must be function call, method call or assignment with
         // function/method call
         switch (activeExpr) {
-        case CallExpression ce -> {
-            actualResult = null;
-            call = ce;
-        }
-        case MethodCallExpression me -> {
-            actualResult = null;
-            call = me;
-        }
-        case AssignmentExpression as -> {
-            final Expr lhs = as.lhs();
-            final Expr rhs = as.rhs();
-            if ((rhs instanceof Call c) && (lhs instanceof ProgramVariable)) {
-                actualResult = lhs;
-                call = c;
-            } else {
+            case CallExpression ce -> {
+                actualResult = null;
+                call = ce;
+            }
+            case MethodCallExpression me -> {
+                actualResult = null;
+                call = me;
+            }
+            case AssignmentExpression as -> {
+                final Expr lhs = as.lhs();
+                final Expr rhs = as.rhs();
+                if ((rhs instanceof Call c) && (lhs instanceof ProgramVariable)) {
+                    actualResult = lhs;
+                    call = c;
+                } else {
+                    return null;
+                }
+            }
+            case null, default -> {
                 return null;
             }
-        }
-        case null, default -> {
-            return null;
-        }
         }
 
         // receiver must be simple

@@ -614,54 +614,54 @@ public class ChangeHistory extends AbstractService {
             x.setDataLocation(null); // assume that this unit is new
         } else if (parent instanceof CompilationUnit x) {
             switch (role) {
-            case 0:
-                x.setPackageSpecification((PackageSpecification) child);
-                break;
-            case 1:
-                ASTList<Import> list = x.getImports();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setImports(list);
-                }
-                list.add(index, (Import) child);
-                break;
-            case 2:
-                ASTList<TypeDeclaration> list2 = x.getDeclarations();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setDeclarations(list2);
-                }
-                list2.add(index, (TypeDeclaration) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setPackageSpecification((PackageSpecification) child);
+                    break;
+                case 1:
+                    ASTList<Import> list = x.getImports();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setImports(list);
+                    }
+                    list.add(index, (Import) child);
+                    break;
+                case 2:
+                    ASTList<TypeDeclaration> list2 = x.getDeclarations();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setDeclarations(list2);
+                    }
+                    list2.add(index, (TypeDeclaration) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof Import x) {
             switch (role) {
-            case 0:
-                x.setReference((TypeReferenceInfix) child);
-                break;
-            case 1:
-                x.setStaticIdentifier((Identifier) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setReference((TypeReferenceInfix) child);
+                    break;
+                case 1:
+                    x.setStaticIdentifier((Identifier) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof PackageSpecification x) {
             switch (role) {
-            case 0:
-                x.setPackageReference((PackageReference) child);
-                break;
-            case 1:
-                ASTList<AnnotationUseSpecification> rpel = x.getAnnotations();
-                if (rpel == null) {
-                    rpel = new ASTArrayList<>();
-                    x.setAnnotations(rpel);
-                }
-                rpel.add(index, (AnnotationUseSpecification) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setPackageReference((PackageReference) child);
+                    break;
+                case 1:
+                    ASTList<AnnotationUseSpecification> rpel = x.getAnnotations();
+                    if (rpel == null) {
+                        rpel = new ASTArrayList<>();
+                        x.setAnnotations(rpel);
+                    }
+                    rpel.add(index, (AnnotationUseSpecification) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof StatementBlock x) {
             ASTList<Statement> list = x.getBody();
@@ -672,109 +672,109 @@ public class ChangeHistory extends AbstractService {
             list.add(index, (Statement) child);
         } else if (parent instanceof ClassDeclaration x) {
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list);
-                }
-                list.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 2:
-                x.setExtendedTypes((Extends) child);
-                break;
-            case 3:
-                x.setImplementedTypes((Implements) child);
-                break;
-            case 4:
-                ASTList<MemberDeclaration> list2 = x.getMembers();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setMembers(list2);
-                }
-                list2.add(index, (MemberDeclaration) child);
-                break;
-            case 5:
-                ASTList<TypeParameterDeclaration> list3 = x.getTypeParameters();
-                if (list3 == null) {
-                    list3 = new ASTArrayList<>();
-                    x.setTypeParameters(list3);
-                }
-                list3.add(index, (TypeParameterDeclaration) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list);
+                    }
+                    list.add(index, (DeclarationSpecifier) child);
+                    break;
+                case 1:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 2:
+                    x.setExtendedTypes((Extends) child);
+                    break;
+                case 3:
+                    x.setImplementedTypes((Implements) child);
+                    break;
+                case 4:
+                    ASTList<MemberDeclaration> list2 = x.getMembers();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setMembers(list2);
+                    }
+                    list2.add(index, (MemberDeclaration) child);
+                    break;
+                case 5:
+                    ASTList<TypeParameterDeclaration> list3 = x.getTypeParameters();
+                    if (list3 == null) {
+                        list3 = new ASTArrayList<>();
+                        x.setTypeParameters(list3);
+                    }
+                    list3.add(index, (TypeParameterDeclaration) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof EnumDeclaration x) {
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list);
-                }
-                list.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 2:
-                x.setImplementedTypes((Implements) child);
-                break;
-            case 3:
-                ASTList<MemberDeclaration> list2 = x.getMembers();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setMembers(list2);
-                }
-                list2.add(index, (MemberDeclaration) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list);
+                    }
+                    list.add(index, (DeclarationSpecifier) child);
+                    break;
+                case 1:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 2:
+                    x.setImplementedTypes((Implements) child);
+                    break;
+                case 3:
+                    ASTList<MemberDeclaration> list2 = x.getMembers();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setMembers(list2);
+                    }
+                    list2.add(index, (MemberDeclaration) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof ClassInitializer x) {
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list);
-                }
-                list.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setBody((StatementBlock) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list);
+                    }
+                    list.add(index, (DeclarationSpecifier) child);
+                    break;
+                case 1:
+                    x.setBody((StatementBlock) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof FieldDeclaration x) {
             // also EnumConstantDeclaration
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list);
-                }
-                list.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setTypeReference((TypeReference) child);
-                break;
-            case 2:
-                ASTList<FieldSpecification> list2 = x.getFieldSpecifications();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setFieldSpecifications(list2);
-                }
-                list2.add(index, (FieldSpecification) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list);
+                    }
+                    list.add(index, (DeclarationSpecifier) child);
+                    break;
+                case 1:
+                    x.setTypeReference((TypeReference) child);
+                    break;
+                case 2:
+                    ASTList<FieldSpecification> list2 = x.getFieldSpecifications();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setFieldSpecifications(list2);
+                    }
+                    list2.add(index, (FieldSpecification) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof InheritanceSpecification x) {
             ASTList<TypeReference> list = x.getSupertypes();
@@ -786,132 +786,132 @@ public class ChangeHistory extends AbstractService {
         } else if (parent instanceof InterfaceDeclaration x) {
             // Includes AnnotationDeclaration
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list);
-                }
-                list.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 2:
-                x.setExtendedTypes((Extends) child);
-                break;
-            case 4:
-                ASTList<MemberDeclaration> list2 = x.getMembers();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setMembers(list2);
-                }
-                list2.add(index, (MemberDeclaration) child);
-                break;
-            case 5:
-                ASTList<TypeParameterDeclaration> list3 = x.getTypeParameters();
-                if (list3 == null) {
-                    list3 = new ASTArrayList<>();
-                    x.setTypeParameters(list3);
-                }
-                list3.add(index, (TypeParameterDeclaration) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list);
+                    }
+                    list.add(index, (DeclarationSpecifier) child);
+                    break;
+                case 1:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 2:
+                    x.setExtendedTypes((Extends) child);
+                    break;
+                case 4:
+                    ASTList<MemberDeclaration> list2 = x.getMembers();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setMembers(list2);
+                    }
+                    list2.add(index, (MemberDeclaration) child);
+                    break;
+                case 5:
+                    ASTList<TypeParameterDeclaration> list3 = x.getTypeParameters();
+                    if (list3 == null) {
+                        list3 = new ASTArrayList<>();
+                        x.setTypeParameters(list3);
+                    }
+                    list3.add(index, (TypeParameterDeclaration) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof LocalVariableDeclaration x) {
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list2 = x.getDeclarationSpecifiers();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list2);
-                }
-                list2.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setTypeReference((TypeReference) child);
-                break;
-            case 2:
-                ASTList<VariableSpecification> list3 = x.getVariableSpecifications();
-                if (list3 == null) {
-                    list3 = new ASTArrayList<>();
-                    x.setVariableSpecifications(list3);
-                }
-                list3.add(index, (VariableSpecification) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<DeclarationSpecifier> list2 = x.getDeclarationSpecifiers();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list2);
+                    }
+                    list2.add(index, (DeclarationSpecifier) child);
+                    break;
+                case 1:
+                    x.setTypeReference((TypeReference) child);
+                    break;
+                case 2:
+                    ASTList<VariableSpecification> list3 = x.getVariableSpecifications();
+                    if (list3 == null) {
+                        list3 = new ASTArrayList<>();
+                        x.setVariableSpecifications(list3);
+                    }
+                    list3.add(index, (VariableSpecification) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof MethodDeclaration x) {
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list);
-                }
-                list.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setTypeReference((TypeReference) child);
-                break;
-            case 2:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 3:
-                ASTList<ParameterDeclaration> list2 = x.getParameters();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setParameters(list2);
-                }
-                list2.add(index, (ParameterDeclaration) child);
-                break;
-            case 4:
-                x.setThrown((Throws) child);
-                break;
-            case 5:
-                x.setBody((StatementBlock) child);
-                break;
-            // case 6:
-            // x.setVarArgMethod((VarArgSpecifier) child);
-            // break;
-            case 7:
-                ASTList<TypeParameterDeclaration> list3 = x.getTypeParameters();
-                if (list3 == null) {
-                    list3 = new ASTArrayList<>();
-                    x.setTypeParameters(list3);
-                }
-                list3.add(index, (TypeParameterDeclaration) child);
-                break;
-            case 8:
-                if (x instanceof AnnotationPropertyDeclaration) {
-                    // this is valid. Go into default otherwise.
-                    ((AnnotationPropertyDeclaration) x).setDefaultValue((Expression) child);
+                case 0:
+                    ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list);
+                    }
+                    list.add(index, (DeclarationSpecifier) child);
                     break;
-                }
-                // error. go into default handling.
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 1:
+                    x.setTypeReference((TypeReference) child);
+                    break;
+                case 2:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 3:
+                    ASTList<ParameterDeclaration> list2 = x.getParameters();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setParameters(list2);
+                    }
+                    list2.add(index, (ParameterDeclaration) child);
+                    break;
+                case 4:
+                    x.setThrown((Throws) child);
+                    break;
+                case 5:
+                    x.setBody((StatementBlock) child);
+                    break;
+                // case 6:
+                // x.setVarArgMethod((VarArgSpecifier) child);
+                // break;
+                case 7:
+                    ASTList<TypeParameterDeclaration> list3 = x.getTypeParameters();
+                    if (list3 == null) {
+                        list3 = new ASTArrayList<>();
+                        x.setTypeParameters(list3);
+                    }
+                    list3.add(index, (TypeParameterDeclaration) child);
+                    break;
+                case 8:
+                    if (x instanceof AnnotationPropertyDeclaration) {
+                        // this is valid. Go into default otherwise.
+                        ((AnnotationPropertyDeclaration) x).setDefaultValue((Expression) child);
+                        break;
+                    }
+                    // error. go into default handling.
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof ParameterDeclaration x) {
             switch (role) {
-            case 0:
-                ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDeclarationSpecifiers(list);
-                }
-                list.add(index, (DeclarationSpecifier) child);
-                break;
-            case 1:
-                x.setTypeReference((TypeReference) child);
-                break;
-            case 2:
-                x.setVariableSpecification((VariableSpecification) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<DeclarationSpecifier> list = x.getDeclarationSpecifiers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDeclarationSpecifiers(list);
+                    }
+                    list.add(index, (DeclarationSpecifier) child);
+                    break;
+                case 1:
+                    x.setTypeReference((TypeReference) child);
+                    break;
+                case 2:
+                    x.setVariableSpecification((VariableSpecification) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof Throws x) {
             ASTList<TypeReference> list = x.getExceptions();
@@ -922,14 +922,14 @@ public class ChangeHistory extends AbstractService {
             list.add(index, (TypeReference) child);
         } else if (parent instanceof VariableSpecification x) {
             switch (role) {
-            case 0:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 1:
-                x.setInitializer((Expression) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 1:
+                    x.setInitializer((Expression) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof ArrayInitializer x) {
             ASTList<Expression> list = x.getArguments();
@@ -951,44 +951,44 @@ public class ChangeHistory extends AbstractService {
             if (parent instanceof TypeOperator) {
                 if (parent instanceof New y) {
                     switch (role) {
-                    case 0:
-                        break;
-                    case 1:
-                        y.setTypeReference((TypeReference) child);
-                        break;
-                    case 2:
-                        y.setReferencePrefix((ReferencePrefix) child);
-                        break;
-                    case 3:
-                        y.setClassDeclaration((ClassDeclaration) child);
-                        break;
-                    default:
-                        throw new IllegalChangeReportException("Illegal child role in " + dc);
+                        case 0:
+                            break;
+                        case 1:
+                            y.setTypeReference((TypeReference) child);
+                            break;
+                        case 2:
+                            y.setReferencePrefix((ReferencePrefix) child);
+                            break;
+                        case 3:
+                            y.setClassDeclaration((ClassDeclaration) child);
+                            break;
+                        default:
+                            throw new IllegalChangeReportException("Illegal child role in " + dc);
                     }
                 } else if (parent instanceof NewArray y) {
                     switch (role) {
-                    case 0:
-                        break;
-                    case 1:
-                        y.setTypeReference((TypeReference) child);
-                        break;
-                    case 3:
-                        y.setArrayInitializer((ArrayInitializer) child);
-                        break;
-                    default:
-                        throw new IllegalChangeReportException("Illegal child role in " + dc);
+                        case 0:
+                            break;
+                        case 1:
+                            y.setTypeReference((TypeReference) child);
+                            break;
+                        case 3:
+                            y.setArrayInitializer((ArrayInitializer) child);
+                            break;
+                        default:
+                            throw new IllegalChangeReportException("Illegal child role in " + dc);
                     }
                 } else {
                     // includes TypeCast and Instanceof
                     TypeOperator y = (TypeOperator) parent;
                     switch (role) {
-                    case 0:
-                        break;
-                    case 1:
-                        y.setTypeReference((TypeReference) child);
-                        break;
-                    default:
-                        throw new IllegalChangeReportException("Illegal child role in " + dc);
+                        case 0:
+                            break;
+                        case 1:
+                            y.setTypeReference((TypeReference) child);
+                            break;
+                        default:
+                            throw new IllegalChangeReportException("Illegal child role in " + dc);
                     }
                 }
             }
@@ -996,30 +996,30 @@ public class ChangeHistory extends AbstractService {
             x.setReferencePrefix((ReferencePrefix) child);
         } else if (parent instanceof ArrayReference x) {
             switch (role) {
-            case 0:
-                x.setReferencePrefix((ReferencePrefix) child);
-                break;
-            case 1:
-                ASTList<Expression> list = x.getDimensionExpressions();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setDimensionExpressions(list);
-                }
-                list.add(index, (Expression) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setReferencePrefix((ReferencePrefix) child);
+                    break;
+                case 1:
+                    ASTList<Expression> list = x.getDimensionExpressions();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setDimensionExpressions(list);
+                    }
+                    list.add(index, (Expression) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof FieldReference x) {
             switch (role) {
-            case 0:
-                x.setReferencePrefix((ReferencePrefix) child);
-                break;
-            case 1:
-                x.setIdentifier((Identifier) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setReferencePrefix((ReferencePrefix) child);
+                    break;
+                case 1:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof VariableReference x) {
             x.setIdentifier((Identifier) child);
@@ -1027,93 +1027,93 @@ public class ChangeHistory extends AbstractService {
             x.setReferencePrefix((ReferencePrefix) child);
         } else if (parent instanceof MethodReference x) {
             switch (role) {
-            case 0:
-                x.setReferencePrefix((ReferencePrefix) child);
-                break;
-            case 1:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 2:
-                ASTList<Expression> list = x.getArguments();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setArguments(list);
-                }
-                list.add(index, (Expression) child);
-                break;
-            case 3:
-                ASTList<TypeArgumentDeclaration> list2 = x.getTypeArguments();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setTypeArguments(list2);
-                }
-                list2.add(index, (TypeArgumentDeclaration) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setReferencePrefix((ReferencePrefix) child);
+                    break;
+                case 1:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 2:
+                    ASTList<Expression> list = x.getArguments();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setArguments(list);
+                    }
+                    list.add(index, (Expression) child);
+                    break;
+                case 3:
+                    ASTList<TypeArgumentDeclaration> list2 = x.getTypeArguments();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setTypeArguments(list2);
+                    }
+                    list2.add(index, (TypeArgumentDeclaration) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof TypeReferenceInfix x) {
             // includes PackageReference, TypeReference, URQ
             switch (role) {
-            case 0:
-                x.setReferencePrefix((ReferencePrefix) child);
-                break;
-            case 1:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 2:
-                if (x instanceof TypeReference y) {
-                    ASTList<TypeArgumentDeclaration> list2 = y.getTypeArguments();
-                    if (list2 == null) {
-                        list2 = new ASTArrayList<>();
-                        y.setTypeArguments(list2);
-                    }
-                    list2.add(index, (TypeArgumentDeclaration) child);
+                case 0:
+                    x.setReferencePrefix((ReferencePrefix) child);
                     break;
-                } else if (x instanceof UncollatedReferenceQualifier y) {
-                    ASTList<TypeArgumentDeclaration> list2 = y.getTypeArguments();
-                    if (list2 == null) {
-                        list2 = new ASTArrayList<>();
-                        y.setTypeArguments(list2);
-                    }
-                    list2.add(index, (TypeArgumentDeclaration) child);
+                case 1:
+                    x.setIdentifier((Identifier) child);
                     break;
-                }
-                // fall through to error handling (PackageReference)
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 2:
+                    if (x instanceof TypeReference y) {
+                        ASTList<TypeArgumentDeclaration> list2 = y.getTypeArguments();
+                        if (list2 == null) {
+                            list2 = new ASTArrayList<>();
+                            y.setTypeArguments(list2);
+                        }
+                        list2.add(index, (TypeArgumentDeclaration) child);
+                        break;
+                    } else if (x instanceof UncollatedReferenceQualifier y) {
+                        ASTList<TypeArgumentDeclaration> list2 = y.getTypeArguments();
+                        if (list2 == null) {
+                            list2 = new ASTArrayList<>();
+                            y.setTypeArguments(list2);
+                        }
+                        list2.add(index, (TypeArgumentDeclaration) child);
+                        break;
+                    }
+                    // fall through to error handling (PackageReference)
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof EnumConstructorReference x) {
             switch (role) {
-            case 0:
-                x.setClassDeclaration((ClassDeclaration) child);
-                break;
-            case 1:
-                ASTList<Expression> list = x.getArguments();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setArguments(list);
-                }
-                list.add(index, (Expression) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setClassDeclaration((ClassDeclaration) child);
+                    break;
+                case 1:
+                    ASTList<Expression> list = x.getArguments();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setArguments(list);
+                    }
+                    list.add(index, (Expression) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof SuperConstructorReference x) {
             switch (role) {
-            case 0:
-                x.setReferencePrefix((ReferencePrefix) child);
-                break;
-            case 1:
-                ASTList<Expression> list = x.getArguments();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setArguments(list);
-                }
-                list.add(index, (Expression) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setReferencePrefix((ReferencePrefix) child);
+                    break;
+                case 1:
+                    ASTList<Expression> list = x.getArguments();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setArguments(list);
+                    }
+                    list.add(index, (Expression) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof SuperReference x) {
             x.setReferencePrefix((ReferencePrefix) child);
@@ -1131,41 +1131,41 @@ public class ChangeHistory extends AbstractService {
             x.setIdentifier((Identifier) child);
         } else if (parent instanceof Assert x) {
             switch (role) {
-            case 0:
-                x.setCondition((Expression) child);
-                break;
-            case 1:
-                x.setMessage((Expression) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setCondition((Expression) child);
+                    break;
+                case 1:
+                    x.setMessage((Expression) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof Case x) {
             switch (role) {
-            case 0:
-                x.setExpression((Expression) child);
-                break;
-            case 1:
-                ASTList<Statement> list = x.getBody();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setBody(list);
-                }
-                list.add(index, (Statement) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setExpression((Expression) child);
+                    break;
+                case 1:
+                    ASTList<Statement> list = x.getBody();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setBody(list);
+                    }
+                    list.add(index, (Statement) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof Catch x) {
             switch (role) {
-            case 0:
-                x.setParameterDeclaration((ParameterDeclaration) child);
-                break;
-            case 1:
-                x.setBody((StatementBlock) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setParameterDeclaration((ParameterDeclaration) child);
+                    break;
+                case 1:
+                    x.setBody((StatementBlock) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof Default x) {
             ASTList<Statement> list = x.getBody();
@@ -1176,30 +1176,30 @@ public class ChangeHistory extends AbstractService {
             list.add(index, (Statement) child);
         } else if (parent instanceof LoopStatement x) {
             switch (role) {
-            case 0:
-                ASTList<LoopInitializer> list = x.getInitializers();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setInitializers(list);
-                }
-                list.add(index, (LoopInitializer) child);
-                break;
-            case 1:
-                x.setGuard((Expression) child);
-                break;
-            case 2:
-                ASTList<Expression> list2 = x.getUpdates();
-                if (list2 == null) {
-                    list2 = new ASTArrayList<>();
-                    x.setUpdates(list2);
-                }
-                list2.add(index, (Expression) child);
-                break;
-            case 3:
-                x.setBody((Statement) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    ASTList<LoopInitializer> list = x.getInitializers();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setInitializers(list);
+                    }
+                    list.add(index, (LoopInitializer) child);
+                    break;
+                case 1:
+                    x.setGuard((Expression) child);
+                    break;
+                case 2:
+                    ASTList<Expression> list2 = x.getUpdates();
+                    if (list2 == null) {
+                        list2 = new ASTArrayList<>();
+                        x.setUpdates(list2);
+                    }
+                    list2.add(index, (Expression) child);
+                    break;
+                case 3:
+                    x.setBody((Statement) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof Else x) {
             x.setBody((Statement) child);
@@ -1207,121 +1207,121 @@ public class ChangeHistory extends AbstractService {
             x.setBody((StatementBlock) child);
         } else if (parent instanceof If x) {
             switch (role) {
-            case 0:
-                x.setExpression((Expression) child);
-                break;
-            case 1:
-                x.setThen((Then) child);
-                break;
-            case 2:
-                x.setElse((Else) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setExpression((Expression) child);
+                    break;
+                case 1:
+                    x.setThen((Then) child);
+                    break;
+                case 2:
+                    x.setElse((Else) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof LabeledStatement x) {
             switch (role) {
-            case 0:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 1:
-                x.setBody((Statement) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 1:
+                    x.setBody((Statement) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof ExpressionJumpStatement x) {
             // Return and Throw
             x.setExpression((Expression) child);
         } else if (parent instanceof Switch x) {
             switch (role) {
-            case 0:
-                x.setExpression((Expression) child);
-                break;
-            case 1:
-                ASTList<Branch> list = x.getBranchList();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setBranchList(list);
-                }
-                list.add(index, (Branch) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setExpression((Expression) child);
+                    break;
+                case 1:
+                    ASTList<Branch> list = x.getBranchList();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setBranchList(list);
+                    }
+                    list.add(index, (Branch) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof SynchronizedBlock x) {
             switch (role) {
-            case 0:
-                x.setExpression((Expression) child);
-                break;
-            case 1:
-                x.setBody((StatementBlock) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setExpression((Expression) child);
+                    break;
+                case 1:
+                    x.setBody((StatementBlock) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof Then x) {
             x.setBody((Statement) child);
         } else if (parent instanceof Try x) {
             switch (role) {
-            case 0:
-                x.setBody((StatementBlock) child);
-                break;
-            case 1:
-                ASTList<Branch> list = x.getBranchList();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setBranchList(list);
-                }
-                list.add(index, (Branch) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setBody((StatementBlock) child);
+                    break;
+                case 1:
+                    ASTList<Branch> list = x.getBranchList();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setBranchList(list);
+                    }
+                    list.add(index, (Branch) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof AnnotationUseSpecification x) {
             switch (role) {
-            case 0:
-                x.setTypeReference((TypeReference) child);
-                break;
-            case 1:
-                ASTList<AnnotationElementValuePair> list = x.getElementValuePairs();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setElementValuePairs(list);
-                }
-                list.add(index, (AnnotationElementValuePair) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setTypeReference((TypeReference) child);
+                    break;
+                case 1:
+                    ASTList<AnnotationElementValuePair> list = x.getElementValuePairs();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setElementValuePairs(list);
+                    }
+                    list.add(index, (AnnotationElementValuePair) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof AnnotationElementValuePair x) {
             switch (role) {
-            case 0:
-                x.setElement((AnnotationPropertyReference) child);
-                break;
-            case 1:
-                x.setElementValue((Expression) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setElement((AnnotationPropertyReference) child);
+                    break;
+                case 1:
+                    x.setElementValue((Expression) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof TypeArgumentDeclaration x) {
             x.setTypeReference((TypeReference) child);
         } else if (parent instanceof TypeParameterDeclaration x) {
             switch (role) {
-            case 0:
-                x.setIdentifier((Identifier) child);
-                break;
-            case 1:
-                ASTList<TypeReference> list = x.getBounds();
-                if (list == null) {
-                    list = new ASTArrayList<>();
-                    x.setBound(list);
-                }
-                list.add(index, (TypeReference) child);
-                break;
-            default:
-                throw new IllegalChangeReportException("Illegal child role in " + dc);
+                case 0:
+                    x.setIdentifier((Identifier) child);
+                    break;
+                case 1:
+                    ASTList<TypeReference> list = x.getBounds();
+                    if (list == null) {
+                        list = new ASTArrayList<>();
+                        x.setBound(list);
+                    }
+                    list.add(index, (TypeReference) child);
+                    break;
+                default:
+                    throw new IllegalChangeReportException("Illegal child role in " + dc);
             }
         } else if (parent instanceof AnnotationPropertyReference x) {
             x.setIdentifier((Identifier) child);

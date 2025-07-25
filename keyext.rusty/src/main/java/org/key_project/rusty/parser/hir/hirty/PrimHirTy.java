@@ -21,10 +21,10 @@ public interface PrimHirTy {
         @Override
         public @Nullable Class<? extends PrimHirTy> getType(String tag) {
             return switch (tag) {
-            case "Int" -> Int.class;
-            case "Uint" -> Uint.class;
-            case "Bool" -> Bool.class;
-            default -> null;
+                case "Int" -> Int.class;
+                case "Uint" -> Uint.class;
+                case "Bool" -> Bool.class;
+                default -> null;
             };
         }
     }

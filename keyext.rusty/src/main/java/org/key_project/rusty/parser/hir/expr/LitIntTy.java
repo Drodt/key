@@ -23,10 +23,10 @@ public interface LitIntTy {
         @Override
         public @Nullable Class<? extends LitIntTy> getType(String tag) {
             return switch (tag) {
-            case "Signed" -> Signed.class;
-            case "Unsigned" -> Unsigned.class;
-            case "Unsuffixed" -> Unsuffixed.class;
-            default -> null;
+                case "Signed" -> Signed.class;
+                case "Unsigned" -> Unsigned.class;
+                case "Unsuffixed" -> Unsuffixed.class;
+                default -> null;
             };
         }
     }

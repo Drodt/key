@@ -328,11 +328,11 @@ public class LexPathOrdering implements TermOrdering {
                 return 3;
             }
             return switch (opStr) {
-            case "add", "intersect", "seqSingleton" -> 6;
-            case "mul", "union", "seqConcat" -> 7;
-            case "div", "infiniteUnion" -> 8;
-            case "jdiv", "setMinus" -> 9;
-            default -> null;
+                case "add", "intersect", "seqSingleton" -> 6;
+                case "mul", "union", "seqConcat" -> 7;
+                case "div", "infiniteUnion" -> 8;
+                case "jdiv", "setMinus" -> 9;
+                default -> null;
             };
         }
     }

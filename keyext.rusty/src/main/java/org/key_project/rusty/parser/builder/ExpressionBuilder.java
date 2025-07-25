@@ -278,12 +278,12 @@ public class ExpressionBuilder extends DefaultBuilder {
         for (int i = 0; i < terms.size(); i++) {
             String opname = "";
             switch (ctx.op.get(i).getType()) {
-            case KeYRustyLexer.UTF_INTERSECT -> opname = "intersect";
-            case KeYRustyLexer.UTF_SETMINUS -> opname = "setMinus";
-            case KeYRustyLexer.UTF_UNION -> opname = "union";
-            case KeYRustyLexer.PLUS -> opname = "add";
-            case KeYRustyLexer.MINUS -> opname = "sub";
-            default -> semanticError(ctx, "Unexpected token: %s", ctx.op.get(i));
+                case KeYRustyLexer.UTF_INTERSECT -> opname = "intersect";
+                case KeYRustyLexer.UTF_SETMINUS -> opname = "setMinus";
+                case KeYRustyLexer.UTF_UNION -> opname = "union";
+                case KeYRustyLexer.PLUS -> opname = "add";
+                case KeYRustyLexer.MINUS -> opname = "sub";
+                default -> semanticError(ctx, "Unexpected token: %s", ctx.op.get(i));
             }
             Term cur = terms.get(i);
             last = binaryLDTSpecificTerm(ctx, opname, last, cur);
