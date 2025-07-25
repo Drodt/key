@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ReflectionImport {
 
-    private static String getTypeName(Class c) {
+    private static String getTypeName(Class<?> c) {
         String n = c.getName();
         if (n.charAt(0) == '[') {
             try {
@@ -25,7 +25,7 @@ public class ReflectionImport {
         return n;
     }
 
-    private static String[] getTypeNames(Class[] classes) {
+    private static String[] getTypeNames(Class<?>[] classes) {
         String[] names = new String[classes.length];
         for (int i = 0; i < names.length; i += 1) {
             names[i] = getTypeName(classes[i]);
@@ -40,7 +40,7 @@ public class ReflectionImport {
     public static ClassFile getClassFile(String classname) {
         // if cached, return
         classname = classname.replace('$', '.');
-        Class c = null;
+        Class<?> c = null;
         try {
             c = Class.forName(classname);
         } catch (ClassNotFoundException cnfe) {
@@ -51,7 +51,7 @@ public class ReflectionImport {
         cf.setPhysicalName(n);
         cf.setFullName(n);
         cf.setName(getShortName(n));
-        Class sup = c.getSuperclass();
+        Class<?> sup = c.getSuperclass();
         if (sup != null) {
             cf.setSuperName(sup.getName());
         }
@@ -82,9 +82,9 @@ public class ReflectionImport {
         }
         cf.setFields(fields);
 
-        Constructor[] dconstructors = c.getDeclaredConstructors();
+        java.lang.reflect.Constructor<?>[] dconstructors = c.getDeclaredConstructors();
         List<ConstructorInfo> constructors = new ArrayList<>(dconstructors.length);
-        for (Constructor co : dconstructors) {
+        for (java.lang.reflect.Constructor<?> co : dconstructors) {
             constructors.add(new ConstructorInfo(co.getModifiers(), getShortName(co.getName()),
                 getTypeNames(co.getParameterTypes()), getTypeNames(co.getExceptionTypes()), cf));
 

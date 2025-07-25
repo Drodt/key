@@ -9,14 +9,6 @@ plugins {
     //https://docs.gradle.org/current/userguide/eclipse_plugin.html
     id("eclipse")  //support for Eclipse
 
-    //Checks and adds the license header of the source files:
-    // Task: `licenseMain' and `licenseFormatMain'
-    //https://github.com/hierynomus/license-gradle-plugin
-    id "com.github.hierynomus.license-base" version "0.16.1"
-    //Generates reports on the license of used packages: Task `downloadLicenses'
-    //Some Licenses requires an entry in the credits (MIT, BSD)
-    id "com.github.hierynomus.license-report" version "0.16.1"
-
     // Gives `gradle dependencyUpdate` to show which dependency has a newer version
     // id "com.github.ben-manes.versions" version "0.39.0"
 
@@ -24,7 +16,7 @@ plugins {
     id "com.diffplug.spotless" version "7.0.4"
 
     // EISOP Checker Framework
-    id "org.checkerframework" version "0.6.53"
+    id "org.checkerframework" version "0.6.55"
 
     id("org.sonarqube") version "6.2.0.5505"
 }
@@ -105,9 +97,9 @@ subprojects {
 
         testImplementation("ch.qos.logback:logback-classic:1.5.18")
         testImplementation("org.assertj:assertj-core:3.27.3")
-        testImplementation("ch.qos.logback:logback-classic:1.5.17")
+        testImplementation("ch.qos.logback:logback-classic:1.5.18")
 
-        testImplementation(platform("org.junit:junit-bom:5.12.2"))
+        testImplementation(platform("org.junit:junit-bom:5.13.2"))
         testImplementation ("org.junit.jupiter:junit-jupiter-api")
         testImplementation ("org.junit.jupiter:junit-jupiter-api")
         testImplementation ("org.junit.jupiter:junit-jupiter-params")
@@ -116,10 +108,10 @@ subprojects {
         testImplementation project(':key.util')
 
         // test fixtures
-        testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.2")
-        testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
+        testImplementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.19.1")
+        testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1")
 
-        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.2'
     }
 
     tasks.withType(JavaCompile) {
@@ -138,11 +130,15 @@ subprojects {
     }
 
     tasks.withType(Test) {//Configure all tests
+
+        def examplesDir = rootProject.layout.projectDirectory.dir("key.ui/examples").getAsFile()
+        def runAllProofsReportDir = layout.buildDirectory.dir("report/runallproves/").get().getAsFile()
+
         systemProperty "test-resources", "src/test/resources"
         systemProperty "testcases", "src/test/resources/testcase"
         systemProperty "TACLET_PROOFS", "tacletProofs"
-        systemProperty "EXAMPLES_DIR", file("$rootProject/key.ui/examples")
-        systemProperty "RUNALLPROOFS_DIR", "$buildDir/report/runallproves"
+        systemProperty "EXAMPLES_DIR", "$examplesDir"
+        systemProperty "RUNALLPROOFS_DIR", "$runAllProofsReportDir"
 
         systemProperty "key.disregardSettings", "true"
         maxHeapSize = "4g"
@@ -178,7 +174,7 @@ subprojects {
         }
     }
 
-    task testFast(type: Test) {
+    tasks.register('testFast', Test) {
         group = "verification"
         useJUnitPlatform {
             excludeTags "slow", "performance", "interactive"
@@ -204,14 +200,14 @@ subprojects {
     // The following two tasks can be used to execute main methods from the project
     // The main class is set via "gradle -DmainClass=... execute --args ..."
     // see https://stackoverflow.com/questions/21358466/gradle-to-execute-java-class-without-modifying-build-gradle
-    task execute(type: JavaExec) {
+    tasks.register('execute', JavaExec) {
         description = 'Execute main method from the project. Set main class via "gradle -DmainClass=... execute --args ..."'
         group = "application"
         mainClass.set(System.getProperty('mainClass'))
         classpath = sourceSets.main.runtimeClasspath
     }
 
-    task executeInTests(type: JavaExec) {
+    tasks.register('executeInTests', JavaExec) {
         description = 'Execute main method from the project (tests loaded). Set main class via "gradle -DmainClass=... execute --args ..."'
         group = "application"
         mainClass.set(System.getProperty('mainClass'))
@@ -228,7 +224,7 @@ subprojects {
         ruleSets = ["category/java/errorprone.xml", "category/java/bestpractices.xml"]
     }
 
-    task pmdMainChanged(type: Pmd) {
+    tasks.register('pmdMainChanged', Pmd) {
         // Specify all files that should be checked
         def changedFiles = getChangedFiles()
         source pmdMain.source.filter { f -> f.getAbsoluteFile().toString() in changedFiles }
@@ -254,7 +250,7 @@ subprojects {
     }
 
 
-    task checkstyleMainChanged(type: Checkstyle) {
+    tasks.register('checkstyleMainChanged', Checkstyle) {
         // Specify all files that should be checked
         def changedFiles = getChangedFiles()
         source checkstyleMain.source.filter { f -> f.getAbsoluteFile().toString() in changedFiles }
@@ -289,28 +285,16 @@ subprojects {
         }
     }
 
-    task sourcesJar(type: Jar) {
+    tasks.register('sourcesJar', Jar) {
         description = 'Create a jar file with the sources from this project'
         from sourceSets.main.allJava
         archiveClassifier = 'sources'
     }
 
-    task javadocJar(type: Jar) {
+    tasks.register('javadocJar', Jar) {
         description = 'Create a jar file with the javadocs from this project'
         from javadoc
         archiveClassifier = 'javadoc'
-    }
-
-    license {//configures the license file header
-        header = file("$rootDir/gradle/header")
-
-        mapping {
-            //find styles here:
-            // http://code.mycila.com/license-maven-plugin/#supported-comment-types
-            java = "SLASHSTAR_STYLE" // DOUBLESLASH_STYLE
-            javascript = "SLASHSTAR_STYLE"
-        }
-        mapping("key", "SLASHSTAR_STYLE")
     }
 
     eclipse { //configures the generated .project and .classpath files.
@@ -500,7 +484,7 @@ subprojects {
     }
 }
 
-task start {
+tasks.register('start'){
     description = "Use :key.ui:run instead"
     doFirst {
         println "Use :key.ui:run instead"
@@ -508,14 +492,14 @@ task start {
 }
 
 // Generation of a JavaDoc across sub projects.
-task alldoc(type: Javadoc) {
+tasks.register('alldoc', Javadoc){
     group = "documentation"
     description = "Generate a JavaDoc across sub projects"
     def projects = subprojects
     //key.ui javadoc is broken
     source projects.collect { it.sourceSets.main.allJava }
     classpath = files(projects.collect { it.sourceSets.main.compileClasspath })
-    destinationDir = file("${buildDir}/docs/javadoc")
+    destinationDir = layout.buildDirectory.dir("docs/javadoc").getOrNull().getAsFile()
 
     if (JavaVersion.current().isJava9Compatible()) {
         //notworking on jenkins
@@ -540,12 +524,12 @@ task alldoc(type: Javadoc) {
 }
 
 // Creates a jar file with the javadoc over all sub projects.
-task alldocJar(type: Zip) {
+tasks.register('alldocJar', Zip){
     dependsOn alldoc
     description = 'Create a jar file with the javadoc over all sub projects'
     from alldoc
     archiveFileName = "key-api-doc-${project.version}.zip"
-    destinationDirectory = file("$buildDir/distribution")
+    destinationDirectory = layout.buildDirectory.dir("distribution").getOrNull()
 }
 
 //conditionally enable jacoco coverage when `-DjacocoEnabled=true` is given on CLI.
