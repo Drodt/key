@@ -18,9 +18,7 @@ import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.ProgramVariable;
-import org.key_project.rusty.logic.sort.GenericSort;
-import org.key_project.rusty.logic.sort.ParametricSortDecl;
-import org.key_project.rusty.logic.sort.SortImpl;
+import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.rusty.parser.ParsingFacade;
 import org.key_project.util.collection.ImmutableList;
@@ -66,7 +64,7 @@ public class DeclarationBuilder extends DefaultBuilder {
         var doc = ctx.DOC_COMMENT() != null
                 ? ctx.DOC_COMMENT().getText()
                 : null;
-        List<GenericSort> typeParameters = accept(ctx.formal_sort_parameters());
+        List<ParamSortParam> typeParameters = accept(ctx.formal_sort_parameters());
         if (typeParameters == null) {
             var s = new SortImpl(new Name(name), false);
             sorts().addSafely(s);
@@ -192,8 +190,8 @@ public class DeclarationBuilder extends DefaultBuilder {
             // parametric sort
             var declCtx = ctx.parametric_sort_decl();
             assert declCtx != null : "One of the two must be present";
-            List<GenericSort> typeParams = mapOf(declCtx.formal_sort_param_decl());
-            ImmutableList<GenericSort> params = ImmutableList.fromList(typeParams);
+            List<ParamSortParam> typeParams = mapOf(declCtx.formal_sort_param_decl());
+            ImmutableList<ParamSortParam> params = ImmutableList.fromList(typeParams);
             var doubled = CollectionUtil.findDuplicates(params);
             if (!doubled.isEmpty()) {
                 semanticError(declCtx,
@@ -209,18 +207,16 @@ public class DeclarationBuilder extends DefaultBuilder {
     }
 
     @Override
-    public GenericSort visitFormal_sort_param_decl(
+    public ParamSortParam visitFormal_sort_param_decl(
             KeYRustyParser.Formal_sort_param_declContext ctx) {
-        var name = ctx.simple_ident().getText();
-        Sort paramSort = sorts().lookup(name);
-        if (paramSort == null) {
-            semanticError(ctx, "Parameter sort %s not found", name);
-        }
-        if (!(paramSort instanceof GenericSort)) {
-            semanticError(ctx, "Parameter sort %s is not a generic sort", name);
-        }
+        if (ctx.simple_ident() != null) {
+            var name = ctx.simple_ident().getText();
 
-        return (GenericSort) paramSort;
+            return new GenericSortParam(new GenericSort(new Name(name)));
+        }
+        var name = new Name(ctx.const_param_decl().simple_ident().getText());
+        var sort = visitSortId(ctx.const_param_decl().sortId());
+        return new ConstParam(name, sort);
     }
 
     @Override

@@ -67,8 +67,10 @@ parametric_sort_decl
 
 formal_sort_param_decl
 :
-    simple_ident
+    simple_ident | const_param_decl
 ;
+
+const_param_decl: CONST simple_ident COLON sortId ;
 
 datatype_decl:
   doc=DOC_COMMENT?
@@ -82,12 +84,27 @@ datatype_decl:
 
 sortId
 :
-    id=simple_ident_dots (EMPTYBRACKETS)* formal_sort_parameters?
+    id=simple_ident_dots formal_sort_parameters?
 ;
 
 formal_sort_parameters
 :
     OPENTYPEPARAMS
-    sortId (COMMA sortId)*
+    formal_sort_param (COMMA formal_sort_param)*
     CLOSETYPEPARAMS
+;
+
+formal_sort_param : sortId | term ;
+
+func_decl
+:
+    doc=DOC_COMMENT?
+    (UNIQUE)?
+    func_name = funcpred_name
+    formal_sort_parameters?
+	whereToBind=where_to_bind?
+    argSorts = arg_sorts
+    IMP
+    retSort = sortId
+    SEMI
 ;

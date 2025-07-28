@@ -7,10 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.key_project.logic.Choice;
-import org.key_project.logic.Name;
-import org.key_project.logic.Named;
-import org.key_project.logic.Namespace;
+import org.key_project.logic.*;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.ParsableVariable;
@@ -27,8 +24,7 @@ import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
-import org.key_project.rusty.logic.sort.ParametricSortDecl;
-import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.util.collection.ImmutableList;
 
@@ -263,7 +259,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
             if (sortDecl == null) {
                 semanticError(ctx, "Could not find polymorphic sort: %s", name);
             }
-            ImmutableList<Sort> parameters = getSorts(ctx.formal_sort_parameters());
+            ImmutableList<ParamSortArg> parameters = getParamSortArgs(ctx.formal_sort_parameters());
             s = ParametricSortInstance.get(sortDecl, parameters);
         } else {
             s = lookupSort(name);
@@ -274,16 +270,25 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         return s;
     }
 
-    private ImmutableList<Sort> getSorts(KeYRustyParser.Formal_sort_parametersContext ctx) {
-        List<Sort> seq = accept(ctx);
+    private ImmutableList<ParamSortArg> getParamSortArgs(
+            KeYRustyParser.Formal_sort_parametersContext ctx) {
+        List<ParamSortArg> seq = accept(ctx);
         assert seq != null;
         return ImmutableList.fromList(seq);
     }
 
     @Override
-    public List<Sort> visitFormal_sort_parameters(
+    public List<ParamSortArg> visitFormal_sort_parameters(
             KeYRustyParser.Formal_sort_parametersContext ctx) {
-        return mapOf(ctx.sortId());
+        return mapOf(ctx.formal_sort_param());
+    }
+
+    @Override
+    public ParamSortArg visitFormal_sort_param(KeYRustyParser.Formal_sort_paramContext ctx) {
+        if (ctx.sortId() != null) {
+            return new SortArg(visitSortId(ctx.sortId()));
+        }
+        return new TermArg((Term) visitTerm(ctx.term()));
     }
 
     public KeYRustyType visitTypemapping(KeYRustyParser.TypemappingContext ctx) {

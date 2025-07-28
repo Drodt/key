@@ -25,3 +25,5 @@ DIFFERENT     : '\\different';
 
 OPENTYPEPARAMS:'<' '[';
 CLOSETYPEPARAMS:']' '>';
+
+CONST : 'const';

@@ -6,7 +6,6 @@ package org.key_project.rusty.logic.sort;
 import java.util.Map;
 import java.util.Objects;
 import java.util.WeakHashMap;
-import java.util.function.Function;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.AbstractSort;
@@ -21,12 +20,12 @@ public class ParametricSortInstance extends AbstractSort {
     private static final Map<ParametricSortInstance, ParametricSortInstance> CACHE =
         new WeakHashMap<>();
 
-    private final ImmutableList<Sort> parameters;
+    private final ImmutableList<ParamSortArg> args;
     private final ParametricSortDecl base;
     private final ImmutableSet<Sort> extendsSorts;
 
     public static ParametricSortInstance get(ParametricSortDecl base,
-            ImmutableList<Sort> parameters) {
+            ImmutableList<ParamSortArg> parameters) {
         ParametricSortInstance sort =
             new ParametricSortInstance(base, parameters);
         ParametricSortInstance cached = CACHE.get(sort);
@@ -39,15 +38,15 @@ public class ParametricSortInstance extends AbstractSort {
     }
 
     // This must only be called in #get, which ensures that the cache is used.
-    private ParametricSortInstance(ParametricSortDecl base, ImmutableList<Sort> parameters) {
-        super(makeName(base, parameters), base.isAbstract());
+    private ParametricSortInstance(ParametricSortDecl base, ImmutableList<ParamSortArg> args) {
+        super(makeName(base, args), base.isAbstract());
 
         this.extendsSorts = ImmutableSet.singleton(RustyDLTheory.ANY);
         this.base = base;
-        this.parameters = parameters;
+        this.args = args;
     }
 
-    private static Name makeName(ParametricSortDecl base, ImmutableList<Sort> parameters) {
+    private static Name makeName(ParametricSortDecl base, ImmutableList<ParamSortArg> parameters) {
         // The [ ] are produced by the list's toString method.
         return new Name(base.name() + "<" + parameters + ">");
     }
@@ -56,14 +55,8 @@ public class ParametricSortInstance extends AbstractSort {
         return base;
     }
 
-    public ImmutableList<Sort> getParameters() {
-        return parameters;
-    }
-
-    public ParametricSortInstance map(Function<Sort, Sort> f) {
-        ImmutableList<Sort> newParameters = parameters.map(f);
-        // The cache ensures that no unnecessary duplicates are kept.
-        return get(base, newParameters);
+    public ImmutableList<ParamSortArg> getArgs() {
+        return args;
     }
 
     @Override
@@ -73,13 +66,13 @@ public class ParametricSortInstance extends AbstractSort {
         if (o == null || getClass() != o.getClass())
             return false;
         ParametricSortInstance that = (ParametricSortInstance) o;
-        return Objects.equals(parameters, that.parameters) &&
+        return Objects.equals(args, that.args) &&
                 base == that.base;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(parameters, base);
+        return Objects.hash(args, base);
     }
 
     @Override
@@ -105,8 +98,10 @@ public class ParametricSortInstance extends AbstractSort {
     }
 
     public Sort instantiate(GenericSort template, Sort instantiation) {
-        ImmutableList<Sort> newParameters =
-            parameters.map(s -> instantiate(template, instantiation, s));
+        ImmutableList<ParamSortArg> newParameters =
+            args.map(s -> s instanceof SortArg(Sort sort)
+                    ? new SortArg(instantiate(template, instantiation, sort))
+                    : s);
         return get(base, newParameters);
     }
 }

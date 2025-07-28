@@ -848,7 +848,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         return mapOf(ctx.term());
     }
 
-    /// Handles "[sort]::a.name.or.something.else"
+    /// Handles `[sort]::a.name.or.something.else`
     ///
     /// @param ctx
     /// @return a Term or an operator, depending on the referenced object.
