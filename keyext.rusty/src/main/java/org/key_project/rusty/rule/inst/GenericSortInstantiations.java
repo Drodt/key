@@ -42,7 +42,7 @@ public final class GenericSortInstantiations {
             ImmutableList<GenericSortCondition> p_conditions, LogicServices services) {
 
         ImmutableList<GenericSort> sorts = ImmutableSLList.nil();
-        GenericSortCondition c;
+        ImmutableList<GenericSortCondition> c;
 
         final Iterator<GenericSortCondition> it;
 
@@ -58,8 +58,10 @@ public final class GenericSortInstantiations {
                 p_instantiations.next();
             c = GenericSortCondition.createCondition(entry.key(), entry.value());
             if (c != null) {
-                p_conditions = p_conditions.prepend(c);
-                sorts = sorts.prepend(c.getGenericSort());
+                for (var cond : c) {
+                    p_conditions = p_conditions.prepend(cond);
+                    sorts = sorts.prepend(cond.getGenericSort());
+                }
             }
         }
         return create(sorts, p_conditions, services);
@@ -92,9 +94,10 @@ public final class GenericSortInstantiations {
             return Boolean.TRUE;
         }
 
-        final GenericSortCondition c = GenericSortCondition.createCondition(sv, p_entry);
-        if (c != null) {
-            return checkCondition(c);
+        final ImmutableList<GenericSortCondition> cs =
+            GenericSortCondition.createCondition(sv, p_entry);
+        if (cs != null) {
+            return checkConditions(cs);
         }
 
         final Term term = ((TermInstantiation) p_entry).getInstantiation();
@@ -106,6 +109,14 @@ public final class GenericSortInstantiations {
         }
     }
 
+    public Boolean checkConditions(ImmutableList<GenericSortCondition> p_condition) {
+        for (var cond : p_condition) {
+            var r = checkCondition(cond);
+            if (r == null || !r)
+                return null;
+        }
+        return true;
+    }
 
     /// @return Boolean.TRUE if the generic sort instantiations within "this" satisfy "p_condition",
     /// null otherwise (this means, "p_condition" could be satisfied by create a new

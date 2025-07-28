@@ -25,9 +25,10 @@ public class ParametricSortInstance extends AbstractSort {
     private final ImmutableSet<Sort> extendsSorts;
 
     public static ParametricSortInstance get(ParametricSortDecl base,
-            ImmutableList<ParamSortArg> parameters) {
+            ImmutableList<ParamSortArg> args) {
+        assert args.size() == base.getParameters().size();
         ParametricSortInstance sort =
-            new ParametricSortInstance(base, parameters);
+            new ParametricSortInstance(base, args);
         ParametricSortInstance cached = CACHE.get(sort);
         if (cached != null) {
             return cached;

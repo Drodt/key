@@ -27,8 +27,11 @@ public class ParametricFunctionInstance extends RFunction {
 
     public static ParametricFunctionInstance get(ParametricFunctionDecl decl,
             ImmutableList<ParamSortArg> args) {
-        var argSorts = instantiate(decl, args);
-        var fn = new ParametricFunctionInstance(decl, args, argSorts);
+        assert args.size() == decl.getParameters().size();
+        var instMap = getInstMap(decl, args);
+        var argSorts = instantiate(decl, instMap);
+        var sort = instantiate(decl.sort(), instMap);
+        var fn = new ParametricFunctionInstance(decl, args, argSorts, sort);
         var cached = CACHE.get(fn);
         if (cached != null) {
             return cached;
@@ -38,8 +41,8 @@ public class ParametricFunctionInstance extends RFunction {
     }
 
     private ParametricFunctionInstance(ParametricFunctionDecl base,
-            ImmutableList<ParamSortArg> args, ImmutableArray<Sort> argSorts) {
-        super(makeName(base, args), base.sort(), argSorts, base.getWhereToBind(), base.isUnique(),
+            ImmutableList<ParamSortArg> args, ImmutableArray<Sort> argSorts, Sort sort) {
+        super(makeName(base, args), sort, argSorts, base.getWhereToBind(), base.isUnique(),
             base.isRigid(),
             base.isSkolemConstant());
         this.base = base;
@@ -61,9 +64,20 @@ public class ParametricFunctionInstance extends RFunction {
     }
 
     private static ImmutableArray<Sort> instantiate(ParametricFunctionDecl base,
-            ImmutableList<ParamSortArg> args) {
+            HashMap<ParamSortParam, ParamSortArg> instMap) {
         var baseArgSorts = base.argSorts();
         var argSorts = new Sort[baseArgSorts.size()];
+
+        for (int i = 0; i < baseArgSorts.size(); i++) {
+            var sort = baseArgSorts.get(i);
+            argSorts[i] = instantiate(sort, instMap);
+        }
+
+        return new ImmutableArray<>(argSorts);
+    }
+
+    private static HashMap<ParamSortParam, ParamSortArg> getInstMap(ParametricFunctionDecl base,
+            ImmutableList<ParamSortArg> args) {
         var map = new HashMap<ParamSortParam, ParamSortArg>();
 
         for (int i = 0; i < base.getParameters().size(); i++) {
@@ -71,13 +85,7 @@ public class ParametricFunctionInstance extends RFunction {
             var arg = args.get(i);
             map.put(param, arg);
         }
-
-        for (int i = 0; i < baseArgSorts.size(); i++) {
-            var sort = baseArgSorts.get(i);
-            argSorts[i] = instantiate(sort, map);
-        }
-
-        return new ImmutableArray<>(argSorts);
+        return map;
     }
 
     private static Sort instantiate(Sort sort, Map<ParamSortParam, ParamSortArg> map) {
@@ -93,10 +101,12 @@ public class ParametricFunctionInstance extends RFunction {
                 if (psiArg instanceof SortArg(Sort s)) {
                     args = args.prepend(new SortArg(instantiate(s, map)));
                 } else if (psiArg instanceof TermArg ta) {
-                    if (ta.term() instanceof RFunction rf) {
+                    if (ta.term().op() instanceof RFunction rf) {
                         var t = map.get(new ConstParam(rf.name(), rf.sort()));
                         var arg = t == null ? ta : t;
                         args = args.prepend(arg);
+                    } else {
+                        var m = 1;
                     }
                 }
             }

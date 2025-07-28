@@ -60,7 +60,7 @@ public class ProofCollections {
 
         var array = c.group("array");
         array.loadable("array-get-of-repeat.proof");
-        // TODO: fix array.loadable("array-get-of-set.proof");
+        array.loadable("array-get-of-set.proof");
         array.loadable("array-test.proof");
 
         return c;
