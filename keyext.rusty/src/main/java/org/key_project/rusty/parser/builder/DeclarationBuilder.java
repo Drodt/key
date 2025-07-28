@@ -190,7 +190,8 @@ public class DeclarationBuilder extends DefaultBuilder {
             // parametric sort
             var declCtx = ctx.parametric_sort_decl();
             assert declCtx != null : "One of the two must be present";
-            List<ParamSortParam> typeParams = mapOf(declCtx.formal_sort_param_decl());
+            List<ParamSortParam> typeParams =
+                visitFormal_sort_param_decls(declCtx.formal_sort_param_decls());
             ImmutableList<ParamSortParam> params = ImmutableList.fromList(typeParams);
             var doubled = CollectionUtil.findDuplicates(params);
             if (!doubled.isEmpty()) {
@@ -204,19 +205,6 @@ public class DeclarationBuilder extends DefaultBuilder {
             namespaces().parametricSorts().add(sortDecl);
         }
         return createdSorts;
-    }
-
-    @Override
-    public ParamSortParam visitFormal_sort_param_decl(
-            KeYRustyParser.Formal_sort_param_declContext ctx) {
-        if (ctx.simple_ident() != null) {
-            var name = ctx.simple_ident().getText();
-
-            return new GenericSortParam(new GenericSort(new Name(name)));
-        }
-        var name = new Name(ctx.const_param_decl().simple_ident().getText());
-        var sort = visitSortId(ctx.const_param_decl().sortId());
-        return new ConstParam(name, sort);
     }
 
     @Override

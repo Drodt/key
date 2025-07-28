@@ -6,6 +6,7 @@ package org.key_project.rusty.parser.builder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.key_project.logic.*;
 import org.key_project.logic.op.Function;
@@ -27,6 +28,7 @@ import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jspecify.annotations.NonNull;
@@ -102,16 +104,28 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         return namespaces().functions();
     }
 
-    protected Namespace<RuleSet> ruleSets() {
+    protected Namespace<@NonNull RuleSet> ruleSets() {
         return namespaces().ruleSets();
     }
 
-    protected Namespace<Choice> choices() {
+    protected Namespace<@NonNull Choice> choices() {
         return namespaces().choices();
     }
 
     protected Namespace<@NonNull ProgramVariable> programVariables() {
         return namespaces().programVariables();
+    }
+
+    protected <T> T withSortAndConsts(Namespace<@NonNull Sort> sorts,
+            Namespace<@NonNull Function> consts, Supplier<T> fn) {
+        var oldSorts = nss.sorts();
+        var oldFns = nss.functions();
+        nss.setSorts(sorts);
+        nss.setFunctions(consts);
+        var res = fn.get();
+        nss.setSorts(oldSorts);
+        nss.setFunctions(oldFns);
+        return res;
     }
 
     public String visitSimple_ident_dots(KeYRustyParser.Simple_ident_dotsContext ctx) {
@@ -255,11 +269,12 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         Sort s;
         if (ctx.formal_sort_parameters() != null) {
             // parametric sorts should be instantiated
-            ParametricSortDecl sortDecl = services.getNamespaces().parametricSorts().lookup(name);
+            ParametricSortDecl sortDecl = nss.parametricSorts().lookup(name);
             if (sortDecl == null) {
                 semanticError(ctx, "Could not find polymorphic sort: %s", name);
             }
-            ImmutableList<ParamSortArg> parameters = getParamSortArgs(ctx.formal_sort_parameters());
+            ImmutableList<ParamSortArg> parameters =
+                getParamSortArgs(ctx.formal_sort_parameters(), sortDecl);
             s = ParametricSortInstance.get(sortDecl, parameters);
         } else {
             s = lookupSort(name);
@@ -271,24 +286,38 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     }
 
     private ImmutableList<ParamSortArg> getParamSortArgs(
-            KeYRustyParser.Formal_sort_parametersContext ctx) {
-        List<ParamSortArg> seq = accept(ctx);
-        assert seq != null;
-        return ImmutableList.fromList(seq);
-    }
-
-    @Override
-    public List<ParamSortArg> visitFormal_sort_parameters(
-            KeYRustyParser.Formal_sort_parametersContext ctx) {
-        return mapOf(ctx.formal_sort_param());
-    }
-
-    @Override
-    public ParamSortArg visitFormal_sort_param(KeYRustyParser.Formal_sort_paramContext ctx) {
-        if (ctx.sortId() != null) {
-            return new SortArg(visitSortId(ctx.sortId()));
+            KeYRustyParser.Formal_sort_parametersContext ctx, ParametricSortDecl sortDecl) {
+        if (ctx.formal_sort_param().size() != sortDecl.getParameters().size()) {
+            semanticError(ctx, "Expected %d sort arguments, got only %d",
+                sortDecl.getParameters().size(), ctx.formal_sort_param().size());
         }
-        return new TermArg((Term) visitTerm(ctx.term()));
+        ImmutableList<ParamSortArg> args = ImmutableSLList.nil();
+        for (int i = sortDecl.getParameters().size() - 1; i >= 0; i--) {
+            var expectConst = sortDecl.getParameters().get(i) instanceof ConstParam;
+            var arg = ctx.formal_sort_param(i);
+            var isConst = arg.CONST() != null;
+            if (isConst && !expectConst) {
+                semanticError(arg, "Expected argument %s to be a sort argument but got const %s",
+                    sortDecl.getParameters().get(i), arg.getText());
+            }
+            if (!isConst && expectConst) {
+                semanticError(arg, "Expected argument %s to be a const argument but got sort %s",
+                    sortDecl.getParameters().get(i), arg.getText());
+            }
+            if (isConst) {
+                var constName = visitSimple_ident(arg.simple_ident());
+                var c = nss.functions().lookup(constName);
+                if (c == null) {
+                    semanticError(arg, "Could not find constant: %s", constName);
+                }
+                var term = services.getTermBuilder().func(c);
+                args.prepend(new TermArg(term));
+            } else {
+                var sort = visitSortId(arg.sortId());
+                args.prepend(new SortArg(sort));
+            }
+        }
+        return args;
     }
 
     public KeYRustyType visitTypemapping(KeYRustyParser.TypemappingContext ctx) {
@@ -316,4 +345,22 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         return ctx.getText();
     }
 
+    @Override
+    public @Nullable List<ParamSortParam> visitFormal_sort_param_decls(
+            KeYRustyParser.Formal_sort_param_declsContext ctx) {
+        return mapOf(ctx.formal_sort_param_decl());
+    }
+
+    @Override
+    public ParamSortParam visitFormal_sort_param_decl(
+            KeYRustyParser.Formal_sort_param_declContext ctx) {
+        if (ctx.simple_ident() != null) {
+            var name = ctx.simple_ident().getText();
+
+            return new GenericSortParam(new GenericSort(new Name(name)));
+        }
+        var name = new Name(ctx.const_param_decl().simple_ident().getText());
+        var sort = visitSortId(ctx.const_param_decl().sortId());
+        return new ConstParam(name, sort);
+    }
 }

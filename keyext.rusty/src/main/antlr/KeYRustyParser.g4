@@ -60,10 +60,13 @@ one_sort_decl
 parametric_sort_decl
 :
     simple_ident_dots
-    OPENTYPEPARAMS
-    formal_sort_param_decl (COMMA formal_sort_param_decl)*
-    CLOSETYPEPARAMS
+    formal_sort_param_decls
 ;
+
+formal_sort_param_decls
+: OPENTYPEPARAMS
+      formal_sort_param_decl (COMMA formal_sort_param_decl)*
+      CLOSETYPEPARAMS ;
 
 formal_sort_param_decl
 :
@@ -94,14 +97,14 @@ formal_sort_parameters
     CLOSETYPEPARAMS
 ;
 
-formal_sort_param : sortId | term ;
+formal_sort_param : sortId | CONST simple_ident ;
 
 func_decl
 :
     doc=DOC_COMMENT?
     (UNIQUE)?
     func_name = funcpred_name
-    formal_sort_parameters?
+    formal_sort_param_decls?
 	whereToBind=where_to_bind?
     argSorts = arg_sorts
     IMP
