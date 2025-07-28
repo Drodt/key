@@ -23,6 +23,7 @@ import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
+import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
@@ -157,8 +158,9 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     /// argument terms args in the namespaces and Rust info.
     ///
     /// @param varfuncName the String with the symbols name
+    /// @param genericArgsCtxt
     protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName, String sortName,
-            Sort sort) {
+            Sort sort, KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
         Name name = new Name(varfuncName);
         Operator[] operators =
             { schemaVariables().lookup(name), variables().lookup(name),
@@ -198,6 +200,15 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
              * }
              * }
              */
+        }
+        if (genericArgsCtxt != null) {
+            var d = nss.parametricFunctions().lookup(name);
+            if (d == null) {
+                semanticError(ctx, "Could not find parametric function: %s", name);
+                return null;
+            }
+            var args = getParamSortArgs(genericArgsCtxt, d.getParameters());
+            return ParametricFunctionInstance.get(d, args);
         }
         semanticError(ctx, "Could not find (program) variable or constant %s", varfuncName);
         return null;
@@ -273,7 +284,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
                 semanticError(ctx, "Could not find polymorphic sort: %s", name);
             }
             ImmutableList<ParamSortArg> parameters =
-                getParamSortArgs(ctx.formal_sort_args(), sortDecl);
+                getParamSortArgs(ctx.formal_sort_args(), sortDecl.getParameters());
             s = ParametricSortInstance.get(sortDecl, parameters);
         } else {
             s = lookupSort(name);
@@ -284,24 +295,24 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         return s;
     }
 
-    private ImmutableList<ParamSortArg> getParamSortArgs(
-            KeYRustyParser.Formal_sort_argsContext ctx, ParametricSortDecl sortDecl) {
-        if (ctx.formal_sort_arg().size() != sortDecl.getParameters().size()) {
+    protected ImmutableList<ParamSortArg> getParamSortArgs(
+            KeYRustyParser.Formal_sort_argsContext ctx, ImmutableList<ParamSortParam> params) {
+        if (ctx.formal_sort_arg().size() != params.size()) {
             semanticError(ctx, "Expected %d sort arguments, got only %d",
-                sortDecl.getParameters().size(), ctx.formal_sort_arg().size());
+                params.size(), ctx.formal_sort_arg().size());
         }
         ImmutableList<ParamSortArg> args = ImmutableSLList.nil();
-        for (int i = sortDecl.getParameters().size() - 1; i >= 0; i--) {
-            var expectConst = sortDecl.getParameters().get(i) instanceof ConstParam;
+        for (int i = params.size() - 1; i >= 0; i--) {
+            var expectConst = params.get(i) instanceof ConstParam;
             var arg = ctx.formal_sort_arg(i);
             var isConst = arg.CONST() != null;
             if (isConst && !expectConst) {
                 semanticError(arg, "Expected argument %s to be a sort argument but got const %s",
-                    sortDecl.getParameters().get(i), arg.getText());
+                    params.get(i), arg.getText());
             }
             if (!isConst && expectConst) {
                 semanticError(arg, "Expected argument %s to be a const argument but got sort %s",
-                    sortDecl.getParameters().get(i), arg.getText());
+                    params.get(i), arg.getText());
             }
             if (isConst) {
                 var constName = visitSimple_ident(arg.simple_ident());
@@ -309,11 +320,17 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
                 if (c == null) {
                     semanticError(arg, "Could not find constant: %s", constName);
                 }
+
+                Sort expectedSort = ((ConstParam) params.get(i)).sort();
+                if (!c.sort().extendsTrans(expectedSort)) {
+                    semanticError(arg, "Constant %s is sort %s, which does not extend %s", c,
+                        c.sort(), expectedSort);
+                }
                 var term = services.getTermBuilder().func(c);
-                args.prepend(new TermArg(term));
+                args = args.prepend(new TermArg(term));
             } else {
                 var sort = visitSortId(arg.sortId());
-                args.prepend(new SortArg(sort));
+                args = args.prepend(new SortArg(sort));
             }
         }
         return args;

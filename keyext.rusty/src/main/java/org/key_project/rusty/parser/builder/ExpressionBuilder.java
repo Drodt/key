@@ -421,16 +421,20 @@ public class ExpressionBuilder extends DefaultBuilder {
         String firstName = accept(ctx.simple_ident());
 
         ImmutableArray<QuantifiableVariable> boundVars = null;
-        Namespace<QuantifiableVariable> orig = null;
+        Namespace<@NonNull QuantifiableVariable> origVars = null;
+        KeYRustyParser.Formal_sort_argsContext genericArgsCtxt = null;
         Term[] args = null;
         if (ctx.call() != null) {
-            orig = variables();
+            if (ctx.call().formal_sort_args() != null) {
+                genericArgsCtxt = ctx.call().formal_sort_args();
+            }
+            origVars = variables();
             List<QuantifiableVariable> bv = accept(ctx.call().boundVars);
             boundVars =
                 bv != null ? new ImmutableArray<>(bv.toArray(new QuantifiableVariable[0])) : null;
             args = visitArguments(ctx.call().argument_list());
             if (boundVars != null) {
-                unbindVars(orig);
+                unbindVars(origVars);
             }
         }
 
@@ -441,7 +445,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             op = UpdateJunctor.SKIP;
         } else {
             op = lookupVarfuncId(ctx, firstName,
-                ctx.sortId() != null ? ctx.sortId().getText() : null, sortId);
+                ctx.sortId() != null ? ctx.sortId().getText() : null, sortId, genericArgsCtxt);
         }
 
         Term current;
@@ -873,7 +877,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             ctx.name == null ? ctx.INT_LITERAL().getText()
                     : ctx.name.simple_ident(0).getText();
         op = lookupVarfuncId(ctx, firstName,
-            ctx.sortId() != null ? ctx.sortId().getText() : null, sortId);
+            ctx.sortId() != null ? ctx.sortId().getText() : null, sortId, null);
         if (op instanceof ProgramVariable v && ctx.name.simple_ident().size() > 1) {
             List<KeYRustyParser.Simple_identContext> otherParts =
                 ctx.name.simple_ident().subList(1, ctx.name.simple_ident().size());
@@ -950,7 +954,7 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     @Override
     protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName, String sortName,
-            Sort sort) {
+            Sort sort, KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
         // Might be quantified variable
         var idx = -1;
         for (int i = 0; i < boundVars.size(); ++i) {
@@ -964,7 +968,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             return new LogicVariable(deBruijn, boundVars.get(idx).sort());
         }
 
-        return super.lookupVarfuncId(ctx, varfuncName, sortName, sort);
+        return super.lookupVarfuncId(ctx, varfuncName, sortName, sort, genericArgsCtxt);
     }
 
     private void unbindVars(List<@NonNull BoundVariable> vars) {

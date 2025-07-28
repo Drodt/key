@@ -111,3 +111,7 @@ func_decl
     retSort = sortId
     SEMI
 ;
+
+call:
+  ((LBRACE boundVars=bound_variables RBRACE)? formal_sort_args? argument_list)
+;
