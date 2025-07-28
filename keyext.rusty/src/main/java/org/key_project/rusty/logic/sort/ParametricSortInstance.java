@@ -37,7 +37,8 @@ public class ParametricSortInstance extends AbstractSort {
         }
     }
 
-    // This must only be called in #get, which ensures that the cache is used.
+    /// This must only be called in [ParametricSortInstance#get], which ensures that the cache is
+    /// used.
     private ParametricSortInstance(ParametricSortDecl base, ImmutableList<ParamSortArg> args) {
         super(makeName(base, args), base.isAbstract());
 
