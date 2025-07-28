@@ -97,7 +97,7 @@ formal_sort_args
     CLOSETYPEPARAMS
 ;
 
-formal_sort_arg : sortId | CONST simple_ident ;
+formal_sort_arg : sortId | CONST term ;
 
 func_decl
 :
@@ -112,6 +112,19 @@ func_decl
     SEMI
 ;
 
-call:
-  ((LBRACE boundVars=bound_variables RBRACE)? formal_sort_args? argument_list)
+accessterm
+:
+  // OLD
+  (sortId DOUBLECOLON)?
+  firstName=simple_ident
+
+  /*Faster version
+  simple_ident_dots
+  ( EMPTYBRACKETS*
+    DOUBLECOLON
+    simple_ident
+  )?*/
+  formal_sort_args?
+  call?
+  ( attribute )*
 ;

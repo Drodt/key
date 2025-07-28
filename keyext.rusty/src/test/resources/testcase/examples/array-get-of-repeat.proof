@@ -1,0 +1,20 @@
+\functions {
+    i -> int;
+    j -> int;
+}
+
+\problem {
+    arr_get<[int, const 4]>(arr_repeat<[int, const 4]>(1, 4), 2) = 1
+}
+
+\proof {
+    (branch "dummy ID"
+        (rule "get_of_repeat" (formula "1") (term "0"))
+        (rule "leq_literals" (formula "1") (term "0,0,0"))
+        (rule "less_literals" (formula "1") (term "1,0,0"))
+        (rule "concrete_and_1" (formula "1") (term "0,0"))
+        (rule "ifthenelse_true" (formula "1") (term "0"))
+        (rule "eqClose" (formula "1"))
+        (rule "closeTrue" (formula "1"))
+    )
+}

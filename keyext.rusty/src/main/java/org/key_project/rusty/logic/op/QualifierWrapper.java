@@ -54,4 +54,9 @@ public class QualifierWrapper<T extends @NonNull Object> implements TerminalSynt
     public T getQualifier() {
         return qualifier;
     }
+
+    @Override
+    public String toString() {
+        return qualifier.toString();
+    }
 }

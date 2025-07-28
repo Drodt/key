@@ -13,6 +13,9 @@ import org.key_project.rusty.logic.SVPlace;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.SortArg;
+import org.key_project.rusty.logic.sort.TermArg;
 
 import static org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet.*;
 
@@ -48,43 +51,71 @@ public class SyntaxElementMatchProgramGenerator {
         } else {
             program.add(getCheckNodeKindInstruction(Term.class));
             program.add(gotoNextInstruction());
-            if (op instanceof SortDependingFunction sortDependingFunction) {
-                program.add(getCheckNodeKindInstruction(SortDependingFunction.class));
-                program.add(getSimilarSortDependingFunctionInstruction(sortDependingFunction));
-                program.add(gotoNextInstruction());
-                if (sortDependingFunction.getSortDependingOn() instanceof GenericSort gs) {
-                    program.add(getMatchGenericSortInstruction(gs));
-                } else {
-                    program.add(getMatchIdentityInstruction(sortDependingFunction.getChild(0)));
-                }
-                program.add(gotoNextInstruction());
-            } else if (op instanceof ElementaryUpdate elUp) {
-                program.add(getCheckNodeKindInstruction(ElementaryUpdate.class));
-                program.add(gotoNextInstruction());
-                if (elUp.lhs() instanceof SchemaVariable sv) {
-                    program.add(getMatchInstructionForSV(sv));
-                    program.add(gotoNextSiblingInstruction());
-                } else if (elUp.lhs() instanceof ProgramVariable pv) {
-                    program.add(getMatchIdentityInstruction(pv));
+            switch (op) {
+                case SortDependingFunction sortDependingFunction -> {
+                    program.add(getCheckNodeKindInstruction(SortDependingFunction.class));
+                    program.add(getSimilarSortDependingFunctionInstruction(sortDependingFunction));
+                    program.add(gotoNextInstruction());
+                    if (sortDependingFunction.getSortDependingOn() instanceof GenericSort gs) {
+                        program.add(getMatchGenericSortInstruction(gs));
+                    } else {
+                        program.add(getMatchIdentityInstruction(sortDependingFunction.getChild(0)));
+                    }
                     program.add(gotoNextInstruction());
                 }
-            } else if (op instanceof RModality mod) {
-                program.add(getCheckNodeKindInstruction(RModality.class));
-                program.add(gotoNextInstruction());
-                if (mod.kind() instanceof ModalOperatorSV modKindSV) {
-                    program.add(matchModalOperatorSV(modKindSV));
-                } else {
-                    program.add(getMatchIdentityInstruction(mod.kind()));
+                case ParametricFunctionInstance pfi -> {
+                    program.add(getCheckNodeKindInstruction(ParametricFunctionInstance.class));
+                    program.add(getSimilarParametricFunctionInstruction(pfi));
+                    for (int i = 0; i < pfi.getChildCount(); i++) {
+                        program.add(gotoNextInstruction());
+                        var arg = pfi.getChild(i);
+                        if (arg instanceof SortArg sa) {
+                            if (sa.sort() instanceof GenericSort gs) {
+                                program.add(getMatchGenericSortInstruction(gs));
+                            } else if (sa.sort() instanceof ParametricSortInstance psi) {
+                                throw new UnsupportedOperationException(
+                                    "TODO @ DD: Parametric sort in generic args!");
+                            } else {
+                                program.add(getMatchIdentityInstruction(sa));
+                            }
+                        } else {
+                            var t = ((TermArg) arg).term();
+                            program.add(gotoNextInstruction());
+                            createProgram(t, program);
+                        }
+                    }
                 }
-                program.add(gotoNextInstruction());
-                program.add(matchProgram(mod.programBlock().program()));
-                program.add(gotoNextSiblingInstruction());
-            } else if (op instanceof MutRef mr && mr.getPlace() instanceof SVPlace sv) {
-                program.add(matchPlaceSV(sv));
-                program.add(gotoNextSiblingInstruction());
-            } else {
-                program.add(getMatchIdentityInstruction(op));
-                program.add(gotoNextInstruction());
+                case ElementaryUpdate elUp -> {
+                    program.add(getCheckNodeKindInstruction(ElementaryUpdate.class));
+                    program.add(gotoNextInstruction());
+                    if (elUp.lhs() instanceof SchemaVariable sv) {
+                        program.add(getMatchInstructionForSV(sv));
+                        program.add(gotoNextSiblingInstruction());
+                    } else if (elUp.lhs() instanceof ProgramVariable pv) {
+                        program.add(getMatchIdentityInstruction(pv));
+                        program.add(gotoNextInstruction());
+                    }
+                }
+                case RModality mod -> {
+                    program.add(getCheckNodeKindInstruction(RModality.class));
+                    program.add(gotoNextInstruction());
+                    if (mod.kind() instanceof ModalOperatorSV modKindSV) {
+                        program.add(matchModalOperatorSV(modKindSV));
+                    } else {
+                        program.add(getMatchIdentityInstruction(mod.kind()));
+                    }
+                    program.add(gotoNextInstruction());
+                    program.add(matchProgram(mod.programBlock().program()));
+                    program.add(gotoNextSiblingInstruction());
+                }
+                case MutRef mr when mr.getPlace() instanceof SVPlace sv -> {
+                    program.add(matchPlaceSV(sv));
+                    program.add(gotoNextSiblingInstruction());
+                }
+                default -> {
+                    program.add(getMatchIdentityInstruction(op));
+                    program.add(gotoNextInstruction());
+                }
             }
         }
 

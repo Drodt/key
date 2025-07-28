@@ -3,5 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.sort;
 
-public interface ParamSortArg {
+import org.key_project.logic.SyntaxElement;
+
+public interface ParamSortArg extends SyntaxElement {
 }

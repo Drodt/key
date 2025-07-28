@@ -315,10 +315,16 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
                     params.get(i), arg.getText());
             }
             if (isConst) {
-                var constName = visitSimple_ident(arg.simple_ident());
-                var c = nss.functions().lookup(constName);
-                if (c == null) {
-                    semanticError(arg, "Could not find constant: %s", constName);
+                var t = visitTerm(arg.term());
+                Term c;
+                if (t instanceof String s) {
+                    var op = nss.functions().lookup(s);
+                    if (op == null) {
+                        semanticError(arg, "Could not find constant: %s", s);
+                    }
+                    c = services.getTermBuilder().func(op);
+                } else {
+                    c = (Term) t;
                 }
 
                 Sort expectedSort = ((ConstParam) params.get(i)).sort();
@@ -326,8 +332,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
                     semanticError(arg, "Constant %s is sort %s, which does not extend %s", c,
                         c.sort(), expectedSort);
                 }
-                var term = services.getTermBuilder().func(c);
-                args = args.prepend(new TermArg(term));
+                args = args.prepend(new TermArg(c));
             } else {
                 var sort = visitSortId(arg.sortId());
                 args = args.prepend(new SortArg(sort));

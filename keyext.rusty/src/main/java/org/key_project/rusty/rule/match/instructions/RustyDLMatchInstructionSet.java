@@ -11,6 +11,7 @@ import org.key_project.prover.rules.matcher.vm.instruction.*;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.SVPlace;
+import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.op.SortDependingFunction;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
@@ -68,6 +69,11 @@ public class RustyDLMatchInstructionSet {
     public static SimilarSortDependingFunctionInstruction getSimilarSortDependingFunctionInstruction(
             SortDependingFunction sortDependingFunction) {
         return new SimilarSortDependingFunctionInstruction(sortDependingFunction);
+    }
+
+    public static SimilarParametricFunctionInstruction getSimilarParametricFunctionInstruction(
+            ParametricFunctionInstance psi) {
+        return new SimilarParametricFunctionInstruction(psi);
     }
 
     public static MatchIdentityInstruction getMatchIdentityInstruction(

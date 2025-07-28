@@ -6,5 +6,11 @@ package org.key_project.rusty.logic.sort;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 
+import org.jspecify.annotations.NonNull;
+
 public record ConstParam(Name name, Sort sort) implements ParamSortParam {
+    @Override
+    public @NonNull String toString() {
+        return "const " + name + ": " + sort;
+    }
 }

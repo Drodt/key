@@ -3,7 +3,12 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.sort;
 
+import org.key_project.logic.TerminalSyntaxElement;
 import org.key_project.logic.sort.Sort;
 
-public record SortArg(Sort sort) implements ParamSortArg {
+public record SortArg(Sort sort) implements ParamSortArg, TerminalSyntaxElement {
+    @Override
+    public String toString() {
+        return sort.toString();
+    }
 }

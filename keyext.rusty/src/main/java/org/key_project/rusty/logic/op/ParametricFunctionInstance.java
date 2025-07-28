@@ -5,14 +5,18 @@ package org.key_project.rusty.logic.op;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
+
+import org.jspecify.annotations.NonNull;
 
 public class ParametricFunctionInstance extends RFunction {
     private static final Map<ParametricFunctionInstance, ParametricFunctionInstance> CACHE =
@@ -100,5 +104,15 @@ public class ParametricFunctionInstance extends RFunction {
         } else {
             return sort;
         }
+    }
+
+    @Override
+    public int getChildCount() {
+        return args.size();
+    }
+
+    @Override
+    public @NonNull SyntaxElement getChild(int n) {
+        return Objects.requireNonNull(args.get(n));
     }
 }

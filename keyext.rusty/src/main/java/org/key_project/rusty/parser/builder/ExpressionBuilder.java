@@ -423,11 +423,11 @@ public class ExpressionBuilder extends DefaultBuilder {
         ImmutableArray<QuantifiableVariable> boundVars = null;
         Namespace<@NonNull QuantifiableVariable> origVars = null;
         KeYRustyParser.Formal_sort_argsContext genericArgsCtxt = null;
+        if (ctx.formal_sort_args() != null) {
+            genericArgsCtxt = ctx.formal_sort_args();
+        }
         Term[] args = null;
         if (ctx.call() != null) {
-            if (ctx.call().formal_sort_args() != null) {
-                genericArgsCtxt = ctx.call().formal_sort_args();
-            }
             origVars = variables();
             List<QuantifiableVariable> bv = accept(ctx.call().boundVars);
             boundVars =

@@ -10,6 +10,7 @@ import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.logic.op.QualifierWrapper;
 import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.rule.inst.GenericSortCondition;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.inst.SortException;
@@ -51,6 +52,9 @@ public class MatchGenericSortInstruction implements MatchInstruction {
     @Override
     public @Nullable MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo mc,
             LogicServices services) {
+        if (actualElement instanceof SortArg sa) {
+            return matchSorts(sa.sort(), mc, services);
+        }
         return matchSorts(((QualifierWrapper<Sort>) actualElement).getQualifier(), mc, services);
     }
 }
