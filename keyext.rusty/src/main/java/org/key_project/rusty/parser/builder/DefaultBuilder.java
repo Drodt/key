@@ -24,7 +24,6 @@ import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.logic.op.ProgramVariable;
-import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.util.collection.ImmutableList;
@@ -162,7 +161,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
             Sort sort) {
         Name name = new Name(varfuncName);
         Operator[] operators =
-            { (OperatorSV) schemaVariables().lookup(name), variables().lookup(name),
+            { schemaVariables().lookup(name), variables().lookup(name),
                 programVariables().lookup(new Name(varfuncName)),
                 functions().lookup(name), AbstractTermTransformer.name2metaop(varfuncName) };
 
@@ -176,7 +175,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
             Name fqName =
                 new Name((sort != null ? sort.toString() : sortName) + "::" + varfuncName);
             operators =
-                new Operator[] { (OperatorSV) schemaVariables().lookup(fqName),
+                new Operator[] { schemaVariables().lookup(fqName),
                     variables().lookup(fqName),
                     programVariables().lookup(new Name(fqName.toString())),
                     functions().lookup(fqName) };
@@ -267,14 +266,14 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     public Sort visitSortId(KeYRustyParser.SortIdContext ctx) {
         String name = ctx.id.getText();
         Sort s;
-        if (ctx.formal_sort_parameters() != null) {
+        if (ctx.formal_sort_args() != null) {
             // parametric sorts should be instantiated
             ParametricSortDecl sortDecl = nss.parametricSorts().lookup(name);
             if (sortDecl == null) {
                 semanticError(ctx, "Could not find polymorphic sort: %s", name);
             }
             ImmutableList<ParamSortArg> parameters =
-                getParamSortArgs(ctx.formal_sort_parameters(), sortDecl);
+                getParamSortArgs(ctx.formal_sort_args(), sortDecl);
             s = ParametricSortInstance.get(sortDecl, parameters);
         } else {
             s = lookupSort(name);
@@ -286,15 +285,15 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     }
 
     private ImmutableList<ParamSortArg> getParamSortArgs(
-            KeYRustyParser.Formal_sort_parametersContext ctx, ParametricSortDecl sortDecl) {
-        if (ctx.formal_sort_param().size() != sortDecl.getParameters().size()) {
+            KeYRustyParser.Formal_sort_argsContext ctx, ParametricSortDecl sortDecl) {
+        if (ctx.formal_sort_arg().size() != sortDecl.getParameters().size()) {
             semanticError(ctx, "Expected %d sort arguments, got only %d",
-                sortDecl.getParameters().size(), ctx.formal_sort_param().size());
+                sortDecl.getParameters().size(), ctx.formal_sort_arg().size());
         }
         ImmutableList<ParamSortArg> args = ImmutableSLList.nil();
         for (int i = sortDecl.getParameters().size() - 1; i >= 0; i--) {
             var expectConst = sortDecl.getParameters().get(i) instanceof ConstParam;
-            var arg = ctx.formal_sort_param(i);
+            var arg = ctx.formal_sort_arg(i);
             var isConst = arg.CONST() != null;
             if (isConst && !expectConst) {
                 semanticError(arg, "Expected argument %s to be a sort argument but got const %s",

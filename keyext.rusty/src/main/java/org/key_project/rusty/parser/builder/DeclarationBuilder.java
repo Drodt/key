@@ -64,14 +64,14 @@ public class DeclarationBuilder extends DefaultBuilder {
         var doc = ctx.DOC_COMMENT() != null
                 ? ctx.DOC_COMMENT().getText()
                 : null;
-        List<ParamSortParam> typeParameters = accept(ctx.formal_sort_parameters());
+        List<ParamSortParam> typeParameters = accept(ctx.formal_sort_param_decls());
         if (typeParameters == null) {
             var s = new SortImpl(new Name(name), false);
             sorts().addSafely(s);
         } else {
             var doubled = CollectionUtil.findDuplicates(typeParameters);
             if (!doubled.isEmpty()) {
-                semanticError(ctx.formal_sort_parameters(),
+                semanticError(ctx.formal_sort_param_decls(),
                     "Type parameters must be unique within a declaration. Found duplicate: %s",
                     doubled.getFirst());
             }

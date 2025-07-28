@@ -79,7 +79,7 @@ datatype_decl:
   doc=DOC_COMMENT?
   // weigl: all datatypes are free!
   // FREE?
-  name=simple_ident formal_sort_parameters?
+  name=simple_ident formal_sort_param_decls?
   EQUALS
   datatype_constructor (OR datatype_constructor)*
   SEMI
@@ -87,17 +87,17 @@ datatype_decl:
 
 sortId
 :
-    id=simple_ident_dots formal_sort_parameters?
+    id=simple_ident_dots formal_sort_args?
 ;
 
-formal_sort_parameters
+formal_sort_args
 :
     OPENTYPEPARAMS
-    formal_sort_param (COMMA formal_sort_param)*
+    formal_sort_arg (COMMA formal_sort_arg)*
     CLOSETYPEPARAMS
 ;
 
-formal_sort_param : sortId | CONST simple_ident ;
+formal_sort_arg : sortId | CONST simple_ident ;
 
 func_decl
 :

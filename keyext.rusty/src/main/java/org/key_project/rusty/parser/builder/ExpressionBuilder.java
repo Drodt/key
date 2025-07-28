@@ -916,7 +916,8 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     private Term toZNotation(String number) {
-        return getTermFactory().createTerm(functions().lookup(new Name("Z")), toNum(number));
+        var z = services.getLDTs().getIntLDT().getNumberSymbol();
+        return getTermFactory().createTerm(z, toNum(number));
     }
 
     private Term toNum(String number) {
