@@ -5,7 +5,7 @@ package org.key_project.rusty.parser.varcond;
 
 import java.util.List;
 
-import org.key_project.rusty.rule.VariableCondition;
+import org.key_project.prover.rules.VariableCondition;
 import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
 
 /// A specilized [TacletBuilderCommand] for handling `\varcond`s.
@@ -18,7 +18,8 @@ public interface ConditionBuilder extends TacletBuilderCommand {
     ///
     /// For a varcond `\varcond(\abc[p1,p2](a1, a2))` the arguments are a1 and a2, the
     /// parameters are p1 and p2. `negated` is true if `\not` is used.
-    VariableCondition build(Object[] arguments, List<String> parameters, boolean negated);
+    VariableCondition build(Object[] arguments,
+            List<String> parameters, boolean negated);
 
     /// This method will add the contructed [VariableCondition] to given `tacletBuilder`.
     ///
@@ -26,7 +27,8 @@ public interface ConditionBuilder extends TacletBuilderCommand {
     @Override
     default void apply(TacletBuilder<?> tacletBuilder, Object[] arguments, List<String> parameters,
             boolean negated) {
-        VariableCondition condition = build(arguments, parameters, negated);
+        VariableCondition condition =
+            build(arguments, parameters, negated);
         tacletBuilder.addVariableCondition(condition);
     }
 }

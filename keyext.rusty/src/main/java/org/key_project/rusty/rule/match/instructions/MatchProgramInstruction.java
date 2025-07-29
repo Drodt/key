@@ -14,7 +14,6 @@ import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.rule.MatchConditions;
 
 public class MatchProgramInstruction implements MatchInstruction {
-
     private final RustyProgramElement pe;
 
     public MatchProgramInstruction(RustyProgramElement pe) {

@@ -22,16 +22,16 @@ import org.key_project.rusty.ast.visitor.ProgramContextAdder;
 import org.key_project.rusty.ast.visitor.ProgramReplaceVisitor;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.RModality;
-import org.key_project.rusty.logic.op.SubstOp;
-import org.key_project.rusty.logic.op.TermTransformer;
+import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
+import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 /// visitor for <t> execPostOrder </t> of [Term]. Called with that method
 /// on a term, the visitor builds a new term replacing SchemaVariables with their instantiations
@@ -269,7 +269,10 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
          * instantiatedOp =
          * handleSortDependingSymbol((SortDependingFunction) p_operatorToBeInstantiated);
          * } else
-         */ if (p_operatorToBeInstantiated instanceof ElementaryUpdate eu) {
+         */
+        if (p_operatorToBeInstantiated instanceof ParametricFunctionInstance pfi) {
+            instantiatedOp = handleParametricFunction(pfi);
+        } else if (p_operatorToBeInstantiated instanceof ElementaryUpdate eu) {
             instantiatedOp =
                 instantiateElementaryUpdate(eu);
         } else if (p_operatorToBeInstantiated instanceof SchemaVariable) {
@@ -283,6 +286,16 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
         assert instantiatedOp != null;
 
         return instantiatedOp;
+    }
+
+    private Operator handleParametricFunction(ParametricFunctionInstance pfi) {
+        ImmutableList<ParamSortArg> args = ImmutableSLList.nil();
+
+        for (int i = pfi.getArgs().size() - 1; i >= 0; i--) {
+            args = args.prepend(pfi.getArgs().get(i).instantiateParamArg(svInst, services));
+        }
+
+        return ParametricFunctionInstance.get(pfi.getBase(), args);
     }
 
     private ElementaryUpdate instantiateElementaryUpdate(ElementaryUpdate op) {

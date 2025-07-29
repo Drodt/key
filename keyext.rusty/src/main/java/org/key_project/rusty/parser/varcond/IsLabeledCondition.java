@@ -9,15 +9,15 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.expr.LabeledExpression;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
+import org.key_project.rusty.rule.VariableConditionAdapter;
+import org.key_project.rusty.rule.inst.SVInstantiations;
 
 
 /// Checks whether the given statement is labeled, i.e., actual a LabeledStatement. This information
 /// is obtained from the program prefix.
 ///
 /// @author Dominic Steinhoefel
-public class IsLabeledCondition implements VariableCondition {
+public class IsLabeledCondition extends VariableConditionAdapter {
     private final boolean negated;
     private final ProgramSV exprSV;
 
@@ -27,12 +27,10 @@ public class IsLabeledCondition implements VariableCondition {
     }
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions matchCond, Services services) {
-        final var svInst = matchCond.getInstantiations();
+    public boolean check(SchemaVariable var, SyntaxElement instCandidate, SVInstantiations instMap,
+            Services services) {
+        final var expr = (Expr) instMap.getInstantiation(exprSV);
 
-        final var expr = (Expr) svInst.getInstantiation(exprSV);
-
-        return negated == expr instanceof LabeledExpression ? null : matchCond;
+        return negated != expr instanceof LabeledExpression;
     }
 }

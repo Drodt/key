@@ -9,10 +9,19 @@ import java.util.stream.Collectors;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.VariableCondition;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
+import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
-import org.key_project.rusty.rule.VariableCondition;
+import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.parser.varcond.TypeComparisonCondition.Mode;
 import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
+
+import org.jspecify.annotations.NonNull;
+
+import static org.key_project.rusty.parser.varcond.ArgumentType.SORT;
 
 
 /// This class manages the register of various factories for the different built-in
@@ -23,7 +32,7 @@ import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
 public class TacletBuilderManipulators {
     // region Factories
     // Shortcut for argument types
-    // private static final ArgumentType TR = TYPE_RESOLVER;
+    private static final ArgumentType TR = ArgumentType.TYPE_RESOLVER;
     private static final ArgumentType KRT = ArgumentType.RUST_TYPE;
     private static final ArgumentType PV = ArgumentType.VARIABLE;
     private static final ArgumentType USV = ArgumentType.VARIABLE;
@@ -65,7 +74,8 @@ public class TacletBuilderManipulators {
     public static final AbstractConditionBuilder STORE_TERM_IN =
         new AbstractConditionBuilder("storeTermIn", SV, T) {
             @Override
-            public VariableCondition build(Object[] arguments, List<String> parameters,
+            public VariableCondition build(Object[] arguments,
+                    List<String> parameters,
                     boolean negated) {
                 return new StoreTermInCondition((SchemaVariable) arguments[0], (Term) arguments[1]);
             }
@@ -79,7 +89,8 @@ public class TacletBuilderManipulators {
     public static final AbstractConditionBuilder GET_VARIANT =
         new AbstractConditionBuilder("\\getVariant", PV, SV) {
             @Override
-            public VariableCondition build(Object[] arguments, List<String> parameters,
+            public VariableCondition build(Object[] arguments,
+                    List<String> parameters,
                     boolean negated) {
                 return new LoopVariantCondition((ProgramSV) arguments[0],
                     (SchemaVariable) arguments[1]);
@@ -120,6 +131,55 @@ public class TacletBuilderManipulators {
             }
         };
 
+    public static final AbstractConditionBuilder SAME =
+        new AbstractConditionBuilder("same", TR, TR) {
+            @Override
+            public TypeComparisonCondition build(Object[] arguments, List<String> parameters,
+                    boolean negated) {
+                return new TypeComparisonCondition((TypeResolver) arguments[0],
+                    (TypeResolver) arguments[1],
+                    negated ? Mode.NOT_SAME : Mode.SAME);
+            }
+        };
+
+    public static final AbstractConditionBuilder IS_SUBTYPE =
+        new AbstractConditionBuilder("sub", TR, TR) {
+            @Override
+            public TypeComparisonCondition build(Object[] arguments, List<String> parameters,
+                    boolean negated) {
+                return new TypeComparisonCondition((TypeResolver) arguments[0],
+                    (TypeResolver) arguments[1],
+                    negated ? Mode.NOT_IS_SUBTYPE : Mode.IS_SUBTYPE);
+            }
+        };
+
+    static class RustTypeToSortConditionBuilder extends AbstractConditionBuilder {
+        public RustTypeToSortConditionBuilder(@NonNull String triggerName) {
+            super(triggerName, SV, SORT);
+        }
+
+        @Override
+        public VariableCondition build(Object[] arguments, List<String> parameters,
+                boolean negated) {
+            var v = (OperatorSV) arguments[0];
+            Sort s = (Sort) arguments[1];
+            if (!RustTypeToSortCondition.checkSortedSV(v)) {
+                throw new IllegalArgumentException(
+                    "Expected schema variable of kind EXPRESSION or TYPE, but is " + v);
+            } else if (s instanceof GenericSort gs) {
+                return new RustTypeToSortCondition(v, gs);
+            } else if (s instanceof ParametricSortInstance psi) {
+                return new RustTypeToParametricSortCondition(v, psi);
+            } else {
+                throw new IllegalArgumentException(
+                    "Generic or parametric sort is expected. Got: " + s);
+            }
+        }
+    }
+
+    public static final AbstractConditionBuilder HAS_SORT =
+        new RustTypeToSortConditionBuilder("hasSort");
+
     public static final TacletBuilderCommand NEW_LOCAL_VARS =
         new ConstructorBasedBuilder("newLocalVars", NewLocalVarsCondition.class, SV, SV, SV, SV);
 
@@ -128,6 +188,7 @@ public class TacletBuilderManipulators {
     static {
         register(DIFFERENT, APPLY_UPDATE_ON_RIGID, NEW_DEPENDING_ON, EQUAL_UNIQUE,
             DROP_EFFECTLESS_ELEMENTARIES, SIMPLIFY_ITE_UPDATE, NEW_TYPE_OF, NEW_RUSTY_TYPE,
+            IS_SUBTYPE, SAME, HAS_SORT,
             NEW_LOCAL_VARS, STORE_EXPR_IN, STORE_TERM_IN, HAS_INVARIANT, GET_INVARIANT,
             GET_VARIANT, IS_LABELED);
     }

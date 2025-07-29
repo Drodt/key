@@ -9,7 +9,10 @@ import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.RustType;
-import org.key_project.rusty.logic.sort.ArraySort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.SortArg;
+import org.key_project.rusty.logic.sort.TermArg;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -24,7 +27,10 @@ public class ArrayType implements Type {
     private ArrayType(Type elementType, int length, Services services) {
         this.elementType = elementType;
         this.length = length;
-        sort = ArraySort.get(elementType.getSort(services), length);
+        var psd = services.getNamespaces().parametricSorts().lookup("Array");
+        sort = ParametricSortInstance.get(psd,
+            ImmutableList.of(new SortArg(elementType.getSort(services)),
+                new TermArg(services.getTermBuilder().zTerm(length))));
         name = new Name("[" + elementType + "; " + length + "]");
     }
 

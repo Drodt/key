@@ -42,6 +42,18 @@ public abstract class ProgramSVSort extends SortImpl {
         new TypedSimpleExpressionSort(PrimitiveType.U128);
     public static final ProgramSVSort SIMPLE_EXPRESSION_USIZE =
         new TypedSimpleExpressionSort(PrimitiveType.USIZE);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I8 =
+        new TypedSimpleExpressionSort(PrimitiveType.I8);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I16 =
+        new TypedSimpleExpressionSort(PrimitiveType.I16);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I32 =
+        new TypedSimpleExpressionSort(PrimitiveType.I32);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I64 =
+        new TypedSimpleExpressionSort(PrimitiveType.I64);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I128 =
+        new TypedSimpleExpressionSort(PrimitiveType.I128);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_ISIZE =
+        new TypedSimpleExpressionSort(PrimitiveType.ISIZE);
     public static final ProgramSVSort NON_SIMPLE_EXPRESSION = new NonSimpleExpressionSort();
     public static final ProgramSVSort EXPRESSION = new ExpressionSort();
     public static final ProgramSVSort BLOCK_EXPRESSION = new BlockExpressionSort();

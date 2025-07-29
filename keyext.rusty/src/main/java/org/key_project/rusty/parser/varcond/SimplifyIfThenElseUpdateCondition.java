@@ -8,29 +8,27 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.Named;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.UpdateableOperator;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.VariableCondition;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
 import org.key_project.rusty.logic.op.UpdateJunctor;
 import org.key_project.rusty.logic.op.sv.FormulaSV;
 import org.key_project.rusty.logic.op.sv.UpdateSV;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 public class SimplifyIfThenElseUpdateCondition implements VariableCondition {
-
     private final FormulaSV phi;
     private final UpdateSV u1;
     private final UpdateSV u2;
     private final FormulaSV commonFormula;
     private final org.key_project.logic.op.sv.SchemaVariable result;
-
-
 
     public SimplifyIfThenElseUpdateCondition(FormulaSV phi, UpdateSV u1, UpdateSV u2,
             FormulaSV commonFormula, org.key_project.logic.op.sv.SchemaVariable result) {
@@ -155,10 +153,11 @@ public class SimplifyIfThenElseUpdateCondition implements VariableCondition {
 
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions mc,
-            Services services) {
-        SVInstantiations svInst = mc.getInstantiations();
+    public MatchResultInfo check(SchemaVariable var, SyntaxElement instCandidate,
+            MatchResultInfo mc,
+            LogicServices lServices) {
+        final var services = (Services) lServices;
+        var svInst = (SVInstantiations) mc.getInstantiations();
 
         Term u1Inst = (Term) svInst.getInstantiation(u1);
         Term u2Inst = (Term) svInst.getInstantiation(u2);

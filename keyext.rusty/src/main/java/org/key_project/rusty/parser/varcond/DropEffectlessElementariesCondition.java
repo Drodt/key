@@ -5,9 +5,12 @@ package org.key_project.rusty.parser.varcond;
 
 import java.util.Set;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.VariableCondition;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.ElementaryUpdate;
 import org.key_project.rusty.logic.op.ProgramVariable;
@@ -15,8 +18,6 @@ import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.logic.op.UpdateJunctor;
 import org.key_project.rusty.logic.op.sv.UpdateSV;
 import org.key_project.rusty.proof.TermProgramVariableCollector;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 public final class DropEffectlessElementariesCondition implements VariableCondition {
@@ -78,10 +79,10 @@ public final class DropEffectlessElementariesCondition implements VariableCondit
     }
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions mc,
-            Services services) {
-        SVInstantiations svInst = mc.getInstantiations();
+    public MatchResultInfo check(SchemaVariable var, SyntaxElement instCandidate,
+            MatchResultInfo mc,
+            LogicServices services) {
+        SVInstantiations svInst = (SVInstantiations) mc.getInstantiations();
         Term uInst = (Term) svInst.getInstantiation(u);
         Term xInst = (Term) svInst.getInstantiation(x);
         Term resultInst = (Term) svInst.getInstantiation(result);
@@ -89,7 +90,7 @@ public final class DropEffectlessElementariesCondition implements VariableCondit
             return mc;
         }
 
-        Term properResultInst = dropEffectlessElementaries(uInst, xInst, services);
+        Term properResultInst = dropEffectlessElementaries(uInst, xInst, (Services) services);
         if (properResultInst == null) {
             return null;
         } else if (resultInst == null) {

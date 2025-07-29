@@ -12,6 +12,7 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.*;
+import org.key_project.prover.rules.VariableCondition;
 import org.key_project.prover.rules.conditions.NotFreeIn;
 import org.key_project.prover.rules.instantiation.*;
 import org.key_project.prover.rules.matcher.vm.VMProgramInterpreter;
@@ -20,7 +21,6 @@ import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.Taclet;
-import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.match.instructions.MatchSchemaVariableInstruction;
 import org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet;
 import org.key_project.util.collection.ImmutableList;
@@ -39,7 +39,7 @@ public class VMTacletMatcher implements TacletMatcher {
 
     /// the variable conditions of the taclet that need to be satisfied by found schema variable
     /// instantiations
-    private final ImmutableList<VariableCondition> varconditions;
+    private final ImmutableList<org.key_project.prover.rules.VariableCondition> varconditions;
     /// the built-in notFreeIn variable conditions
     private final ImmutableList<NotFreeIn> varsNotFreeIn;
 
@@ -56,7 +56,8 @@ public class VMTacletMatcher implements TacletMatcher {
     private final Term findExp;
 
     public VMTacletMatcher(Taclet taclet) {
-        varconditions = (ImmutableList<VariableCondition>) taclet.getVariableConditions();
+        varconditions = (ImmutableList<org.key_project.prover.rules.VariableCondition>) taclet
+                .getVariableConditions();
         assumesSequent = taclet.assumesSequent();
         boundVars = taclet.getBoundVariables();
         varsNotFreeIn = (ImmutableList<NotFreeIn>) taclet.varsNotFreeIn();

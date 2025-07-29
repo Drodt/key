@@ -24,6 +24,9 @@ varexpId
  | GET_VARIANT
  | IS_LABELED
  | DIFFERENT
+ | SAME
+ | ISSUBTYPE
+ | HASSORT
  ;
 
 elementary_update_term: a=mutating_update_term (ASSIGN b=mutating_update_term)?;
@@ -127,4 +130,12 @@ accessterm
   formal_sort_args?
   call?
   ( attribute )*
+;
+
+varexp_argument
+:
+    TYPEOF LPAREN y=varId RPAREN
+  | SORT LPAREN sortId RPAREN
+  | DEPENDINGON LPAREN y=varId RPAREN
+  | term
 ;

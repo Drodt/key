@@ -17,17 +17,19 @@ import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
-import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.logic.*;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.op.sv.SchemaVariableFactory;
+import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.rusty.parser.SchemaVariableModifierSet;
 import org.key_project.rusty.parser.varcond.ArgumentType;
 import org.key_project.rusty.parser.varcond.TacletBuilderCommand;
 import org.key_project.rusty.parser.varcond.TacletBuilderManipulators;
+import org.key_project.rusty.parser.varcond.TypeResolver;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.rule.tacletbuilder.*;
 import org.key_project.rusty.util.parsing.BuildingException;
@@ -345,8 +347,8 @@ public class TacletPBuilder extends ExpressionBuilder {
         }
 
         return switch (expectedType) {
-            // case TYPE_RESOLVER -> buildTypeResolver(ctx);
-            case SORT -> visitSortId(ctx.term().getText(), ctx.term());
+            case TYPE_RESOLVER -> buildTypeResolver(ctx);
+            case SORT -> visitSortId(ctx.sortId());
             case RUST_TYPE -> getOrCreateRustyType(ctx.term().getText(), ctx);
             case VARIABLE -> varId(ctx, ctx.getText());
             case STRING -> ctx.getText();
@@ -356,7 +358,6 @@ public class TacletPBuilder extends ExpressionBuilder {
 
     private Sort visitSortId(String text, ParserRuleContext ctx) {
         String primitiveName = text;
-        Type t = null;
         if (primitiveName.equals(PrimitiveType.U8.name().toString())
                 || primitiveName.equals(PrimitiveType.U16.name().toString())
                 || primitiveName.equals(PrimitiveType.U32.name().toString())
@@ -392,6 +393,28 @@ public class TacletPBuilder extends ExpressionBuilder {
     // ---------------------------------------------------------------------------
     // Here we leave out methods from visitSortId(...) to buildTypeResolver(...)
     // ---------------------------------------------------------------------------
+
+    public Object buildTypeResolver(KeYRustyParser.Varexp_argumentContext ctx) {
+        if (ctx.TYPEOF() != null) {
+            SchemaVariable y = accept(ctx.varId());
+            return TypeResolver.createElementTypeResolver(y);
+        }
+
+        if (ctx.SORT() != null) {
+            Sort s = visitSortId(ctx.sortId());
+            if (s != null) {
+                if (s instanceof GenericSort gs) {
+                    return TypeResolver.createGenericSortResolver(gs);
+                } else if (s instanceof ParametricSortInstance psi) {
+                    return TypeResolver.createParametricSortResolver(psi);
+                } else {
+                    return TypeResolver.createNonGenericSortResolver(s);
+                }
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public Object visitGoalspecs(KeYRustyParser.GoalspecsContext ctx) {

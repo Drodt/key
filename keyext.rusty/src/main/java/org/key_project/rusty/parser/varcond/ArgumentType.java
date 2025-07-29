@@ -14,7 +14,7 @@ import org.key_project.rusty.ast.abstraction.KeYRustyType;
 /// @version 1 (12/9/19)
 /// @see TacletBuilderCommand
 public enum ArgumentType {
-    /* TYPE_RESOLVER(TypeResolver.class), */ SORT(Sort.class), TERM(Term.class),
+    TYPE_RESOLVER(TypeResolver.class), SORT(Sort.class), TERM(Term.class),
     RUST_TYPE(KeYRustyType.class), VARIABLE(ParsableVariable.class), STRING(String.class);
 
     public final Class<?> clazz;

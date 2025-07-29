@@ -6,17 +6,19 @@ package org.key_project.rusty.parser.varcond;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.VariableCondition;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.pat.BindingPattern;
 import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.logic.op.ProgramVariable;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.inst.ProgramList;
+import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -29,7 +31,7 @@ import org.key_project.util.collection.ImmutableSLList;
 ///
 /// To achieve this, this condition generates (1) the "before" version of each variable that may be
 /// written to by the loop
-/// [#getLocalOuts(ProgramElement,Services)]; (2) an update storing the value of each
+/// [#getLocalOuts(RustyProgramElement ,Services)]; (2) an update storing the value of each
 /// such PV in its "before" version,
 /// i.e., `{...||i_before := i||...}`; (3) the reverse of the update, to be applied to the
 /// frame condition, i.e.,
@@ -53,9 +55,10 @@ public class NewLocalVarsCondition implements VariableCondition {
     }
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions matchCond, Services services) {
-        var svInst = matchCond.getInstantiations();
+    public MatchResultInfo check(SchemaVariable var, SyntaxElement instCandidate,
+            MatchResultInfo matchCond, LogicServices lServices) {
+        final var services = (Services) lServices;
+        final var svInst = (SVInstantiations) matchCond.getInstantiations();
         if (svInst.getInstantiation(varDeclsSV) != null) {
             return matchCond;
         }

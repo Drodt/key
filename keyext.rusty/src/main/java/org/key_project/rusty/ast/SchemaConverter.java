@@ -744,8 +744,16 @@ public class SchemaConverter {
 
     private Statement convertExprStmt(
             RustySchemaParser.ExprStmtContext ctx) {
-        if (ctx.expr() != null)
-            return new ExpressionStatement(convertExpr(ctx.expr()), ctx.SEMI() != null);
+        if (ctx.expr() != null) {
+            Expr expr = convertExpr(ctx.expr());
+            if (expr instanceof ProgramSV sv && sv.sort() == ProgramSVSort.STATEMENT) {
+                // A schema statement like `s#sv;` can be parsed as an expression statement with
+                // expr `s#sv`.
+                // Here, we convert back when the schema var has the correct sort.
+                return sv;
+            }
+            return new ExpressionStatement(expr, ctx.SEMI() != null);
+        }
         return new ExpressionStatement(convertExprWithBlock(ctx.exprWithBlock()),
             ctx.SEMI() != null);
     }
@@ -775,7 +783,7 @@ public class SchemaConverter {
 
     private Statement convertStmt(
             RustySchemaParser.StmtContext ctx) {
-        if (ctx.SEMI() != null) {
+        if (ctx.SEMI() != null && ctx.schemaStmt() == null) {
             return new EmptyStatement();
         }
         if (ctx.item() != null)

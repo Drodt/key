@@ -27,3 +27,5 @@ OPENTYPEPARAMS:'<' '[';
 CLOSETYPEPARAMS:']' '>';
 
 CONST : 'const';
+
+SORT: '\\sort';

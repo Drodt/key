@@ -65,7 +65,7 @@ public class RewriteTacletExecutor
             PosInOccurrence posOfFind, MatchConditions matchCond, Goal goal, RuleApp ruleApp,
             Services services) {
         if (gt instanceof RewriteTacletGoalTemplate rwtgt) {
-            final org.key_project.prover.sequent.SequentFormula cf = applyReplacewithHelper(goal,
+            final SequentFormula cf = applyReplacewithHelper(goal,
                 rwtgt, posOfFind, services, matchCond, ruleApp);
             currentSequent.combine(currentSequent.sequent().changeFormula(cf, posOfFind));
         } else {
@@ -76,7 +76,7 @@ public class RewriteTacletExecutor
         }
     }
 
-    private org.key_project.prover.sequent.SequentFormula applyReplacewithHelper(Goal goal,
+    private SequentFormula applyReplacewithHelper(Goal goal,
             RewriteTacletGoalTemplate gt, PosInOccurrence posOfFind, Services services,
             MatchConditions matchCond, RuleApp ruleApp) {
         final Term term = posOfFind.sequentFormula().formula();

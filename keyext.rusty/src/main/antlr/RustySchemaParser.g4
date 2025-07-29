@@ -55,11 +55,10 @@ expr
    ;
 
 stmt
-   : SEMI
-   | item
+   : item
    | letStmt
    | exprStmt
-   | schemaStmt
+   | schemaStmt SEMI
    ;
 
 schemaStmt

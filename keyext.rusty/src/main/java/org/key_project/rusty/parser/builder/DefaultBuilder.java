@@ -328,7 +328,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
                 }
 
                 Sort expectedSort = ((ConstParam) params.get(i)).sort();
-                if (!c.sort().extendsTrans(expectedSort)) {
+                if (!c.sort().extendsTrans(expectedSort) && !(c.op() instanceof SchemaVariable)) {
                     semanticError(arg, "Constant %s is sort %s, which does not extend %s", c,
                         c.sort(), expectedSort);
                 }

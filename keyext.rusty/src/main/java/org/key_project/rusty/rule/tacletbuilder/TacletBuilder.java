@@ -24,7 +24,6 @@ import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.rule.NewVarcond;
 import org.key_project.rusty.rule.Taclet;
-import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -46,7 +45,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     protected TacletAttributes attrs = new TacletAttributes(null, null);
 
     /// List of additional generic conditions on the instantiations of schema variables.
-    protected ImmutableList<VariableCondition> variableConditions =
+    protected ImmutableList<org.key_project.prover.rules.VariableCondition> variableConditions =
         ImmutableSLList.nil();
     protected HashMap<TacletGoalTemplate, ChoiceExpr> goal2Choices = null;
     protected ChoiceExpr choices = ChoiceExpr.TRUE;

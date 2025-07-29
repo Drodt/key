@@ -3,16 +3,18 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.varcond;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.VariableCondition;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.InfiniteLoopExpression;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
+import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.speclang.LoopSpecification;
 
 /// Extracts the loop invariants for a loop term (for all applicable heap contexts).
@@ -31,9 +33,10 @@ public class LoopInvariantCondition implements VariableCondition {
     }
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions matchCond, Services services) {
-        final var svInst = matchCond.getInstantiations();
+    public MatchResultInfo check(SchemaVariable var, SyntaxElement instCandidate,
+            MatchResultInfo matchCond, LogicServices lServices) {
+        final var services = (Services) lServices;
+        final var svInst = (SVInstantiations) matchCond.getInstantiations();
         final var tb = services.getTermBuilder();
 
         final var loop = (InfiniteLoopExpression) svInst.getInstantiation(loopExprSV);
@@ -44,8 +47,7 @@ public class LoopInvariantCondition implements VariableCondition {
         }
 
         if (services.getProof().getInitConfig().getActivatedChoices().stream()
-                .filter(c -> c.name().toString().equals("intRules:rustSemantics")).findFirst()
-                .isPresent()) {
+                .anyMatch(c -> c.name().toString().equals("intRules:rustSemantics"))) {
             loopSpec = loopSpec.withInRangePredicates(services);
         }
 

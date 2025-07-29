@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.key_project.rusty.rule.VariableCondition;
+import org.key_project.prover.rules.VariableCondition;
 
 public class ConstructorBasedBuilder extends AbstractConditionBuilder {
     private final Class<? extends VariableCondition> clazz;

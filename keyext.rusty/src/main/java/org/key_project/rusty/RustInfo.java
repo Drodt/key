@@ -43,7 +43,7 @@ public final class RustInfo {
             return getPrimitiveKeYRustyType(pt);
         }
         if (type instanceof TupleType tt && tt == TupleType.UNIT) {
-            var sort = services.getNamespaces().sorts().lookup("unit");
+            var sort = services.getNamespaces().sorts().lookup("Unit");
             assert sort != null;
             var krt = new KeYRustyType(type, sort);
             type2KRTCache.put(type, krt);

@@ -15,6 +15,7 @@ import org.key_project.prover.proof.ProofServices;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
+import org.key_project.rusty.ast.expr.TupleExpression;
 import org.key_project.rusty.ldt.LDT;
 import org.key_project.rusty.ldt.LDTs;
 import org.key_project.rusty.logic.*;
@@ -202,6 +203,9 @@ public class Services implements LogicServices, ProofServices {
         if (pe instanceof BinaryExpression ale) {
             return convertBinaryExpression(ale, services);
         }
+        if (pe instanceof TupleExpression te) {
+            return convertTupleExpression(te, services);
+        }
         throw new IllegalArgumentException(
             "Unknown or not convertible ProgramElement " + pe + " of type "
                 + pe.getClass());
@@ -220,6 +224,16 @@ public class Services implements LogicServices, ProofServices {
         }
         throw new IllegalArgumentException(
             "could not handle" + " this operator: " + op);
+    }
+
+    public static Term convertTupleExpression(TupleExpression te, Services services) {
+        if (te == TupleExpression.UNIT) {
+            // TODO: replace once tuples are properly added
+            var tb = services.getTermBuilder();
+            var unit = services.namespaces.functions().lookup("unit");
+            return tb.func(unit);
+        }
+        throw new IllegalArgumentException("could not handle this tuple: " + te);
     }
 
     public static @Nullable LDT getResponsibleLDT(BinaryExpression.Operator op, Term[] subs,
