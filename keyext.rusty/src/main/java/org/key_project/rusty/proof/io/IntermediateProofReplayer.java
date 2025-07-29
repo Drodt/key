@@ -253,7 +253,7 @@ public class IntermediateProofReplayer {
         PosInOccurrence pos = null;
 
         Name name = new Name(tacletName);
-        Taclet t = (Taclet) proof.getInitConfig().lookupActiveTaclet(name);
+        Taclet t = proof.getInitConfig().lookupActiveTaclet(name);
         if (t == null) {
             ourApp = currGoal.indexOfTaclets().lookup(name);
         } else {

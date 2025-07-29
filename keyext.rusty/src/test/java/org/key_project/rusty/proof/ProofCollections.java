@@ -52,15 +52,15 @@ public class ProofCollections {
          var contracts = c.group("contracts");
          contracts.loadable("use-contract.proof");
 
-        var rustSrc = c.group("rustSrc");
-        rustSrc.loadable("loop-mul.proof");
-        rustSrc.loadable("add-no-bounds.proof");
-        rustSrc.loadable("mut-ref-src.proof");
-        rustSrc.loadable("if-src.proof");
+         var rustSrc = c.group("rustSrc");
+         rustSrc.loadable("loop-mul.proof");
+         rustSrc.loadable("add-no-bounds.proof");
+         rustSrc.loadable("mut-ref-src.proof");
+         rustSrc.loadable("if-src.proof");
 
         var array = c.group("array");
-        array.loadable("array-get-of-repeat.proof");
-        array.loadable("array-get-of-set.proof");
+         array.loadable("array-get-of-repeat.proof");
+         array.loadable("array-get-of-set.proof");
         array.loadable("array-test.proof");
 
         return c;
