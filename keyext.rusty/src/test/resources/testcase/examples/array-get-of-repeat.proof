@@ -4,7 +4,7 @@
 }
 
 \problem {
-    arr_get<[int, const 4]>(arr_repeat<[int, const 4]>(1, 4), 2) = 1
+    arr_get<[int, const 4]>(arr_repeat<[int, const 4]>(1), 2) = 1
 }
 
 \proof {
