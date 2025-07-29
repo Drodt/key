@@ -37,20 +37,20 @@ public class ProofCollections {
 
         var c = new ProofCollection(settings);
         var simple = c.group("simple");
-        // simple.loadable("simple.proof");
-        // simple.loadable("if.proof");
-        // simple.loadable("iflet.proof");
-        //
-        // var refs = c.group("references");
-        // refs.loadable("shared-ref.proof");
-        // refs.loadable("mutable-ref.proof");
-        // refs.loadable("mutable-ref-wrong.proof");
-        //
-        // var choices = c.group("choices");
-        // choices.loadable("sub-no-check.proof");
-        //
-        // var contracts = c.group("contracts");
-        // contracts.loadable("use-contract.proof");
+         simple.loadable("simple.proof");
+         simple.loadable("if.proof");
+         simple.loadable("iflet.proof");
+
+         var refs = c.group("references");
+         refs.loadable("shared-ref.proof");
+         refs.loadable("mutable-ref.proof");
+         refs.loadable("mutable-ref-wrong.proof");
+
+         var choices = c.group("choices");
+         choices.loadable("sub-no-check.proof");
+
+         var contracts = c.group("contracts");
+         contracts.loadable("use-contract.proof");
 
         var rustSrc = c.group("rustSrc");
         rustSrc.loadable("loop-mul.proof");
