@@ -432,6 +432,14 @@ public class HirConverter {
                 case UintTy.U128 -> PrimitiveType.U128;
                 case UintTy.Usize -> PrimitiveType.USIZE;
             };
+            case PrimHirTy.Int(var intTy) -> switch (intTy) {
+                case IntTy.I8 -> PrimitiveType.I8;
+                case IntTy.I16 -> PrimitiveType.I16;
+                case IntTy.I32 -> PrimitiveType.I32;
+                case IntTy.I64 -> PrimitiveType.I64;
+                case IntTy.I128 -> PrimitiveType.I128;
+                case IntTy.Isize -> PrimitiveType.ISIZE;
+            };
             default -> throw new IllegalArgumentException("Unknown prim type: " + pty);
         };
         return new PrimitiveRustType(primTy);

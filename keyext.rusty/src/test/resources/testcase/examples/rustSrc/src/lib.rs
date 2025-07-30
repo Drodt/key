@@ -55,4 +55,5 @@ pub fn mul(a: u64, mut b: u64) -> u64 {
 pub fn test_array() {
     let mut a = [1 + 2 - 3; 4];
     a[0] = 1;
+    // a[1]
 }
