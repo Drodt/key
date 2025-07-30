@@ -8,7 +8,6 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
-import org.key_project.rusty.logic.op.QualifierWrapper;
 import org.key_project.rusty.logic.sort.GenericSort;
 import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.rule.inst.GenericSortCondition;
@@ -55,6 +54,6 @@ public class MatchGenericSortInstruction implements MatchInstruction {
         if (actualElement instanceof SortArg sa) {
             return matchSorts(sa.sort(), mc, services);
         }
-        return matchSorts(((QualifierWrapper<Sort>) actualElement).getQualifier(), mc, services);
+        return null;
     }
 }
