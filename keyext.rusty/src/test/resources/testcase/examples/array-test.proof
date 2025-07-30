@@ -53,9 +53,7 @@
         )
         (branch "i out of bounds"
             (rule "simplifyUpdate2" (formula "1"))
-            (rule "greater_literals" (formula "1") (term "0,0"))
-            (rule "qeq_literals" (formula "1") (term "1,0"))
-            (rule "concrete_and_1" (formula "1") (term "0"))
+            (rule "greater_literals" (formula "1") (term "0"))
             (rule "concrete_not_1" (formula "1"))
             (rule "closeFalse" (formula "1"))
         )
