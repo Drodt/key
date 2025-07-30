@@ -51,9 +51,10 @@ pub fn mul(a: u64, mut b: u64) -> u64 {
     }
 }
 
-#[spec(name = "array", ensures(true))]
-pub fn test_array() {
+#[spec(name = "array", ensures(result == 2))]
+pub fn test_array() -> i32 {
     let mut a = [1 + 2 - 3; 4];
     a[0] = 1;
-    // a[1]
+    a[1] = a[0] + 1;
+    a[1]
 }
