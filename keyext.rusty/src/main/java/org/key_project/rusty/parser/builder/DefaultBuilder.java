@@ -159,8 +159,8 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     ///
     /// @param varfuncName the String with the symbols name
     /// @param genericArgsCtxt
-    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName, String sortName,
-            Sort sort, KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
+    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName,
+            KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
         Name name = new Name(varfuncName);
         Operator[] operators =
             { schemaVariables().lookup(name), variables().lookup(name),
@@ -173,34 +173,6 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
             }
         }
 
-        if (sort != null || sortName != null) {
-            Name fqName =
-                new Name((sort != null ? sort.toString() : sortName) + "::" + varfuncName);
-            operators =
-                new Operator[] { schemaVariables().lookup(fqName),
-                    variables().lookup(fqName),
-                    programVariables().lookup(new Name(fqName.toString())),
-                    functions().lookup(fqName) };
-
-            for (Operator op : operators) {
-                if (op != null) {
-                    return op;
-                }
-            }
-
-            // SortDependingFunction firstInstance =
-            // SortDependingFunction.getFirstInstance(new Name(varfuncName), getServices());
-            if (sort == null)
-                semanticError(ctx, "Could not find sort: %s", sortName);
-            /*
-             * if (firstInstance != null) {
-             * SortDependingFunction v = firstInstance.getInstanceFor(sort, getServices());
-             * if (v != null) {
-             * return v;
-             * }
-             * }
-             */
-        }
         if (genericArgsCtxt != null) {
             var d = nss.parametricFunctions().lookup(name);
             if (d == null) {

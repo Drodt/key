@@ -118,15 +118,7 @@ func_decl
 accessterm
 :
   // OLD
-  (sortId DOUBLECOLON)?
   firstName=simple_ident
-
-  /*Faster version
-  simple_ident_dots
-  ( EMPTYBRACKETS*
-    DOUBLECOLON
-    simple_ident
-  )?*/
   formal_sort_args?
   call?
   ( attribute )*
@@ -139,3 +131,7 @@ varexp_argument
   | DEPENDINGON LPAREN y=varId RPAREN
   | term
 ;
+
+funcpred_name
+   : (name = simple_ident_dots | num = INT_LITERAL)
+   ;

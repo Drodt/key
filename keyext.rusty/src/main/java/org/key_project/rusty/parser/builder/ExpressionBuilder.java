@@ -416,8 +416,6 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     @Override
     public Term visitAccessterm(KeYRustyParser.AccesstermContext ctx) {
-        // weigl: I am unsure if this is wise.
-        Sort sortId = defaultOnException(null, () -> accept(ctx.sortId()));
         String firstName = accept(ctx.simple_ident());
 
         ImmutableArray<QuantifiableVariable> boundVars = null;
@@ -445,7 +443,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             op = UpdateJunctor.SKIP;
         } else {
             op = lookupVarfuncId(ctx, firstName,
-                ctx.sortId() != null ? ctx.sortId().getText() : null, sortId, genericArgsCtxt);
+                genericArgsCtxt);
         }
 
         Term current;
@@ -858,7 +856,6 @@ public class ExpressionBuilder extends DefaultBuilder {
     /// @return a Term or an operator, depending on the referenced object.
     @Override
     public Object visitFuncpred_name(KeYRustyParser.Funcpred_nameContext ctx) {
-        Sort sortId = accept(ctx.sortId());
         List<String> parts = mapOf(ctx.name.simple_ident());
         String varfuncid = ctx.name.getText();
 
@@ -877,7 +874,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             ctx.name == null ? ctx.INT_LITERAL().getText()
                     : ctx.name.simple_ident(0).getText();
         op = lookupVarfuncId(ctx, firstName,
-            ctx.sortId() != null ? ctx.sortId().getText() : null, sortId, null);
+            null);
         if (op instanceof ProgramVariable v && ctx.name.simple_ident().size() > 1) {
             List<KeYRustyParser.Simple_identContext> otherParts =
                 ctx.name.simple_ident().subList(1, ctx.name.simple_ident().size());
@@ -953,8 +950,8 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName, String sortName,
-            Sort sort, KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
+    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName,
+            KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
         // Might be quantified variable
         var idx = -1;
         for (int i = 0; i < boundVars.size(); ++i) {
@@ -968,7 +965,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             return new LogicVariable(deBruijn, boundVars.get(idx).sort());
         }
 
-        return super.lookupVarfuncId(ctx, varfuncName, sortName, sort, genericArgsCtxt);
+        return super.lookupVarfuncId(ctx, varfuncName, genericArgsCtxt);
     }
 
     private void unbindVars(List<@NonNull BoundVariable> vars) {
