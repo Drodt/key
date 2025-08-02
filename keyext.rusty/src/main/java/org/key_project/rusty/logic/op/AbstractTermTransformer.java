@@ -15,13 +15,15 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
-import org.key_project.rusty.logic.Place;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.logic.sort.SortImpl;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.CreateFrameCond;
 import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
 import org.key_project.rusty.rule.metaconstruct.IntroAtPreDefs;
 import org.key_project.rusty.rule.metaconstruct.arith.*;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -56,7 +58,8 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
     public static final AbstractTermTransformer DIVIDE_MONOMIALS = new DivideMonomials();
     public static final AbstractTermTransformer DIVIDE_LCR_MONOMIALS = new DivideLCRMonomials();
 
-    public static final AbstractTermTransformer PV_TO_MUT_REF = new PVToMutRef();
+    public static final AbstractTermTransformer PV_TO_PLACE = new PVToPlace();
+    public static final AbstractTermTransformer PLACE_TO_UPDATE = new PlaceToUpdate();
 
     public static final AbstractTermTransformer CREATE_LOCAL_ANON_UPDATE =
         new CreateLocalAnonUpdate();
@@ -84,16 +87,51 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         return NAME_TO_META_OP.get(s);
     }
 
-    private static class PVToMutRef extends AbstractTermTransformer {
-        public PVToMutRef() {
-            super(new Name("pvToMutRef"), 1);
+    private static class PVToPlace extends AbstractTermTransformer {
+        public PVToPlace() {
+            super(new Name("pvToPlace"), 1);
         }
 
         @Override
         public Term transform(Term term, SVInstantiations svInst, Services services) {
-            var tb = services.getTermBuilder();
-            return tb.mutRef(MutRef.getInstance(Place.convertToPlace(term), services));
+            return getPlace(term.sub(0), services);
         }
+    }
+
+    private static class PlaceToUpdate extends AbstractTermTransformer {
+        public PlaceToUpdate() {
+            super(new Name("placeToUpdate"), 2);
+        }
+
+        @Override
+        public Term transform(Term term, SVInstantiations svInst, Services services) {
+            var place = term.sub(0);
+            var t = term.sub(1);
+            var placeName = place.op().name().toString();
+            var pvName = placeName.substring(1, place.op().name().toString().length() - 1);
+            var pv = services.getNamespaces().programVariables().lookup(pvName);
+            return services.getTermBuilder().elementary(pv, t);
+        }
+    }
+
+    public static Term getPlace(Term t, Services services) {
+        if (t.op() instanceof ProgramVariable pv) {
+            var name = pv.name();
+            var tb = services.getTermBuilder();
+            var c = services.getNamespaces().functions().lookup("/" + name + "/");
+            if (c == null) {
+                var innerSort = t.sort();
+                var pSort = services.getNamespaces().parametricSorts().lookup("Place");
+                assert pSort != null;
+                var sort =
+                    ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(innerSort)));
+                c = new RFunction(new Name("/" + name + "/"), sort);
+                services.getNamespaces().functions().add(c);
+            }
+
+            return tb.func(c);
+        }
+        throw new IllegalArgumentException("Cannot convert " + t + " to a Place");
     }
 
     /// @return String representing a logical integer literal in decimal representation

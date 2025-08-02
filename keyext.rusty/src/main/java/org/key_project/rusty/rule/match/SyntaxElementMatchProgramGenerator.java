@@ -9,7 +9,6 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.matcher.vm.instruction.VMInstruction;
-import org.key_project.rusty.logic.SVPlace;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.sort.GenericSort;
@@ -55,8 +54,8 @@ public class SyntaxElementMatchProgramGenerator {
                 case ParametricFunctionInstance pfi -> {
                     program.add(getCheckNodeKindInstruction(ParametricFunctionInstance.class));
                     program.add(getSimilarParametricFunctionInstruction(pfi));
+                    program.add(gotoNextInstruction());
                     for (int i = 0; i < pfi.getChildCount(); i++) {
-                        program.add(gotoNextInstruction());
                         var arg = pfi.getChild(i);
                         if (arg instanceof SortArg sa) {
                             if (sa.sort() instanceof GenericSort gs) {
@@ -67,6 +66,7 @@ public class SyntaxElementMatchProgramGenerator {
                             } else {
                                 program.add(getMatchIdentityInstruction(sa));
                             }
+                            program.add(gotoNextInstruction());
                         } else {
                             var t = ((TermArg) arg).term();
                             program.add(gotoNextInstruction());
@@ -95,10 +95,6 @@ public class SyntaxElementMatchProgramGenerator {
                     }
                     program.add(gotoNextInstruction());
                     program.add(matchProgram(mod.programBlock().program()));
-                    program.add(gotoNextSiblingInstruction());
-                }
-                case MutRef mr when mr.getPlace() instanceof SVPlace sv -> {
-                    program.add(matchPlaceSV(sv));
                     program.add(gotoNextSiblingInstruction());
                 }
                 default -> {

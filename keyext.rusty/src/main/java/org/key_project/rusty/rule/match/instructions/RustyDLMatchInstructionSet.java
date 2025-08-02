@@ -10,7 +10,6 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.matcher.vm.instruction.*;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.ast.RustyProgramElement;
-import org.key_project.rusty.logic.SVPlace;
 import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
@@ -82,10 +81,6 @@ public class RustyDLMatchInstructionSet {
     public static CheckNodeKindInstruction getCheckNodeKindInstruction(
             Class<? extends SyntaxElement> kind) {
         return new CheckNodeKindInstruction(kind);
-    }
-
-    public static MatchSchemaVariableInstruction matchPlaceSV(SVPlace sv) {
-        return new MatchPlaceSVInstruction(sv);
     }
 
     public static MatchInstruction matchAndBindVariable(

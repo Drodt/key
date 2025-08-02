@@ -38,11 +38,11 @@ primitive_term:
   | ifExThenElseTerm
   | abbreviation
   | accessterm
-  | mRef_term
+  | place_term
   | literals
   ;
 
-mRef_term : REF_M LESS simple_ident GREATER;
+place_term : LBRACKET LBRACKET simple_ident RBRACKET RBRACKET;
 
 typemapping
     : (AND MUT?)? simple_ident;

@@ -25,7 +25,6 @@ import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
-import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.parser.KeYRustyLexer;
 import org.key_project.rusty.parser.KeYRustyParser;
@@ -897,18 +896,13 @@ public class ExpressionBuilder extends DefaultBuilder {
         return null;// handleAttributes(base, ctx.attribute());
     }
 
-    public Term visitMRef_term(KeYRustyParser.MRef_termContext ctx) {
-        String borrowed = accept(ctx.simple_ident());
-        var pv = services.getNamespaces().programVariables().lookup(borrowed);
-        Place place;
-        if (pv != null) {
-            place = PVPlace.getInstance(pv);
-        } else {
-            var sv = schemaVariables().lookup(borrowed);
-            assert sv != null;
-            place = SVPlace.getInstance((ProgramSV) sv);
-        }
-        return getTermFactory().createTerm(MutRef.getInstance(place, services));
+    public Term visitPlace_term(KeYRustyParser.Place_termContext ctx) {
+        String ident = accept(ctx.simple_ident());
+        assert ident != null;
+        ProgramVariable op = services.getNamespaces().programVariables().lookup(ident);
+        assert op != null;
+        var pv = services.getTermFactory().createTerm(op);
+        return AbstractTermTransformer.getPlace(pv, services);
     }
 
     @Override
