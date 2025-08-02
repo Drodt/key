@@ -105,8 +105,6 @@ public class ParametricFunctionInstance extends RFunction {
                         var t = map.get(new ConstParam(rf.name(), rf.sort()));
                         var arg = t == null ? ta : t;
                         args = args.prepend(arg);
-                    } else {
-                        var m = 1;
                     }
                 }
             }
@@ -124,5 +122,18 @@ public class ParametricFunctionInstance extends RFunction {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
         return Objects.requireNonNull(args.get(n));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass())
+            return false;
+        ParametricFunctionInstance that = (ParametricFunctionInstance) o;
+        return Objects.equals(args, that.args) && Objects.equals(base, that.base);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(args, base);
     }
 }

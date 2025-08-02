@@ -57,7 +57,6 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
     public static final AbstractTermTransformer DIVIDE_LCR_MONOMIALS = new DivideLCRMonomials();
 
     public static final AbstractTermTransformer PV_TO_MUT_REF = new PVToMutRef();
-    public static final AbstractTermTransformer CREATE_S_REF = new CreateSRef();
 
     public static final AbstractTermTransformer CREATE_LOCAL_ANON_UPDATE =
         new CreateLocalAnonUpdate();
@@ -94,16 +93,6 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         public Term transform(Term term, SVInstantiations svInst, Services services) {
             var tb = services.getTermBuilder();
             return tb.mutRef(MutRef.getInstance(Place.convertToPlace(term), services));
-        }
-    }
-
-    private static class CreateSRef extends AbstractTermTransformer {
-        public CreateSRef() { super(new Name("createSRef"), 1); }
-
-        @Override
-        public Term transform(Term term, SVInstantiations svInst, Services services) {
-            var tb = services.getTermBuilder();
-            return tb.sharedRef(SharedRef.getInstance(term.sub(0).sort(), services), term.sub(0));
         }
     }
 

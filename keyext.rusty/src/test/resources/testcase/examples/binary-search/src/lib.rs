@@ -5,18 +5,18 @@ use rml_contracts::*;
 
 #[spec {
     requires(forall(|x: usize, y: usize| x < y && y < N ==> arr[x] <= arr[y])),
-    ensures(if exists(|x: usize| x < N && arr[x] == v) { arr[result.unwrap()] == v } else { result == None })
+    ensures(result == exists(|x: usize| x < N && arr[x] == v))
 }]
 #[pure]
-pub fn binary_search_array<const N: usize>(arr: &[i128; N], v: i128) -> Option<usize> {
+pub fn contains<const N: usize>(arr: &[i128; N], v: i128) -> bool {
     let mut l = 0;
     let mut r = N - 1;
 
     if N == 0 {
-        return None;
+        return false;
     }
     if N == 1 {
-        return if arr[0] == v { Some(0) } else { None };
+        return arr[0] == v;
     }
 
     #[invariant(
@@ -26,16 +26,16 @@ pub fn binary_search_array<const N: usize>(arr: &[i128; N], v: i128) -> Option<u
     while r > l + 1 {
         let mid = l + (r - l) / 2;
         if arr[mid] == v {
-            return Some(mid);
+            return true;
         }
         if arr[mid] > v { r = mid } else { l = mid }
     }
 
     if arr[l] == v {
-        Some(l)
+        true
     } else if arr[r] == v {
-        Some(r)
+        true
     } else {
-        None
+        false
     }
 }

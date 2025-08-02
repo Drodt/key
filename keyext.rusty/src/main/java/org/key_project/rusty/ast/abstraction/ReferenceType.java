@@ -12,6 +12,10 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.ReferenceRustType;
 import org.key_project.rusty.ast.ty.RustType;
+import org.key_project.rusty.logic.sort.ParametricSortDecl;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.SortArg;
+import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -38,7 +42,15 @@ public final class ReferenceType implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        return services.getRefSortManager().getRefSort(inner().getSort(services), isMut);
+        Sort inner = this.inner.getSort(services);
+        ParametricSortDecl pSort;
+        if (isMut()) {
+            pSort = services.getNamespaces().parametricSorts().lookup("MRef");
+        } else {
+            pSort = services.getNamespaces().parametricSorts().lookup("SRef");
+        }
+        assert pSort != null;
+        return ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(inner)));
     }
 
     @Override

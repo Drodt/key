@@ -63,8 +63,8 @@ public class ProofCollections {
         array.loadable("array-get-of-set.proof");
         array.loadable("array-test.proof");
 
-        var algos = c.group("algorithms");
-        algos.loadable("binary-search/binary-search.proof");
+        // var algos = c.group("algorithms");
+        // algos.loadable("binary-search/binary-search.proof");
 
         return c;
     }

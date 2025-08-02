@@ -532,10 +532,6 @@ public class TermBuilder {
         return tf.createTerm(mRef);
     }
 
-    public Term sharedRef(SharedRef instance, Term term) {
-        return tf.createTerm(instance, term);
-    }
-
     /// Creates a program variable for the result. Take care to register it in the namespaces.
     public ProgramVariable resultVar(ProgramFunction fn, boolean makeNameUnique) {
         return resultVar("result", fn, makeNameUnique);
