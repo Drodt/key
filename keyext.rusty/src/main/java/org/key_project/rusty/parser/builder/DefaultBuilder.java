@@ -255,7 +255,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
             if (sortDecl == null) {
                 semanticError(ctx, "Could not find polymorphic sort: %s", name);
             }
-            ImmutableList<ParamSortArg> parameters =
+            ImmutableList<GenericArgument> parameters =
                 getParamSortArgs(ctx.formal_sort_args(), sortDecl.getParameters());
             s = ParametricSortInstance.get(sortDecl, parameters);
         } else {
@@ -267,13 +267,13 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         return s;
     }
 
-    protected ImmutableList<ParamSortArg> getParamSortArgs(
-            KeYRustyParser.Formal_sort_argsContext ctx, ImmutableList<ParamSortParam> params) {
+    protected ImmutableList<GenericArgument> getParamSortArgs(
+            KeYRustyParser.Formal_sort_argsContext ctx, ImmutableList<GenericParameter> params) {
         if (ctx.formal_sort_arg().size() != params.size()) {
             semanticError(ctx, "Expected %d sort arguments, got only %d",
                 params.size(), ctx.formal_sort_arg().size());
         }
-        ImmutableList<ParamSortArg> args = ImmutableSLList.nil();
+        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
         for (int i = params.size() - 1; i >= 0; i--) {
             var expectConst = params.get(i) instanceof ConstParam;
             var arg = ctx.formal_sort_arg(i);
@@ -339,13 +339,13 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     }
 
     @Override
-    public @Nullable List<ParamSortParam> visitFormal_sort_param_decls(
+    public @Nullable List<GenericParameter> visitFormal_sort_param_decls(
             KeYRustyParser.Formal_sort_param_declsContext ctx) {
         return mapOf(ctx.formal_sort_param_decl());
     }
 
     @Override
-    public ParamSortParam visitFormal_sort_param_decl(
+    public GenericParameter visitFormal_sort_param_decl(
             KeYRustyParser.Formal_sort_param_declContext ctx) {
         if (ctx.simple_ident() != null) {
             var name = ctx.simple_ident().getText();

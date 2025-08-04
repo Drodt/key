@@ -7,7 +7,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.Sorted;
 import org.key_project.logic.sort.Sort;
-import org.key_project.rusty.logic.sort.ParamSortParam;
+import org.key_project.rusty.logic.sort.GenericParameter;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
@@ -16,7 +16,7 @@ import org.jspecify.annotations.Nullable;
 
 public class ParametricFunctionDecl implements Named, Sorted {
     private final Name name;
-    private final ImmutableList<ParamSortParam> parameters;
+    private final ImmutableList<GenericParameter> parameters;
     private final ImmutableArray<Sort> argSorts;
     private final Sort sort;
     private final @Nullable ImmutableArray<Boolean> whereToBind;
@@ -24,7 +24,7 @@ public class ParametricFunctionDecl implements Named, Sorted {
     private final boolean isRigid;
     private final boolean isSkolemConstant;
 
-    public ParametricFunctionDecl(Name name, ImmutableList<ParamSortParam> parameters,
+    public ParametricFunctionDecl(Name name, ImmutableList<GenericParameter> parameters,
             ImmutableArray<Sort> argSorts, Sort sort,
             @Nullable ImmutableArray<Boolean> whereToBind, boolean unique, boolean isRigid,
             boolean isSkolemConstant) {
@@ -63,7 +63,7 @@ public class ParametricFunctionDecl implements Named, Sorted {
         return isSkolemConstant;
     }
 
-    public ImmutableList<ParamSortParam> getParameters() {
+    public ImmutableList<GenericParameter> getParameters() {
         return parameters;
     }
 

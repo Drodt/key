@@ -25,12 +25,12 @@ public class ParametricSortInstance extends AbstractSort {
     private static final Map<ParametricSortInstance, ParametricSortInstance> CACHE =
         new WeakHashMap<>();
 
-    private final ImmutableList<ParamSortArg> args;
+    private final ImmutableList<GenericArgument> args;
     private final ParametricSortDecl base;
     private final ImmutableSet<Sort> extendsSorts;
 
     public static ParametricSortInstance get(ParametricSortDecl base,
-            ImmutableList<ParamSortArg> args) {
+            ImmutableList<GenericArgument> args) {
         assert args.size() == base.getParameters().size();
         ParametricSortInstance sort =
             new ParametricSortInstance(base, args);
@@ -45,7 +45,7 @@ public class ParametricSortInstance extends AbstractSort {
 
     /// This must only be called in [ParametricSortInstance#get], which ensures that the cache is
     /// used.
-    private ParametricSortInstance(ParametricSortDecl base, ImmutableList<ParamSortArg> args) {
+    private ParametricSortInstance(ParametricSortDecl base, ImmutableList<GenericArgument> args) {
         super(makeName(base, args), base.isAbstract());
 
         this.extendsSorts = ImmutableSet.singleton(RustyDLTheory.ANY);
@@ -53,7 +53,8 @@ public class ParametricSortInstance extends AbstractSort {
         this.args = args;
     }
 
-    private static Name makeName(ParametricSortDecl base, ImmutableList<ParamSortArg> parameters) {
+    private static Name makeName(ParametricSortDecl base,
+            ImmutableList<GenericArgument> parameters) {
         // The [ ] are produced by the list's toString method.
         return new Name(base.name() + "<" + parameters + ">");
     }
@@ -62,7 +63,7 @@ public class ParametricSortInstance extends AbstractSort {
         return base;
     }
 
-    public ImmutableList<ParamSortArg> getArgs() {
+    public ImmutableList<GenericArgument> getArgs() {
         return args;
     }
 
@@ -105,7 +106,7 @@ public class ParametricSortInstance extends AbstractSort {
     }
 
     public Sort instantiate(GenericSort template, Sort instantiation) {
-        ImmutableList<ParamSortArg> newParameters =
+        ImmutableList<GenericArgument> newParameters =
             args.map(s -> s instanceof SortArg(Sort sort)
                     ? new SortArg(instantiate(template, instantiation, sort))
                     : s);
@@ -113,7 +114,7 @@ public class ParametricSortInstance extends AbstractSort {
     }
 
     public boolean isComplete(SVInstantiations instMap) {
-        for (ParamSortArg arg : args) {
+        for (GenericArgument arg : args) {
             if (arg instanceof SortArg sa) {
                 if (sa.sort() instanceof ParametricSortInstance psi) {
                     if (!psi.isComplete(instMap))
@@ -133,9 +134,9 @@ public class ParametricSortInstance extends AbstractSort {
 
     public Sort resolveSort(SchemaVariable sv, SyntaxElement instCandidate,
             SVInstantiations instMap) {
-        ImmutableList<ParamSortArg> newArgs = ImmutableSLList.nil();
+        ImmutableList<GenericArgument> newArgs = ImmutableSLList.nil();
         for (int i = args.size() - 1; i >= 0; i--) {
-            ParamSortArg arg = args.get(i);
+            GenericArgument arg = args.get(i);
             if (arg instanceof SortArg sa) {
                 if (sa.sort() instanceof ParametricSortInstance psi) {
                     newArgs =

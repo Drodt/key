@@ -15,10 +15,10 @@ public class ParametricSortDecl implements Named {
     private final boolean isAbstract;
     private final String documentation;
 
-    private final ImmutableList<ParamSortParam> parameters;
+    private final ImmutableList<GenericParameter> parameters;
 
     public ParametricSortDecl(Name name, boolean isAbstract,
-            ImmutableList<ParamSortParam> sortParams, String documentation) {
+            ImmutableList<GenericParameter> sortParams, String documentation) {
         this.name = name;
         this.isAbstract = isAbstract;
         this.documentation = documentation;
@@ -27,7 +27,7 @@ public class ParametricSortDecl implements Named {
                 : "The caller should have made sure that generic sorts are not duplicated";
     }
 
-    public ImmutableList<ParamSortParam> getParameters() {
+    public ImmutableList<GenericParameter> getParameters() {
         return parameters;
     }
 

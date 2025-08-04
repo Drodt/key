@@ -6,7 +6,7 @@ package org.key_project.rusty.logic.sort;
 import org.key_project.logic.TerminalSyntaxElement;
 import org.key_project.logic.sort.Sort;
 
-public record SortArg(Sort sort) implements ParamSortArg, TerminalSyntaxElement {
+public record SortArg(Sort sort) implements GenericArgument, TerminalSyntaxElement {
     @Override
     public String toString() {
         return sort.toString();

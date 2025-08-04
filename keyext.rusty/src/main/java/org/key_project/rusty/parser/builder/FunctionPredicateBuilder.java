@@ -15,9 +15,9 @@ import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 import org.key_project.rusty.logic.op.RFunction;
 import org.key_project.rusty.logic.sort.ConstParam;
+import org.key_project.rusty.logic.sort.GenericParameter;
 import org.key_project.rusty.logic.sort.GenericSort;
 import org.key_project.rusty.logic.sort.GenericSortParam;
-import org.key_project.rusty.logic.sort.ParamSortParam;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -120,10 +120,10 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
         var sorts = new Namespace<>(nss.sorts());
         var consts = new Namespace<>(nss.functions());
 
-        List<ParamSortParam> paramSortParams = ctx.formal_sort_param_decls() == null ? null
+        List<GenericParameter> genericParameters = ctx.formal_sort_param_decls() == null ? null
                 : visitFormal_sort_param_decls(ctx.formal_sort_param_decls());
-        if (paramSortParams != null) {
-            for (ParamSortParam param : paramSortParams) {
+        if (genericParameters != null) {
+            for (GenericParameter param : genericParameters) {
                 if (param instanceof GenericSortParam(GenericSort gs)) {
                     sorts.add(gs);
                 } else if (param instanceof ConstParam(Name name, Sort sort)) {
@@ -162,12 +162,12 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                 Sort[] sortsArray = argSorts.toArray(new Sort[0]);
                 Boolean[] whereToBind1 =
                     whereToBind == null ? null : whereToBind.toArray(new Boolean[0]);
-                if (paramSortParams == null)
+                if (genericParameters == null)
                     f = new RFunction(name, retSort, sortsArray,
                         whereToBind1, unique);
                 else {
                     var d = new ParametricFunctionDecl(name,
-                        ImmutableList.fromList(paramSortParams), new ImmutableArray<>(sortsArray),
+                        ImmutableList.fromList(genericParameters), new ImmutableArray<>(sortsArray),
                         retSort, whereToBind1 == null ? null : new ImmutableArray<>(whereToBind1),
                         unique, true, false);
                     nss.parametricFunctions().add(d);

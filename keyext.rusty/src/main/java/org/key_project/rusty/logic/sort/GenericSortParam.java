@@ -5,7 +5,7 @@ package org.key_project.rusty.logic.sort;
 
 import org.jspecify.annotations.NonNull;
 
-public record GenericSortParam(GenericSort gs) implements ParamSortParam {
+public record GenericSortParam(GenericSort gs) implements GenericParameter {
     @Override
     public @NonNull String toString() {
         return gs.toString();

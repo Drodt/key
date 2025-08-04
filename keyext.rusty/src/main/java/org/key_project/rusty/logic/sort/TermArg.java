@@ -8,7 +8,7 @@ import org.key_project.logic.Term;
 
 import org.jspecify.annotations.NonNull;
 
-public record TermArg(Term term) implements ParamSortArg {
+public record TermArg(Term term) implements GenericArgument {
     public TermArg {
         if (term == null) {
             throw new NullPointerException("term is null");

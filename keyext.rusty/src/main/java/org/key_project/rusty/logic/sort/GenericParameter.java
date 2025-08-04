@@ -3,5 +3,5 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.sort;
 
-public interface ParamSortParam {
+public interface GenericParameter {
 }

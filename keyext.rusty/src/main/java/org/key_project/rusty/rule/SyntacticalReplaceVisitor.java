@@ -289,7 +289,7 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     }
 
     private Operator handleParametricFunction(ParametricFunctionInstance pfi) {
-        ImmutableList<ParamSortArg> args = ImmutableSLList.nil();
+        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
 
         for (int i = pfi.getArgs().size() - 1; i >= 0; i--) {
             args = args.prepend(pfi.getArgs().get(i).instantiateParamArg(svInst, services));

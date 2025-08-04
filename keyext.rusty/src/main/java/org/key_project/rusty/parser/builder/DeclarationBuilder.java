@@ -64,7 +64,7 @@ public class DeclarationBuilder extends DefaultBuilder {
         var doc = ctx.DOC_COMMENT() != null
                 ? ctx.DOC_COMMENT().getText()
                 : null;
-        List<ParamSortParam> typeParameters = accept(ctx.formal_sort_param_decls());
+        List<GenericParameter> typeParameters = accept(ctx.formal_sort_param_decls());
         if (typeParameters == null) {
             var s = new SortImpl(new Name(name), false);
             sorts().addSafely(s);
@@ -190,9 +190,9 @@ public class DeclarationBuilder extends DefaultBuilder {
             // parametric sort
             var declCtx = ctx.parametric_sort_decl();
             assert declCtx != null : "One of the two must be present";
-            List<ParamSortParam> typeParams =
+            List<GenericParameter> typeParams =
                 visitFormal_sort_param_decls(declCtx.formal_sort_param_decls());
-            ImmutableList<ParamSortParam> params = ImmutableList.fromList(typeParams);
+            ImmutableList<GenericParameter> params = ImmutableList.fromList(typeParams);
             var doubled = CollectionUtil.findDuplicates(params);
             if (!doubled.isEmpty()) {
                 semanticError(declCtx,

@@ -11,13 +11,13 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-public interface ParamSortArg extends SyntaxElement {
-    default ParamSortArg instantiateParamArg(SVInstantiations svInst, Services services) {
+public interface GenericArgument extends SyntaxElement {
+    default GenericArgument instantiateParamArg(SVInstantiations svInst, Services services) {
         if (this instanceof SortArg sa) {
             if (sa.sort() instanceof GenericSort gs) {
                 return new SortArg(svInst.getGenericSortInstantiations().getRealSort(gs));
             } else if (sa.sort() instanceof ParametricSortInstance psi) {
-                ImmutableList<ParamSortArg> args = ImmutableSLList.nil();
+                ImmutableList<GenericArgument> args = ImmutableSLList.nil();
 
                 for (int i = psi.getArgs().size() - 1; i >= 0; i--) {
                     args = args.prepend(psi.getArgs().get(i).instantiateParamArg(svInst, services));

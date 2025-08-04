@@ -8,7 +8,7 @@ import org.key_project.logic.sort.Sort;
 
 import org.jspecify.annotations.NonNull;
 
-public record ConstParam(Name name, Sort sort) implements ParamSortParam {
+public record ConstParam(Name name, Sort sort) implements GenericParameter {
     @Override
     public @NonNull String toString() {
         return "const " + name + ": " + sort;
