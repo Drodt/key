@@ -10,7 +10,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 public record LiteralPattern() implements Pattern {
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException();
     }
 
     @Override

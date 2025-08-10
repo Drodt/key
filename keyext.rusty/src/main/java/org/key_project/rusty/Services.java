@@ -6,6 +6,7 @@ package org.key_project.rusty;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
@@ -14,6 +15,7 @@ import org.key_project.prover.proof.ProofServices;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
+import org.key_project.rusty.ast.expr.TupleExpression;
 import org.key_project.rusty.ldt.LDT;
 import org.key_project.rusty.ldt.LDTs;
 import org.key_project.rusty.logic.*;
@@ -22,13 +24,12 @@ import org.key_project.rusty.proof.*;
 import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.SpecificationRepository;
 
+import org.jspecify.annotations.Nullable;
+
 public class Services implements LogicServices, ProofServices {
-    /**
-     * proof specific namespaces (functions, predicates, sorts, variables)
-     */
+    /// proof specific namespaces (functions, predicates, sorts, variables)
     private NamespaceSet namespaces = new NamespaceSet();
     private LDTs ldts;
-    private RefSortManager mRefManager;
     private RustInfo rustInfo;
     private NameRecorder nameRecorder;
 
@@ -39,29 +40,26 @@ public class Services implements LogicServices, ProofServices {
     private Profile profile;
 
     private final ServiceCaches caches;
-    /**
-     * specification repository
-     */
+    /// specification repository
     private SpecificationRepository specRepos;
 
-    /**
-     * variable namer for inner renaming
-     */
+    /// variable namer for inner renaming
+    @SuppressWarnings({ "assignment.type.incompatible", "argument.type.incompatible" })
     private final VariableNamer innerVarNamer = new InnerVariableNamer(this);
 
-    /**
-     * map of names to counters
-     */
+    /// map of names to counters
     private final HashMap<String, Counter> counters;
     private RustModel rustModel;
 
+    // TODO: Fix checker annotations?
+    @SuppressWarnings({ "argument.type.incompatible", "assignment.type.incompatible",
+        "initialization.fields.uninitialized" })
     public Services() {
         this.tf = new TermFactory();
         this.tb = new TermBuilder(tf, this);
         this.specRepos = new SpecificationRepository(this);
         this.caches = new ServiceCaches();
         counters = new LinkedHashMap<>();
-        mRefManager = new RefSortManager(this);
         rustInfo = new RustInfo(this);
         nameRecorder = new NameRecorder();
     }
@@ -72,6 +70,8 @@ public class Services implements LogicServices, ProofServices {
         this.profile = profile;
     }
 
+    @SuppressWarnings({ "argument.type.incompatible", "assignment.type.incompatible",
+        "initialization.fields.uninitialized" })
     public Services(Services services) {
         this.namespaces = services.namespaces;
         this.ldts = services.ldts;
@@ -80,7 +80,6 @@ public class Services implements LogicServices, ProofServices {
         this.proof = services.proof;
         this.profile = services.profile;
         this.counters = services.counters;
-        this.mRefManager = services.mRefManager;
         this.caches = services.caches;
         this.specRepos = services.specRepos;
         this.rustModel = services.rustModel;
@@ -102,10 +101,6 @@ public class Services implements LogicServices, ProofServices {
 
     public TermFactory getTermFactory() {
         return tf;
-    }
-
-    public RefSortManager getMRefManager() {
-        return mRefManager;
     }
 
     public void initLDTs() {
@@ -132,9 +127,7 @@ public class Services implements LogicServices, ProofServices {
         return profile;
     }
 
-    /**
-     * returns an existing named counter, creates a new one otherwise
-     */
+    /// returns an existing named counter, creates a new one otherwise
     public Counter getCounter(String name) {
         Counter c = counters.get(name);
         if (c != null) {
@@ -145,10 +138,8 @@ public class Services implements LogicServices, ProofServices {
         return c;
     }
 
-    /**
-     * Reset all counters associated with this service.
-     * Only use this method if the proof is empty!
-     */
+    /// Reset all counters associated with this service.
+    /// Only use this method if the proof is empty!
     public void resetCounters() {
         if (proof.root().childrenCount() > 0) {
             throw new IllegalStateException("tried to reset counters on non-empty proof");
@@ -156,9 +147,7 @@ public class Services implements LogicServices, ProofServices {
         counters.clear();
     }
 
-    /**
-     * creates a new service object with the same ldt information as the actual one
-     */
+    /// creates a new service object with the same ldt information as the actual one
     public Services copyPreservesLDTInformation() {
         Services s = new Services(getProfile());
         s.setLDTs(getLDTs());
@@ -202,10 +191,13 @@ public class Services implements LogicServices, ProofServices {
             return tb.var(pv);
         }
         if (pe instanceof LiteralExpression lit) {
-            return convertLiteralExpression(lit, services);
+            return Objects.requireNonNull(convertLiteralExpression(lit, services));
         }
         if (pe instanceof BinaryExpression ale) {
             return convertBinaryExpression(ale, services);
+        }
+        if (pe instanceof TupleExpression te) {
+            return convertTupleExpression(te, services);
         }
         throw new IllegalArgumentException(
             "Unknown or not convertible ProgramElement " + pe + " of type "
@@ -227,7 +219,17 @@ public class Services implements LogicServices, ProofServices {
             "could not handle" + " this operator: " + op);
     }
 
-    public static LDT getResponsibleLDT(BinaryExpression.Operator op, Term[] subs,
+    public static Term convertTupleExpression(TupleExpression te, Services services) {
+        if (te == TupleExpression.UNIT) {
+            // TODO: replace once tuples are properly added
+            var tb = services.getTermBuilder();
+            var unit = services.namespaces.functions().lookup("unit");
+            return tb.func(unit);
+        }
+        throw new IllegalArgumentException("could not handle this tuple: " + te);
+    }
+
+    public static @Nullable LDT getResponsibleLDT(BinaryExpression.Operator op, Term[] subs,
             Services services) {
         for (LDT ldt : services.getLDTs()) {
             if (ldt.isResponsible(op, subs, services)) {
@@ -237,7 +239,8 @@ public class Services implements LogicServices, ProofServices {
         return null;
     }
 
-    public static Term convertLiteralExpression(LiteralExpression lit, Services services) {
+    public static @Nullable Term convertLiteralExpression(LiteralExpression lit,
+            Services services) {
         LDT ldt = services.getLDTs().get(lit.getLDTName());
         if (ldt != null) {
             return ldt.translateLiteral(lit, services);

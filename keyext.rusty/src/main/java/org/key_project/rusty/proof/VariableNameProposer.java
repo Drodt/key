@@ -15,21 +15,15 @@ import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * Proposes names for variables (except program variables).
- */
+/// Proposes names for variables (except program variables).
 public class VariableNameProposer implements InstantiationProposer {
-    /**
-     * An instance of VariableNameProposer.
-     */
+    /// An instance of VariableNameProposer.
     public static final VariableNameProposer DEFAULT = new VariableNameProposer();
 
     private static final String SKOLEMTERM_VARIABLE_NAME_POSTFIX = "_";
 
-    /**
-     * Returns an instantiation proposal for the schema variable var. Currently supports names for
-     * skolemterm SVs, variable SVs, and labels.
-     */
+    /// Returns an instantiation proposal for the schema variable var. Currently supports names for
+    /// skolemterm SVs, variable SVs, and labels.
     @Override
     public String getProposal(TacletApp app, SchemaVariable var, Services services, Node undoAnchor,
             ImmutableList<String> previousProposals) {
@@ -43,10 +37,8 @@ public class VariableNameProposer implements InstantiationProposer {
         }
     }
 
-    /**
-     * Generates a proposal for the instantiation of the given term schema variable, which is
-     * declared as skolem term SV.
-     */
+    /// Generates a proposal for the instantiation of the given term schema variable, which is
+    /// declared as skolem term SV.
     private String getNameProposalForSkolemTermVariable(SchemaVariable p_var,
             Services services, ImmutableList<String> previousProposals) {
         return getNameProposalForSkolemTermVariable(
@@ -54,10 +46,8 @@ public class VariableNameProposer implements InstantiationProposer {
             previousProposals);
     }
 
-    /**
-     * Find a name for the variable <code>p_var</code>, based on the result of
-     * <code>Taclet.getNameCorrespondent</code>
-     */
+    /// Find a name for the variable <code>p_var</code>, based on the result of
+    /// <code>Taclet.getNameCorrespondent</code>
     protected static String createBaseNameProposalBasedOnCorrespondence(SchemaVariable p_var) {
         // Use the name of the SkolemTermSV
         final String result = String.valueOf(p_var.name());
@@ -87,13 +77,10 @@ public class VariableNameProposer implements InstantiationProposer {
         return name;
     }
 
-    /**
-     * Generates a proposal for the instantiation of the given schema variable, which is a variable
-     * SV.
-     *
-     * The returned name is not necessarily globally unique, but that is not necessary for bound
-     * variables.
-     */
+    /// Generates a proposal for the instantiation of the given schema variable, which is a variable
+    /// SV.
+    /// The returned name is not necessarily globally unique, but that is not necessary for bound
+    /// variables.
     private String getNameProposalForVariableSV(SchemaVariable var,
             ImmutableList<String> previousProposals) {
         String baseName = var.name().toString();

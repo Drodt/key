@@ -8,13 +8,11 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class allows to write test-results into XML like JUnit.
- * https://stackoverflow.com/questions/4922867/what-is-the-junit-xml-format-specification-that-hudson-supports
- *
- * @author Alexander Weigl
- * @version 1 (8/5/20)
- */
+/// This class allows to write test-results into XML like JUnit.
+/// https://stackoverflow.com/questions/4922867/what-is-the-junit-xml-format-specification-that-hudson-supports
+///
+/// @author Alexander Weigl
+/// @version 1 (8/5/20)
 public class JunitXmlWriter implements AutoCloseable {
 
     /*

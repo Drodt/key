@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir;
 
+import org.jspecify.annotations.Nullable;
+
 public interface DefKind {
     record Mod() implements DefKind {
     }
@@ -30,17 +32,17 @@ public interface DefKind {
 
     class Adapter extends HirAdapter<DefKind> {
         @Override
-        public Class<? extends DefKind> getType(String tag) {
+        public @Nullable Class<? extends DefKind> getType(String tag) {
             return switch (tag) {
-            case "Mod" -> Mod.class;
-            case "Fn" -> Fn.class;
-            case "AssocFn" -> AssocFn.class;
-            case "Trait" -> Trait.class;
-            case "Struct" -> Struct.class;
-            case "Enum" -> Enum.class;
-            case "Const" -> Const.class;
-            case "Union" -> Union.class;
-            default -> null;
+                case "Mod" -> Mod.class;
+                case "Fn" -> Fn.class;
+                case "AssocFn" -> AssocFn.class;
+                case "Trait" -> Trait.class;
+                case "Struct" -> Struct.class;
+                case "Enum" -> Enum.class;
+                case "Const" -> Const.class;
+                case "Union" -> Union.class;
+                default -> null;
             };
         }
     }

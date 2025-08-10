@@ -10,28 +10,27 @@ import java.util.stream.Collectors;
 import org.key_project.logic.*;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.prover.rules.RuleSet;
+import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.Taclet;
-import org.key_project.prover.rules.TacletAnnotation;
-import org.key_project.prover.rules.Trigger;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
-import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.logic.*;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.op.sv.SchemaVariableFactory;
+import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.rusty.parser.SchemaVariableModifierSet;
 import org.key_project.rusty.parser.varcond.ArgumentType;
 import org.key_project.rusty.parser.varcond.TacletBuilderCommand;
 import org.key_project.rusty.parser.varcond.TacletBuilderManipulators;
+import org.key_project.rusty.parser.varcond.TypeResolver;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
-import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.tacletbuilder.*;
 import org.key_project.rusty.util.parsing.BuildingException;
 import org.key_project.util.collection.*;
@@ -52,14 +51,10 @@ public class TacletPBuilder extends ExpressionBuilder {
 
     private final List<Taclet> topLevelTaclets = new ArrayList<>(2048);
 
-    /**
-     * Current required choices for taclets
-     */
+    /// Current required choices for taclets
     private ChoiceExpr requiredChoices = ChoiceExpr.TRUE;
 
-    /**
-     * Required choices for taclet goals.
-     */
+    /// Required choices for taclet goals.
     private ChoiceExpr goalChoice = ChoiceExpr.TRUE;
 
     // --------------------------
@@ -108,7 +103,7 @@ public class TacletPBuilder extends ExpressionBuilder {
     @Override
     public Object visitOne_schema_modal_op_decl(
             KeYRustyParser.One_schema_modal_op_declContext ctx) {
-        ImmutableSet<Modality.RustyModalityKind> modalities = DefaultImmutableSet.nil();
+        ImmutableSet<RModality.RustyModalityKind> modalities = DefaultImmutableSet.nil();
         Sort sort = accept(ctx.sort);
         if (sort != null && sort != RustyDLTheory.FORMULA) {
             semanticError(ctx, "Modal operator SV must be a FORMULA, not " + sort);
@@ -159,7 +154,7 @@ public class TacletPBuilder extends ExpressionBuilder {
                 semanticError(ctx, "formula rules are only permitted for \\axioms");
             }
             TacletBuilder<?> b =
-                createTacletBuilderFor(null, Taclet.ApplicationRestriction.NONE, ctx);
+                createTacletBuilderFor(null, ApplicationRestriction.NONE, ctx);
             currentTBuilder.push(b);
             Sequent addSeq = RustySequentKit
                     .createAnteSequent(ImmutableSLList.singleton(new SequentFormula(form)));
@@ -188,22 +183,22 @@ public class TacletPBuilder extends ExpressionBuilder {
         Object find = accept(ctx.find);
         Sequent seq = find instanceof Sequent ? (Sequent) find : null;
 
-        var applicationRestriction = Taclet.ApplicationRestriction.NONE;
+        var applicationRestriction = ApplicationRestriction.NONE;
         if (!ctx.SAMEUPDATELEVEL().isEmpty()) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.SAME_UPDATE_LEVEL);
+                applicationRestriction.combine(ApplicationRestriction.SAME_UPDATE_LEVEL);
         }
         if (!ctx.INSEQUENTSTATE().isEmpty()) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.IN_SEQUENT_STATE);
+                applicationRestriction.combine(ApplicationRestriction.IN_SEQUENT_STATE);
         }
         if (!ctx.ANTECEDENTPOLARITY().isEmpty() || (seq != null && !seq.antecedent().isEmpty())) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.ANTECEDENT_POLARITY);
+                applicationRestriction.combine(ApplicationRestriction.ANTECEDENT_POLARITY);
         }
         if (!ctx.SUCCEDENTPOLARITY().isEmpty() || (seq != null && !seq.succedent().isEmpty())) {
             applicationRestriction =
-                applicationRestriction.combine(Taclet.ApplicationRestriction.SUCCEDENT_POLARITY);
+                applicationRestriction.combine(ApplicationRestriction.SUCCEDENT_POLARITY);
         }
 
         TacletBuilder<?> b = createTacletBuilderFor(find, applicationRestriction, ctx);
@@ -352,18 +347,17 @@ public class TacletPBuilder extends ExpressionBuilder {
         }
 
         return switch (expectedType) {
-        // case TYPE_RESOLVER -> buildTypeResolver(ctx);
-        case SORT -> visitSortId(ctx.term().getText(), ctx.term());
-        case RUST_TYPE -> getOrCreateRustyType(ctx.term().getText(), ctx);
-        case VARIABLE -> varId(ctx, ctx.getText());
-        case STRING -> ctx.getText();
-        case TERM -> accept(ctx.term());
+            case TYPE_RESOLVER -> buildTypeResolver(ctx);
+            case SORT -> visitSortId(ctx.sortId());
+            case RUST_TYPE -> getOrCreateRustyType(ctx.term().getText(), ctx);
+            case VARIABLE -> varId(ctx, ctx.getText());
+            case STRING -> ctx.getText();
+            case TERM -> accept(ctx.term());
         };
     }
 
     private Sort visitSortId(String text, ParserRuleContext ctx) {
         String primitiveName = text;
-        Type t = null;
         if (primitiveName.equals(PrimitiveType.U8.name().toString())
                 || primitiveName.equals(PrimitiveType.U16.name().toString())
                 || primitiveName.equals(PrimitiveType.U32.name().toString())
@@ -399,6 +393,28 @@ public class TacletPBuilder extends ExpressionBuilder {
     // ---------------------------------------------------------------------------
     // Here we leave out methods from visitSortId(...) to buildTypeResolver(...)
     // ---------------------------------------------------------------------------
+
+    public Object buildTypeResolver(KeYRustyParser.Varexp_argumentContext ctx) {
+        if (ctx.TYPEOF() != null) {
+            SchemaVariable y = accept(ctx.varId());
+            return TypeResolver.createElementTypeResolver(y);
+        }
+
+        if (ctx.SORT() != null) {
+            Sort s = visitSortId(ctx.sortId());
+            if (s != null) {
+                if (s instanceof GenericSort gs) {
+                    return TypeResolver.createGenericSortResolver(gs);
+                } else if (s instanceof ParametricSortInstance psi) {
+                    return TypeResolver.createParametricSortResolver(psi);
+                } else {
+                    return TypeResolver.createNonGenericSortResolver(s);
+                }
+            }
+        }
+
+        return null;
+    }
 
     @Override
     public Object visitGoalspecs(KeYRustyParser.GoalspecsContext ctx) {
@@ -521,7 +537,7 @@ public class TacletPBuilder extends ExpressionBuilder {
     }
 
     private @NonNull TacletBuilder<?> createTacletBuilderFor(Object find,
-            RewriteTaclet.ApplicationRestriction applicationRestriction, ParserRuleContext ctx) {
+            ApplicationRestriction applicationRestriction, ParserRuleContext ctx) {
         if (find == null) {
             return new NoFindTacletBuilder();
         } else if (find instanceof Term) {

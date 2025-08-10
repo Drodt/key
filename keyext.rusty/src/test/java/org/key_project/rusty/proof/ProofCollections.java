@@ -44,7 +44,7 @@ public class ProofCollections {
         var refs = c.group("references");
         refs.loadable("shared-ref.proof");
         refs.loadable("mutable-ref.proof");
-        refs.loadable("mutable-ref-wrong.proof");;
+        refs.loadable("mutable-ref-wrong.proof");
 
         var choices = c.group("choices");
         choices.loadable("sub-no-check.proof");
@@ -57,6 +57,15 @@ public class ProofCollections {
         rustSrc.loadable("add-no-bounds.proof");
         rustSrc.loadable("mut-ref-src.proof");
         rustSrc.loadable("if-src.proof");
+
+        var array = c.group("array");
+        array.loadable("array-get-of-repeat.proof");
+        array.loadable("array-get-of-set.proof");
+        array.loadable("array-test.proof");
+
+        // var algos = c.group("algorithms");
+        // algos.loadable("binary-search/binary-search.proof"); TODO: fix rml transl err:
+        // Implication is not recognized in get_rml_fn_kind
 
         return c;
     }

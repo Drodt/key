@@ -13,6 +13,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.ldt.IntLDT;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class IntegerLiteralExpression extends LiteralExpression {
     public enum IntegerSuffix {
@@ -43,13 +44,13 @@ public class IntegerLiteralExpression extends LiteralExpression {
                 IntegerSuffix integerSuffix4, IntegerSuffix integerSuffix5,
                 IntegerSuffix integerSuffix6) {
             return switch (size) {
-            case "8" -> integerSuffix;
-            case "16" -> integerSuffix2;
-            case "32" -> integerSuffix3;
-            case "64" -> integerSuffix4;
-            case "128" -> integerSuffix5;
-            case "size" -> integerSuffix6;
-            default -> throw new IllegalArgumentException("Unknown size: " + size);
+                case "8" -> integerSuffix;
+                case "16" -> integerSuffix2;
+                case "32" -> integerSuffix3;
+                case "64" -> integerSuffix4;
+                case "128" -> integerSuffix5;
+                case "size" -> integerSuffix6;
+                default -> throw new IllegalArgumentException("Unknown size: " + size);
             };
         }
     }
@@ -81,7 +82,7 @@ public class IntegerLiteralExpression extends LiteralExpression {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
         }

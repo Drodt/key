@@ -36,23 +36,17 @@ public class NotationInfo {
     static final int PRIORITY_LABEL = 140; // TODO: find appropriate value
 
     public static boolean DEFAULT_PRETTY_SYNTAX = true;
-    /**
-     * Whether the very fancy notation is enabled in which Unicode characters for logical operators
-     * are printed.
-     */
+    /// Whether the very fancy notation is enabled in which Unicode characters for logical operators
+    /// are printed.
     public static boolean DEFAULT_UNICODE_ENABLED = false;
 
-    /**
-     * This maps operators and classes of operators to {@link Notation}s. The idea is that we first
-     * look whether the operator has a Notation registered. Otherwise, we see if there is one for
-     * the <em>class</em> of the operator.
-     */
+    /// This maps operators and classes of operators to [Notation]s. The idea is that we first
+    /// look whether the operator has a Notation registered. Otherwise, we see if there is one for
+    /// the _class_ of the operator.
     private HashMap<Object, Notation> notationTable;
 
 
-    /**
-     * Maps terms to abbreviations and reverse.
-     */
+    /// Maps terms to abbreviations and reverse.
     private AbbrevMap scm = new AbbrevMap();
 
     private boolean prettySyntax = DEFAULT_PRETTY_SYNTAX;
@@ -72,9 +66,7 @@ public class NotationInfo {
     // internal methods
     // -------------------------------------------------------------------------
 
-    /**
-     * Register the standard set of notations (that can be defined without a services object).
-     */
+    /// Register the standard set of notations (that can be defined without a services object).
     private HashMap<Object, Notation> createDefaultNotation() {
 
         HashMap<Object, Notation> tbl = new LinkedHashMap<>(50);
@@ -92,9 +84,9 @@ public class NotationInfo {
             new Notation.Quantifier("\\forall", PRIORITY_QUANTIFIER, PRIORITY_QUANTIFIER));
         tbl.put(Quantifier.EX,
             new Notation.Quantifier("\\exists", PRIORITY_QUANTIFIER, PRIORITY_QUANTIFIER));
-        tbl.put(Modality.RustyModalityKind.DIA,
+        tbl.put(RModality.RustyModalityKind.DIA,
             new Notation.ModalityNotation("\\<", "\\>", PRIORITY_MODALITY, PRIORITY_POST_MODALITY));
-        tbl.put(Modality.RustyModalityKind.BOX,
+        tbl.put(RModality.RustyModalityKind.BOX,
             new Notation.ModalityNotation("\\[", "\\]", PRIORITY_MODALITY, PRIORITY_POST_MODALITY));
         tbl.put(ModalOperatorSV.class,
             new Notation.ModalSVNotation(PRIORITY_MODALITY, PRIORITY_POST_MODALITY));
@@ -152,10 +144,8 @@ public class NotationInfo {
         return notationTable.get(c);
     }
 
-    /**
-     * Get the Notation for a given Operator. If no notation is registered, a Function notation is
-     * returned.
-     */
+    /// Get the Notation for a given Operator. If no notation is registered, a Function notation is
+    /// returned.
     Notation getNotation(Operator op) {
         Notation result = notationTable.get(op);
         if (result != null) {
@@ -167,7 +157,7 @@ public class NotationInfo {
             return result;
         }
 
-        if (op instanceof Modality mod) {
+        if (op instanceof RModality mod) {
             result = notationTable.get(mod.kind());
             if (result != null) {
                 return result;

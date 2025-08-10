@@ -8,9 +8,7 @@ import java.math.BigInteger;
 import org.key_project.logic.Name;
 
 public final class MetaShiftRight extends MetaShift {
-    /**
-     * creates the transformer for performing a shift to the right
-     */
+    /// creates the transformer for performing a shift to the right
     public MetaShiftRight() {
         super(new Name("#ShiftRight"));
     }

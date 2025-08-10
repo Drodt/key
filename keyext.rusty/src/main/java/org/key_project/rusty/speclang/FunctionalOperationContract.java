@@ -8,44 +8,38 @@ import java.util.function.UnaryOperator;
 
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * A contract about an operation (i.e., a method or a constructor), consisting of a precondition, a
- * postcondition, a modifiable clause, a measured-by clause, and a modality.
- */
+import org.jspecify.annotations.Nullable;
+
+/// A contract about an operation (i.e., a method or a constructor), consisting of a precondition, a
+/// postcondition, a modifiable clause, a measured-by clause, and a modality.
 public interface FunctionalOperationContract extends OperationContract {
     @Override
     FunctionalOperationContract map(UnaryOperator<Term> op, Services services);
 
-    /**
-     * Returns the modality of the contract.
-     */
-    Modality.RustyModalityKind getModalityKind();
+    /// Returns the modality of the contract.
+    RModality.RustyModalityKind getModalityKind();
 
     Term getEnsures();
 
-    /**
-     * Returns the precondition of the contract.
-     *
-     * @param selfTerm the self variable.
-     * @param paramTerms the list of parameter variables.
-     * @param services the services object.
-     * @return the precondition.
-     */
+    /// Returns the precondition of the contract.
+    ///
+    /// @param selfTerm the self variable.
+    /// @param paramTerms the list of parameter variables.
+    /// @param services the services object.
+    /// @return the precondition.
     Term getPre(Term selfTerm, ImmutableList<Term> paramTerms, Services services);
 
-    /**
-     * Returns the postcondition of the contract.
-     *
-     * @param selfTerm the self variable.
-     * @param paramTerms the list of parameter variables.
-     * @param resultTerm the result variable.
-     * @param services the services object.
-     * @return the post condition.
-     */
+    /// Returns the postcondition of the contract.
+    ///
+    /// @param selfTerm the self variable.
+    /// @param paramTerms the list of parameter variables.
+    /// @param resultTerm the result variable.
+    /// @param services the services object.
+    /// @return the post condition.
     Term getPost(Term selfTerm,
             ImmutableList<Term> paramTerms, Term resultTerm,
             Services services);
@@ -60,14 +54,18 @@ public interface FunctionalOperationContract extends OperationContract {
 
     Term getPost();
 
+    @Nullable
     Term getModifiable();
 
     @Override
+    @Nullable
     Term getMby();
 
+    @Nullable
     Term getSelf();
 
     ImmutableList<Term> getParams();
 
+    @Nullable
     Term getResult();
 }

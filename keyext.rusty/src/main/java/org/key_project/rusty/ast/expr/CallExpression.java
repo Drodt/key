@@ -14,6 +14,7 @@ import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class CallExpression implements Call {
     private final Expr callee;
@@ -67,7 +68,7 @@ public class CallExpression implements Call {
     @Override
     public ProgramFunction function(Services services) {
         var fnTy = (FnDefType) callee.type(services);
-        return services.getRustInfo().getFunction(fnTy.fn());
+        return Objects.requireNonNull(services.getRustInfo().getFunction(fnTy.fn()));
     }
 
     public Expr callee() {
@@ -79,7 +80,7 @@ public class CallExpression implements Call {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())

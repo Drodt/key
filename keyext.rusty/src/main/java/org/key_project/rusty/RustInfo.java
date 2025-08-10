@@ -14,6 +14,7 @@ import org.key_project.rusty.ast.ty.FnDefType;
 import org.key_project.rusty.logic.op.ProgramFunction;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class RustInfo {
     private final Map<Type, KeYRustyType> type2KRTCache;
@@ -28,7 +29,7 @@ public final class RustInfo {
         fnToProgFn = new HashMap<>();
     }
 
-    public KeYRustyType getKeYRustyType(String name) {
+    public @Nullable KeYRustyType getKeYRustyType(String name) {
         KeYRustyType result = getPrimitiveKeYRustyType(name);
         // TODO: ADTs etc.
         return result;
@@ -42,13 +43,14 @@ public final class RustInfo {
             return getPrimitiveKeYRustyType(pt);
         }
         if (type instanceof TupleType tt && tt == TupleType.UNIT) {
-            var sort = services.getNamespaces().sorts().lookup("unit");
+            var sort = services.getNamespaces().sorts().lookup("Unit");
+            assert sort != null;
             var krt = new KeYRustyType(type, sort);
             type2KRTCache.put(type, krt);
             return krt;
         }
         if (type instanceof ReferenceType rt) {
-            Sort sort = services.getMRefManager().getRefSort(rt.getSort(services), rt.isMut());
+            var sort = rt.getSort(services);
             var krt = new KeYRustyType(type, sort);
             type2KRTCache.put(type, krt);
             return krt;
@@ -68,10 +70,15 @@ public final class RustInfo {
             type2KRTCache.put(type, krt);
             return krt;
         }
+        if (type instanceof ArrayType at) {
+            var krt = new KeYRustyType(at, at.getSort(services));
+            type2KRTCache.put(type, krt);
+            return krt;
+        }
         throw new IllegalArgumentException("Unsupported type: " + type);
     }
 
-    private KeYRustyType getPrimitiveKeYRustyType(String name) {
+    private @Nullable KeYRustyType getPrimitiveKeYRustyType(String name) {
         PrimitiveType type = PrimitiveType.get(name);
         if (type != null) {
             return getPrimitiveKeYRustyType(type);
@@ -122,15 +129,13 @@ public final class RustInfo {
         }
     }
 
-    public ProgramFunction getFunction(Function function) {
+    public @Nullable ProgramFunction getFunction(Function function) {
         return fnToProgFn.get(function);
     }
 
-    /**
-     * returns all known KeYRustyTypes of the current program type model
-     *
-     * @return all known KeYRustyTypes of the current program type model
-     */
+    /// returns all known KeYRustyTypes of the current program type model
+    ///
+    /// @return all known KeYRustyTypes of the current program type model
     public Set<KeYRustyType> getAllKeYJavaTypes() {
         final Set<KeYRustyType> result = new LinkedHashSet<>();
         for (final var ty : allTypes) {

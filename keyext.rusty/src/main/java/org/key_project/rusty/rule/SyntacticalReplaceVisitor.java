@@ -22,26 +22,25 @@ import org.key_project.rusty.ast.visitor.ProgramContextAdder;
 import org.key_project.rusty.ast.visitor.ProgramReplaceVisitor;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.Modality;
-import org.key_project.rusty.logic.op.SubstOp;
-import org.key_project.rusty.logic.op.TermTransformer;
+import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
+import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
-/**
- * visitor for <t> execPostOrder </t> of {@link Term}. Called with that method
- * on a term, the visitor builds a new term replacing SchemaVariables with their instantiations that
- * are given as a SVInstantiations object.
- */
+/// visitor for <t> execPostOrder </t> of [Term]. Called with that method
+/// on a term, the visitor builds a new term replacing SchemaVariables with their instantiations
+/// that
+/// are given as a SVInstantiations object.
 public class SyntacticalReplaceVisitor implements Visitor<Term> {
     protected final SVInstantiations svInst;
     protected final Services services;
-    /** the termbuilder used to construct terms */
+    /// the termbuilder used to construct terms
     protected final TermBuilder tb;
     private Term computedResult = null;
     protected final PosInOccurrence applicationPosInOccurrence;
@@ -50,29 +49,25 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     protected final RuleApp ruleApp;
 
 
-    /**
-     * the stack contains the subterms that will be added in the next step of execPostOrder in Term
-     * in order to build the new term. A boolean value between or under the subterms on the stack
-     * indicate that a term using these subterms should build a new term instead of using the old
-     * one, because one of its subterms has been built, too.
-     */
+    /// the stack contains the subterms that will be added in the next step of execPostOrder in Term
+    /// in order to build the new term. A boolean value between or under the subterms on the stack
+    /// indicate that a term using these subterms should build a new term instead of using the old
+    /// one, because one of its subterms has been built, too.
     private final Stack<Object> subStack; // of Term (and Boolean)
     private final Boolean newMarker = Boolean.TRUE;
     private final Deque<Term> tacletTermStack = new ArrayDeque<>();
 
 
-    /**
-     * constructs a term visitor replacing any occurrence of a schemavariable found in
-     * {@code svInst} by its instantiation
-     *
-     * @param applicationPosInOccurrence the application position
-     * @param svInst mapping of schemavariables to their instantiation
-     * @param goal the current goal
-     * @param rule the applied rule
-     * @param ruleApp the rule application
-     * @param services the Services
-     * @param termBuilder the TermBuilder to use (allows to use the non cached version)
-     */
+    /// constructs a term visitor replacing any occurrence of a schemavariable found in
+    /// `svInst` by its instantiation
+    ///
+    /// @param applicationPosInOccurrence the application position
+    /// @param svInst mapping of schemavariables to their instantiation
+    /// @param goal the current goal
+    /// @param rule the applied rule
+    /// @param ruleApp the rule application
+    /// @param services the Services
+    /// @param termBuilder the TermBuilder to use (allows to use the non cached version)
     private SyntacticalReplaceVisitor(
             PosInOccurrence applicationPosInOccurrence, SVInstantiations svInst, Goal goal,
             Rule rule, RuleApp ruleApp, Services services, TermBuilder termBuilder) {
@@ -86,17 +81,15 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
         subStack = new Stack<>(); // of Term
     }
 
-    /**
-     * constructs a term visitor replacing any occurrence of a schemavariable found in
-     * {@code svInst} by its instantiation
-     *
-     * @param applicationPosInOccurrence the application position
-     * @param svInst mapping of schemavariables to their instantiation
-     * @param goal the current goal
-     * @param rule the applied rule
-     * @param ruleApp the rule application
-     * @param services the Services
-     */
+    /// constructs a term visitor replacing any occurrence of a schemavariable found in
+    /// `svInst` by its instantiation
+    ///
+    /// @param applicationPosInOccurrence the application position
+    /// @param svInst mapping of schemavariables to their instantiation
+    /// @param goal the current goal
+    /// @param rule the applied rule
+    /// @param ruleApp the rule application
+    /// @param services the Services
     public SyntacticalReplaceVisitor(
             PosInOccurrence applicationPosInOccurrence, SVInstantiations svInst, Goal goal,
             Rule rule, RuleApp ruleApp, Services services) {
@@ -111,9 +104,7 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
             SVInstantiations.EMPTY_SVINSTANTIATIONS, goal, rule, ruleApp, services);
     }
 
-    /**
-     * performs the syntactic replacement of schemavariables with their instantiations
-     */
+    /// performs the syntactic replacement of schemavariables with their instantiations
     @Override
     public void visit(final Term visited) {
         // Sort equality has to be ensured before calling this method
@@ -129,8 +120,8 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
             // instantiation of Rust block
             boolean rBlockChanged = false;
 
-            if (visitedOp instanceof Modality mod) {
-                var rb = mod.program();
+            if (visitedOp instanceof RModality mod) {
+                var rb = mod.programBlock();
                 var olfRb = rb;
                 rb = replacePrg(svInst, rb);
                 if (rb != olfRb) {
@@ -209,10 +200,8 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
         subStack.push(t);
     }
 
-    /**
-     * the method is only still invoked to allow the
-     * TODO to recursively replace meta variables
-     */
+    /// the method is only still invoked to allow the
+    /// TODO to recursively replace meta variables
     protected Term toTerm(Term o) {
         return o;
     }
@@ -280,7 +269,10 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
          * instantiatedOp =
          * handleSortDependingSymbol((SortDependingFunction) p_operatorToBeInstantiated);
          * } else
-         */ if (p_operatorToBeInstantiated instanceof ElementaryUpdate eu) {
+         */
+        if (p_operatorToBeInstantiated instanceof ParametricFunctionInstance pfi) {
+            instantiatedOp = handleParametricFunction(pfi);
+        } else if (p_operatorToBeInstantiated instanceof ElementaryUpdate eu) {
             instantiatedOp =
                 instantiateElementaryUpdate(eu);
         } else if (p_operatorToBeInstantiated instanceof SchemaVariable) {
@@ -294,6 +286,16 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
         assert instantiatedOp != null;
 
         return instantiatedOp;
+    }
+
+    private Operator handleParametricFunction(ParametricFunctionInstance pfi) {
+        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+
+        for (int i = pfi.getArgs().size() - 1; i >= 0; i--) {
+            args = args.prepend(pfi.getArgs().get(i).instantiateParamArg(svInst, services));
+        }
+
+        return ParametricFunctionInstance.get(pfi.getBase(), args);
     }
 
     private ElementaryUpdate instantiateElementaryUpdate(ElementaryUpdate op) {
@@ -319,20 +321,18 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
         }
     }
 
-    private Operator instantiateModality(Modality op, RustyBlock rb) {
-        Modality.RustyModalityKind kind = op.kind();
+    private Operator instantiateModality(RModality op, RustyBlock rb) {
+        RModality.RustyModalityKind kind = op.kind();
         if (op.kind() instanceof ModalOperatorSV) {
-            kind = (Modality.RustyModalityKind) svInst.getInstantiation(op.kind());
+            kind = (RModality.RustyModalityKind) svInst.getInstantiation(op.kind());
         }
-        if (rb != op.program() || kind != op.kind()) {
-            return Modality.getModality(kind, rb);
+        if (rb != op.programBlock() || kind != op.kind()) {
+            return RModality.getModality(kind, rb);
         }
         return op;
     }
 
-    /**
-     * delivers the new built term
-     */
+    /// delivers the new built term
     public Term getTerm() {
         if (computedResult == null) {
             Object o = null;
@@ -349,22 +349,18 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
         return computedResult;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public void subtreeEntered(Term subtreeRoot) {
         tacletTermStack.push(subtreeRoot);
     }
 
-    /**
-     * this method is called in execPreOrder and execPostOrder in class Term when leaving the
-     * subtree rooted in the term subtreeRoot. Default implementation is to do nothing. Subclasses
-     * can override this method when the visitor behaviour depends on information bound to
-     * subtrees.
-     *
-     * @param subtreeRoot root of the subtree which the visitor leaves.
-     */
+    /// this method is called in execPreOrder and execPostOrder in class Term when leaving the
+    /// subtree rooted in the term subtreeRoot. Default implementation is to do nothing. Subclasses
+    /// can override this method when the visitor behaviour depends on information bound to
+    /// subtrees.
+    ///
+    /// @param subtreeRoot root of the subtree which the visitor leaves.
     @Override
     public void subtreeLeft(Term subtreeRoot) {
         tacletTermStack.pop();

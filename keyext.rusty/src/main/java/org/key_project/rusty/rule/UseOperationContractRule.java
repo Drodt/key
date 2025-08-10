@@ -16,9 +16,9 @@ import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.fn.Function;
 import org.key_project.rusty.ast.visitor.ProgramContextAdder;
 import org.key_project.rusty.logic.*;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.proof.Goal;
@@ -34,13 +34,9 @@ import org.key_project.util.collection.ImmutableSet;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Implements the rule which inserts operation contracts for a method call.
- */
+/// Implements the rule which inserts operation contracts for a method call.
 public final class UseOperationContractRule implements BuiltInRule {
-    /**
-     * A static instance of the (built-in) operation contract rule application.
-     */
+    /// A static instance of the (built-in) operation contract rule application.
     public static final UseOperationContractRule INSTANCE = new UseOperationContractRule();
 
     private static final Name NAME = new Name("Use Operation Contract");
@@ -68,27 +64,27 @@ public final class UseOperationContractRule implements BuiltInRule {
         // active expr must be function call, method call or assignment with
         // function/method call
         switch (activeExpr) {
-        case CallExpression ce -> {
-            actualResult = null;
-            call = ce;
-        }
-        case MethodCallExpression me -> {
-            actualResult = null;
-            call = me;
-        }
-        case AssignmentExpression as -> {
-            final Expr lhs = as.lhs();
-            final Expr rhs = as.rhs();
-            if ((rhs instanceof Call c) && (lhs instanceof ProgramVariable)) {
-                actualResult = lhs;
-                call = c;
-            } else {
+            case CallExpression ce -> {
+                actualResult = null;
+                call = ce;
+            }
+            case MethodCallExpression me -> {
+                actualResult = null;
+                call = me;
+            }
+            case AssignmentExpression as -> {
+                final Expr lhs = as.lhs();
+                final Expr rhs = as.rhs();
+                if ((rhs instanceof Call c) && (lhs instanceof ProgramVariable)) {
+                    actualResult = lhs;
+                    call = c;
+                } else {
+                    return null;
+                }
+            }
+            case null, default -> {
                 return null;
             }
-        }
-        case null, default -> {
-            return null;
-        }
         }
 
         // receiver must be simple
@@ -149,13 +145,11 @@ public final class UseOperationContractRule implements BuiltInRule {
         return result;
     }
 
-    /**
-     * Returns the operation contracts which are applicable for the passed instantiation.
-     *
-     * @param inst the operation contract rule instantiation
-     * @param services the services object
-     * @return all applicable contracts
-     */
+    /// Returns the operation contracts which are applicable for the passed instantiation.
+    ///
+    /// @param inst the operation contract rule instantiation
+    /// @param services the services object
+    /// @return all applicable contracts
     public static ImmutableSet<FunctionalOperationContract> getApplicableContracts(
             Instantiation inst, Services services) {
         if (inst == null) {
@@ -166,26 +160,24 @@ public final class UseOperationContractRule implements BuiltInRule {
         return getApplicableContracts(services, inst.fn, inst.modality.kind());
     }
 
-    /**
-     * Returns the operation contracts which are applicable for the passed operation and the passed
-     * modality.
-     *
-     * @param services the services object
-     * @param fn the program method
-     * @param modalityKind the modality
-     * @return all applicable contracts
-     */
+    /// Returns the operation contracts which are applicable for the passed operation and the passed
+    /// modality.
+    ///
+    /// @param services the services object
+    /// @param fn the program method
+    /// @param modalityKind the modality
+    /// @return all applicable contracts
     private static ImmutableSet<FunctionalOperationContract> getApplicableContracts(
             Services services, ProgramFunction fn,
-            Modality.RustyModalityKind modalityKind) {
+            RModality.RustyModalityKind modalityKind) {
         ImmutableSet<FunctionalOperationContract> result =
             services.getSpecificationRepository().getOperationContracts(fn, modalityKind);
 
         // in box modalities, diamond contracts may be applied as well
-        if (modalityKind == Modality.RustyModalityKind.BOX) {
+        if (modalityKind == RModality.RustyModalityKind.BOX) {
             result = result.union(
                 services.getSpecificationRepository().getOperationContracts(fn,
-                    Modality.RustyModalityKind.DIA));
+                    RModality.RustyModalityKind.DIA));
         }
 
         return result;
@@ -195,10 +187,8 @@ public final class UseOperationContractRule implements BuiltInRule {
     // public interface
     // -------------------------------------------------------------------------
 
-    /**
-     * Computes instantiation for contract rule on passed focus term. Internally only serves as
-     * helper for instantiate().
-     */
+    /// Computes instantiation for contract rule on passed focus term. Internally only serves as
+    /// helper for instantiate().
     public static Instantiation computeInstantiation(Term focusTerm, Services services) {
         // leading update?
         final Term u;
@@ -213,13 +203,13 @@ public final class UseOperationContractRule implements BuiltInRule {
         }
 
         // focus (below update) must be modality term
-        if (!(progPost.op() instanceof Modality modality)) {
+        if (!(progPost.op() instanceof RModality modality)) {
             return null;
         }
 
         // active statement must be method call or new
         final var methodCall =
-            getMethodCall(modality.program(), services);
+            getMethodCall(modality.programBlock(), services);
         if (methodCall == null) {
             return null;
         }
@@ -274,7 +264,7 @@ public final class UseOperationContractRule implements BuiltInRule {
 
         // contract can be applied if modality is box and needs no termination
         // argument
-        if (inst.modality.kind() == Modality.RustyModalityKind.BOX) {
+        if (inst.modality.kind() == RModality.RustyModalityKind.BOX) {
             return true;
         }
 
@@ -308,7 +298,7 @@ public final class UseOperationContractRule implements BuiltInRule {
         var services = goal.getOverlayServices();
         // get instantiation
         final Instantiation inst = instantiate(ruleApp.posInOccurrence().subTerm(), services);
-        final RustyBlock rb = inst.modality().program();
+        final RustyBlock rb = inst.modality().programBlock();
         final TermBuilder tb = services.getTermBuilder();
 
         final var contract =
@@ -371,8 +361,9 @@ public final class UseOperationContractRule implements BuiltInRule {
         }
         final BlockExpression postBE = replaceBlock(rb, resultAssign);
         final RustyBlock postRustyBlock = new RustyBlock(postBE);
-        Modality modality = Modality.getModality(inst.modality.kind(), postRustyBlock);
-        final Term normalPost = tb.prog(modality.kind(), modality.program(), inst.progPost.sub(0));
+        RModality modality = RModality.getModality(inst.modality.kind(), postRustyBlock);
+        final Term normalPost =
+            tb.prog(modality.kind(), modality.programBlock(), inst.progPost.sub(0));
         postGoal.changeFormula(new SequentFormula(tb.apply(inst.u, normalPost)),
             ruleApp.posInOccurrence());
         postGoal.addFormula(new SequentFormula(postAssumption), true, false);
@@ -386,13 +377,11 @@ public final class UseOperationContractRule implements BuiltInRule {
         return result;
     }
 
-    /**
-     * Computes the result variable for this instantiation.
-     *
-     * @param inst the instantiation for the operation contract rule
-     * @param services the services object
-     * @return the result variable
-     */
+    /// Computes the result variable for this instantiation.
+    ///
+    /// @param inst the instantiation for the operation contract rule
+    /// @param services the services object
+    /// @return the result variable
     public static ProgramVariable computeResultVar(Instantiation inst, Services services) {
         final TermBuilder tb = services.getTermBuilder();
         return tb.resultVar(inst.fn, true);
@@ -457,32 +446,28 @@ public final class UseOperationContractRule implements BuiltInRule {
     // inner classes
     // -------------------------------------------------------------------------
 
-    /**
-     * @param u The enclosing update term.
-     * @param progPost The program post condition term.
-     * @param modality The modality.
-     * @param actualResult The actual result expression.
-     * @param actualSelf The actual self term.
-     * @param call The call expression
-     * @param fn The program function.
-     * @param actualParams The actual parameter terms.
-     */
-    public record Instantiation(Term u, Term progPost, Modality modality, Expr actualResult,
+    /// @param u The enclosing update term.
+    /// @param progPost The program post condition term.
+    /// @param modality The modality.
+    /// @param actualResult The actual result expression.
+    /// @param actualSelf The actual self term.
+    /// @param call The call expression
+    /// @param fn The program function.
+    /// @param actualParams The actual parameter terms.
+    public record Instantiation(Term u, Term progPost, RModality modality, Expr actualResult,
             Term actualSelf,
             Call call, ProgramFunction fn,
             ImmutableList<Term> actualParams) {
-        /**
-         * Creates a new instantiation for the contract rule and the given variables.
-         *
-         * @param u the enclosing update term
-         * @param progPost the post condition of the program method
-         * @param modality the modality
-         * @param actualResult the result expression
-         * @param actualSelf the self term
-         * @param call the call expression
-         * @param fn the program method
-         * @param actualParams the actual parameter terms
-         */
+        /// Creates a new instantiation for the contract rule and the given variables.
+        ///
+        /// @param u the enclosing update term
+        /// @param progPost the post condition of the program method
+        /// @param modality the modality
+        /// @param actualResult the result expression
+        /// @param actualSelf the self term
+        /// @param call the call expression
+        /// @param fn the program method
+        /// @param actualParams the actual parameter terms
         public Instantiation {
             assert u != null;
             assert u.sort() == RustyDLTheory.UPDATE;

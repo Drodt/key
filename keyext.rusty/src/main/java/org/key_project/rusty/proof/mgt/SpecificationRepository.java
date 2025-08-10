@@ -10,8 +10,8 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.InfiniteLoopExpression;
 import org.key_project.rusty.ast.expr.LoopExpression;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.rusty.speclang.LoopSpecification;
@@ -35,7 +35,7 @@ public class SpecificationRepository {
     }
 
     public ImmutableSet<FunctionalOperationContract> getOperationContracts(ProgramFunction fn,
-            Modality.RustyModalityKind modalityKind) {
+            RModality.RustyModalityKind modalityKind) {
         ImmutableSet<FunctionalOperationContract> result = getOperationContracts(fn);
         for (var contract : result) {
             if (!contract.getModalityKind().equals(modalityKind)) {
@@ -50,9 +50,7 @@ public class SpecificationRepository {
         return result == null ? ImmutableSet.empty() : result;
     }
 
-    /**
-     * Returns all registered (atomic) contracts for the passed target.
-     */
+    /// Returns all registered (atomic) contracts for the passed target.
     public ImmutableSet<Contract> getContracts(ProgramFunction target) {
         final ImmutableSet<Contract> result = contracts.get(target);
         return result == null ? DefaultImmutableSet.nil() : result;
@@ -87,10 +85,8 @@ public class SpecificationRepository {
         contractsByName.put(name, contract);
     }
 
-    /**
-     * Returns the registered (atomic or combined) contract corresponding to the passed name, or
-     * null.
-     */
+    /// Returns the registered (atomic or combined) contract corresponding to the passed name, or
+    /// null.
     public Contract getContractByName(String name) {
         if (name == null || name.isEmpty()) {
             return null;
@@ -102,9 +98,7 @@ public class SpecificationRepository {
         loopInvs.put(spec.getLoop(), spec);
     }
 
-    /**
-     * Returns the registered loop invariant for the passed loop, or null.
-     */
+    /// Returns the registered loop invariant for the passed loop, or null.
     public LoopSpecification getLoopSpec(InfiniteLoopExpression loop) {
         // TODO: Java uses a pair of lines and loops. Why? Do we need that?
         return loopInvs.get(loop);

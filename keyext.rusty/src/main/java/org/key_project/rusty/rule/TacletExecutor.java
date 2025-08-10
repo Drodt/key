@@ -9,6 +9,7 @@ import java.util.HashMap;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
@@ -44,19 +45,17 @@ public abstract class TacletExecutor extends
         return goal.getOverlayServices().getTermBuilder().and(t1, t2);
     }
 
-    /**
-     * a new term is created by replacing variables of term whose replacement is found in the given
-     * SVInstantiations
-     *
-     * @param term the {@link Term} the syntactical replacement is performed on
-     * @param applicationPosInOccurrence the {@link PosInOccurrence} of the find term in the sequent
-     *        this taclet is applied to
-     * @param mc the {@link MatchConditions} with all instantiations and the constraint
-     * @param goal the {@link Goal} on which this taclet is applied
-     * @param ruleApp the {@link RuleApp} with application information
-     * @param services the {@link Services} with the Rust model information
-     * @return the (partially) instantiated term
-     */
+    /// a new term is created by replacing variables of term whose replacement is found in the given
+    /// SVInstantiations
+    ///
+    /// @param term the [Term] the syntactical replacement is performed on
+    /// @param applicationPosInOccurrence the [PosInOccurrence] of the find term in the sequent
+    /// this taclet is applied to
+    /// @param mc the [MatchConditions] with all instantiations and the constraint
+    /// @param goal the [Goal] on which this taclet is applied
+    /// @param ruleApp the [RuleApp] with application information
+    /// @param services the [Services] with the Rust model information
+    /// @return the (partially) instantiated term
     protected Term syntacticalReplace(Term term, PosInOccurrence applicationPosInOccurrence,
             MatchConditions mc, Goal goal, RuleApp ruleApp, Services services) {
         final SyntacticalReplaceVisitor srVisitor =
@@ -68,26 +67,25 @@ public abstract class TacletExecutor extends
 
     @Override
     protected Term syntacticalReplace(Term term, PosInOccurrence applicationPosInOccurrence,
-            org.key_project.prover.rules.instantiation.MatchConditions mc, @NonNull Goal goal,
+            MatchResultInfo mc, @NonNull Goal goal,
             @NonNull RuleApp ruleApp, LogicServices services, Object... instantiationInfo) {
         return syntacticalReplace(term, applicationPosInOccurrence, (MatchConditions) mc, goal,
             ruleApp, (Services) services);
     }
 
-    /**
-     * adds the given rules (i.e. the rules to add according to the Taclet goal template to the node
-     * of the given goal)
-     *
-     * @param rules the rules to be added
-     * @param goal the goal describing the node where the rules should be added
-     * @param p_services the Services encapsulating all Rust information
-     * @param p_matchCond the MatchConditions containing in particular the instantiations of the
-     *        schemavariables
-     */
+    /// adds the given rules (i.e. the rules to add according to the Taclet goal template to the
+    /// node
+    /// of the given goal)
+    ///
+    /// @param rules the rules to be added
+    /// @param goal the goal describing the node where the rules should be added
+    /// @param p_services the Services encapsulating all Rust information
+    /// @param p_matchCond the MatchConditions containing in particular the instantiations of the
+    /// schemavariables
     @Override
     protected void applyAddrule(ImmutableList<? extends org.key_project.prover.rules.Taclet> rules,
             @NonNull Goal goal, LogicServices p_services,
-            org.key_project.prover.rules.instantiation.MatchConditions p_matchCond) {
+            MatchResultInfo p_matchCond) {
         var services = (Services) p_services;
         var matchCond = (MatchConditions) p_matchCond;
         for (var rule : rules) {
@@ -178,22 +176,21 @@ public abstract class TacletExecutor extends
         goal.getNode().setRenamings(renamings);
     }
 
-    /**
-     * adds SequentFormula to antecedent depending on position information (if none is handed over
-     * it is added at the head of the antecedent). Of course, it has to be ensured that the position
-     * information describes one occurrence in the antecedent of the sequent.
-     *
-     * @param semi the Semisequent with the ConstrainedFormulae to be added
-     * @param currentSequent the Sequent which is the current (intermediate) result of applying the
-     *        taclet
-     * @param pos the PosInOccurrence describing the place in the sequent or null for head of
-     *        antecedent
-     * @param applicationPosInOccurrence The {@link PosInOccurrence} of the {@link Term} which is
-     *        rewritten
-     * @param matchCond the MatchConditions containing in particular the instantiations of the
-     *        schemavariables
-     * @param services the Services encapsulating all Rust information
-     */
+    /// adds SequentFormula to antecedent depending on position information (if none is handed over
+    /// it is added at the head of the antecedent). Of course, it has to be ensured that the
+    /// position
+    /// information describes one occurrence in the antecedent of the sequent.
+    ///
+    /// @param semi the Semisequent with the ConstrainedFormulae to be added
+    /// @param currentSequent the Sequent which is the current (intermediate) result of applying the
+    /// taclet
+    /// @param pos the PosInOccurrence describing the place in the sequent or null for head of
+    /// antecedent
+    /// @param applicationPosInOccurrence The [PosInOccurrence] of the [Term] which is
+    /// rewritten
+    /// @param matchCond the MatchConditions containing in particular the instantiations of the
+    /// schemavariables
+    /// @param services the Services encapsulating all Rust information
     protected void addToAntec(Semisequent semi, SequentChangeInfo currentSequent,
             PosInOccurrence pos,
             PosInOccurrence applicationPosInOccurrence, MatchConditions matchCond, Goal goal,
@@ -221,7 +218,7 @@ public abstract class TacletExecutor extends
             Goal goal,
             PosInOccurrence posOfFind,
             LogicServices p_services,
-            org.key_project.prover.rules.instantiation.MatchConditions matchCond) {
+            MatchResultInfo matchCond) {
         // TODO
     }
 

@@ -10,6 +10,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class IdentPattern implements Pattern, Named {
     private final boolean reference;
@@ -69,7 +70,7 @@ public class IdentPattern implements Pattern, Named {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
         }

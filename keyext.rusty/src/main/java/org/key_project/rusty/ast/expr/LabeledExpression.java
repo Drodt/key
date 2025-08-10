@@ -5,6 +5,9 @@ package org.key_project.rusty.ast.expr;
 
 import org.key_project.rusty.ast.Label;
 
+import org.jspecify.annotations.Nullable;
+
 public interface LabeledExpression {
+    @Nullable
     Label label();
 }

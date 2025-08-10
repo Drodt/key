@@ -16,7 +16,7 @@ public record ItemStatement(Item item) implements Statement {
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

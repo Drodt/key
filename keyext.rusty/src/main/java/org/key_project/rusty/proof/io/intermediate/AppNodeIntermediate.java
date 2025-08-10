@@ -3,17 +3,15 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof.io.intermediate;
 
-/**
- * Node in an intermediate proof representation storing a rule application.
- *
- * @author Dominic Scheurer
- */
+/// Node in an intermediate proof representation storing a rule application.
+///
+/// @author Dominic Scheurer
 public class AppNodeIntermediate extends NodeIntermediate {
     private AppIntermediate ruleApp = null;
     private boolean interactiveRuleApplication = false;
-    /** Signals that this app has been triggered by a proof script. */
+    /// Signals that this app has been triggered by a proof script.
     private boolean scriptRuleApplication = false;
-    /** user-provided notes for the node */
+    /// user-provided notes for the node
     private String notes = null;
 
     public AppIntermediate getIntermediateRuleApp() {

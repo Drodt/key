@@ -65,14 +65,12 @@ public class LDTInput implements EnvInput {
         return "";
     }
 
-    /**
-     * reads all LDTs, i.e., all associated .key files with respect to the given modification
-     * strategy. Reading is done in a special order: first all sort declarations then all function
-     * and predicate declarations and third the rules. This procedure makes it possible to use all
-     * declared sorts in all rules.
-     *
-     * @return a list of warnings during the parsing the process
-     */
+    /// reads all LDTs, i.e., all associated .key files with respect to the given modification
+    /// strategy. Reading is done in a special order: first all sort declarations then all function
+    /// and predicate declarations and third the rules. This procedure makes it possible to use all
+    /// declared sorts in all rules.
+    ///
+    /// @return a list of warnings during the parsing the process
     @Override
     public ImmutableSet<String> read() {
         var warnings = new ArrayList<String>();

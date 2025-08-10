@@ -14,6 +14,7 @@ import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public final class MethodCallExpression implements Call {
     private final Expr callee;
@@ -42,7 +43,7 @@ public final class MethodCallExpression implements Call {
             return method;
         }
         --n;
-        return params.get(n);
+        return Objects.requireNonNull(params.get(n));
     }
 
     @Override
@@ -71,7 +72,7 @@ public final class MethodCallExpression implements Call {
 
     @Override
     public ProgramFunction function(Services services) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     public Expr callee() {
@@ -87,7 +88,7 @@ public final class MethodCallExpression implements Call {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
         if (obj == null || obj.getClass() != this.getClass())

@@ -11,7 +11,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.conditions.NotFreeIn;
 import org.key_project.prover.sequent.Sequent;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.FormulaSV;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.TermSV;
@@ -20,16 +20,15 @@ import org.key_project.rusty.rule.*;
 import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.ImmutableMap;
 
+import org.jspecify.annotations.NonNull;
 
 public class TacletPrefixBuilder {
-    /**
-     * set of all schemavariables that are only allowed to be matched with quantifiable variables.
-     */
+    /// set of all schema variables that are only allowed to be matched with quantifiable variables.
     private int numberOfCurrentlyBoundVars =
         0;
     private final TacletBuilder<? extends Taclet> tacletBuilder;
 
-    protected ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap =
+    protected ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap =
         DefaultImmutableMap.nilMap();
 
     public TacletPrefixBuilder(TacletBuilder<? extends Taclet> tacletBuilder) {
@@ -45,10 +44,8 @@ public class TacletPrefixBuilder {
         prefixMap = prefixMap.put(sv, new TacletPrefix(numberOfBoundVars, false));
     }
 
-    /**
-     * removes all variables x that are declared as x not free in sv from the currently bound vars
-     * set.
-     */
+    /// removes all variables x that are declared as x not free in sv from the currently bound vars
+    /// set.
     private int removeNotFreeIn(SchemaVariable sv) {
         int result = numberOfCurrentlyBoundVars;
         Iterator<NotFreeIn> it = tacletBuilder.varsNotFreeIn();
@@ -62,7 +59,7 @@ public class TacletPrefixBuilder {
     }
 
     private void visit(Term t) {
-        if (t.op() instanceof Modality mod && mod.kind() instanceof ModalOperatorSV msv) {
+        if (t.op() instanceof RModality mod && mod.kind() instanceof ModalOperatorSV msv) {
             // TODO: Is false correct?
             prefixMap.put(msv, new TacletPrefix(0, false));
         }
@@ -216,7 +213,7 @@ public class TacletPrefixBuilder {
         }
     }
 
-    public ImmutableMap<org.key_project.logic.op.sv.SchemaVariable, org.key_project.prover.rules.TacletPrefix> getPrefixMap() {
+    public ImmutableMap<SchemaVariable, org.key_project.prover.rules.TacletPrefix> getPrefixMap() {
         considerContext();
         return prefixMap;
     }

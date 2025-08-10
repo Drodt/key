@@ -9,7 +9,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.Services;
@@ -18,25 +18,21 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 public class NoPosTacletApp extends TacletApp {
-    /**
-     * creates a NoPosTacletApp for the given taclet and no instantiation information and CHECKS
-     * variable conditions as well as it resolves collisions
-     *
-     * @param taclet the Taclet
-     */
+    /// creates a NoPosTacletApp for the given taclet and no instantiation information and CHECKS
+    /// variable conditions as well as it resolves collisions
+    ///
+    /// @param taclet the Taclet
     public static NoPosTacletApp createNoPosTacletApp(Taclet taclet) {
         return new UninstantiatedNoPosTacletApp(taclet);
     }
 
-    /**
-     * creates a NoPosTacletApp for the given taclet with some known instantiations and CHECKS
-     * variable conditions as well as it resolves collisions The ifInstantiations parameter is not
-     * matched against the if sequence, but only stored. For matching use the method
-     * "setIfFormulaInstantiations".
-     *
-     * @param taclet the Taclet
-     * @param instantiations the SVInstantiations
-     */
+    /// creates a NoPosTacletApp for the given taclet with some known instantiations and CHECKS
+    /// variable conditions as well as it resolves collisions The ifInstantiations parameter is not
+    /// matched against the if sequence, but only stored. For matching use the method
+    /// "setIfFormulaInstantiations".
+    ///
+    /// @param taclet the Taclet
+    /// @param instantiations the SVInstantiations
     public static NoPosTacletApp createNoPosTacletApp(Taclet taclet,
             SVInstantiations instantiations, Services services) {
         return createNoPosTacletApp(taclet, instantiations, null, services);
@@ -58,12 +54,12 @@ public class NoPosTacletApp extends TacletApp {
         return createNoPosTacletApp(taclet, matchCond.getInstantiations(), null, services);
     }
 
-    /**
-     * Create TacletApp with immutable "instantiations", i.e. this instantiations must not be
-     * modified later (e.g. by "addInstantiation"). However, this information is currently only used
-     * to decide about introduction of metavariables. Immutable instantiations are important for the
-     * "addrules" part of taclets.
-     */
+    /// Create TacletApp with immutable "instantiations", i.e. this instantiations must not be
+    /// modified later (e.g. by "addInstantiation"). However, this information is currently only
+    /// used
+    /// to decide about introduction of metavariables. Immutable instantiations are important for
+    /// the
+    /// "addrules" part of taclets.
     public static NoPosTacletApp createFixedNoPosTacletApp(Taclet taclet,
             SVInstantiations instantiations, Services services) {
         NoPosTacletApp res = createNoPosTacletApp(taclet, instantiations, null, services);
@@ -75,21 +71,17 @@ public class NoPosTacletApp extends TacletApp {
     }
 
 
-    /**
-     * creates a NoPosTacletApp for the given taclet and no instantiation information
-     *
-     * @param taclet the Taclet
-     */
+    /// creates a NoPosTacletApp for the given taclet and no instantiation information
+    ///
+    /// @param taclet the Taclet
     protected NoPosTacletApp(Taclet taclet) {
         super(taclet);
     }
 
-    /**
-     * creates a NoPosTacletApp for the given taclet with some known instantiations
-     *
-     * @param taclet the Taclet
-     * @param instantiations the SVInstantiations
-     */
+    /// creates a NoPosTacletApp for the given taclet with some known instantiations
+    ///
+    /// @param taclet the Taclet
+    /// @param instantiations the SVInstantiations
     private NoPosTacletApp(Taclet taclet, SVInstantiations instantiations,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations) {
         super(taclet, instantiations, ifInstantiations);
@@ -115,22 +107,20 @@ public class NoPosTacletApp extends TacletApp {
         return mc;
     }
 
-    /**
-     * returns the PositionInOccurrence (representing a SequentFormula and a position in the
-     * corresponding formula)
-     *
-     * @return the PosInOccurrence
-     */
+    /// returns the PositionInOccurrence (representing a SequentFormula and a position in the
+    /// corresponding formula)
+    ///
+    /// @return the PosInOccurrence
     @Override
     public PosInOccurrence posInOccurrence() {
         return null;
     }
 
-    /**
-     * returns true iff all necessary informations are collected, so that the Taclet can be applied.
-     *
-     * @return true iff all necessary informations are collected, so that the Taclet can be applied.
-     */
+    /// returns true iff all necessary informations are collected, so that the Taclet can be
+    /// applied.
+    ///
+    /// @return true iff all necessary informations are collected, so that the Taclet can be
+    /// applied.
     @Override
     public boolean complete() {
         return (uninstantiatedVars().isEmpty() && taclet() instanceof NoFindTaclet
@@ -138,18 +128,13 @@ public class NoPosTacletApp extends TacletApp {
 
     }
 
-    /**
-     * PRECONDITION:
-     *
-     * <pre>
-     *  {@code
-     * ifFormulaInstantiations() == null &&
-     *         (pos == null || termConstraint.isSatisfiable())
-     * }
-     * </pre>
-     *
-     * @return TacletApp with the resulting instantiations or null
-     */
+    /// PRECONDITION:
+    /// <pre>
+    ///
+    /// `ifFormulaInstantiations() == null &&(pos == null || termConstraint.isSatisfiable())`
+    /// </pre>
+    ///
+    /// @return TacletApp with the resulting instantiations or null
     public NoPosTacletApp matchFind(PosInOccurrence pos, Services services) {
         return matchFind(pos, services, null);
     }
@@ -164,7 +149,7 @@ public class NoPosTacletApp extends TacletApp {
             return null;
         }
 
-        MatchConditions res;
+        MatchResultInfo res;
         if (taclet() instanceof FindTaclet) {
             res = taclet().getMatcher().matchFind(t, mc, services);
             // the following check will partly be repeated within the
@@ -178,7 +163,7 @@ public class NoPosTacletApp extends TacletApp {
         return evalCheckRes(res, services);
     }
 
-    private NoPosTacletApp evalCheckRes(MatchConditions res, Services services) {
+    private NoPosTacletApp evalCheckRes(MatchResultInfo res, Services services) {
         if (res == null) {
             return null;
         }
@@ -195,23 +180,19 @@ public class NoPosTacletApp extends TacletApp {
         return (NoPosTacletApp) setMatchConditions(res, services);
     }
 
-    /**
-     * creates a new Taclet application containing all the instantiations, constraints and new
-     * metavariables given by the mc object and forget the old ones
-     */
+    /// creates a new Taclet application containing all the instantiations, constraints and new
+    /// metavariables given by the mc object and forget the old ones
     @Override
-    public TacletApp setMatchConditions(MatchConditions mc, Services services) {
+    public TacletApp setMatchConditions(MatchResultInfo mc, Services services) {
         return createNoPosTacletApp(taclet(), mc.getInstantiations(),
             assumesFormulaInstantiations(),
             services);
     }
 
-    /**
-     * creates a new Taclet application containing all the instantiations, constraints, new
-     * metavariables and if formula instantiations given and forget the old ones
-     */
+    /// creates a new Taclet application containing all the instantiations, constraints, new
+    /// metavariables and if formula instantiations given and forget the old ones
     @Override
-    protected TacletApp setAllInstantiations(MatchConditions mc,
+    protected TacletApp setAllInstantiations(MatchResultInfo mc,
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations, Services services) {
         return createNoPosTacletApp(taclet(), mc.getInstantiations(), ifInstantiations, services);
     }
@@ -221,13 +202,11 @@ public class NoPosTacletApp extends TacletApp {
                 .equals(p_mc.getInstantiations().getUpdateContext());
     }
 
-    /**
-     * adds a new instantiation to this TacletApp
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param term the Term the SchemaVariable is instantiated with
-     * @return the new TacletApp
-     */
+    /// adds a new instantiation to this TacletApp
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param term the Term the SchemaVariable is instantiated with
+    /// @return the new TacletApp
     @Override
     public TacletApp addInstantiation(SchemaVariable sv, Term term, boolean interesting,
             Services services) {

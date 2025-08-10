@@ -6,10 +6,10 @@ package org.key_project.rusty.parser.varcond;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
+import org.key_project.rusty.rule.VariableConditionAdapter;
+import org.key_project.rusty.rule.inst.SVInstantiations;
 
-public class DifferentInstantiationCondition implements VariableCondition {
+public class DifferentInstantiationCondition extends VariableConditionAdapter {
     private final SchemaVariable var1, var2;
 
     public DifferentInstantiationCondition(SchemaVariable var1, SchemaVariable var2) {
@@ -18,17 +18,16 @@ public class DifferentInstantiationCondition implements VariableCondition {
     }
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions matchCond, Services services) {
-        final var svInst = matchCond.getInstantiations();
+    public boolean check(SchemaVariable var, SyntaxElement instCandidate, SVInstantiations svInst,
+            Services services) {
         if (var == var1) {
             final Object inst2 = svInst.getInstantiation(var2);
-            return inst2 == null || !inst2.equals(instCandidate) ? matchCond : null;
+            return inst2 == null || !inst2.equals(instCandidate);
         } else if (var == var2) {
             final Object inst1 = svInst.getInstantiation(var1);
-            return inst1 == null || !inst1.equals(instCandidate) ? matchCond : null;
+            return inst1 == null || !inst1.equals(instCandidate);
         } else {
-            return matchCond;
+            return true;
         }
     }
 }

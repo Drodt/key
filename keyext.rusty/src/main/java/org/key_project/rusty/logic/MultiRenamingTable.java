@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 import org.key_project.rusty.ast.RustyProgramElement;
 
+import org.jspecify.annotations.Nullable;
+
 public class MultiRenamingTable extends RenamingTable {
     private final HashMap<? extends RustyProgramElement, ? extends RustyProgramElement> hmap;
 
@@ -15,7 +17,7 @@ public class MultiRenamingTable extends RenamingTable {
         this.hmap = hmap;
     }
 
-    public RustyProgramElement getRenaming(RustyProgramElement se) {
+    public @Nullable RustyProgramElement getRenaming(RustyProgramElement se) {
         return hmap.get(se);
     }
 

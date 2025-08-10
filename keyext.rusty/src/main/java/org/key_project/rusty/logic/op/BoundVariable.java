@@ -4,18 +4,16 @@
 package org.key_project.rusty.logic.op;
 
 import org.key_project.logic.Name;
-import org.key_project.logic.ParsableVariable;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.AbstractSortedOperator;
 import org.key_project.logic.op.Modifier;
+import org.key_project.logic.op.ParsableVariable;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * The definition of logical variables.
- */
+/// The definition of logical variables.
 public final class BoundVariable extends AbstractSortedOperator
         implements QuantifiableVariable, ParsableVariable {
     public BoundVariable(Name name, Sort sort) {

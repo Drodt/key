@@ -5,9 +5,7 @@ package org.key_project.rusty.pp;
 
 public class AbbrevException extends Exception {
 
-    /**
-     *
-     */
+    ///
     private static final long serialVersionUID = 7602628448672131434L;
     protected final boolean termused;
 

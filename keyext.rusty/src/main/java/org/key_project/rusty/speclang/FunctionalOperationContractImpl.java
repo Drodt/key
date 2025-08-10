@@ -13,61 +13,52 @@ import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.proof.OpReplacer;
 import org.key_project.rusty.proof.init.ContractPO;
 import org.key_project.rusty.proof.init.FunctionalOperationContractPO;
 import org.key_project.rusty.proof.init.InitConfig;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 import static org.key_project.rusty.util.Assert.assertSubSort;
 
-/**
- * Standard implementation of the OperationContract interface.
- */
+/// Standard implementation of the OperationContract interface.
 public class FunctionalOperationContractImpl implements FunctionalOperationContract {
     final String baseName;
     final String name;
     final ProgramFunction fn;
-    final Modality.RustyModalityKind modalityKind;
-    /**
-     * The original precondition terms.
-     */
+    final RModality.RustyModalityKind modalityKind;
+    /// The original precondition terms.
     final Term originalPre;
-    final Term originalMby;
-    /**
-     * The original postcondition term.
-     */
+    final @Nullable Term originalMby;
+    /// The original postcondition term.
     final Term originalPost;
-    /**
-     * The original modifiable clause term.
-     */
-    final Term originalModifiable;
+    /// The original modifiable clause term.
+    final @Nullable Term originalModifiable;
     final ImmutableList<ProgramVariable> originalParamVars;
-    final ProgramVariable originalResultVar;
-    final Term globalDefs;
+    final @Nullable ProgramVariable originalResultVar;
+    final @Nullable Term globalDefs;
     final int id;
     final boolean toBeSaved;
 
-    /**
-     * The term builder.
-     */
+    /// The term builder.
     private final TermBuilder tb;
-    /**
-     * The services object.
-     */
+    /// The services object.
     private final Services services;
 
     // -------------------------------------------------------------------------
     // constructors
     // -------------------------------------------------------------------------
 
-    FunctionalOperationContractImpl(String baseName, String name,
-            ProgramFunction fn, Modality.RustyModalityKind modalityKind,
-            Term pre, Term mby, Term post, Term modifiables,
-            ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar, Term globalDefs,
+    FunctionalOperationContractImpl(String baseName, @Nullable String name,
+            ProgramFunction fn, RModality.RustyModalityKind modalityKind,
+            Term pre, @Nullable Term mby, Term post, @Nullable Term modifiables,
+            ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar,
+            @Nullable Term globalDefs,
             int id, boolean toBeSaved,
             Services services) {
         assert !(name == null && baseName == null);
@@ -99,10 +90,10 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     @Override
     public FunctionalOperationContract map(UnaryOperator<Term> op, Services services) {
         Term newPres = op.apply(originalPre);
-        Term newMby = op.apply(originalMby);
+        Term newMby = originalMby == null ? null : op.apply(originalMby);
         Term newPost = op.apply(originalPost);
-        Term newModifiable = op.apply(originalModifiable);
-        Term newGlobalDefs = op.apply(globalDefs);
+        Term newModifiable = originalModifiable == null ? null : op.apply(originalModifiable);
+        Term newGlobalDefs = globalDefs == null ? null : op.apply(globalDefs);
 
         return new FunctionalOperationContractImpl(baseName, name, fn,
             modalityKind,
@@ -156,11 +147,14 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     @Override
-    public Term getModifiable(Term selfVar, ImmutableList<Term> paramVars,
+    public @Nullable Term getModifiable(Term selfVar, ImmutableList<Term> paramVars,
             Services services) {
         assert paramVars != null;
         assert paramVars.size() == originalParamVars.size();
         assert services != null;
+        if (originalModifiable == null) {
+            return null;
+        }
         final Map<Term, Term> replaceMap =
             getReplaceMap(selfVar, paramVars, null, services);
         final OpReplacer or =
@@ -169,13 +163,14 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     @Override
-    public Term getFreePre(ProgramVariable selfVar, ImmutableList<ProgramVariable> paramVars,
+    public @Nullable Term getFreePre(ProgramVariable selfVar,
+            ImmutableList<ProgramVariable> paramVars,
             Services services) {
         return null;
     }
 
     @Override
-    public Modality.RustyModalityKind getModalityKind() {
+    public RModality.RustyModalityKind getModalityKind() {
         return modalityKind;
     }
 
@@ -221,7 +216,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     private Map<ProgramVariable, ProgramVariable> getReplaceMap(ProgramVariable selfVar,
-            ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar,
+            @Nullable ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar,
             Services services) {
         final Map<ProgramVariable, ProgramVariable> result = new HashMap<>();
 
@@ -243,6 +238,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
 
         // result
         if (resultVar != null) {
+            assert originalResultVar != null;
             assertSubSort(resultVar, originalResultVar);
             result.put(originalResultVar, resultVar);
         }
@@ -266,12 +262,12 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     @Override
-    public Term getModifiable() {
+    public @Nullable Term getModifiable() {
         return originalModifiable;
     }
 
     @Override
-    public Term getMby() {
+    public @Nullable Term getMby() {
         return originalMby;
     }
 
@@ -291,12 +287,12 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     @Override
-    public Term getGlobalDefs() {
+    public @Nullable Term getGlobalDefs() {
         return globalDefs;
     }
 
     @Override
-    public Term getMby(ProgramVariable selfVar, ImmutableList<ProgramVariable> paramVars,
+    public @Nullable Term getMby(ProgramVariable selfVar, ImmutableList<ProgramVariable> paramVars,
             Services services) {
         return null;
     }
@@ -313,7 +309,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     @Override
-    public Term getSelf() {
+    public @Nullable Term getSelf() {
         // TODO
         return null;
     }
@@ -324,21 +320,21 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     @Override
-    public Term getResult() {
+    public @Nullable Term getResult() {
+        if (originalResultVar == null)
+            return null;
         return tb.var(originalResultVar);
     }
 
-    /**
-     * Get the according replace-map for the given variables.
-     *
-     * @param selfVar the self variable
-     * @param paramVars the parameter variables
-     * @param resultVar the result variable
-     * @param services the services object
-     * @return the replacement map
-     */
-    protected Map<Term, Term> getReplaceMap(Term selfVar,
-            ImmutableList<Term> paramVars, Term resultVar,
+    /// Get the according replace-map for the given variables.
+    ///
+    /// @param selfVar the self variable
+    /// @param paramVars the parameter variables
+    /// @param resultVar the result variable
+    /// @param services the services object
+    /// @return the replacement map
+    protected Map<Term, Term> getReplaceMap(@Nullable Term selfVar,
+            ImmutableList<Term> paramVars, @Nullable Term resultVar,
             Services services) {
         final Map<Term, Term> result = new LinkedHashMap<>();
 
@@ -365,6 +361,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
         // result
         if (resultVar != null) {
             // workaround to allow covariant return types (bug #1384)
+            assert originalResultVar != null;
             assertSubSort(resultVar, originalResultVar);
             result.put(tb.var(originalResultVar), resultVar);
         }

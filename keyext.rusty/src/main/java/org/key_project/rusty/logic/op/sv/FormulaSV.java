@@ -10,10 +10,8 @@ import org.key_project.rusty.logic.RustyDLTheory;
 import org.jspecify.annotations.NonNull;
 
 public class FormulaSV extends OperatorSV implements TerminalSyntaxElement {
-    /**
-     * @param name the name of the SchemaVariable
-     * @param isRigid true iff this SV may only match rigid formulas
-     */
+    /// @param name the name of the SchemaVariable
+    /// @param isRigid true iff this SV may only match rigid formulas
     FormulaSV(Name name, boolean isRigid) {
         super(name, RustyDLTheory.FORMULA, isRigid, true);
     }

@@ -9,15 +9,13 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
-/**
- * Metaoperator for computing the result of dividing one monomial by another
- */
+/// Metaoperator for computing the result of dividing one monomial by another
 public final class DivideMonomials extends AbstractTermTransformer {
     public DivideMonomials() {
         super(new Name("#divideMonomials"), 2);
     }
 
-    /** calculates the resulting term. */
+    /// calculates the resulting term.
     public Term transform(Term term, SVInstantiations svInst, Services services) {
         final Term arg1 = term.sub(0);
         final Term arg2 = term.sub(1);

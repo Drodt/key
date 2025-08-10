@@ -16,21 +16,22 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.RustyDLTheory;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.SchemaVariableFactory;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.*;
+
+import org.jspecify.annotations.NonNull;
 
 import static org.key_project.rusty.Services.convertToLogicElement;
 
 public class SVInstantiations
         implements org.key_project.prover.rules.instantiation.SVInstantiations {
-    /** the empty instantiation */
+    /// the empty instantiation
     public static final SVInstantiations EMPTY_SVINSTANTIATIONS = new SVInstantiations();
-    /**
-     * the context itself is not realised as a schemavariable, therefore we need here a dummy SV for
-     * a more unified handling (key in map)
-     */
+    /// the context itself is not realised as a schemavariable, therefore we need here a dummy SV
+    /// for
+    /// a more unified handling (key in map)
     private static final SchemaVariable CONTEXTSV = SchemaVariableFactory.createProgramSV(
         new Name("Context"), new ProgramSVSort(new Name("ContextStatementBlock")) {
             public boolean canStandFor(RustyProgramElement pe, Services services) {
@@ -38,23 +39,21 @@ public class SVInstantiations
             }
         }, false); // just a dummy SV for context
 
-    /** the map with the instantiations to logic terms */
+    /// the map with the instantiations to logic terms
     private final ImmutableMap<SchemaVariable, InstantiationEntry<?>> map;
 
-    /**
-     * updates may be ignored when matching, therefore they need to be added after the application
-     * around the added/replaced parts. These are stored in this list
-     */
+    /// updates may be ignored when matching, therefore they need to be added after the application
+    /// around the added/replaced parts. These are stored in this list
     private final ImmutableList<Term> updateContext;
 
-    /** instantiations of generic sorts */
+    /// instantiations of generic sorts
     private GenericSortInstantiations genericSortInstantiations =
         GenericSortInstantiations.EMPTY_INSTANTIATIONS;
 
-    /** additional conditions for the generic sorts */
+    /// additional conditions for the generic sorts
     private final ImmutableList<GenericSortCondition> genericSortConditions;
 
-    /** creates a new SVInstantions object with an empty map */
+    /// creates a new SVInstantions object with an empty map
     private SVInstantiations() {
         genericSortConditions = ImmutableSLList.nil();
         updateContext = ImmutableSLList.nil();
@@ -62,12 +61,10 @@ public class SVInstantiations
         // interesting = DefaultImmutableMap.nilMap();
     }
 
-    /**
-     * creates a new SVInstantions object using the given map
-     *
-     * @param map the ImmMap<SchemaVariable,InstantiationEntry<?>> with the instantiations
-     */
-    private SVInstantiations(ImmutableMap<SchemaVariable, InstantiationEntry<?>> map,
+    /// creates a new SVInstantions object using the given map
+    ///
+    /// @param map the ImmMap<SchemaVariable,InstantiationEntry<?>> with the instantiations
+    private SVInstantiations(ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> map,
             // ImmutableMap<SchemaVariable, InstantiationEntry<?>> interesting,
             ImmutableList<Term> updateContext,
             GenericSortInstantiations genericSortInstantiations,
@@ -87,14 +84,12 @@ public class SVInstantiations
         return genericSortConditions;
     }
 
-    /**
-     * adds the given pair to the instantiations. If the given SchemaVariable has been instantiated
-     * already, the new pair is taken without a warning.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param subst the Term the SchemaVariable is instantiated with
-     * @return SVInstantiations the new SVInstantiations containing the given pair
-     */
+    /// adds the given pair to the instantiations. If the given SchemaVariable has been instantiated
+    /// already, the new pair is taken without a warning.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param subst the Term the SchemaVariable is instantiated with
+    /// @return SVInstantiations the new SVInstantiations containing the given pair
     public SVInstantiations add(SchemaVariable sv, Term subst, LogicServices services) {
         return add(sv, new TermInstantiation(sv, subst), services);
     }
@@ -103,40 +98,29 @@ public class SVInstantiations
         return add(sv, new ProgramListInstantiation(pes.list()), services);
     }
 
-    /**
-     * Add the given additional condition for the generic sort instantiations
-     */
-    public SVInstantiations add(SchemaVariable sv, Modality.RustyModalityKind kind,
+    /// Add the given additional condition for the generic sort instantiations
+    public SVInstantiations add(SchemaVariable sv, RModality.RustyModalityKind kind,
             LogicServices services) throws SortException {
         return add(sv, new InstantiationEntry<>(kind) {
         }, services);
     }
 
-    public SVInstantiations addList(SchemaVariable sv, Object[] list, LogicServices services) {
-        return add(sv, new ListInstantiation(sv, ImmutableSLList.nil().prepend(list)),
-            services);
-    }
-
-    /**
-     * adds the given pair to the instantiations. If the given SchemaVariable has been instantiated
-     * already, the new pair is taken without a warning.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param pe the ProgramElement the SchemaVariable is instantiated with
-     * @return SVInstantiations the new SVInstantiations containing the given pair
-     */
+    /// adds the given pair to the instantiations. If the given SchemaVariable has been instantiated
+    /// already, the new pair is taken without a warning.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param pe the ProgramElement the SchemaVariable is instantiated with
+    /// @return SVInstantiations the new SVInstantiations containing the given pair
     public SVInstantiations add(SchemaVariable sv, RustyProgramElement pe, LogicServices services) {
         return add(sv, new ProgramInstantiation(pe), services);
     }
 
-    /**
-     * adds the given pair to the instantiations. If the given SchemaVariable has been instantiated
-     * already, the new pair is taken without a warning.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param entry the InstantiationEntry
-     * @return SVInstantiations the new SVInstantiations containing the given pair
-     */
+    /// adds the given pair to the instantiations. If the given SchemaVariable has been instantiated
+    /// already, the new pair is taken without a warning.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param entry the InstantiationEntry
+    /// @return SVInstantiations the new SVInstantiations containing the given pair
     public SVInstantiations add(SchemaVariable sv, InstantiationEntry<?> entry,
             LogicServices services) {
         return new SVInstantiations(map.put(sv, entry), getUpdateContext(),
@@ -144,11 +128,9 @@ public class SVInstantiations
                 services);
     }
 
-    /**
-     * returns the update context
-     *
-     * @return the update context
-     */
+    /// returns the update context
+    ///
+    /// @return the update context
     public ImmutableList<Term> getUpdateContext() {
         return updateContext;
     }
@@ -202,52 +184,42 @@ public class SVInstantiations
         return this;
     }
 
-    /**
-     * returns true iff the sv has been instantiated already
-     *
-     * @return true iff the sv has been instantiated already
-     */
+    /// returns true iff the sv has been instantiated already
+    ///
+    /// @return true iff the sv has been instantiated already
     public boolean isInstantiated(SchemaVariable sv) {
         return map.containsKey(sv);
     }
 
-    /**
-     * returns the instantiation of the given SchemaVariable
-     *
-     * @return the InstantiationEntry the SchemaVariable will be instantiated with, {@code null} if
-     *         no
-     *         instantiation is stored
-     */
+    /// returns the instantiation of the given SchemaVariable
+    ///
+    /// @return the InstantiationEntry the SchemaVariable will be instantiated with, `null` if
+    /// no
+    /// instantiation is stored
     public InstantiationEntry<?> getInstantiationEntry(SchemaVariable sv) {
         return map.get(sv);
     }
 
-    /**
-     * returns the instantiation of the given SchemaVariable
-     *
-     * @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
-     *         stored
-     */
+    /// returns the instantiation of the given SchemaVariable
+    ///
+    /// @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
+    /// stored
     public Object getInstantiation(SchemaVariable sv) {
         final InstantiationEntry<?> entry = getInstantiationEntry(sv);
         return entry == null ? null : entry.getInstantiation();
     }
 
-    /**
-     * returns the instantiation entry for the context "schema variable" or null if non such exists
-     */
+    /// returns the instantiation entry for the context "schema variable" or null if non such exists
     public ContextInstantiationEntry getContextInstantiation() {
         final InstantiationEntry<?> entry = getInstantiationEntry(CONTEXTSV);
         return (ContextInstantiationEntry) entry;
     }
 
-    /**
-     * returns the instantiation of the given SchemaVariable as Term. If the instantiation is a
-     * program element it is tried to convert it to a term otherwise an exception is thrown
-     *
-     * @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
-     *         stored
-     */
+    /// returns the instantiation of the given SchemaVariable as Term. If the instantiation is a
+    /// program element it is tried to convert it to a term otherwise an exception is thrown
+    ///
+    /// @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
+    /// stored
     public Term getTermInstantiation(SchemaVariable sv, LogicServices services) {
         final Object inst = getInstantiation(sv);
         if (inst == null) {
@@ -261,9 +233,7 @@ public class SVInstantiations
         }
     }
 
-    /**
-     * adds an update to the update context
-     */
+    /// adds an update to the update context
     public SVInstantiations addUpdate(Term update) {
         assert update.sort() == RustyDLTheory.UPDATE;
         return new SVInstantiations(map,
@@ -298,45 +268,35 @@ public class SVInstantiations
     // return (ContextInstantiationEntry) entry;
     // }
 
-    /**
-     * returns iterator of the SchemaVariables that have an instantiation
-     *
-     * @return the Iterator<SchemaVariable>
-     */
+    /// returns iterator of the SchemaVariables that have an instantiation
+    ///
+    /// @return the Iterator<SchemaVariable>
     public Iterator<SchemaVariable> svIterator() {
         return map.keyIterator();
     }
 
-    /**
-     * returns iterator of the mapped pair {@code (SchemaVariables, InstantiationEntry)}
-     *
-     * @return the Iterator
-     */
+    /// returns iterator of the mapped pair `(SchemaVariables, InstantiationEntry)`
+    ///
+    /// @return the Iterator
     public ImmutableMap<SchemaVariable, InstantiationEntry<?>> getInstantiationMap() {
         return map;
     }
 
-    /**
-     * returns iterator of the mapped pair {@code (SchemaVariables, InstantiationEntry)}
-     *
-     * @return the Iterator
-     */
+    /// returns iterator of the mapped pair `(SchemaVariables, InstantiationEntry)`
+    ///
+    /// @return the Iterator
     public Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> pairIterator() {
         return map.iterator();
     }
 
-    /**
-     * returns the number of SchemaVariables of which an instantiation is known
-     *
-     * @return int that is the number of SchemaVariables of which an instantiation is known
-     */
+    /// returns the number of SchemaVariables of which an instantiation is known
+    ///
+    /// @return int that is the number of SchemaVariables of which an instantiation is known
     public int size() {
         return map.size();
     }
 
-    /**
-     * returns true iff no instantiation of SchemaVariables are known
-     */
+    /// returns true iff no instantiation of SchemaVariables are known
     public boolean isEmpty() {
         // the interesting map needs not to be checked
         return this == EMPTY_SVINSTANTIATIONS || (map.isEmpty() && updateContext.isEmpty()
@@ -381,10 +341,9 @@ public class SVInstantiations
         return (result.append(map.toString())).toString();
     }
 
-    /**
-     * Add the given additional condition for the generic sort instantiations
-     */
-    public SVInstantiations add(GenericSortCondition p_c, Services services) throws SortException {
+    /// Add the given additional condition for the generic sort instantiations
+    public SVInstantiations add(GenericSortCondition p_c, LogicServices services)
+            throws SortException {
         return new SVInstantiations(map, getUpdateContext(),
             getGenericSortInstantiations(), getGenericSortConditions().prepend(p_c))
                 .checkCondition(p_c, false, services);
@@ -409,11 +368,9 @@ public class SVInstantiations
         return e == null ? null : e.value().getInstantiation();
     }
 
-    /**
-     * returns true if the given object and this one have the same mappings
-     *
-     * @return true if the given object and this one have the same mappings
-     */
+    /// returns true if the given object and this one have the same mappings
+    ///
+    /// @return true if the given object and this one have the same mappings
     public boolean equals(Object obj) {
         final SVInstantiations cmp;
         if (!(obj instanceof SVInstantiations)) {
@@ -442,29 +399,25 @@ public class SVInstantiations
         return true;
     }
 
-    /**
-     * replaces the given pair in the instantiations. If the context has been instantiated already,
-     * the new pair is taken without a warning.
-     *
-     * @param prefix the PosInProgram describing the position of the first statement after the
-     *        prefix
-     * @param postfix the PosInProgram describing the position of the statement just before the
-     *        postfix
-     * @param pe the ProgramElement the context positions are related to
-     */
+    /// replaces the given pair in the instantiations. If the context has been instantiated already,
+    /// the new pair is taken without a warning.
+    ///
+    /// @param prefix the PosInProgram describing the position of the first statement after the
+    /// prefix
+    /// @param postfix the PosInProgram describing the position of the statement just before the
+    /// postfix
+    /// @param pe the ProgramElement the context positions are related to
     public SVInstantiations replace(PosInProgram prefix, PosInProgram postfix,
             RustyProgramElement pe, Services services) {
         return replace(CONTEXTSV,
             new ContextInstantiationEntry(prefix, postfix, pe), services);
     }
 
-    /**
-     * replaces the given pair in the instantiations. If the given SchemaVariable has been
-     * instantiated already, the new pair is taken without a warning.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param entry the InstantiationEntry the SchemaVariable is instantiated with
-     */
+    /// replaces the given pair in the instantiations. If the given SchemaVariable has been
+    /// instantiated already, the new pair is taken without a warning.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param entry the InstantiationEntry the SchemaVariable is instantiated with
     public SVInstantiations replace(SchemaVariable sv, InstantiationEntry<?> entry,
             Services services) {
         return new SVInstantiations(map.remove(sv).put(sv, entry),
@@ -472,36 +425,30 @@ public class SVInstantiations
             getGenericSortConditions()).checkSorts(sv, entry, true, services);
     }
 
-    /**
-     * replaces the given pair in the instantiations. If the given SchemaVariable has been
-     * instantiated already, the new pair is taken without a warning.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param pe the ProgramElement the SchemaVariable is instantiated with
-     */
+    /// replaces the given pair in the instantiations. If the given SchemaVariable has been
+    /// instantiated already, the new pair is taken without a warning.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param pe the ProgramElement the SchemaVariable is instantiated with
     public SVInstantiations replace(SchemaVariable sv, RustyProgramElement pe, Services services) {
         return replace(sv, new ProgramInstantiation(pe), services);
     }
 
-    /**
-     * replaces the given pair in the instantiations. If the given SchemaVariable has been
-     * instantiated already, the new pair is taken without a warning.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param pes the ArrayOf<t> the SchemaVariable is instantiated with
-     */
+    /// replaces the given pair in the instantiations. If the given SchemaVariable has been
+    /// instantiated already, the new pair is taken without a warning.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param pes the ArrayOf<t> the SchemaVariable is instantiated with
     public SVInstantiations replace(SchemaVariable sv, ImmutableArray<RustyProgramElement> pes,
             Services services) {
         return replace(sv, new ProgramListInstantiation(pes), services);
     }
 
-    /**
-     * replaces the given pair in the instantiations. If the given SchemaVariable has been
-     * instantiated already, the new pair is taken without a warning.
-     *
-     * @param sv the SchemaVariable to be instantiated
-     * @param term the Term the SchemaVariable is instantiated with
-     */
+    /// replaces the given pair in the instantiations. If the given SchemaVariable has been
+    /// instantiated already, the new pair is taken without a warning.
+    ///
+    /// @param sv the SchemaVariable to be instantiated
+    /// @param term the Term the SchemaVariable is instantiated with
     public SVInstantiations replace(SchemaVariable sv, Term term, Services services) {
         return replace(sv, new TermInstantiation(sv, term), services);
     }

@@ -10,10 +10,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
@@ -56,8 +55,8 @@ import de.uka.ilkd.key.gui.sourceview.SourceViewFrame;
 import de.uka.ilkd.key.gui.utilities.GuiUtilities;
 import de.uka.ilkd.key.gui.utilities.LruCached;
 import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.proof.ProofAggregate;
 import de.uka.ilkd.key.proof.ProofEvent;
 import de.uka.ilkd.key.settings.FeatureSettings;
 import de.uka.ilkd.key.settings.GeneralSettings;
@@ -66,7 +65,10 @@ import de.uka.ilkd.key.settings.ViewSettings;
 import de.uka.ilkd.key.smt.SolverTypeCollection;
 import de.uka.ilkd.key.smt.solvertypes.SolverType;
 import de.uka.ilkd.key.ui.AbstractMediatorUserInterfaceControl;
-import de.uka.ilkd.key.util.*;
+import de.uka.ilkd.key.util.KeYConstants;
+import de.uka.ilkd.key.util.KeYResourceManager;
+import de.uka.ilkd.key.util.PreferenceSaver;
+import de.uka.ilkd.key.util.ThreadUtilities;
 
 import org.key_project.logic.Name;
 import org.key_project.prover.rules.RuleApp;
@@ -77,6 +79,8 @@ import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.station.stack.tab.layouting.TabPlacement;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.util.SystemInfo;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -296,7 +300,6 @@ public final class MainWindow extends JFrame {
         if (!applyTaskbarIcon()) {
             applyMacOsWorkaround();
         }
-        setLaF();
         setIconImages(IconFactory.applicationLogos());
 
 
@@ -405,13 +408,47 @@ public final class MainWindow extends JFrame {
             }
             return instance;
         }
+
         if (instance == null) {
+            updateLookAndFeel();
             instance = new MainWindow();
+            final var viewSettings = ProofIndependentSettings.DEFAULT_INSTANCE.getViewSettings();
+            final PropertyChangeListener propertyChangeListener = (evt) -> updateLookAndFeel();
+            viewSettings.addPropertyChangeListener(
+                ViewSettings.PROP_DEFAULT_LOOK_AND_FEEL_DECORATED, propertyChangeListener);
+            viewSettings.addPropertyChangeListener(
+                ViewSettings.PROP_LOOK_AND_FEEL, propertyChangeListener);
+
             if (ensureIsVisible) {
                 instance.setVisible(true);
             }
         }
         return instance;
+    }
+
+    private static void updateLookAndFeel() {
+        final var viewSettings = ProofIndependentSettings.DEFAULT_INSTANCE.getViewSettings();
+        String laf = viewSettings.getLookAndFeel();
+        try {
+            UIManager.setLookAndFeel(laf);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | UnsupportedLookAndFeelException e) {
+            FlatLightLaf.setup();
+        }
+
+        if (SystemInfo.isLinux) {
+            // enable custom window decorations
+            JFrame.setDefaultLookAndFeelDecorated(viewSettings.isDefaultLookAndFeelDecorated());
+            JDialog.setDefaultLookAndFeelDecorated(viewSettings.isDefaultLookAndFeelDecorated());
+        }
+
+        for (Window w : Window.getWindows()) {
+            SwingUtilities.updateComponentTreeUI(w);
+        }
+
+        if (instance != null) {
+            // SwingUtilities.updateComponentTreeUI(instance);
+        }
     }
 
     /**
@@ -444,7 +481,7 @@ public final class MainWindow extends JFrame {
      */
     private void applyGnomeWorkaround() {
         Toolkit xToolkit = Toolkit.getDefaultToolkit();
-        Field awtAppClassNameField;
+        java.lang.reflect.Field awtAppClassNameField;
         try {
             awtAppClassNameField = xToolkit.getClass().getDeclaredField("awtAppClassName");
             awtAppClassNameField.setAccessible(true);
@@ -575,7 +612,7 @@ public final class MainWindow extends JFrame {
 
         getContentPane().add(toolBarPanel, BorderLayout.PAGE_START);
 
-        proofListView.setPreferredSize(new Dimension(350, 100));
+        proofListView.setPreferredSize(new java.awt.Dimension(350, 100));
         GuiUtilities.paintEmptyViewComponent(proofListView, "Proofs");
 
         // JSplitPane leftPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, proofListView,
@@ -848,7 +885,7 @@ public final class MainWindow extends JFrame {
         SwingUtilities.invokeLater(this::updateSequentView);
     }
 
-    private void addToProofList(ProofAggregate plist) {
+    private void addToProofList(de.uka.ilkd.key.proof.ProofAggregate plist) {
         proofList.addProof(plist);
         // TODO/Check: the code below emulates phantom actions. Check if this can be solved
         // differently
@@ -1185,7 +1222,7 @@ public final class MainWindow extends JFrame {
         return currentGoalView;
     }
 
-    public void addProblem(final ProofAggregate plist) {
+    public void addProblem(final de.uka.ilkd.key.proof.ProofAggregate plist) {
         Runnable guiUpdater = () -> {
             disableCurrentGoalView = true;
             addToProofList(plist);
@@ -1407,12 +1444,12 @@ public final class MainWindow extends JFrame {
         openExampleAction.actionPerformed(null);
     }
 
-    public void loadProblem(File file) {
+    public void loadProblem(Path file) {
         getUserInterface().loadProblem(file);
     }
 
-    public void loadProblem(File file, List<File> classPath, File bootClassPath,
-            List<File> includes) {
+    public void loadProblem(Path file, List<Path> classPath, Path bootClassPath,
+            List<Path> includes) {
         getUserInterface().loadProblem(file, classPath, bootClassPath, includes);
     }
 
@@ -1423,7 +1460,7 @@ public final class MainWindow extends JFrame {
      * @param proofPath the path of the proof to load (relative to the root of the bundle ->
      *        filename only)
      */
-    public void loadProofFromBundle(File proofBundle, File proofPath) {
+    public void loadProofFromBundle(Path proofBundle, Path proofPath) {
         getUserInterface().loadProofFromBundle(proofBundle, proofPath);
     }
 
@@ -1741,7 +1778,7 @@ public final class MainWindow extends JFrame {
          * focused node has changed
          */
         @Override
-        public synchronized void selectedNodeChanged(KeYSelectionEvent e) {
+        public synchronized void selectedNodeChanged(KeYSelectionEvent<Node> e) {
             if (disableCurrentGoalView) {
                 return;
             }
@@ -1752,7 +1789,7 @@ public final class MainWindow extends JFrame {
          * the selected proof has changed (e.g. a new proof has been loaded)
          */
         @Override
-        public synchronized void selectedProofChanged(KeYSelectionEvent e) {
+        public synchronized void selectedProofChanged(KeYSelectionEvent<Proof> e) {
             if (disableCurrentGoalView) {
                 return;
             }
@@ -1807,19 +1844,21 @@ public final class MainWindow extends JFrame {
         }
 
         @Override
-        public void selectedProofChanged(KeYSelectionEvent e) {
+        public void selectedProofChanged(KeYSelectionEvent<Proof> e) {
+            handleProof(e.getSource().getSelectedProof());
+        }
 
-            if (e.getSource().getSelectedProof() != null) {
-                enable(!e.getSource().getSelectedProof().closed());
+        private void handleProof(Proof p) {
+            if (p != null) {
+                enable(!p.closed());
             } else {
                 enable(false);
             }
-
         }
 
         @Override
-        public void selectedNodeChanged(KeYSelectionEvent e) {
-            selectedProofChanged(e);
+        public void selectedNodeChanged(KeYSelectionEvent<Node> e) {
+            handleProof(e.getSource().getSelectedProof());
         }
 
     }

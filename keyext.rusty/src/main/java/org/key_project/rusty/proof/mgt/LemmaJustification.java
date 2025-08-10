@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof.mgt;
 
-/**
- * {@link RuleJustification} for taclets, that can be proven from other taclets.
- */
+/// [RuleJustification] for taclets, that can be proven from other taclets.
 public class LemmaJustification implements RuleJustification {
     public static final LemmaJustification INSTANCE = new LemmaJustification();
 

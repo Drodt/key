@@ -15,14 +15,12 @@ import org.key_project.rusty.logic.op.ElementaryUpdate;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Collects all operators occurring in the traversed term.
- */
+/// Collects all operators occurring in the traversed term.
 public class OpCollector implements Visitor<@NonNull Term> {
-    /** the found operators */
+    /// the found operators
     protected final HashSet<Operator> ops;
 
-    /** creates the Op collector */
+    /// creates the Op collector
     public OpCollector() {
         ops = new LinkedHashSet<>();
     }

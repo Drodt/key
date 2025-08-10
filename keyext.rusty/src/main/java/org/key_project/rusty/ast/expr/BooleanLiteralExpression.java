@@ -12,6 +12,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.ldt.BoolLDT;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 
 public class BooleanLiteralExpression extends LiteralExpression {
@@ -62,10 +63,10 @@ public class BooleanLiteralExpression extends LiteralExpression {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (obj == this)
             return true;
-        if (obj.getClass() != this.getClass())
+        if (obj == null || obj.getClass() != this.getClass())
             return false;
         BooleanLiteralExpression other = (BooleanLiteralExpression) obj;
         return value == other.value;

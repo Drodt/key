@@ -6,13 +6,9 @@ package org.key_project.rusty.pp;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * Identity Filter not doing anything
- */
+/// Identity Filter not doing anything
 public class IdentitySequentPrintFilter extends SequentPrintFilter {
-    /**
-     * filters the sequent, creating SequentPrintFilterEntries from the sequent formulae.
-     */
+    /// filters the sequent, creating SequentPrintFilterEntries from the sequent formulae.
     protected void filterSequent() {
         if (antec != null) {
             return;
@@ -20,70 +16,53 @@ public class IdentitySequentPrintFilter extends SequentPrintFilter {
         filterIdentity();
     }
 
-    /**
-     *
-     * @param sequentFormula the formula to filter
-     * @return the FilterEntry from the formula
-     */
+    /// @param sequentFormula the formula to filter
+    /// @return the FilterEntry from the formula
     protected SequentPrintFilterEntry filterFormula(
             org.key_project.prover.sequent.SequentFormula sequentFormula) {
         return new IdentityFilterEntry(sequentFormula);
     }
 
-    /**
-     * Get the formulas of the filtered antecedent and the constraints to use for instantiating
-     * metavariables when printing
-     *
-     * @return the filtered antecedent
-     */
+    /// Get the formulas of the filtered antecedent and the constraints to use for instantiating
+    /// metavariables when printing
+    ///
+    /// @return the filtered antecedent
     public ImmutableList<SequentPrintFilterEntry> getFilteredAntec() {
         filterSequent();
         return antec;
     }
 
-    /**
-     * Get the formulas of the filtered succcedent and the constraints to use for instantiating
-     * metavariables when printing
-     *
-     * @return the filtered succcedent
-     */
+    /// Get the formulas of the filtered succcedent and the constraints to use for instantiating
+    /// metavariables when printing
+    ///
+    /// @return the filtered succcedent
     public ImmutableList<SequentPrintFilterEntry> getFilteredSucc() {
         filterSequent();
         return succ;
     }
 
-    /**
-     * A filter entry, representing one sequent formula.
-     */
+    /// A filter entry, representing one sequent formula.
     public static class IdentityFilterEntry implements SequentPrintFilterEntry {
-        /**
-         * the original Formula being filtered
-         */
+        /// the original Formula being filtered
         final org.key_project.prover.sequent.SequentFormula originalFormula;
 
-        /**
-         * constructor
-         *
-         * @param originalFormula the original formula to be filtered
-         */
+        /// constructor
+        ///
+        /// @param originalFormula the original formula to be filtered
         IdentityFilterEntry(org.key_project.prover.sequent.SequentFormula originalFormula) {
             this.originalFormula = originalFormula;
         }
 
-        /**
-         * Formula to display
-         *
-         * @return the original formula
-         */
+        /// Formula to display
+        ///
+        /// @return the original formula
         public org.key_project.prover.sequent.SequentFormula getFilteredFormula() {
             return originalFormula;
         }
 
-        /**
-         * Original formula from sequent
-         *
-         * @return the original formula
-         */
+        /// Original formula from sequent
+        ///
+        /// @return the original formula
         public SequentFormula getOriginalFormula() {
             return originalFormula;
         }

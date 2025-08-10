@@ -12,8 +12,15 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
+import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 import org.key_project.rusty.logic.op.RFunction;
+import org.key_project.rusty.logic.sort.ConstParam;
+import org.key_project.rusty.logic.sort.GenericParameter;
+import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.GenericSortParam;
 import org.key_project.rusty.parser.KeYRustyParser;
+import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -109,42 +116,72 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
     @Override
     public Object visitFunc_decl(KeYRustyParser.Func_declContext ctx) {
         boolean unique = ctx.UNIQUE() != null;
-        Sort retSort = accept(ctx.sortId());
         String funcName = accept(ctx.funcpred_name());
-        List<Boolean[]> whereToBind = accept(ctx.where_to_bind());
-        List<Sort> argSorts = accept(ctx.arg_sorts());
-        assert argSorts != null;
+        var sorts = new Namespace<>(nss.sorts());
+        var consts = new Namespace<>(nss.functions());
 
-        if (whereToBind != null && whereToBind.size() != argSorts.size()) {
-            semanticError(ctx, "Where-to-bind list must have same length as argument list");
+        List<GenericParameter> genericParameters = ctx.formal_sort_param_decls() == null ? null
+                : visitFormal_sort_param_decls(ctx.formal_sort_param_decls());
+        if (genericParameters != null) {
+            for (GenericParameter param : genericParameters) {
+                if (param instanceof GenericSortParam(GenericSort gs)) {
+                    sorts.add(gs);
+                } else if (param instanceof ConstParam(Name name, Sort sort)) {
+                    consts.add(new RFunction(name, sort));
+                }
+            }
         }
 
-        RFunction f = null;
-        assert funcName != null;
-        int separatorIndex = funcName.indexOf("::");
-        if (separatorIndex > 0) {
-            String sortName = funcName.substring(0, separatorIndex);
-            String baseName = funcName.substring(separatorIndex + 2);
-            Sort genSort = lookupSort(sortName);
-            // if (genSort instanceof GenericSort) {
-            // f = SortDependingFunction.createFirstInstance((GenericSort) genSort,
-            // new Name(baseName), retSort, argSorts.toArray(new Sort[0]), unique);
-            // }
-        }
+        return withSortAndConsts(sorts, consts, () -> {
+            Sort retSort = accept(ctx.sortId());
+            List<Boolean[]> whereToBind = accept(ctx.where_to_bind());
+            List<Sort> argSorts = accept(ctx.arg_sorts());
+            assert argSorts != null;
 
-        // TODO debug this; why Boolean[]?
-        if (f == null) {
-            f = new RFunction(new Name(funcName), retSort, argSorts.toArray(new Sort[0]),
-                whereToBind == null ? null : whereToBind.toArray(new Boolean[0]), unique);
-        }
+            if (whereToBind != null && whereToBind.size() != argSorts.size()) {
+                semanticError(ctx, "Where-to-bind list must have same length as argument list");
+            }
 
-        if (lookup(f.name()) == null) {
-            functions().add(f);
-        } else {
-            // weigl: agreement on KaKeY meeting: this should be an error.
-            semanticError(ctx, "Function '" + funcName + "' is already defined!");
-        }
-        return f;
+            RFunction f = null;
+            assert funcName != null;
+            int separatorIndex = funcName.indexOf("::");
+            if (separatorIndex > 0) {
+                String sortName = funcName.substring(0, separatorIndex);
+                String baseName = funcName.substring(separatorIndex + 2);
+                Sort genSort = lookupSort(sortName);
+                // if (genSort instanceof GenericSort) {
+                // f = SortDependingFunction.createFirstInstance((GenericSort) genSort,
+                // new Name(baseName), retSort, argSorts.toArray(new Sort[0]), unique);
+                // }
+            }
+
+            // TODO debug this; why Boolean[]?
+
+            if (f == null) {
+                Name name = new Name(funcName);
+                Sort[] sortsArray = argSorts.toArray(new Sort[0]);
+                Boolean[] whereToBind1 =
+                    whereToBind == null ? null : whereToBind.toArray(new Boolean[0]);
+                if (genericParameters == null)
+                    f = new RFunction(name, retSort, sortsArray,
+                        whereToBind1, unique);
+                else {
+                    var d = new ParametricFunctionDecl(name,
+                        ImmutableList.fromList(genericParameters), new ImmutableArray<>(sortsArray),
+                        retSort, whereToBind1 == null ? null : new ImmutableArray<>(whereToBind1),
+                        unique, true, false);
+                    nss.parametricFunctions().add(d);
+                    return null;
+                }
+            }
+            if (lookup(f.name()) == null) {
+                functions().parent().add(f);
+            } else {
+                // weigl: agreement on KaKeY meeting: this should be an error.
+                semanticError(ctx, "Function '" + funcName + "' is already defined!");
+            }
+            return f;
+        });
     }
 
     @Override

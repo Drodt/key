@@ -4,6 +4,8 @@
 package org.key_project.rusty.util;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.Objects;
 
 import org.key_project.rusty.proof.ProofAggregate;
 import org.key_project.rusty.proof.init.*;
@@ -11,11 +13,14 @@ import org.key_project.rusty.proof.io.RuleSourceFactory;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.helper.FindResources;
 
+import org.jspecify.annotations.Nullable;
+
 import static org.key_project.rusty.proof.io.RuleSource.LDT_FILE;
 
 public class TestHelper {
-    public static final File TESTCASE_DIRECTORY = FindResources.getTestCasesDirectory();
-    public static final File DUMMY_KEY_FILE = new File(TESTCASE_DIRECTORY, "dummyTrue.key");
+    public static final Path TESTCASE_DIRECTORY =
+        Objects.requireNonNull(FindResources.getTestCasesDirectory());
+    public static final Path DUMMY_KEY_FILE = TESTCASE_DIRECTORY.resolve("dummyTrue.key");
 
     public static final Profile profile = new RustProfile() {
         @Override
@@ -29,7 +34,7 @@ public class TestHelper {
 
     }
 
-    public ProofAggregate parse(File file, Profile profile) {
+    public @Nullable ProofAggregate parse(File file, Profile profile) {
         ProblemInitializer pi = null;
         ProofAggregate result = null;
 

@@ -3,54 +3,39 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.pp;
 
-/**
- * A class specifying a range of integer numbers e.g. character positions.
- */
+/// A class specifying a range of integer numbers e.g. character positions.
 public class Range {
     int start = -1;
     int end = -1;
 
-    /**
-     * Creates a new range {@code [s,e)}.
-     *
-     * @param s this range's (included) start position.
-     * @param e this range's (excluded) end position.
-     */
+    /// Creates a new range `[s,e)`.
+    ///
+    /// @param s this range's (included) start position.
+    /// @param e this range's (excluded) end position.
     public Range(int s, int e) {
         start = s;
         end = e;
     }
 
-    /**
-     * Creates a copy of the specified range.
-     *
-     * @param r the range to copy.
-     */
+    /// Creates a copy of the specified range.
+    ///
+    /// @param r the range to copy.
     public Range(Range r) {
         start = r.start;
         end = r.end;
     }
 
-    /**
-     *
-     * @return this range's (included) start position.
-     */
+    /// @return this range's (included) start position.
     public int start() {
         return start;
     }
 
-    /**
-     *
-     * @return this range's (excluded) end position.
-     */
+    /// @return this range's (excluded) end position.
     public int end() {
         return end;
     }
 
-    /**
-     *
-     * @return this range's length.
-     */
+    /// @return this range's length.
     public int length() {
         return end - start;
     }

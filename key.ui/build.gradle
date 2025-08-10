@@ -7,7 +7,7 @@ plugins {
     // Used to create a single executable jar file with all dependencies
     // see task "shadowJar" below
     // https://github.com/GradleUp/shadow
-    id 'com.gradleup.shadow' version "8.3.5"
+    id 'com.gradleup.shadow' version "8.3.8"
 }
 
 description = "User interface for the deductive verification of Java programs"
@@ -15,6 +15,8 @@ description = "User interface for the deductive verification of Java programs"
 dependencies {
     implementation project(":key.core")
     implementation project(":key.core.rifl")
+
+    implementation("com.formdev:flatlaf:3.6.1")
 
     implementation project(":key.core.proof_references")
     implementation project(":key.core.symbolic_execution")
@@ -36,9 +38,9 @@ dependencies {
     runtimeOnly project(":keyext.isabelletranslation")
 }
 
-task createExamplesZip(type: Zip) {
+tasks.register('createExamplesZip', Zip) {
     description = 'Create "examples.zip" containing all KeY examples'
-    destinationDirectory = file("$buildDir/resources/main/")
+    destinationDirectory = layout.buildDirectory.dir("resources/main/").getOrNull()
     archiveFileName = "examples.zip"
     from "examples"
     include scanReadmeFiles()  // see end of file
@@ -72,7 +74,7 @@ run {
     jvmArgs += "-Dsun.awt.disablegrab=true"
 }
 
-task runWithProfiler(type: JavaExec) {
+tasks.register('runWithProfiler', JavaExec) {
     group = "application"
     description = """Run key.ui with flight recoder enabled. 
                    See https://www.baeldung.com/java-flight-recorder-monitoring for a how to."""

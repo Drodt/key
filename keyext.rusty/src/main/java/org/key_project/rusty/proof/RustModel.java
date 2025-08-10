@@ -10,9 +10,7 @@ import java.util.Date;
 import org.key_project.rusty.proof.init.Includes;
 
 public final class RustModel {
-    /**
-     * Directory of Rust source files. May be null if the proof doesn't refer to any Rust code.
-     */
+    /// Directory of Rust source files. May be null if the proof doesn't refer to any Rust code.
     private final String modelDir;
     private final String modelTag;
     private final String descr;

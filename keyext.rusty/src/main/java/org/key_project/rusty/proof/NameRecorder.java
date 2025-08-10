@@ -3,9 +3,13 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import java.util.Objects;
+
 import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
+
+import org.jspecify.annotations.Nullable;
 
 public class NameRecorder {
     private ImmutableList<Name> pre = ImmutableSLList.nil();
@@ -13,27 +17,19 @@ public class NameRecorder {
     private ImmutableList<Name> post = ImmutableSLList.nil();
 
     public void setProposals(ImmutableList<Name> proposals) {
-        if (proposals == null) {
-            pre = ImmutableSLList.nil();
-        } else {
-            pre = proposals;
-        }
+        pre = Objects.requireNonNullElseGet(proposals, ImmutableSLList::nil);
     }
 
-    /**
-     * Get the name proposals added using {@link #addProposal(Name)}.
-     *
-     * @return the name proposals
-     */
+    /// Get the name proposals added using [#addProposal(Name)].
+    ///
+    /// @return the name proposals
     public ImmutableList<Name> getProposals() {
         return post;
     }
 
-    /**
-     * Get the name proposals previously set using {@link #setProposals(ImmutableList)}.
-     *
-     * @return the name proposals
-     */
+    /// Get the name proposals previously set using [#setProposals(ImmutableList)].
+    ///
+    /// @return the name proposals
     public ImmutableList<Name> getSetProposals() {
         return pre;
     }
@@ -42,12 +38,10 @@ public class NameRecorder {
         post = post.append(proposal);
     }
 
-    /**
-     * Get a proposal and remove it from this recorder.
-     *
-     * @return the first proposal
-     */
-    public Name getProposal() {
+    /// Get a proposal and remove it from this recorder.
+    ///
+    /// @return the first proposal
+    public @Nullable Name getProposal() {
         Name proposal = null;
 
         if (pre != null && !pre.isEmpty()) {

@@ -15,25 +15,27 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
-import org.key_project.rusty.logic.Place;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.logic.sort.SortImpl;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.CreateFrameCond;
 import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
 import org.key_project.rusty.rule.metaconstruct.IntroAtPreDefs;
 import org.key_project.rusty.rule.metaconstruct.arith.*;
+import org.key_project.util.collection.ImmutableList;
 
-/**
- * Abstract class factoring out commonalities of typical term transformer implementations. The
- * available singletons of term transformers are kept here.
- */
+import org.jspecify.annotations.Nullable;
+
+/// Abstract class factoring out commonalities of typical term transformer implementations. The
+/// available singletons of term transformers are kept here.
 public abstract class AbstractTermTransformer extends AbstractSortedOperator
         implements TermTransformer {
     // must be first
-    /** The metasort sort **/
+    /// The metasort sort
     public static final Sort METASORT = new SortImpl(new Name("Meta"));
 
-    /** A map from String names to meta operators **/
+    /// A map from String names to meta operators
     public static final Map<String, AbstractTermTransformer> NAME_TO_META_OP =
         new LinkedHashMap<>(17);
 
@@ -56,8 +58,8 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
     public static final AbstractTermTransformer DIVIDE_MONOMIALS = new DivideMonomials();
     public static final AbstractTermTransformer DIVIDE_LCR_MONOMIALS = new DivideLCRMonomials();
 
-    public static final AbstractTermTransformer PV_TO_MUT_REF = new PVToMutRef();
-    public static final AbstractTermTransformer CREATE_S_REF = new CreateSRef();
+    public static final AbstractTermTransformer PV_TO_PLACE = new PVToPlace();
+    public static final AbstractTermTransformer PLACE_TO_UPDATE = new PlaceToUpdate();
 
     public static final AbstractTermTransformer CREATE_LOCAL_ANON_UPDATE =
         new CreateLocalAnonUpdate();
@@ -65,6 +67,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
 
     public static final AbstractTermTransformer INTRODUCE_AT_PRE_DEFINITIONS = new IntroAtPreDefs();
 
+    @SuppressWarnings("argument.type.incompatible")
     protected AbstractTermTransformer(Name name, int arity, Sort sort) {
         super(name, createMetaSortArray(arity), sort, Modifier.NONE);
         NAME_TO_META_OP.put(name.toString(), this);
@@ -80,35 +83,58 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         return result;
     }
 
-    public static TermTransformer name2metaop(String s) {
+    public static @Nullable TermTransformer name2metaop(String s) {
         return NAME_TO_META_OP.get(s);
     }
 
-    private static class PVToMutRef extends AbstractTermTransformer {
-        public PVToMutRef() {
-            super(new Name("pvToMutRef"), 1);
+    private static class PVToPlace extends AbstractTermTransformer {
+        public PVToPlace() {
+            super(new Name("pvToPlace"), 1);
         }
 
         @Override
         public Term transform(Term term, SVInstantiations svInst, Services services) {
-            var tb = services.getTermBuilder();
-            return tb.mutRef(MutRef.getInstance(Place.convertToPlace(term), services));
+            return getPlace(term.sub(0), services);
         }
     }
 
-    private static class CreateSRef extends AbstractTermTransformer {
-        public CreateSRef() { super(new Name("createSRef"), 1); }
+    private static class PlaceToUpdate extends AbstractTermTransformer {
+        public PlaceToUpdate() {
+            super(new Name("placeToUpdate"), 2);
+        }
 
         @Override
         public Term transform(Term term, SVInstantiations svInst, Services services) {
-            var tb = services.getTermBuilder();
-            return tb.sharedRef(SharedRef.getInstance(term.sub(0).sort(), services), term.sub(0));
+            var place = term.sub(0);
+            var t = term.sub(1);
+            var placeName = place.op().name().toString();
+            var pvName = placeName.substring(1, place.op().name().toString().length() - 1);
+            var pv = services.getNamespaces().programVariables().lookup(pvName);
+            return services.getTermBuilder().elementary(pv, t);
         }
     }
 
-    /**
-     * @return String representing a logical integer literal in decimal representation
-     */
+    public static Term getPlace(Term t, Services services) {
+        if (t.op() instanceof ProgramVariable pv) {
+            var name = pv.name();
+            var tb = services.getTermBuilder();
+            var c = services.getNamespaces().functions().lookup("/" + name + "/");
+            if (c == null) {
+                var innerSort = t.sort();
+                var pSort = services.getNamespaces().parametricSorts().lookup("Place");
+                assert pSort != null;
+                var sort =
+                    ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(innerSort)));
+                c = new RFunction(new Name("/" + name + "/"), sort);
+                services.getNamespaces().functions().add(c);
+            }
+
+            return tb.func(c);
+        }
+        throw new IllegalArgumentException("Cannot convert " + t + " to a Place");
+    }
+
+    /// @return String representing a logical integer literal in decimal representation
     public static String convertToDecimalString(Term term, Services services) {
         StringBuilder result = new StringBuilder();
         boolean neg = false;

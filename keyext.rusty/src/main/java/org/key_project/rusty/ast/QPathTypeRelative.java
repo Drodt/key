@@ -16,7 +16,7 @@ public record QPathTypeRelative(RustType ty, PathSegment segment) implements QPa
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException();
     }
 
     @Override

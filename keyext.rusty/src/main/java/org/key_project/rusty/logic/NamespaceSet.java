@@ -11,9 +11,12 @@ import org.key_project.logic.op.Function;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.RuleSet;
+import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.sort.ParametricSortDecl;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class NamespaceSet {
     private Namespace<@NonNull QuantifiableVariable> varNS = new Namespace<>();
@@ -22,6 +25,8 @@ public class NamespaceSet {
     private Namespace<@NonNull Function> funcNS = new Namespace<>();
     private Namespace<@NonNull RuleSet> ruleSetNS = new Namespace<>();
     private Namespace<@NonNull Sort> sortNS = new Namespace<>();
+    private Namespace<@NonNull ParametricSortDecl> parametricSortNS = new Namespace<>();
+    private Namespace<@NonNull ParametricFunctionDecl> parametricFuncNS = new Namespace<>();
     private Namespace<@NonNull Choice> choiceNS = new Namespace<>();
 
     public NamespaceSet() {}
@@ -29,13 +34,17 @@ public class NamespaceSet {
     public NamespaceSet(Namespace<@NonNull QuantifiableVariable> varNS,
             Namespace<@NonNull ProgramVariable> progVarNS, Namespace<@NonNull Function> funcNS,
             Namespace<@NonNull Choice> choiceNS,
-            Namespace<@NonNull Sort> sortNS) {
+            Namespace<@NonNull Sort> sortNS,
+            Namespace<@NonNull ParametricSortDecl> parametricSortNS,
+            Namespace<@NonNull ParametricFunctionDecl> parametricFuncNS) {
         assert varNS != null;
         this.varNS = varNS;
         this.progVarNS = progVarNS;
         this.funcNS = funcNS;
         this.choiceNS = choiceNS;
         this.sortNS = sortNS;
+        this.parametricSortNS = parametricSortNS;
+        this.parametricFuncNS = parametricFuncNS;
     }
 
     public Namespace<@NonNull QuantifiableVariable> variables() {
@@ -74,6 +83,23 @@ public class NamespaceSet {
         return sortNS;
     }
 
+    public Namespace<@NonNull ParametricSortDecl> parametricSorts() {
+        return parametricSortNS;
+    }
+
+    public Namespace<@NonNull ParametricFunctionDecl> parametricFunctions() {
+        return parametricFuncNS;
+    }
+
+    public void setParametricSorts(Namespace<ParametricSortDecl> parametricSortNS) {
+        this.parametricSortNS = parametricSortNS;
+    }
+
+    public void setParametricFunctions(
+            Namespace<@NonNull ParametricFunctionDecl> parametricFuncNS) {
+        this.parametricFuncNS = parametricFuncNS;
+    }
+
     public void setSorts(Namespace<@NonNull Sort> sortNS) {
         this.sortNS = sortNS;
     }
@@ -92,32 +118,30 @@ public class NamespaceSet {
         sorts().add(ns.sorts());
         ruleSets().add(ns.ruleSets());
         functions().add(ns.functions());
+        parametricFunctions().add(ns.parametricFunctions());
+        choices().add(ns.choices());
+        parametricFunctions().add(ns.parametricFunctions());
     }
 
-    /**
-     * returns all namespaces in an array
-     */
+    /// returns all namespaces in an array
     private Namespace<?>[] asArray() {
-        return new Namespace[] { variables(), programVariables(), sorts(), ruleSets(), functions(),
+        return new Namespace[] { variables(), programVariables(), sorts(), parametricSorts(),
+            ruleSets(), functions(), parametricFunctions(), choices()
         };
     }
 
-    /**
-     * looks up if the given name is found in one of the namespaces and returns the named object or
-     * null if no object with the same name has been found
-     */
-    public Named lookup(Name name) {
+    /// looks up if the given name is found in one of the namespaces and returns the named object or
+    /// null if no object with the same name has been found
+    public @Nullable Named lookup(Name name) {
         final Namespace<?>[] spaces = asArray();
         return lookup(name, spaces);
     }
 
-    /**
-     * @param name
-     * @param spaces
-     * @return the element with the given name if found in the given namespaces, otherwise
-     *         <tt>null</tt>
-     */
-    private Named lookup(Name name, final Namespace<?>[] spaces) {
+    /// @param name
+    /// @param spaces
+    /// @return the element with the given name if found in the given namespaces, otherwise
+    /// <tt>null</tt>
+    private @Nullable Named lookup(Name name, final Namespace<?>[] spaces) {
         for (Namespace<?> space : spaces) {
             final Named n = space.lookup(name);
             if (n != null) {
@@ -130,7 +154,7 @@ public class NamespaceSet {
     public NamespaceSet copy() {
         return new NamespaceSet(variables().copy(), programVariables().copy(), functions().copy(),
             choiceNS.copy(),
-            sorts().copy());
+            sorts().copy(), parametricSorts().copy(), parametricFunctions().copy());
     }
 
     @Override
@@ -140,20 +164,16 @@ public class NamespaceSet {
             + choices();
     }
 
-    /**
-     * looks up for the symbol in the namespaces sort, functions and programVariables
-     *
-     * @param name the Name to look up
-     * @return the element of the given name or null
-     */
-    public Named lookupLogicSymbol(Name name) {
+    /// looks up for the symbol in the namespaces sort, functions and programVariables
+    ///
+    /// @param name the Name to look up
+    /// @return the element of the given name or null
+    public @Nullable Named lookupLogicSymbol(Name name) {
         return lookup(name, logicAsArray());
     }
 
-    /**
-     * returns all namespaces with symbols that may occur in a real sequent (this means all
-     * namespaces without variables, choices and ruleSets)
-     */
+    /// returns all namespaces with symbols that may occur in a real sequent (this means all
+    /// namespaces without variables, choices and ruleSets)
     private Namespace<?>[] logicAsArray() {
         return new Namespace[] { programVariables(), sorts(), functions() };
     }
@@ -164,9 +184,12 @@ public class NamespaceSet {
         }
     }
 
+    // TODO: Nullness
+    @SuppressWarnings("argument.type.incompatible")
     public NamespaceSet getParent() {
         return new NamespaceSet(varNS.parent(), progVarNS.parent(), funcNS.parent(),
-            choiceNS.parent(), sortNS.parent());
+            choiceNS.parent(), sortNS.parent(), parametricSorts().parent(),
+            parametricFunctions().parent());
     }
 
     // TODO MU: Rename into sth with wrap or similar
@@ -174,6 +197,7 @@ public class NamespaceSet {
         return new NamespaceSet(new Namespace<>(variables()),
             new Namespace<>(programVariables()), new Namespace<>(functions()),
             new Namespace<>(choices()),
-            new Namespace<>(sorts()));
+            new Namespace<>(sorts()), new Namespace<>(parametricSorts()),
+            new Namespace<>(parametricFunctions()));
     }
 }

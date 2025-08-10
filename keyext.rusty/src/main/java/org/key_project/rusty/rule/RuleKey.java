@@ -9,14 +9,12 @@ import org.key_project.prover.rules.Rule;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Provides a unique key for taclets based on a taclet's name and its taclet options. This class is
- * e.g. used by the parser which might encounter more than one taclet of the same name (but with
- * different taclet options).
- * <br>
- * One does not need to use this implementation (but can rely on a taclet's own
- * {@link Taclet#equals(Object)} and {@link Taclet#hashCode()} method.
- */
+/// Provides a unique key for taclets based on a taclet's name and its taclet options. This class is
+/// e.g. used by the parser which might encounter more than one taclet of the same name (but with
+/// different taclet options).
+///
+/// One does not need to use this implementation (but can rely on a taclet's own
+/// [#equals(Object)] and [#hashCode()] method.
 public class RuleKey {
     public final @NonNull Name name;
     public final @NonNull ChoiceExpr choices;

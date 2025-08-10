@@ -12,18 +12,28 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class LDTs implements Iterable<LDT> {
     private final BoolLDT boolLDT;
     private final IntLDT intLDT;;
+    private final CharLDT charLDT;
+    private final StrLDT strLDT;
+    private final NeverLDT neverLDT;
     private final Map<Name, LDT> map;
 
     public LDTs(Services services) {
         boolLDT = new BoolLDT(services);
         intLDT = new IntLDT(services);
+        charLDT = new CharLDT(services);
+        strLDT = new StrLDT(services);
+        neverLDT = new NeverLDT(services);
         map = new HashMap<>();
         map.put(boolLDT.name(), boolLDT);
         map.put(intLDT.name(), intLDT);
+        map.put(charLDT.name(), charLDT);
+        map.put(strLDT.name(), strLDT);
+        map.put(neverLDT.name(), neverLDT);
     }
 
     public BoolLDT getBoolLDT() {
@@ -34,7 +44,19 @@ public class LDTs implements Iterable<LDT> {
         return intLDT;
     }
 
-    public LDT get(Name name) {
+    public CharLDT getCharLDT() {
+        return charLDT;
+    }
+
+    public StrLDT getStrLDT() {
+        return strLDT;
+    }
+
+    public NeverLDT getNeverLDT() {
+        return neverLDT;
+    }
+
+    public @Nullable LDT get(Name name) {
         return map.get(name);
     }
 
@@ -44,7 +66,7 @@ public class LDTs implements Iterable<LDT> {
         return map.values().iterator();
     }
 
-    public LDT getLDTFor(Sort s) {
+    public @Nullable LDT getLDTFor(Sort s) {
         for (LDT ldt : this) {
             if (s.equals(ldt.targetSort())) {
                 return ldt;

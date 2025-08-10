@@ -7,7 +7,6 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.collection.ImmutableArray;
 
-// spotless:off
 public record Use(Path<ImmutableArray<Res>> path, UseKind kind) implements Item {
     @Override
     public void visit(Visitor v) {
@@ -16,7 +15,7 @@ public record Use(Path<ImmutableArray<Res>> path, UseKind kind) implements Item 
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException("No such child " + n);
     }
 
     @Override
@@ -28,4 +27,3 @@ public record Use(Path<ImmutableArray<Res>> path, UseKind kind) implements Item 
         Single, Glob, ListStem
     }
 }
-//spotless:on

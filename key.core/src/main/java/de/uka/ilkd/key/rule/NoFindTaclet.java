@@ -45,7 +45,6 @@ public class NoFindTaclet extends Taclet {
             ChoiceExpr choices, ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, null, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
             tacletAnnotations);
-        createTacletServices();
     }
 
     @Override

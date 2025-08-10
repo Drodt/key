@@ -3,20 +3,21 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.pat;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.collection.ImmutableArray;
 
-// spotless:off
 public record AltPattern(ImmutableArray<Pattern> alternatives) implements Pattern {
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        return Objects.requireNonNull(alternatives.get(n));
     }
 
     @Override
     public int getChildCount() {
-        return 0;
+        return alternatives.size();
     }
 
     @Override
@@ -24,4 +25,3 @@ public record AltPattern(ImmutableArray<Pattern> alternatives) implements Patter
         v.performActionOnAltPattern(this);
     }
 }
-//spotless:on

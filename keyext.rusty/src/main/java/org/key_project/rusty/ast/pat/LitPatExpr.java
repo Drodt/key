@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.pat;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.expr.LiteralExpression;
@@ -20,7 +22,7 @@ public class LitPatExpr implements PatExpr {
     }
 
     public LitPatExpr(ExtList changeList, boolean negated) {
-        this.lit = changeList.get(LiteralExpression.class);
+        this.lit = Objects.requireNonNull(changeList.get(LiteralExpression.class));
         this.negated = negated;
     }
 

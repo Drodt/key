@@ -16,47 +16,38 @@ import org.key_project.rusty.logic.op.sv.*;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * Encapsulate the concrete syntax used to print a term. The {@link NotationInfo} class associates a
- * Notation with every {@link Operator}. The various inner classes of this
- * class represent different kinds of concrete syntax, like prefix, infix, postfix, function style,
- * attribute style, etc.
- */
+/// Encapsulate the concrete syntax used to print a term. The [NotationInfo] class associates a
+/// Notation with every [Operator]. The various inner classes of this
+/// class represent different kinds of concrete syntax, like prefix, infix, postfix, function style,
+/// attribute style, etc.
 public abstract class Notation {
-    /**
-     * The priority of this operator in the given concrete syntax. This is used to determine whether
-     * parentheses are required around a subterm.
-     */
+    /// The priority of this operator in the given concrete syntax. This is used to determine
+    /// whether
+    /// parentheses are required around a subterm.
     private final int priority;
 
-    /** Create a Notation with a given priority. */
+    /// Create a Notation with a given priority.
     protected Notation(int priority) {
         this.priority = priority;
     }
 
-    /** get the priority of the term */
+    /// get the priority of the term
     public final int getPriority() {
         return priority;
     }
 
-    /**
-     * Print a term to a {@link LogicPrinter}. Concrete subclasses override this to call one of the
-     * <code>printXYZTerm</code> of {@link LogicPrinter}, which do the layout.
-     */
+    /// Print a term to a [LogicPrinter]. Concrete subclasses override this to call one of the
+    /// <code>printXYZTerm</code> of [LogicPrinter], which do the layout.
     public abstract void print(Term t, LogicPrinter sp);
 
-    /**
-     * Print a term without beginning a new block. See
-     * {@link LogicPrinter#printTermContinuingBlock(Term)}for the idea behind this. The standard
-     * implementation just delegates to {@link #print(Term,LogicPrinter)}
-     */
+    /// Print a term without beginning a new block. See
+    /// [#printTermContinuingBlock(Term)]for the idea behind this. The standard
+    /// implementation just delegates to [#print(Term,LogicPrinter)]
     public void printContinuingBlock(Term t, LogicPrinter sp) {
         print(t, sp);
     }
 
-    /**
-     * The standard concrete syntax for constants like true and false.
-     */
+    /// The standard concrete syntax for constants like true and false.
     public static final class Constant extends Notation {
         private final String name;
 
@@ -70,9 +61,7 @@ public abstract class Notation {
         }
     }
 
-    /**
-     * The standard concrete syntax for prefix operators.
-     */
+    /// The standard concrete syntax for prefix operators.
     public static final class Prefix extends Notation {
         private final String name;
         private final int ass;
@@ -89,9 +78,7 @@ public abstract class Notation {
 
     }
 
-    /**
-     * The standard concrete syntax for infix operators.
-     */
+    /// The standard concrete syntax for infix operators.
     public static final class Infix extends Notation {
         private final String name;
         private final int assLeft, assRight;
@@ -107,19 +94,15 @@ public abstract class Notation {
             sp.printInfixTerm(t.sub(0), assLeft, name, t, t.sub(1), assRight);
         }
 
-        /**
-         * Print a term without beginning a new block. This calls the
-         * {@link LogicPrinter#printTermContinuingBlock(Term)} method.
-         */
+        /// Print a term without beginning a new block. This calls the
+        /// [#printTermContinuingBlock(Term)] method.
         public void printContinuingBlock(Term t, LogicPrinter sp) {
             sp.printInfixTermContinuingBlock(t.sub(0), assLeft, name, t, t.sub(1), assRight);
         }
 
     }
 
-    /**
-     * The standard concrete syntax for quantifiers.
-     */
+    /// The standard concrete syntax for quantifiers.
     public static final class Quantifier extends Notation {
         private final String name;
         private final int ass;
@@ -138,9 +121,7 @@ public abstract class Notation {
     }
 
 
-    /**
-     * The standard concrete syntax for DL modalities box and diamond.
-     */
+    /// The standard concrete syntax for DL modalities box and diamond.
     public static final class ModalityNotation extends Notation {
         private final String left, right;
 
@@ -154,16 +135,13 @@ public abstract class Notation {
         }
 
         public void print(Term t, LogicPrinter sp) {
-            assert t.op() instanceof Modality;
-            var mod = (Modality) t.op();
-            assert mod.program() != null;
-            sp.printModalityTerm(left, mod.program(), right, t, ass);
+            assert t.op() instanceof RModality;
+            var mod = (RModality) t.op();
+            sp.printModalityTerm(left, mod.programBlock(), right, t, ass);
         }
     }
 
-    /**
-     * The concrete syntax for DL modalities represented with a SchemaVariable.
-     */
+    /// The concrete syntax for DL modalities represented with a SchemaVariable.
     public static final class ModalSVNotation extends Notation {
         private final int ass;
 
@@ -173,15 +151,13 @@ public abstract class Notation {
         }
 
         public void print(Term t, LogicPrinter sp) {
-            var mod = (Modality) t.op();
-            sp.printModalityTerm("\\modality{" + t.op().name() + "}", mod.program(),
+            var mod = (RModality) t.op();
+            sp.printModalityTerm("\\modality{" + t.op().name() + "}", mod.programBlock(),
                 "\\endmodality", t, ass);
         }
     }
 
-    /**
-     * The standard concrete syntax for update application.
-     */
+    /// The standard concrete syntax for update application.
     public static final class UpdateApplicationNotation extends Notation {
         public UpdateApplicationNotation() {
             super(115);
@@ -197,9 +173,7 @@ public abstract class Notation {
         }
     }
 
-    /**
-     * The standard concrete syntax for elementary updates.
-     */
+    /// The standard concrete syntax for elementary updates.
     public static final class ElementaryUpdateNotation extends Notation {
         public ElementaryUpdateNotation() {
             super(150);
@@ -211,9 +185,7 @@ public abstract class Notation {
     }
 
 
-    /**
-     * The standard concrete syntax for parallel updates
-     */
+    /// The standard concrete syntax for parallel updates
     public static final class ParallelUpdateNotation extends Notation {
         public ParallelUpdateNotation() {
             super(100);
@@ -227,9 +199,7 @@ public abstract class Notation {
     }
 
 
-    /**
-     * The standard concrete syntax for substitution terms.
-     */
+    /// The standard concrete syntax for substitution terms.
     public static final class Subst extends Notation {
         public Subst() {
             super(120);
@@ -257,9 +227,7 @@ public abstract class Notation {
     }
 
 
-    /**
-     * The standard concrete syntax for function and predicate terms.
-     */
+    /// The standard concrete syntax for function and predicate terms.
     public static final class FunctionNotation extends Notation {
         public FunctionNotation() {
             super(130);
@@ -270,9 +238,7 @@ public abstract class Notation {
         }
     }
 
-    /**
-     * The standard concrete syntax for conditional terms <code>if (phi) (t1) (t2)</code>.
-     */
+    /// The standard concrete syntax for conditional terms <code>if (phi) (t1) (t2)</code>.
     public static final class IfThenElse extends Notation {
         private final String keyword;
 
@@ -286,9 +252,7 @@ public abstract class Notation {
         }
     }
 
-    /**
-     * The standard concrete syntax for all kinds of variables.
-     */
+    /// The standard concrete syntax for all kinds of variables.
     public static class VariableNotation extends Notation {
         public VariableNotation() {
             super(1000);
@@ -312,39 +276,39 @@ public abstract class Notation {
             String specificSort = "";
             if (v instanceof OperatorSV) {
                 switch (v) {
-                case ProgramSV psv -> {
-                    svType = "\\program";
-                    specificSort = psv.sort().declarationString();
-                }
-                case TermSV tsv -> {
-                    svType = "\\term";
-                    specificSort = tsv.sort().name().toString();
-                }
-                case FormulaSV fsv -> {
-                    svType = "\\formula";
-                    specificSort = fsv.sort().name().toString();
-                }
-                case VariableSV varSV -> {
-                    svType = "\\variables";
-                    specificSort = varSV.sort().name().toString();
-                }
-                case UpdateSV ignored -> svType = "\\update";
-                case SkolemTermSV skolemTermSV -> {
-                    if (skolemTermSV.sort() == RustyDLTheory.FORMULA) {
-                        svType = "\\skolemFormula";
-                    } else {
-                        svType = "\\skolemTerm";
-                        specificSort = skolemTermSV.sort().name().toString();
+                    case ProgramSV psv -> {
+                        svType = "\\program";
+                        specificSort = psv.sort().declarationString();
                     }
-                }
-                default -> throw new RuntimeException("Unknown variable type: " + v.getClass());
+                    case TermSV tsv -> {
+                        svType = "\\term";
+                        specificSort = tsv.sort().name().toString();
+                    }
+                    case FormulaSV fsv -> {
+                        svType = "\\formula";
+                        specificSort = fsv.sort().name().toString();
+                    }
+                    case VariableSV varSV -> {
+                        svType = "\\variables";
+                        specificSort = varSV.sort().name().toString();
+                    }
+                    case UpdateSV ignored -> svType = "\\update";
+                    case SkolemTermSV skolemTermSV -> {
+                        if (skolemTermSV.sort() == RustyDLTheory.FORMULA) {
+                            svType = "\\skolemFormula";
+                        } else {
+                            svType = "\\skolemTerm";
+                            specificSort = skolemTermSV.sort().name().toString();
+                        }
+                    }
+                    default -> throw new RuntimeException("Unknown variable type: " + v.getClass());
                 }
                 sp.layouter().print("\\schemaVar ").print(svType + " ").print(specificSort)
                         .print(" ").print(v.name().toString());
             } else if (v instanceof ModalOperatorSV modalOperatorSV) {
                 sp.layouter().beginC(0).beginC().print("\\schemaVar \\modalOperator {").brk(0);
                 boolean first = true;
-                for (Modality.RustyModalityKind modality : modalOperatorSV.getModalities()) {
+                for (RModality.RustyModalityKind modality : modalOperatorSV.getModalities()) {
                     if (!first) {
                         sp.layouter().print(",").brk();
                     } else {

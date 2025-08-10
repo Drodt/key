@@ -31,9 +31,7 @@ public class ElementaryUpdate extends AbstractSortedOperator {
     }
 
 
-    /**
-     * Returns the elementary update operator for the passed left hand side.
-     */
+    /// Returns the elementary update operator for the passed left hand side.
     public static ElementaryUpdate getInstance(UpdateableOperator lhs) {
         WeakReference<ElementaryUpdate> ref = instances.get(lhs);
         ElementaryUpdate result = null;
@@ -49,9 +47,7 @@ public class ElementaryUpdate extends AbstractSortedOperator {
     }
 
 
-    /**
-     * Returns the left hand side of this elementary update operator.
-     */
+    /// Returns the left hand side of this elementary update operator.
     public UpdateableOperator lhs() {
         return lhs;
     }

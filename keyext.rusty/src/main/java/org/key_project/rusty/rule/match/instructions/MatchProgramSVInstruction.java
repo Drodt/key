@@ -4,78 +4,32 @@
 package org.key_project.rusty.rule.match.instructions;
 
 import org.key_project.logic.LogicServices;
-import org.key_project.logic.SyntaxElementCursor;
+import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
-import org.key_project.logic.op.Operator;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static org.key_project.rusty.Services.convertToLogicElement;
 
-public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@NonNull ProgramSV>
-        implements MatchOperatorInstruction {
+public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction {
 
     public MatchProgramSVInstruction(ProgramSV sv) {
         super(sv);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
+    /// {@inheritDoc}
     @Override
-    public MatchConditions match(Term instantiationCandidate,
-            MatchConditions matchCond,
-            LogicServices services) {
-        final ProgramSVSort svSort = (ProgramSVSort) op.sort();
-
-        if (svSort.canStandFor(instantiationCandidate)) {
-            return addInstantiation(instantiationCandidate,
-                matchCond, services);
-        }
-
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public MatchConditions match(Operator instantiationCandidate,
-            MatchConditions matchConditions,
-            LogicServices services) {
-        if (instantiationCandidate instanceof RustyProgramElement pe) {
-            return match(pe, matchConditions, services);
-        }
-        return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions matchConditions,
-            LogicServices services) {
-        MatchConditions result = match((Term) cursor.getCurrentNode(), matchConditions, services);
-        if (result != null) {
-            cursor.gotoNextSibling();
-        }
-        return result;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public MatchConditions match(
+    public MatchResultInfo match(
             RustyProgramElement instantiationCandidate,
-            MatchConditions matchCond,
+            MatchResultInfo matchCond,
             LogicServices services) {
         final ProgramSVSort svSort = (ProgramSVSort) op.sort();
 
@@ -87,12 +41,10 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@N
         return null;
     }
 
-    /**
-     * tries to add the pair <tt>(this,pe)</tt> to the match conditions. If possible the resulting
-     * match conditions are returned, otherwise <tt>null</tt>. Such an addition can fail, e.g. if
-     * already a pair <tt>(this,x)</tt> exists where <tt>x!=pe</tt>
-     */
-    private MatchConditions addInstantiation(RustyProgramElement pe, MatchConditions matchCond,
+    /// tries to add the pair <tt>(this,pe)</tt> to the match conditions. If possible the resulting
+    /// match conditions are returned, otherwise <tt>null</tt>. Such an addition can fail, e.g. if
+    /// already a pair <tt>(this,x)</tt> exists where <tt>x!=pe</tt>
+    private MatchResultInfo addInstantiation(RustyProgramElement pe, MatchResultInfo matchCond,
             Services services) {
 
         final SVInstantiations instantiations =
@@ -119,5 +71,20 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction<@N
             }
         }
         return null;
+    }
+
+    @Override
+    public @Nullable MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo mc,
+            LogicServices services) {
+        MatchResultInfo result = null;
+        if (actualElement instanceof RustyProgramElement programElement) {
+            result = match(programElement, mc, services);
+        } else if (actualElement instanceof Term term) {
+            final ProgramSVSort svSort = (ProgramSVSort) op.sort();
+            if (svSort.canStandFor(term)) {
+                return addInstantiation(term, mc, services);
+            }
+        }
+        return result;
     }
 }

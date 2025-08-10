@@ -13,6 +13,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 // spotless:off
 public class BorrowExpression implements Expr {
@@ -26,7 +27,7 @@ public class BorrowExpression implements Expr {
 
     public BorrowExpression(boolean mut, ExtList children) {
         this.mut = mut;
-        this.expr = children.get(Expr.class);
+        this.expr = Objects.requireNonNull(children.get(Expr.class));
     }
 
     public boolean isMut() {
@@ -68,7 +69,7 @@ public class BorrowExpression implements Expr {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         BorrowExpression that = (BorrowExpression) o;
         return mut == that.mut && Objects.equals(expr, that.expr);

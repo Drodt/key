@@ -13,6 +13,7 @@ import org.key_project.rusty.parser.ParsingFacade;
 import org.key_project.rusty.util.Position;
 
 import org.antlr.v4.runtime.CharStream;
+import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -28,57 +29,47 @@ public class Configuration {
         this.data = data;
     }
 
-    /**
-     * Loads a configuration using the given file.
-     *
-     * @param file existsing file path
-     * @return a configuration based on the file contents
-     * @throws IOException if file does not exists or i/o error
-     */
+    /// Loads a configuration using the given file.
+    ///
+    /// @param file existsing file path
+    /// @return a configuration based on the file contents
+    /// @throws IOException if file does not exists or i/o error
     public static Configuration load(File file) throws IOException {
         return ParsingFacade.readConfigurationFile(file);
     }
 
-    /**
-     * Loads a configuration using the given char stream.
-     *
-     * @param input existing file path
-     * @return a configuration based on the file contents
-     * @throws IOException i/o error on the steram
-     */
+    /// Loads a configuration using the given char stream.
+    ///
+    /// @param input existing file path
+    /// @return a configuration based on the file contents
+    /// @throws IOException i/o error on the steram
     public static Configuration load(CharStream input) throws IOException {
         return ParsingFacade.readConfigurationFile(input);
     }
 
-    /**
-     * Returns true if an entry for the given name exists.
-     */
+    /// Returns true if an entry for the given name exists.
     public boolean exists(String name) {
         return data.containsKey(name);
     }
 
-    /**
-     * Returns true if an entry for the given name exists and is also compatible
-     * with the given class.
-     *
-     * @see #getBool(String)
-     * @see #getInt(String)
-     * @see #getLong(String)
-     * @see #getDouble(String)
-     * @see #getTable(String)
-     */
+    /// Returns true if an entry for the given name exists and is also compatible
+    /// with the given class.
+    ///
+    /// @see #getBool(String)
+    /// @see #getInt(String)
+    /// @see #getLong(String)
+    /// @see #getDouble(String)
+    /// @see #getTable(String)
     public <T> boolean exists(String name, Class<T> clazz) {
         return data.containsKey(name) && clazz.isAssignableFrom(data.get(name).getClass());
     }
 
-    /**
-     * Returns the stored value for the given name cast to the given clazz if possible.
-     * If no value exists, or value is not compatible to {@code clazz}, {@code null} is returned.
-     *
-     * @param <T> an arbitrary class, exptected return type
-     * @param name property name
-     * @param clazz data type because of missing reified generics.
-     */
+    /// Returns the stored value for the given name cast to the given clazz if possible.
+    /// If no value exists, or value is not compatible to `clazz`, `null` is returned.
+    ///
+    /// @param <T> an arbitrary class, exptected return type
+    /// @param name property name
+    /// @param clazz data type because of missing reified generics.
     public <T> @Nullable T get(String name, Class<T> clazz) {
         if (exists(name, clazz))
             return clazz.cast(data.get(name));
@@ -86,162 +77,131 @@ public class Configuration {
             return null;
     }
 
-    /**
-     * The same as {@link #get(String, Class)} but returns the {@code defaultValue} instead
-     * of a {@code null} reference.
-     *
-     * @param <T> the expected return type compatible to the {@code defaultValue}
-     * @param name property name
-     * @param defaultValue the returned instead of {@code null}.
-     */
-
+    /// The same as [#get(String,Class)] but returns the `defaultValue` instead
+    /// of a `null` reference.
+    ///
+    /// @param <T> the expected return type compatible to the `defaultValue`
+    /// @param name property name
+    /// @param defaultValue the returned instead of `null`.
     public <T> @NonNull T get(String name, Class<T> clazz, @NonNull T defaultValue) {
-        if (exists(name, defaultValue.getClass()))
-            return clazz.cast(data.get(name));
-        else
+        if (exists(name, defaultValue.getClass())) {
+            T res = clazz.cast(data.get(name));
+            assert res != null;
+            return res;
+        } else
             return defaultValue;
     }
 
-    /**
-     * Get the value for the entry named {@code name}. Null if no such entry exists.
-     *
-     * @see #exists(String)
-     */
-
+    /// Get the value for the entry named `name`. Null if no such entry exists.
+    ///
+    /// @see #exists(String)
     public @Nullable Object get(String name) {
         return data.get(name);
     }
 
-    /**
-     * Returns an integer from the configuration.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link java.lang.Long}
-     * @throws NullPointerException if no such value entry exists
-     */
+    /// Returns an integer from the configuration.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [java.lang.Long]
+    /// @throws NullPointerException if no such value entry exists
     public int getInt(String name) {
         return (int) getLong(name);
     }
 
-    /**
-     * Returns an integer value for the given name.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link Long}
-     * @throws NullPointerException if no such value entry exists
-     */
+    /// Returns an integer value for the given name.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [Long]
+    /// @throws NullPointerException if no such value entry exists
     public int getInt(String name, int defaultValue) {
         return (int) getLong(name, defaultValue);
     }
 
-    /**
-     * Returns a long value for the given name.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link Long}
-     * @throws NullPointerException if no such value entry exists
-     */
+    /// Returns a long value for the given name.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [Long]
+    /// @throws NullPointerException if no such value entry exists
     public long getLong(String name) {
-        return get(name, Long.class);
+        return Objects.requireNonNull(get(name, Long.class));
     }
 
-    /**
-     * Returns a long value for the given name. {@code defaultValue} if no such value is present.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link Long}
-     */
+    /// Returns a long value for the given name. `defaultValue` if no such value is present.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [Long]
     public long getLong(String name, long defaultValue) {
         Long value = get(name, Long.class);
         return Objects.requireNonNullElse(value, defaultValue);
     }
 
-    /**
-     * Returns a boolean value for the given name.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link Boolean}
-     * @throws NullPointerException if no such value entry exists
-     */
+    /// Returns a boolean value for the given name.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [Boolean]
+    /// @throws NullPointerException if no such value entry exists
     public boolean getBool(String name) {
-        return get(name, Boolean.class);
+        return Objects.requireNonNull(get(name, Boolean.class));
     }
 
-    /**
-     * Returns a boolean value for the given name. {@code defaultValue} if no such value is present.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link Boolean}
-     */
+    /// Returns a boolean value for the given name. `defaultValue` if no such value is present.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [Boolean]
     public boolean getBool(String name, boolean defaultValue) {
         return get(name, Boolean.class, defaultValue);
     }
 
-    /**
-     * Returns a double value for the given name. {@code defaultValue} if no such value is
-     * present.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not an {@link Double}
-     * @throws NullPointerException if no such value entry exists
-     */
+    /// Returns a double value for the given name. `defaultValue` if no such value is
+    /// present.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not an [Double]
+    /// @throws NullPointerException if no such value entry exists
     public double getDouble(String name) {
-        return get(name, Double.class);
+        return Objects.requireNonNull(get(name, Double.class));
     }
 
-    /**
-     * Returns a string value for the given name.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link String}
-     */
-    @Nullable
-    public String getString(String name) {
+    /// Returns a string value for the given name.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [String]
+    public @Nullable String getString(String name) {
         return get(name, String.class);
     }
 
-    /**
-     * Returns a string value for the given name. {@code defaultValue} if no such value is present.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not an {@link String}
-     */
+    /// Returns a string value for the given name. `defaultValue` if no such value is present.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not an [String]
     public String getString(String name, String defaultValue) {
         return get(name, String.class, defaultValue);
     }
 
-    /**
-     * Returns a sub configuration for the given name. {@code null} if no such value is present.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link Configuration}
-     */
-    @Nullable
-    public Configuration getTable(String name) {
+    /// Returns a sub configuration for the given name. `null` if no such value is present.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [Configuration]
+    public @Nullable Configuration getTable(String name) {
         return get(name, Configuration.class);
     }
 
-    /**
-     * Returns a list of objects for the given name. {@code null} if no such value is present.
-     *
-     * @param name property name
-     * @throws ClassCastException if the entry is not a {@link List}
-     */
-    @Nullable
-    public List<Object> getList(String name) {
+    /// Returns a list of objects for the given name. `null` if no such value is present.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the entry is not a [List]
+    public @Nullable List<Object> getList(String name) {
         return getList(name, Object.class);
     }
 
-    /**
-     * Returns a list of elements for the given name.
-     * The class type for the elements is given by the {@code clazz} parameter.
-     * {@code null} if no such value is present.
-     *
-     * @param name property name
-     * @param clazz the class type of the elements
-     * @throws ClassCastException if the entry is not a {@link List} or contains elements of the
-     *         wrong type
-     */
+    /// Returns a list of elements for the given name.
+    /// The class type for the elements is given by the `clazz` parameter.
+    /// `null` if no such value is present.
+    ///
+    /// @param name property name
+    /// @param clazz the class type of the elements
+    /// @throws ClassCastException if the entry is not a [List] or contains elements of the
+    /// wrong type
     @SuppressWarnings("unchecked")
     public <T> @Nullable List<T> getList(String name, Class<T> clazz) {
         List<?> result = get(name, List.class);
@@ -254,16 +214,13 @@ public class Configuration {
         return (List<T>) result;
     }
 
-    /**
-     * Returns a list of strings for the given name.
-     *
-     * In contrast to the other methods, this method does not throw an exception if the entry does
-     * not
-     * exist in the configuration. Instead, it returns an empty list.
-     *
-     * @param name property name
-     * @throws ClassCastException if the list contains non-strings
-     */
+    /// Returns a list of strings for the given name.
+    /// In contrast to the other methods, this method does not throw an exception if the entry does
+    /// not
+    /// exist in the configuration. Instead, it returns an empty list.
+    ///
+    /// @param name property name
+    /// @throws ClassCastException if the list contains non-strings
     @SuppressWarnings("unchecked")
     public @NonNull List<String> getStringList(String name) {
         List<?> result = get(name, List.class);
@@ -276,31 +233,26 @@ public class Configuration {
         return (List<String>) result;
     }
 
-    /**
-     * Returns string array for the requested entry. {@code defaultValue} is returned if no such
-     * entry exists.
-     *
-     * @param name a string identifying the entry
-     * @param defaultValue a default value
-     * @throws ClassCastException if the given entry has non-string elements
-     */
-    @NonNull
-    public String[] getStringArray(String name, @NonNull String[] defaultValue) {
+    /// Returns string array for the requested entry. `defaultValue` is returned if no such
+    /// entry exists.
+    ///
+    /// @param name a string identifying the entry
+    /// @param defaultValue a default value
+    /// @throws ClassCastException if the given entry has non-string elements
+    public @NonNull String[] getStringArray(String name, @NonNull String[] defaultValue) {
         if (exists(name)) {
             return getStringList(name).toArray(String[]::new);
         } else
             return defaultValue;
     }
 
-    /**
-     * Interprets the given entry as an enum value.
-     *
-     * @param <T> the enum
-     * @param name a name identifying an entry
-     * @param defaultValue the default value to be returned
-     * @throws ClassCastException if the given entry is not a string
-     * @throws IllegalArgumentException if defaultValue does not belong to an enum
-     */
+    /// Interprets the given entry as an enum value.
+    ///
+    /// @param <T> the enum
+    /// @param name a name identifying an entry
+    /// @param defaultValue the default value to be returned
+    /// @throws ClassCastException if the given entry is not a string
+    /// @throws IllegalArgumentException if defaultValue does not belong to an enum
     @SuppressWarnings("unchecked")
     public <T extends Enum<T>> @NonNull T getEnum(String name, @NonNull T defaultValue) {
         Class<T> clazz = (Class<T>) defaultValue.getClass();
@@ -319,86 +271,76 @@ public class Configuration {
         }
     }
 
-    /**
-     * Returns the metadata corresponding to the given entry.
-     */
-    @Nullable
-    public ConfigurationMeta getMeta(String name) {
+    /// Returns the metadata corresponding to the given entry.
+    public @Nullable ConfigurationMeta getMeta(String name) {
         return meta.get(name);
     }
 
-    /**
-     * Returns the metadata corresponding to the given entry, creates the entry if not existing.
-     */
-    @NonNull
-    private ConfigurationMeta getOrCreateMeta(String name) {
+    /// Returns the metadata corresponding to the given entry, creates the entry if not existing.
+    private @NonNull ConfigurationMeta getOrCreateMeta(String name) {
         return Objects.requireNonNull(meta.putIfAbsent(name, new ConfigurationMeta()));
     }
 
-    /**
-     * @see #getTable(String)
-     */
-    public Configuration getSection(String name) {
+    /// @see #getTable(String)
+    public @Nullable Configuration getSection(String name) {
         return getTable(name);
     }
 
-    public Configuration getOrCreateSection(String name) {
+    public @Nullable Configuration getOrCreateSection(String name) {
         return getSection(name, true);
     }
 
-    public Configuration getSection(String name, boolean createIfNotExists) {
+    public @Nullable Configuration getSection(String name, boolean createIfNotExists) {
         if (!exists(name) && createIfNotExists) {
             set(name, new Configuration());
         }
         return getSection(name);
     }
 
-    public Object set(String name, Object obj) {
+    public @Nullable Object set(String name, Object obj) {
         return data.put(name, obj);
     }
 
-    public Object set(String name, Boolean obj) {
+    public @Nullable Object set(String name, Boolean obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, String obj) {
+    public @Nullable Object set(String name, String obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, Long obj) {
+    public @Nullable Object set(String name, Long obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, int obj) {
+    public @Nullable Object set(String name, int obj) {
         return set(name, (long) obj);
     }
 
-    public Object set(String name, Double obj) {
+    public @Nullable Object set(String name, Double obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, Configuration obj) {
+    public @Nullable Object set(String name, Configuration obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, List<?> obj) {
+    public @Nullable Object set(String name, List<?> obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, String[] seq) {
+    public @Nullable Object set(String name, String[] seq) {
         return set(name, (Object) Arrays.asList(seq));
     }
 
-    public Set<Map.Entry<String, Object>> getEntries() {
+    public Set<Map.Entry<@KeyFor("data") String, Object>> getEntries() {
         return data.entrySet();
     }
 
-    /**
-     * Serializes this configuration instance into the given writer.
-     *
-     * @param writer a writer
-     * @param comment a comment
-     */
+    /// Serializes this configuration instance into the given writer.
+    ///
+    /// @param writer a writer
+    /// @param comment a comment
     public void save(Writer writer, String comment) {
         new ConfigurationWriter(writer).printComment(comment).printMap(this.data);
     }
@@ -408,17 +350,15 @@ public class Configuration {
     }
 
     // TODO Add documentation for this.
-    /**
-     * POJO for metadata of configuration entries.
-     */
+    /// POJO for metadata of configuration entries.
     public static class ConfigurationMeta {
-        /** Position of declaration within a file */
-        private Position position;
+        /// Position of declaration within a file
+        private @Nullable Position position;
 
-        /** documentation given in the file */
-        private String documentation;
+        /// documentation given in the file
+        private @Nullable String documentation;
 
-        public Position getPosition() {
+        public @Nullable Position getPosition() {
             return position;
         }
 
@@ -426,7 +366,7 @@ public class Configuration {
             this.position = position;
         }
 
-        public String getDocumentation() {
+        public @Nullable String getDocumentation() {
             return documentation;
         }
 
@@ -435,9 +375,7 @@ public class Configuration {
         }
     }
 
-    /**
-     * Writer for configurations. Mainly manages the indentation levels and escapings.
-     */
+    /// Writer for configurations. Mainly manages the indentation levels and escapings.
     public static class ConfigurationWriter {
         private final PrintWriter out;
         private int indent;
@@ -462,7 +400,7 @@ public class Configuration {
             return this;
         }
 
-        private ConfigurationWriter printKeyValue(String key, Object value) {
+        private ConfigurationWriter printKeyValue(String key, @Nullable Object value) {
             return printKey(key).printValue(value);
         }
 
@@ -471,7 +409,7 @@ public class Configuration {
             return this;
         }
 
-        public ConfigurationWriter printValue(Object value) {
+        public ConfigurationWriter printValue(@Nullable Object value) {
             if (value instanceof String) {
                 // TODO What about '"' inside value?
                 out.format("\"%s\"", value);
@@ -503,7 +441,7 @@ public class Configuration {
             for (Iterator<? extends Map.Entry<?, ?>> iterator =
                 value.entrySet().iterator(); iterator.hasNext();) {
                 Map.Entry<?, ?> entry = iterator.next();
-                String k = entry.getKey().toString();
+                String k = Objects.requireNonNull(entry.getKey()).toString();
                 Object v = entry.getValue();
                 printKeyValue(k, v);
                 if (iterator.hasNext()) {
@@ -555,12 +493,12 @@ public class Configuration {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof Configuration that))
+        if (o == null || getClass() != o.getClass())
             return false;
-        return Objects.equals(data, that.data);
+        return Objects.equals(data, o);
     }
 
     @Override

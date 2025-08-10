@@ -11,10 +11,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.key_project.logic.*;
-import org.key_project.logic.op.AbstractSortedOperator;
-import org.key_project.logic.op.Function;
-import org.key_project.logic.op.Operator;
-import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.logic.op.*;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.sequent.Sequent;
@@ -25,9 +22,9 @@ import org.key_project.rusty.ast.SchemaRustyReader;
 import org.key_project.rusty.ldt.LDT;
 import org.key_project.rusty.logic.*;
 import org.key_project.rusty.logic.op.*;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
-import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.parser.KeYRustyLexer;
 import org.key_project.rusty.parser.KeYRustyParser;
@@ -55,12 +52,10 @@ public class ExpressionBuilder extends DefaultBuilder {
         super(services, nss);
     }
 
-    /**
-     * Given a raw modality string, this function trims the modality information.
-     *
-     * @param raw non-null string
-     * @return non-null string
-     */
+    /// Given a raw modality string, this function trims the modality information.
+    ///
+    /// @param raw non-null string
+    /// @return non-null string
     public static String trimRustyBlock(String raw) {
         if (raw.startsWith("\\<")) {
             return StringUtil.trim(raw, "\\<>");
@@ -80,9 +75,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         return raw.substring(start, end);
     }
 
-    /**
-     * Given a raw modality string, this method determines the operator name.
-     */
+    /// Given a raw modality string, this method determines the operator name.
     public static String operatorOfRustyBlock(String raw) {
         if (raw.startsWith("\\<")) {
             return "diamond";
@@ -115,31 +108,33 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitTermEOF(KeYRustyParser.TermEOFContext ctx) {
+    public @Nullable Term visitTermEOF(KeYRustyParser.TermEOFContext ctx) {
         return accept(ctx.term());
     }
 
     @Override
-    public Term visitElementary_update_term(KeYRustyParser.Elementary_update_termContext ctx) {
+    public @Nullable Term visitElementary_update_term(
+            KeYRustyParser.Elementary_update_termContext ctx) {
         Term a = accept(ctx.a);
         Term b = accept(ctx.b);
         if (b != null) {
-            return getServices().getTermBuilder().elementary(a, b);
+            return getServices().getTermBuilder().elementary(Objects.requireNonNull(a), b);
         }
         return a;
     }
 
-    public Term visitMutating_update_term(KeYRustyParser.Mutating_update_termContext ctx) {
+    public @Nullable Term visitMutating_update_term(
+            KeYRustyParser.Mutating_update_termContext ctx) {
         Term a = accept(ctx.a);
         Term b = accept(ctx.b);
         if (b != null) {
-            return getServices().getTermBuilder().mutating(a, b);
+            return getServices().getTermBuilder().mutating(Objects.requireNonNull(a), b);
         }
         return a;
     }
 
     @Override
-    public Term visitEquivalence_term(KeYRustyParser.Equivalence_termContext ctx) {
+    public @Nullable Term visitEquivalence_term(KeYRustyParser.Equivalence_termContext ctx) {
         Term a = accept(ctx.a);
         if (ctx.b.isEmpty()) {
             return a;
@@ -154,23 +149,24 @@ public class ExpressionBuilder extends DefaultBuilder {
         return cur;
     }
 
-    private Term binaryTerm(ParserRuleContext ctx, Operator operator, Term left, Term right) {
+    private @Nullable Term binaryTerm(ParserRuleContext ctx, Operator operator, @Nullable Term left,
+            @Nullable Term right) {
         if (right == null) {
             return left;
         }
         return capsulateTf(ctx,
-            () -> getTermFactory().createTerm(operator, left, right));
+            () -> getTermFactory().createTerm(operator, Objects.requireNonNull(left), right));
     }
 
     @Override
-    public Term visitImplication_term(KeYRustyParser.Implication_termContext ctx) {
+    public @Nullable Term visitImplication_term(KeYRustyParser.Implication_termContext ctx) {
         Term termL = accept(ctx.a);
         Term termR = accept(ctx.b);
         return binaryTerm(ctx, Junctor.IMP, termL, termR);
     }
 
     @Override
-    public Term visitDisjunction_term(KeYRustyParser.Disjunction_termContext ctx) {
+    public @Nullable Term visitDisjunction_term(KeYRustyParser.Disjunction_termContext ctx) {
         Term t = accept(ctx.a);
         for (KeYRustyParser.Conjunction_termContext c : ctx.b) {
             t = binaryTerm(ctx, Junctor.OR, t, accept(c));
@@ -179,7 +175,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitConjunction_term(KeYRustyParser.Conjunction_termContext ctx) {
+    public @Nullable Term visitConjunction_term(KeYRustyParser.Conjunction_termContext ctx) {
         Term t = accept(ctx.a);
         for (KeYRustyParser.Term60Context c : ctx.b) {
             t = binaryTerm(ctx, Junctor.AND, t, accept(c));
@@ -196,7 +192,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             if (result.op() == Z) {
                 // weigl: rewrite neg(Z(1(#)) to Z(neglit(1(#))
                 // This mimics the old KeYRustyParser behaviour. Unknown if necessary.
-                final Function neglit = functions().lookup("neglit");
+                final Function neglit = services.getLDTs().getIntLDT().getNegativeNumberSign();
                 final Term num = result.sub(0);
                 return capsulateTf(ctx,
                     () -> getTermFactory().createTerm(Z, getTermFactory().createTerm(neglit, num)));
@@ -210,6 +206,7 @@ public class ExpressionBuilder extends DefaultBuilder {
                     // falling back to integer ldt (for instance for untyped schema variables)
                     ldt = services.getLDTs().getIntLDT();
                 }
+                // TODO(DD): Can this be simplified?
                 Function op = ldt.getFunctionFor("neg", services);
                 if (op == null) {
                     semanticError(ctx, "Could not find function symbol 'neg' for sort '%s'.", sort);
@@ -223,7 +220,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitNegation_term(KeYRustyParser.Negation_termContext ctx) {
+    public @Nullable Term visitNegation_term(KeYRustyParser.Negation_termContext ctx) {
         Term termL = accept(ctx.sub);
         if (ctx.NOT() != null) {
             return capsulateTf(ctx, () -> getTermFactory().createTerm(Junctor.NOT, termL));
@@ -233,7 +230,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Term visitEquality_term(KeYRustyParser.Equality_termContext ctx) {
+    public @Nullable Term visitEquality_term(KeYRustyParser.Equality_termContext ctx) {
         Term termL = accept(ctx.a);
         Term termR = accept(ctx.b);
         Term eq = binaryTerm(ctx, Equality.EQUALS, termL, termR);
@@ -244,7 +241,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Object visitComparison_term(KeYRustyParser.Comparison_termContext ctx) {
+    public @Nullable Object visitComparison_term(KeYRustyParser.Comparison_termContext ctx) {
         Term termL = accept(ctx.a);
         Term termR = accept(ctx.b);
 
@@ -269,7 +266,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Object visitWeak_arith_term(KeYRustyParser.Weak_arith_termContext ctx) {
+    public @Nullable Object visitWeak_arith_term(KeYRustyParser.Weak_arith_termContext ctx) {
         Term termL = Objects.requireNonNull(accept(ctx.a));
         if (ctx.op.isEmpty()) {
             return termL;
@@ -280,12 +277,12 @@ public class ExpressionBuilder extends DefaultBuilder {
         for (int i = 0; i < terms.size(); i++) {
             String opname = "";
             switch (ctx.op.get(i).getType()) {
-            case KeYRustyLexer.UTF_INTERSECT -> opname = "intersect";
-            case KeYRustyLexer.UTF_SETMINUS -> opname = "setMinus";
-            case KeYRustyLexer.UTF_UNION -> opname = "union";
-            case KeYRustyLexer.PLUS -> opname = "add";
-            case KeYRustyLexer.MINUS -> opname = "sub";
-            default -> semanticError(ctx, "Unexpected token: %s", ctx.op.get(i));
+                case KeYRustyLexer.UTF_INTERSECT -> opname = "intersect";
+                case KeYRustyLexer.UTF_SETMINUS -> opname = "setMinus";
+                case KeYRustyLexer.UTF_UNION -> opname = "union";
+                case KeYRustyLexer.PLUS -> opname = "add";
+                case KeYRustyLexer.MINUS -> opname = "sub";
+                default -> semanticError(ctx, "Unexpected token: %s", ctx.op.get(i));
             }
             Term cur = terms.get(i);
             last = binaryLDTSpecificTerm(ctx, opname, last, cur);
@@ -418,21 +415,23 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     @Override
     public Term visitAccessterm(KeYRustyParser.AccesstermContext ctx) {
-        // weigl: I am unsure if this is wise.
-        Sort sortId = defaultOnException(null, () -> accept(ctx.sortId()));
         String firstName = accept(ctx.simple_ident());
 
         ImmutableArray<QuantifiableVariable> boundVars = null;
-        Namespace<QuantifiableVariable> orig = null;
+        Namespace<@NonNull QuantifiableVariable> origVars = null;
+        KeYRustyParser.Formal_sort_argsContext genericArgsCtxt = null;
+        if (ctx.formal_sort_args() != null) {
+            genericArgsCtxt = ctx.formal_sort_args();
+        }
         Term[] args = null;
         if (ctx.call() != null) {
-            orig = variables();
+            origVars = variables();
             List<QuantifiableVariable> bv = accept(ctx.call().boundVars);
             boundVars =
                 bv != null ? new ImmutableArray<>(bv.toArray(new QuantifiableVariable[0])) : null;
             args = visitArguments(ctx.call().argument_list());
             if (boundVars != null) {
-                unbindVars(orig);
+                unbindVars(origVars);
             }
         }
 
@@ -443,7 +442,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             op = UpdateJunctor.SKIP;
         } else {
             op = lookupVarfuncId(ctx, firstName,
-                ctx.sortId() != null ? ctx.sortId().getText() : null, sortId);
+                genericArgsCtxt);
         }
 
         Term current;
@@ -554,12 +553,12 @@ public class ExpressionBuilder extends DefaultBuilder {
         return getServices().getTermFactory();
     }
 
-    protected ImmutableSet<Modality.RustyModalityKind> opSVHelper(String opName,
-            ImmutableSet<Modality.RustyModalityKind> modalityKinds) {
+    protected ImmutableSet<RModality.RustyModalityKind> opSVHelper(String opName,
+            ImmutableSet<RModality.RustyModalityKind> modalityKinds) {
         if (opName.charAt(0) == '#') {
             return lookupOperatorSV(opName, modalityKinds);
         } else {
-            Modality.RustyModalityKind m = Modality.RustyModalityKind.getKind(opName);
+            RModality.RustyModalityKind m = RModality.RustyModalityKind.getKind(opName);
             if (m == null) {
                 semanticError(null, "Unrecognised operator: " + opName);
             }
@@ -580,7 +579,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    public Object visitTermorseq(KeYRustyParser.TermorseqContext ctx) {
+    public @Nullable Object visitTermorseq(KeYRustyParser.TermorseqContext ctx) {
         Term head = accept(ctx.head);
         Sequent s = accept(ctx.s);
         ImmutableList<SequentFormula> ss = accept(ctx.ss);
@@ -618,8 +617,8 @@ public class ExpressionBuilder extends DefaultBuilder {
         return ss;
     }
 
-    private ImmutableSet<Modality.RustyModalityKind> lookupOperatorSV(String opName,
-            ImmutableSet<Modality.RustyModalityKind> modalityKinds) {
+    private ImmutableSet<RModality.RustyModalityKind> lookupOperatorSV(String opName,
+            ImmutableSet<RModality.RustyModalityKind> modalityKinds) {
         SchemaVariable sv = schemaVariables().lookup(new Name(opName));
         if (sv instanceof ModalOperatorSV osv) {
             modalityKinds = modalityKinds.union(osv.getModalities());
@@ -831,11 +830,11 @@ public class ExpressionBuilder extends DefaultBuilder {
              * if (!inSchemaMode()) { semanticError(ctx,
              * "No schema elements allowed outside taclet declarations (" + sjb.opName + ")"); }
              */
-            var kind = (Modality.RustyModalityKind) schemaVariables().lookup(new Name(sjb.opName));
-            op = Modality.getModality(kind, sjb.rustyBlock);
+            var kind = (RModality.RustyModalityKind) schemaVariables().lookup(new Name(sjb.opName));
+            op = RModality.getModality(kind, sjb.rustyBlock);
         } else {
-            var kind = Modality.RustyModalityKind.getKind(sjb.opName);
-            op = Modality.getModality(kind, sjb.rustyBlock);
+            var kind = RModality.RustyModalityKind.getKind(sjb.opName);
+            op = RModality.getModality(kind, sjb.rustyBlock);
         }
         if (op == null) {
             semanticError(ctx, "Unknown modal operator: " + sjb.opName);
@@ -850,15 +849,12 @@ public class ExpressionBuilder extends DefaultBuilder {
         return mapOf(ctx.term());
     }
 
-    /**
-     * Handles "[sort]::a.name.or.something.else"
-     *
-     * @param ctx
-     * @return a Term or an operator, depending on the referenced object.
-     */
+    /// Handles `[sort]::a.name.or.something.else`
+    ///
+    /// @param ctx
+    /// @return a Term or an operator, depending on the referenced object.
     @Override
     public Object visitFuncpred_name(KeYRustyParser.Funcpred_nameContext ctx) {
-        Sort sortId = accept(ctx.sortId());
         List<String> parts = mapOf(ctx.name.simple_ident());
         String varfuncid = ctx.name.getText();
 
@@ -877,7 +873,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             ctx.name == null ? ctx.INT_LITERAL().getText()
                     : ctx.name.simple_ident(0).getText();
         op = lookupVarfuncId(ctx, firstName,
-            ctx.sortId() != null ? ctx.sortId().getText() : null, sortId);
+            null);
         if (op instanceof ProgramVariable v && ctx.name.simple_ident().size() > 1) {
             List<KeYRustyParser.Simple_identContext> otherParts =
                 ctx.name.simple_ident().subList(1, ctx.name.simple_ident().size());
@@ -900,18 +896,13 @@ public class ExpressionBuilder extends DefaultBuilder {
         return null;// handleAttributes(base, ctx.attribute());
     }
 
-    public Term visitMRef_term(KeYRustyParser.MRef_termContext ctx) {
-        String borrowed = accept(ctx.simple_ident());
-        var pv = services.getNamespaces().programVariables().lookup(borrowed);
-        Place place;
-        if (pv != null) {
-            place = PVPlace.getInstance(pv);
-        } else {
-            var sv = schemaVariables().lookup(borrowed);
-            assert sv != null;
-            place = SVPlace.getInstance((ProgramSV) sv);
-        }
-        return getTermFactory().createTerm(MutRef.getInstance(place, services));
+    public Term visitPlace_term(KeYRustyParser.Place_termContext ctx) {
+        String ident = accept(ctx.simple_ident());
+        assert ident != null;
+        ProgramVariable op = services.getNamespaces().programVariables().lookup(ident);
+        assert op != null;
+        var pv = services.getTermFactory().createTerm(op);
+        return AbstractTermTransformer.getPlace(pv, services);
     }
 
     @Override
@@ -920,7 +911,8 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     private Term toZNotation(String number) {
-        return getTermFactory().createTerm(functions().lookup(new Name("Z")), toNum(number));
+        var z = services.getLDTs().getIntLDT().getNumberSymbol();
+        return getTermFactory().createTerm(z, toNum(number));
     }
 
     private Term toNum(String number) {
@@ -952,8 +944,8 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
-    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName, String sortName,
-            Sort sort) {
+    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName,
+            KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
         // Might be quantified variable
         var idx = -1;
         for (int i = 0; i < boundVars.size(); ++i) {
@@ -967,7 +959,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             return new LogicVariable(deBruijn, boundVars.get(idx).sort());
         }
 
-        return super.lookupVarfuncId(ctx, varfuncName, sortName, sort);
+        return super.lookupVarfuncId(ctx, varfuncName, genericArgsCtxt);
     }
 
     private void unbindVars(List<@NonNull BoundVariable> vars) {

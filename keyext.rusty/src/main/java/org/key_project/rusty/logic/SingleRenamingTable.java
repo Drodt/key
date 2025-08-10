@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
+import org.jspecify.annotations.Nullable;
+
 public class SingleRenamingTable extends RenamingTable {
     final RustyProgramElement oldVar;
     final RustyProgramElement newVar;
@@ -18,7 +20,7 @@ public class SingleRenamingTable extends RenamingTable {
         this.newVar = newVar;
     }
 
-    public RustyProgramElement getRenaming(RustyProgramElement se) {
+    public @Nullable RustyProgramElement getRenaming(RustyProgramElement se) {
         if (se.equals(oldVar)) {
             return newVar;
         }

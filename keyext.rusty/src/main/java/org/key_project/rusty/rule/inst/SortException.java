@@ -7,15 +7,11 @@ import java.io.Serial;
 
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 
-/**
- * this exception is thrown from an "SVInstantiations"-Object if the sorts of a schema variable and
- * its instantiation are not compatible (and not generic)
- */
+/// this exception is thrown from an "SVInstantiations"-Object if the sorts of a schema variable and
+/// its instantiation are not compatible (and not generic)
 public class SortException extends IllegalInstantiationException {
 
-    /**
-     *
-     */
+    ///
     @Serial
     private static final long serialVersionUID = -1659749880755516351L;
 

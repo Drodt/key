@@ -5,6 +5,9 @@ package org.key_project.rusty.ast;
 
 import org.key_project.rusty.ast.ty.RustType;
 
+import org.jspecify.annotations.Nullable;
+
 public interface VariableDeclaration {
+    @Nullable
     RustType type();
 }

@@ -19,20 +19,16 @@ import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
 import org.key_project.rusty.speclang.LoopSpecification;
 
-/**
- * Extends the RustyASTWalker to use the visitor mechanism. The methods inherited by the Visitor
- * interface are all implemented that they call the method
- * <code> doDefaultAction(ProgramElement) </code>.
- */
+/// Extends the RustyASTWalker to use the visitor mechanism. The methods inherited by the Visitor
+/// interface are all implemented that they call the method
+/// <code> doDefaultAction(ProgramElement) </code>.
 public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor {
     protected final Services services;
 
-    /**
-     * create the RustyASTVisitor
-     *
-     * @param root the ProgramElement where to begin
-     * @param services the Services object
-     */
+    /// create the RustyASTVisitor
+    ///
+    /// @param root the ProgramElement where to begin
+    /// @param services the Services object
     protected RustyASTVisitor(RustyProgramElement root, Services services) {
         super(root);
         this.services = services;
@@ -49,19 +45,15 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
         }
     }
 
-    /**
-     * the action that is performed just before leaving the node the last time
-     */
+    /// the action that is performed just before leaving the node the last time
     @Override
     protected void doAction(RustyProgramElement node) {
         node.visit(this);
     }
 
-    /**
-     * the action that is performed just before leaving the node the last time
-     *
-     * @param node the node described above
-     */
+    /// the action that is performed just before leaving the node the last time
+    ///
+    /// @param node the node described above
     protected abstract void doDefaultAction(RustyProgramElement node);
 
     @Override

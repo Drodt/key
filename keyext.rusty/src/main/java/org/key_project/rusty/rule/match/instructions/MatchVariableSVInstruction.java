@@ -4,43 +4,33 @@
 package org.key_project.rusty.rule.match.instructions;
 
 import org.key_project.logic.LogicServices;
-import org.key_project.logic.SyntaxElementCursor;
+import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
-import org.key_project.prover.rules.instantiation.MatchConditions;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 
-import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
 
 public class MatchVariableSVInstruction
-        extends MatchSchemaVariableInstruction<@NonNull VariableSV> {
+        extends MatchSchemaVariableInstruction {
     protected MatchVariableSVInstruction(VariableSV op) {
         super(op);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public MatchConditions match(Term subst, MatchConditions mc, LogicServices services) {
-        if (subst.op() instanceof QuantifiableVariable) {
-            final Term foundMapping = (Term) mc.getInstantiations().getInstantiation(op);
+    public @Nullable MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo mc,
+            LogicServices services) {
+        final Term actualTerm = (Term) actualElement;
+        if (actualTerm.op() instanceof QuantifiableVariable qv) {
+            final Term foundMapping = mc.getInstantiations().getInstantiation(op);
             if (foundMapping == null) {
-                return addInstantiation(subst, mc, services);
-            } else if (foundMapping.op() == subst.op()) {
+                return addInstantiation(actualTerm, mc, services);
+            } else if (foundMapping.op() == qv) {
                 return mc;
             }
         }
         return null;
-    }
-
-    @Override
-    public MatchConditions match(SyntaxElementCursor cursor, MatchConditions mc,
-            LogicServices services) {
-        final MatchConditions result = match((Term) cursor.getCurrentNode(), mc, services);
-        if (result != null) {
-            cursor.gotoNextSibling();
-        }
-        return result;
     }
 }

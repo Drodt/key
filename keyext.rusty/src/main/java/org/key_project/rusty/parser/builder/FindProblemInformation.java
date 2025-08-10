@@ -76,9 +76,7 @@ public class FindProblemInformation extends AbstractBuilder<Object> {
         return ctx.s != null ? (String) accept(ctx.s) : null;
     }
 
-    /**
-     * The found problem information.
-     */
+    /// The found problem information.
     public @NonNull ProblemInformation getProblemInformation() {
         return information;
     }

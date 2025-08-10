@@ -15,7 +15,7 @@ public record ResErr() implements Res {
 
     @Override
     public SyntaxElement getChild(int n) {
-        return null;
+        throw new IndexOutOfBoundsException("No child " + n + " of " + this);
     }
 
     @Override

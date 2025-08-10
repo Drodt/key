@@ -3,21 +3,21 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.op;
 
+import java.util.Objects;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * Objects of this class represent "observer" function or predicate symbols. Observer symbols are
- * used to
- * represent model functions as well as occurrences of
- * pure functions in specifications (via the subclass ProgramFunction). As they come from the Rust
- * program, both their parameter sorts and their result sorts always have an associated
- * KeYRustyType.
- * Observer symbols serve as the targets of contracts (i.e., as the subjects that the contracts are
- * about).
- */
+/// Objects of this class represent "observer" function or predicate symbols. Observer symbols are
+/// used to
+/// represent model functions as well as occurrences of
+/// pure functions in specifications (via the subclass ProgramFunction). As they come from the Rust
+/// program, both their parameter sorts and their result sorts always have an associated
+/// KeYRustyType.
+/// Observer symbols serve as the targets of contracts (i.e., as the subjects that the contracts are
+/// about).
 public class ObserverFunction extends RFunction implements IObserverFunction {
     private final ImmutableArray<KeYRustyType> paramTypes;
     private final KeYRustyType type;
@@ -45,7 +45,9 @@ public class ObserverFunction extends RFunction implements IObserverFunction {
         final Sort[] result = new Sort[arity];
 
         for (int i = 0, n = paramTypes.size(); i < n; i++) {
-            result[i] = paramTypes.get(i).getSort();
+            KeYRustyType krt = paramTypes.get(i);
+            assert krt != null;
+            result[i] = Objects.requireNonNull(krt.getSort());
         }
 
         return result;

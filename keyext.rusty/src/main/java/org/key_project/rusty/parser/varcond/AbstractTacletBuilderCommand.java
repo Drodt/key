@@ -5,23 +5,19 @@ package org.key_project.rusty.parser.varcond;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Simple default implementation for {@link TacletBuilderCommand}.
- *
- * @author Alexander Weigl
- * @version 1 (12/9/19)
- */
+/// Simple default implementation for [TacletBuilderCommand].
+///
+/// @author Alexander Weigl
+/// @version 1 (12/9/19)
 public abstract class AbstractTacletBuilderCommand implements TacletBuilderCommand {
     private final @NonNull String triggerName;
     private final @NonNull ArgumentType[] argumentsTypes;
 
-    /**
-     * Construct this class with the parameters for {@link #isSuitableFor(String)} and
-     * {@link #getArgumentTypes()}.
-     *
-     * @param triggerName the name of this command.
-     * @param argumentsTypes the argument type of this command.
-     */
+    /// Construct this class with the parameters for [#isSuitableFor(String)] and
+    /// [#getArgumentTypes()].
+    ///
+    /// @param triggerName the name of this command.
+    /// @param argumentsTypes the argument type of this command.
     protected AbstractTacletBuilderCommand(@NonNull String triggerName,
             @NonNull ArgumentType... argumentsTypes) {
         this.triggerName = triggerName;

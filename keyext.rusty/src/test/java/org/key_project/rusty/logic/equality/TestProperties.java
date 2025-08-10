@@ -5,7 +5,7 @@ package org.key_project.rusty.logic.equality;
 
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.NameAbstractionTable;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.proof.init.RustProfile;
 import org.key_project.rusty.util.TacletForTests;
 
@@ -27,8 +27,10 @@ public class TestProperties {
         var t1 = TacletForTests.parseTerm(termString1);
         var t2 = TacletForTests.parseTerm(termString2);
 
-        var p1 = ((Modality) t1.op()).program().program();
-        var p2 = ((Modality) t2.op()).program().program();
+        assert t1 != null && t2 != null;
+
+        var p1 = ((RModality) t1.op()).programBlock().program();
+        var p2 = ((RModality) t2.op()).programBlock().program();
 
         return new ProgramTuple(p1, p2);
     }

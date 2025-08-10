@@ -30,14 +30,14 @@ public interface PatKind {
 
     class Adapter extends HirAdapter<PatKind> {
         @Override
-        public Class<? extends PatKind> getType(String tag) {
+        public @Nullable Class<? extends PatKind> getType(String tag) {
             return switch (tag) {
-            case "Wild" -> Wild.class;
-            case "Binding" -> Binding.class;
-            case "Path" -> Path.class;
-            case "Range" -> Range.class;
-            case "Expr" -> Expr.class;
-            default -> null;
+                case "Wild" -> Wild.class;
+                case "Binding" -> Binding.class;
+                case "Path" -> Path.class;
+                case "Range" -> Range.class;
+                case "Expr" -> Expr.class;
+                default -> null;
             };
         }
     }

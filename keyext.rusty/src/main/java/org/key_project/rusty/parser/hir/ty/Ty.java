@@ -8,6 +8,8 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.hirty.IntTy;
 import org.key_project.rusty.parser.hir.hirty.UintTy;
 
+import org.jspecify.annotations.Nullable;
+
 public interface Ty {
     record Bool() implements Ty {
     }
@@ -39,21 +41,25 @@ public interface Ty {
     record Adt() implements Ty {
     }
 
+    record Array(Ty ty, TyConst len) implements Ty {
+    }
+
     class Adapter extends HirAdapter<Ty> {
         @Override
-        public Class<? extends Ty> getType(String tag) {
+        public @Nullable Class<? extends Ty> getType(String tag) {
             return switch (tag) {
-            case "Bool" -> Bool.class;
-            case "Char" -> Char.class;
-            case "Int" -> Int.class;
-            case "Uint" -> Uint.class;
-            case "Ref" -> Ref.class;
-            case "FnDef" -> FnDef.class;
-            case "Closure" -> Closure.class;
-            case "Never" -> Never.class;
-            case "Tuple" -> Tuple.class;
-            case "Adt" -> Adt.class;
-            default -> null;
+                case "Bool" -> Bool.class;
+                case "Char" -> Char.class;
+                case "Int" -> Int.class;
+                case "Uint" -> Uint.class;
+                case "Ref" -> Ref.class;
+                case "FnDef" -> FnDef.class;
+                case "Closure" -> Closure.class;
+                case "Never" -> Never.class;
+                case "Tuple" -> Tuple.class;
+                case "Adt" -> Adt.class;
+                case "Array" -> Array.class;
+                default -> null;
             };
         }
     }

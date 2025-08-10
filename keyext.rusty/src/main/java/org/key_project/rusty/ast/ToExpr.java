@@ -5,9 +5,7 @@ package org.key_project.rusty.ast;
 
 import org.key_project.rusty.ast.expr.Expr;
 
-/**
- * An AST element which can be translated to an expression. E.g., a pattern expression
- */
+/// An AST element which can be translated to an expression. E.g., a pattern expression
 public interface ToExpr {
     Expr toExpr();
 }

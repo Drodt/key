@@ -12,8 +12,6 @@ MUTATE
 :   '*->'
     ;
 
-REF_M : 'refM';
-
 NEW_LOCAL_VARS: '\\newLocalVars';
 STORE_TERM_IN : '\\storeTermIn';
 STORE_EXPR_IN : '\\storeExprIn';
@@ -22,3 +20,10 @@ GET_INVARIANT : '\\getInvariant';
 GET_VARIANT   : '\\getVariant';
 IS_LABELED    : '\\isLabeled';
 DIFFERENT     : '\\different';
+
+OPENTYPEPARAMS:'<' '[';
+CLOSETYPEPARAMS:']' '>';
+
+CONST : 'const';
+
+SORT: '\\sort';

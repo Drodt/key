@@ -9,6 +9,8 @@ import org.key_project.rusty.logic.op.BoundVariable;
 import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.jspecify.annotations.Nullable;
+
 public class Subst {
     private final BoundVariable v;
     private final Term s;
@@ -22,16 +24,12 @@ public class Subst {
         this.tb = tb;
     }
 
-    /**
-     * substitute <code>s</code> for <code>v</code> in <code>t</code>.
-     */
+    /// substitute <code>s</code> for <code>v</code> in <code>t</code>.
     public Term apply(Term t) {
         return apply1(t);
     }
 
-    /**
-     * substitute <code>s</code> for <code>v</code> in <code>t</code>.
-     */
+    /// substitute <code>s</code> for <code>v</code> in <code>t</code>.
     protected Term apply1(Term t) {
         if (t.op() instanceof LogicVariable lv && lv.getIndex() == index) {
             return s;
@@ -40,11 +38,9 @@ public class Subst {
         }
     }
 
-    /**
-     * substitute <code>s</code> for <code>v</code> in every subterm of <code>t</code>, and build a
-     * new term. It is assumed, that one of the subterms contains a free occurrence of
-     * <code>v</code>, and that the case <code>v==t<code> is already handled.
-     */
+    /// substitute <code>s</code> for <code>v</code> in every subterm of <code>t</code>, and build a
+    /// new term. It is assumed, that one of the subterms contains a free occurrence of
+    /// <code>v</code>, and that the case <code>v==t<code> is already handled.
     private Term applyOnSubterms(Term t) {
         final int arity = t.arity();
         final Term[] newSubterms = new Term[arity];
@@ -55,11 +51,9 @@ public class Subst {
             (ImmutableArray<QuantifiableVariable>) t.boundVars());
     }
 
-    /**
-     * Apply the substitution of the subterm <code>subtermIndex</code> of term/formula
-     * <code>completeTerm</code>. The result is stored in <code>newSubterms</code> and
-     * <code>newBoundVars</code> (at index <code>subtermIndex</code>)
-     */
+    /// Apply the substitution of the subterm <code>subtermIndex</code> of term/formula
+    /// <code>completeTerm</code>. The result is stored in <code>newSubterms</code> and
+    /// <code>newBoundVars</code> (at index <code>subtermIndex</code>)
     protected void applyOnSubterm(Term completeTerm, int subtermIndex, Term[] newSubterms) {
         var oldIndex = index;
         if (completeTerm.op().bindVarsAt(subtermIndex)) {
@@ -70,8 +64,8 @@ public class Subst {
         index = oldIndex;
     }
 
-    protected static ImmutableArray<QuantifiableVariable> getSingleArray(
-            ImmutableArray<QuantifiableVariable>[] bv) {
+    protected static @Nullable ImmutableArray<QuantifiableVariable> getSingleArray(
+            @Nullable ImmutableArray<QuantifiableVariable> @Nullable [] bv) {
         if (bv == null) {
             return null;
         }

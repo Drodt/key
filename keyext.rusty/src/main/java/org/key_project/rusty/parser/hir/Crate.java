@@ -17,6 +17,8 @@ import org.key_project.rusty.parser.hir.pat.PatKind;
 import org.key_project.rusty.parser.hir.stmt.LocalSource;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
 import org.key_project.rusty.parser.hir.ty.Ty;
+import org.key_project.rusty.parser.hir.ty.TyConst;
+import org.key_project.rusty.parser.hir.ty.ValTree;
 import org.key_project.rusty.speclang.spec.SpecMap;
 import org.key_project.rusty.speclang.spec.TermKind;
 
@@ -47,7 +49,10 @@ public record Crate(Mod topMod, HirTyMapping[] types) {
                     .registerTypeAdapter(DefKind.class, new DefKind.Adapter())
                     .registerTypeAdapter(Ty.class, new Ty.Adapter())
                     .registerTypeAdapter(TermKind.class, new TermKind.Adapter())
-                    .registerTypeAdapter(PatExprKind.class, new PatExprKind.Adapter()).create();
+                    .registerTypeAdapter(PatExprKind.class, new PatExprKind.Adapter())
+                    .registerTypeAdapter(ConstArgKind.class, new ConstArgKind.Adapter())
+                    .registerTypeAdapter(TyConst.class, new TyConst.Adapter())
+                    .registerTypeAdapter(ValTree.class, new ValTree.Adapter()).create();
         return gson.fromJson(json, WrapperOutput.class);
     }
 }

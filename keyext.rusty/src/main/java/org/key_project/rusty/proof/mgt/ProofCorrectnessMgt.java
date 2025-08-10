@@ -49,10 +49,8 @@ public final class ProofCorrectnessMgt {
         return proof.getInitConfig().getJustifInfo().getJustification(r, proof.getServices());
     }
 
-    /**
-     * Tells whether a contract for the passed target may be applied in the passed goal without
-     * creating circular dependencies.
-     */
+    /// Tells whether a contract for the passed target may be applied in the passed goal without
+    /// creating circular dependencies.
     public boolean isContractApplicable(Contract contract) {
         return true;
     }

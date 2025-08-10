@@ -13,12 +13,10 @@ public class TermInstantiation extends InstantiationEntry<Term> {
         "Tried to instantiate a rigid schema variable" + " with a non-rigid term/formula");
 
 
-    /**
-     * creates a new ContextInstantiationEntry
-     *
-     * @param sv the SchemaVariable that is instantiated
-     * @param term the Term the SchemaVariable is instantiated with
-     */
+    /// creates a new ContextInstantiationEntry
+    ///
+    /// @param sv the SchemaVariable that is instantiated
+    /// @param term the Term the SchemaVariable is instantiated with
     TermInstantiation(SchemaVariable sv, Term term) {
         super(term);
         // TODO: Remove the check below and move it to the matching logic

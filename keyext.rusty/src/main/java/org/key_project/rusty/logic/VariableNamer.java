@@ -21,8 +21,8 @@ import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.stmt.EmptyStatement;
 import org.key_project.rusty.ast.visitor.RustyASTVisitor;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.proof.Goal;
@@ -33,28 +33,20 @@ import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
 
-/**
- * Responsible for program variable naming issues.
- */
+
+/// Responsible for program variable naming issues.
 public abstract class VariableNamer implements InstantiationProposer {
-    /**
-     * default basename for variable name proposals
-     */
+    /// default basename for variable name proposals
     private static final String DEFAULT_BASENAME = "var";
-    /**
-     * name of the counter object used for temporary name proposals
-     */
+    /// name of the counter object used for temporary name proposals
     private static final String TEMPCOUNTER_NAME = "VarNamerCnt";
 
-    /**
-     * status of suggestive name proposing
-     */
+    /// status of suggestive name proposing
     private static boolean suggestiveOff = true;
 
-    /**
-     * pointer to services object
-     */
+    /// pointer to services object
     protected final Services services;
 
     protected final HashMap<ProgramVariable, ProgramVariable> map =
@@ -66,28 +58,24 @@ public abstract class VariableNamer implements InstantiationProposer {
     // constructors
     // -------------------------------------------------------------------------
 
-    /**
-     * @param services pointer to services object
-     */
+    /// @param services pointer to services object
     protected VariableNamer(Services services) {
         this.services = services;
     }
 
-    /**
-     * proposes a unique name for the instantiation of a schema variable
-     * <p>
-     * <strong>Warning:</strong> The current version does not yet guarantee a unique name,
-     * but it is very important that this is implemented in the future.
-     *
-     * @param app the taclet app
-     * @param var the schema variable to be instantiated
-     * @param services not used
-     * @param undoAnchor not used
-     * @param previousProposals list of names which should be considered taken, or null
-     * @return the name proposal, or null if no proposal is available
-     */
-    public String getProposal(TacletApp app, org.key_project.logic.op.sv.SchemaVariable var,
-            Services services, Node undoAnchor,
+    /// proposes a unique name for the instantiation of a schema variable
+    ///
+    /// **Warning:** The current version does not yet guarantee a unique name,
+    /// but it is very important that this is implemented in the future.
+    ///
+    /// @param app the taclet app
+    /// @param var the schema variable to be instantiated
+    /// @param services not used
+    /// @param undoAnchor not used
+    /// @param previousProposals list of names which should be considered taken, or null
+    /// @return the name proposal, or null if no proposal is available
+    public @Nullable String getProposal(TacletApp app, SchemaVariable var,
+            Services services, @Nullable Node undoAnchor,
             ImmutableList<String> previousProposals) {
         ContextInstantiationEntry cie = app.instantiations().getContextInstantiation();
         PosInProgram posOfDeclaration = (cie == null ? null : cie.prefix());
@@ -100,7 +88,7 @@ public abstract class VariableNamer implements InstantiationProposer {
             if (type != null) {
                 basename = getBaseNameProposal(type);
             } else {
-                org.key_project.logic.op.sv.SchemaVariable psv = nv.getPeerSchemaVariable();
+                SchemaVariable psv = nv.getPeerSchemaVariable();
                 Object inst = app.instantiations().getInstantiation(psv);
                 if (inst instanceof Expr e) {
                     Type ty = e.type(services);
@@ -119,8 +107,8 @@ public abstract class VariableNamer implements InstantiationProposer {
     }
 
     // precondition: sv.sort()==ProgramSVSort.VARIABLE
-    public String getSuggestiveNameProposalForProgramVariable(
-            org.key_project.logic.op.sv.SchemaVariable sv, TacletApp app,
+    public @Nullable String getSuggestiveNameProposalForProgramVariable(
+            SchemaVariable sv, TacletApp app,
             Services services, ImmutableList<String> previousProposals) {
         if (suggestiveOff) {
             return getProposal(app, sv, services, null, previousProposals);
@@ -135,16 +123,15 @@ public abstract class VariableNamer implements InstantiationProposer {
         return proposal;
     }
 
-    /**
-     * intended to be called when symbolically executing a variable declaration; resolves any naming
-     * conflicts between the new variable and other global variables by renaming the new variable
-     * and / or other variables
-     *
-     * @param var the new program variable
-     * @param goal the goal
-     * @param posOfFind the PosInOccurrence of the currently executed program
-     * @return the renamed version of the var parameter
-     */
+    /// intended to be called when symbolically executing a variable declaration; resolves any
+    /// naming
+    /// conflicts between the new variable and other global variables by renaming the new variable
+    /// and / or other variables
+    ///
+    /// @param var the new program variable
+    /// @param goal the goal
+    /// @param posOfFind the PosInOccurrence of the currently executed program
+    /// @return the renamed version of the var parameter
     public abstract ProgramVariable rename(ProgramVariable var, Goal goal,
             PosInOccurrence posOfFind);
 
@@ -152,9 +139,7 @@ public abstract class VariableNamer implements InstantiationProposer {
         return renamingHistory;
     }
 
-    /**
-     * proposes a base name for a given sort
-     */
+    /// proposes a base name for a given sort
     private String getBaseNameProposal(Type type) {
         String result;
         String name = type.name().toString();
@@ -168,20 +153,18 @@ public abstract class VariableNamer implements InstantiationProposer {
         return result;
     }
 
-    /**
-     * proposes a unique name for the instantiation of a schema variable (like getProposal(), but
-     * somewhat less nicely)
-     *
-     * @param basename desired base name, or null to use default
-     * @param sv the schema variable
-     * @param posOfFind the PosInOccurrence containing the name's target program
-     * @param posOfDeclaration the PosInProgram where the name will be declared (or null to just be
-     *        pessimistic about the scope)
-     * @param previousProposals list of names which should be considered taken, or null
-     * @return the name proposal, or null if no proposal is available
-     */
-    protected String getNameProposalForSchemaVariable(String basename,
-            SchemaVariable sv, PosInOccurrence posOfFind, PosInProgram posOfDeclaration,
+    /// proposes a unique name for the instantiation of a schema variable (like getProposal(), but
+    /// somewhat less nicely)
+    ///
+    /// @param basename desired base name, or null to use default
+    /// @param sv the schema variable
+    /// @param posOfFind the PosInOccurrence containing the name's target program
+    /// @param posOfDeclaration the PosInProgram where the name will be declared (or null to just be
+    /// pessimistic about the scope)
+    /// @param previousProposals list of names which should be considered taken, or null
+    /// @return the name proposal, or null if no proposal is available
+    protected @Nullable String getNameProposalForSchemaVariable(@Nullable String basename,
+            SchemaVariable sv, PosInOccurrence posOfFind, @Nullable PosInProgram posOfDeclaration,
             ImmutableList<String> previousProposals, Services services) {
         String result = null;
 
@@ -224,17 +207,15 @@ public abstract class VariableNamer implements InstantiationProposer {
         return result;
     }
 
-    /**
-     * returns the maximum counter value already associated with the passed basename in the passed
-     * program (ignoring temporary counters), or -1
-     */
+    /// returns the maximum counter value already associated with the passed basename in the passed
+    /// program (ignoring temporary counters), or -1
     protected int getMaxCounterInProgram(String basename, RustyProgramElement program,
-            PosInProgram posOfDeclaration) {
+            @Nullable PosInProgram posOfDeclaration) {
         class MyWalker extends CustomRustASTWalker {
             public String basename;
             public int maxCounter = -1;
 
-            public MyWalker(RustyProgramElement program, PosInProgram posOfDeclaration,
+            public MyWalker(RustyProgramElement program, @Nullable PosInProgram posOfDeclaration,
                     Services services) {
                 super(program, posOfDeclaration, services);
             }
@@ -267,9 +248,7 @@ public abstract class VariableNamer implements InstantiationProposer {
         return walker.maxCounter;
     }
 
-    /**
-     * creates a Globals object for use with other internal methods
-     */
+    /// creates a Globals object for use with other internal methods
     protected Iterable<Name> wrapGlobals(Iterable<? extends Named> globals) {
         List<Name> result = new ArrayList<>();
         for (Named named : globals) {
@@ -278,10 +257,8 @@ public abstract class VariableNamer implements InstantiationProposer {
         return result;
     }
 
-    /**
-     * returns the maximum counter value already associated with the passed basename in the passed
-     * list of global variables, or -1
-     */
+    /// returns the maximum counter value already associated with the passed basename in the passed
+    /// list of global variables, or -1
     protected int getMaxCounterInGlobals(String basename, Iterable<Name> globals) {
         int result = -1;
 
@@ -295,9 +272,7 @@ public abstract class VariableNamer implements InstantiationProposer {
         return result;
     }
 
-    /**
-     * tells whether a name is unique in the passed list of global variables
-     */
+    /// tells whether a name is unique in the passed list of global variables
     protected boolean isUniqueInGlobals(String name, Iterable<Name> globals) {
         for (var n : globals) {
             if (n.toString().equals(name)) {
@@ -307,13 +282,11 @@ public abstract class VariableNamer implements InstantiationProposer {
         return true;
     }
 
-    /**
-     * proposes a unique name; intended for use in places where the information required by
-     * getProposal() is not available
-     *
-     * @param basename desired base name, or null to use default
-     * @return the name proposal
-     */
+    /// proposes a unique name; intended for use in places where the information required by
+    /// getProposal() is not available
+    ///
+    /// @param basename desired base name, or null to use default
+    /// @return the name proposal
     public Name getTemporaryNameProposal(String basename) {
         if (basename == null || basename.isEmpty()) {
             basename = DEFAULT_BASENAME;
@@ -322,15 +295,13 @@ public abstract class VariableNamer implements InstantiationProposer {
         return new Name(basename + (cnt == 0 ? "" : "_" + cnt));
     }
 
-    /**
-     * a customized RustASTWalker
-     */
+    /// a customized RustASTWalker
     private abstract static class CustomRustASTWalker extends RustyASTVisitor {
-        private RustyProgramElement declarationNode = null;
+        private @Nullable RustyProgramElement declarationNode = null;
         private int declarationScopeDepth = -2;
         private int currentScopeDepth = -2;
 
-        CustomRustASTWalker(RustyProgramElement program, PosInProgram posOfDeclaration,
+        CustomRustASTWalker(RustyProgramElement program, @Nullable PosInProgram posOfDeclaration,
                 Services services) {
             super(program, services);
             if (posOfDeclaration != null) {
@@ -364,24 +335,20 @@ public abstract class VariableNamer implements InstantiationProposer {
         }
     }
 
-    /**
-     * returns the program contained in a PosInOccurrence
-     */
+    /// returns the program contained in a PosInOccurrence
     protected RustyProgramElement getProgramFromPIO(PosInOccurrence pio) {
         Term progTerm;
         if (pio != null && (progTerm = findProgramInTerm(pio.subTerm())) != null) {
-            var mod = (Modality) progTerm.op();
-            return mod.program().program();
+            var mod = (RModality) progTerm.op();
+            return mod.programBlock().program();
         } else {
             return new EmptyStatement();
         }
     }
 
-    /**
-     * returns the subterm containing a java block, or null (helper for getProgramFromPIO())
-     */
-    private Term findProgramInTerm(Term term) {
-        if (term.op() instanceof Modality) {
+    /// returns the subterm containing a java block, or null (helper for getProgramFromPIO())
+    private @Nullable Term findProgramInTerm(Term term) {
+        if (term.op() instanceof RModality) {
             return term;
         }
         for (int i = 0; i < term.arity(); i++) {

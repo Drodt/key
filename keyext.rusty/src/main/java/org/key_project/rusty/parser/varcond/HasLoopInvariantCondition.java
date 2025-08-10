@@ -3,22 +3,22 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.varcond;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.VariableCondition;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.InfiniteLoopExpression;
 import org.key_project.rusty.logic.RustyBlock;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
+import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.speclang.LoopSpecification;
 
-/**
- * Checks whether a loop has an invariant.
- *
- * @author Dominic Steinhoefel
- */
+/// Checks whether a loop has an invariant.
+///
+/// @author Dominic Steinhoefel
 public class HasLoopInvariantCondition implements VariableCondition {
     private final ProgramSV loopExprSV;
     private final SchemaVariable modalitySV;
@@ -29,9 +29,10 @@ public class HasLoopInvariantCondition implements VariableCondition {
     }
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions matchCond, Services services) {
-        final var svInst = matchCond.getInstantiations();
+    public MatchResultInfo check(SchemaVariable var, SyntaxElement instCandidate,
+            MatchResultInfo matchCond, LogicServices lServices) {
+        final var svInst = (SVInstantiations) matchCond.getInstantiations();
+        final var services = (Services) lServices;
 
         final var loop = (InfiniteLoopExpression) svInst.getInstantiation(loopExprSV);
         final LoopSpecification loopSpec = services.getSpecificationRepository().getLoopSpec(loop);
@@ -42,7 +43,7 @@ public class HasLoopInvariantCondition implements VariableCondition {
 
         final var rb = new RustyBlock(svInst.getContextInstantiation().contextProgram());
 
-        var modKind = (Modality.RustyModalityKind) svInst.getInstantiation(modalitySV);
+        var modKind = (RModality.RustyModalityKind) svInst.getInstantiation(modalitySV);
 
         return loopSpec.getInvariant(services) != null ? matchCond : null;
     }

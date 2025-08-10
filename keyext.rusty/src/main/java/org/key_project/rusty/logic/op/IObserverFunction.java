@@ -7,23 +7,15 @@ import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.util.collection.ImmutableArray;
 
 public interface IObserverFunction {
-    /**
-     * Returns the result type of this symbol.
-     */
+    /// Returns the result type of this symbol.
     KeYRustyType getType();
 
-    /**
-     * Gives the number of parameters of the observer symbol.
-     */
+    /// Gives the number of parameters of the observer symbol.
     int getNumParams();
 
-    /**
-     * Gives the type of the i-th parameter of this observer symbol.
-     */
+    /// Gives the type of the i-th parameter of this observer symbol.
     KeYRustyType getParamType(int i);
 
-    /**
-     * Returns the parameter types of this observer symbol.
-     */
+    /// Returns the parameter types of this observer symbol.
     ImmutableArray<KeYRustyType> getParamTypes();
 }

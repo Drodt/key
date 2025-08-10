@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.util;
 
-import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -16,8 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import de.uka.ilkd.key.logic.Term;
-import de.uka.ilkd.key.rule.Rule;
+import de.uka.ilkd.key.logic.JTerm;
 
 import org.key_project.util.java.IOUtil;
 
@@ -39,7 +37,7 @@ public class DesignTests {
     private static final Logger LOGGER = LoggerFactory.getLogger(DesignTests.class);
 
     static {
-        File projectRoot = IOUtil.getClassLocation(Term.class);
+        File projectRoot = IOUtil.getClassLocation(JTerm.class);
         if ("org.key_project.core".equals(projectRoot.getName())) {
             projectRoot = new File(projectRoot, "bin");
         } else if (projectRoot.isFile()) {
@@ -87,7 +85,7 @@ public class DesignTests {
                 var name = relative.substring(0, index).replace(File.separatorChar, '.');
 
                 try {
-                    acc.add(Term.class.getClassLoader().loadClass(name));
+                    acc.add(JTerm.class.getClassLoader().loadClass(name));
                 } catch (ClassNotFoundException cnfe) {
                     LOGGER.error("That's weird. Cannot find class {} ", name, cnfe);
                 } catch (NoClassDefFoundError ncdfe) {
@@ -123,7 +121,7 @@ public class DesignTests {
     public void xtestTermSubclassVisibility() {
         LinkedList<Class<?>> badClasses = new LinkedList<>();
         for (Class<?> allClass : allClasses) {
-            if (allClass != Term.class && (Term.class).isAssignableFrom(allClass)) {
+            if (allClass != JTerm.class && (JTerm.class).isAssignableFrom(allClass)) {
                 int mods = allClass.getModifiers();
                 if (Modifier.isProtected(mods) || Modifier.isPublic(mods)) {
                     badClasses.add(allClass);
@@ -145,7 +143,7 @@ public class DesignTests {
     public void testGuiSep() {
         LinkedList<Class<?>> badClasses = new LinkedList<>();
         for (Class<?> allClass : allClasses) {
-            if (Rule.class.isAssignableFrom(allClass)
+            if (de.uka.ilkd.key.rule.Rule.class.isAssignableFrom(allClass)
                     || allClass.getPackage().getName().contains("key.rule")
                     || allClass.getPackage().getName().contains("key.logic")
                     || allClass.getPackage().getName().contains("key.proof")
@@ -163,7 +161,7 @@ public class DesignTests {
                 }
 
                 for (Field f : allClass.getDeclaredFields()) {
-                    if (Component.class.isAssignableFrom(f.getType())) {
+                    if (java.awt.Component.class.isAssignableFrom(f.getType())) {
                         // || pkgname.contains("key.gui")) { as long as the mediator and settings
                         // are in the GUI
                         LOGGER.error("Illegal GUI reference at field {} declared in class {}",
@@ -173,13 +171,13 @@ public class DesignTests {
                 }
 
                 for (Method m : allClass.getDeclaredMethods()) {
-                    if (Component.class.isAssignableFrom(m.getReturnType())) {
+                    if (java.awt.Component.class.isAssignableFrom(m.getReturnType())) {
                         LOGGER.error(
                             "Illegal GUI reference as return type of {} declared in class {}",
                             m.getName(), allClass.getName());
                     }
                     for (Class<?> t : m.getParameterTypes()) {
-                        if (Component.class.isAssignableFrom(t)) {
+                        if (java.awt.Component.class.isAssignableFrom(t)) {
                             LOGGER.error(
                                 "Illegal GUI reference as parameter type of {} declared in class {}",
                                 m.getName(), allClass.getName());

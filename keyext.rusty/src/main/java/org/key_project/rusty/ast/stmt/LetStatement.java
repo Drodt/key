@@ -19,8 +19,8 @@ import org.jspecify.annotations.Nullable;
 
 public class LetStatement implements Statement, VariableDeclaration {
     private final Pattern pat;
-    private final RustType type;
-    private final Expr init;
+    private final @Nullable RustType type;
+    private final @Nullable Expr init;
 
     private int hashCode = -1;
 
@@ -31,7 +31,7 @@ public class LetStatement implements Statement, VariableDeclaration {
     }
 
     public LetStatement(ExtList changeList) {
-        pat = changeList.removeFirstOccurrence(Pattern.class);
+        pat = Objects.requireNonNull(changeList.removeFirstOccurrence(Pattern.class));
         type = changeList.removeFirstOccurrence(RustType.class);
         init = changeList.removeFirstOccurrence(Expr.class);
     }
@@ -66,7 +66,7 @@ public class LetStatement implements Statement, VariableDeclaration {
         return res;
     }
 
-    public RustType type() {
+    public @Nullable RustType type() {
         return type;
     }
 
@@ -78,7 +78,7 @@ public class LetStatement implements Statement, VariableDeclaration {
         return init != null;
     }
 
-    public Expr getInit() {
+    public @Nullable Expr getInit() {
         return init;
     }
 
@@ -111,7 +111,7 @@ public class LetStatement implements Statement, VariableDeclaration {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj)
             return true;
         if (obj == null || getClass() != obj.getClass())

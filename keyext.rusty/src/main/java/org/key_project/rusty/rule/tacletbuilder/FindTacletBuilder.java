@@ -4,37 +4,34 @@
 package org.key_project.rusty.rule.tacletbuilder;
 
 import org.key_project.logic.SyntaxElement;
-import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.rusty.rule.BoundUniquenessChecker;
 import org.key_project.rusty.rule.FindTaclet;
 
 public abstract class FindTacletBuilder<T extends FindTaclet> extends TacletBuilder<T> {
     protected SyntaxElement find = null;
 
-    /**
-     * encodes restrictions on the state where a rewrite taclet is applicable If the value is equal
-     * to
-     * <ul>
-     * <li>{@link Taclet.ApplicationRestriction#NONE} no state restrictions are posed</li>
-     * <li>{@link Taclet.ApplicationRestriction#SAME_UPDATE_LEVEL} then <code>\assumes</code> must
-     * match on
-     * a
-     * formula within the same state as <code>\find</code> rsp. <code>\add</code>. For efficiency no
-     * modalities are allowed above the <code>\find</code> position</li>
-     * <li>{@link Taclet.ApplicationRestriction#IN_SEQUENT_STATE} the <code>\find</code> part is
-     * only
-     * allowed to
-     * match on formulas which are evaluated in the same state as the sequent</li>
-     * </ul>
-     */
-    protected Taclet.ApplicationRestriction applicationRestriction =
-        Taclet.ApplicationRestriction.NONE;
+    /// encodes restrictions on the state where a rewrite taclet is applicable If the value is equal
+    /// to
+    ///
+    /// - [#NONE] no state restrictions are posed
+    /// - [#SAME_UPDATE_LEVEL] then <code>\assumes</code> must
+    /// match on
+    /// a
+    /// formula within the same state as <code>\find</code> rsp. <code>\add</code>. For efficiency
+    /// no
+    /// modalities are allowed above the <code>\find</code> position
+    /// - [#IN_SEQUENT_STATE] the <code>\find</code> part is
+    /// only
+    /// allowed to
+    /// match on formulas which are evaluated in the same state as the sequent
+    ///
+    protected ApplicationRestriction applicationRestriction =
+        ApplicationRestriction.NONE;
 
-    /**
-     * checks that a SchemaVariable that is used to match pure variables (this means bound
-     * variables) occurs at most once in a quantifier of the assumes and finds and throws an
-     * exception otherwise
-     */
+    /// checks that a SchemaVariable that is used to match pure variables (this means bound
+    /// variables) occurs at most once in a quantifier of the assumes and finds and throws an
+    /// exception otherwise
     protected void checkBoundInIfAndFind() {
         final BoundUniquenessChecker ch = new BoundUniquenessChecker(getFind(), ifSequent());
         if (!ch.correct()) {
@@ -43,16 +40,14 @@ public abstract class FindTacletBuilder<T extends FindTaclet> extends TacletBuil
         }
     }
 
-    /**
-     * Get the {@code find} term. This could be a term or a formula for a RewriteTaclet, but only a
-     * formula for an Antec/Succ Taclet.
-     */
+    /// Get the `find` term. This could be a term or a formula for a RewriteTaclet, but only a
+    /// formula for an Antec/Succ Taclet.
     public SyntaxElement getFind() {
         return find;
     }
 
     public FindTacletBuilder<T> setApplicationRestriction(
-            Taclet.ApplicationRestriction p_applicationRestriction) {
+            ApplicationRestriction p_applicationRestriction) {
         applicationRestriction = p_applicationRestriction;
         return this;
     }

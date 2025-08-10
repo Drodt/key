@@ -8,17 +8,14 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.prover.rules.RuleSet;
-import org.key_project.prover.rules.TacletAnnotation;
-import org.key_project.prover.rules.TacletApplPart;
-import org.key_project.prover.rules.TacletAttributes;
+import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.TacletPrefix;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
 import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.logic.op.IfThenElse;
 import org.key_project.rusty.logic.op.Junctor;
-import org.key_project.rusty.logic.op.Modality;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.rusty.rule.executor.rustydl.RewriteTacletExecutor;
 import org.key_project.rusty.rule.inst.SVInstantiations;
@@ -28,28 +25,26 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * A RewriteTaclet represents a taclet, whose find can be matched against any term in the sequent no
- * matter where it occurs. The only constraint to be fulfilled is that the term matches the
- * structure described by the term of the find-part.
- */
+/// A RewriteTaclet represents a taclet, whose find can be matched against any term in the sequent
+/// no
+/// matter where it occurs. The only constraint to be fulfilled is that the term matches the
+/// structure described by the term of the find-part.
 public class RewriteTaclet extends FindTaclet {
-    /**
-     * creates a Schematic Theory Specific Rule (Taclet) with the given parameters that represents a
-     * rewrite rule.
-     *
-     * @param name the Name of the Taclet
-     * @param applPart the TacletApplPart that contains the application part of an Taclet that is
-     *        the if-sequent, the variable conditions
-     * @param goalTemplates a list of goal descriptions.
-     * @param ruleSets a list of rule sets for the Taclet
-     * @param attrs the TacletAttributes; these are boolean values indicating a noninteractive or
-     *        recursive use of the Taclet.
-     * @param find the find term of the Taclet
-     * @param prefixMap an ImmutableMap that contains the prefix for each
-     *        SchemaVariable in the Taclet
-     * @param choices the SetOf<Choices> to which this taclet belongs to
-     */
+    /// creates a Schematic Theory Specific Rule (Taclet) with the given parameters that represents
+    /// a
+    /// rewrite rule.
+    ///
+    /// @param name the Name of the Taclet
+    /// @param applPart the TacletApplPart that contains the application part of an Taclet that is
+    /// the if-sequent, the variable conditions
+    /// @param goalTemplates a list of goal descriptions.
+    /// @param ruleSets a list of rule sets for the Taclet
+    /// @param attrs the TacletAttributes; these are boolean values indicating a noninteractive or
+    /// recursive use of the Taclet.
+    /// @param find the find term of the Taclet
+    /// @param prefixMap an ImmutableMap that contains the prefix for each
+    /// SchemaVariable in the Taclet
+    /// @param choices the SetOf<Choices> to which this taclet belongs to
     public RewriteTaclet(Name name, TacletApplPart applPart,
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
@@ -71,7 +66,6 @@ public class RewriteTaclet extends FindTaclet {
             ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, applPart, goalTemplates, ruleSets, attrs, find, prefixMap, choices,
             surviveSymbExec, tacletAnnotations);
-        createTacletServices();
     }
 
     @Override
@@ -84,25 +78,21 @@ public class RewriteTaclet extends FindTaclet {
         this.executor = new RewriteTacletExecutor(this);
     }
 
-    /**
-     * the top level operator has to be a simultaneous update. This method checks if the assignment
-     * pairs of the update contain free logic variables and gives a veto if positive
-     *
-     * @param t the Term to check
-     * @return false if vetoing
-     */
+    /// the top level operator has to be a simultaneous update. This method checks if the assignment
+    /// pairs of the update contain free logic variables and gives a veto if positive
+    ///
+    /// @param t the Term to check
+    /// @return false if vetoing
     private boolean veto(Term t) {
         return !t.freeVars().isEmpty();
     }
 
-    /**
-     * For taclets with <code>getSameUpdatePrefix ()</code>, collect the updates above
-     * <code>p_pos</code> and add them to the update context of the instantiations object
-     * <code>p_mc</code>.
-     *
-     * @return the new instantiations with the additional updates, or <code>null</code>, if program
-     *         modalities appear above <code>p_pos</code>
-     */
+    /// For taclets with <code>getSameUpdatePrefix ()</code>, collect the updates above
+    /// <code>p_pos</code> and add them to the update context of the instantiations object
+    /// <code>p_mc</code>.
+    ///
+    /// @return the new instantiations with the additional updates, or <code>null</code>, if program
+    /// modalities appear above <code>p_pos</code>
     public MatchConditions checkPrefix(
             PosInOccurrence p_pos,
             MatchConditions p_mc) {
@@ -126,7 +116,7 @@ public class RewriteTaclet extends FindTaclet {
                     svi = svi.addUpdate(update);
                 }
             } else if (!applicationRestriction().equals(ApplicationRestriction.NONE)
-                    && (op instanceof Modality)) {
+                    && (op instanceof RModality)) {
                 return null;
             }
 
@@ -147,11 +137,9 @@ public class RewriteTaclet extends FindTaclet {
         return p_mc.setInstantiations(svi);
     }
 
-    /**
-     * Compute polarity
-     * <br>
-     * (the {@code AntecSuccPrefixChecker} seems to reimplement this.
-     */
+    /// Compute polarity
+    ///
+    /// (the `AntecSuccPrefixChecker` seems to reimplement this.
     private int polarity(final Operator op, final PIOPathIterator it, int polarity) {
         // toggle polarity if find term is
         // subterm of

@@ -6,6 +6,7 @@ package org.key_project.rusty.parser.hir;
 import java.lang.reflect.Type;
 
 import com.google.gson.*;
+import org.jspecify.annotations.Nullable;
 
 public abstract class HirAdapter<T> implements JsonDeserializer<T> {
     private final String tagString;
@@ -38,5 +39,5 @@ public abstract class HirAdapter<T> implements JsonDeserializer<T> {
         }
     }
 
-    public abstract Class<? extends T> getType(String tag);
+    public abstract @Nullable Class<? extends T> getType(String tag);
 }

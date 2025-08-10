@@ -16,12 +16,12 @@ public class Never implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public RustType toRustType(Services services) {
-        return null;
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

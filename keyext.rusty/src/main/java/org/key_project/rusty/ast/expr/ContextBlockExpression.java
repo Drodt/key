@@ -4,6 +4,8 @@
 package org.key_project.rusty.ast.expr;
 
 
+import java.util.Objects;
+
 import org.key_project.logic.IntIterator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -17,14 +19,14 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 
 public class ContextBlockExpression extends BlockExpression {
-    /**
-     * length of this progran prefix
-     */
+    /// length of this progran prefix
     private final int patternPrefixLength;
 
-    public ContextBlockExpression(ImmutableList<Statement> statements, Expr expr) {
+    public ContextBlockExpression(ImmutableList<Statement> statements, @Nullable Expr expr) {
         super(statements, expr);
         patternPrefixLength = this.getPrefixLength();
     }
@@ -55,18 +57,15 @@ public class ContextBlockExpression extends BlockExpression {
         return sb.append("\n#c}").toString();
     }
 
-    /**
-     * overrides the check of the superclass as unmatched elements will disappear in the suffix of
-     * this ContextStatementBlock
-     */
+    /// overrides the check of the superclass as unmatched elements will disappear in the suffix of
+    /// this ContextStatementBlock
     @Override
     public boolean compatibleBlockSize(int pos, int max) {
         return true;
     }
 
     @Override
-    public MatchConditions match(SourceData source, MatchConditions mc) {
-        // TODO: 2nd use of blockBreakValue has wrong ctx!
+    public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions mc) {
         SourceData newSource = source;
 
         final RustyProgramElement src = newSource.getSource();
@@ -117,19 +116,18 @@ public class ContextBlockExpression extends BlockExpression {
         }
 
         mc =
-            makeContextInfoComplete(mc, newSource, prefix, pos, relPos, src, services);
+            makeContextInfoComplete(mc, newSource, prefix, pos, relPos, Objects.requireNonNull(src),
+                services);
 
         return mc;
     }
 
-    /**
-     * completes match of context block by adding the prefix end position and the suffix start
-     * position
-     */
+    /// completes match of context block by adding the prefix end position and the suffix start
+    /// position
     private MatchConditions makeContextInfoComplete(MatchConditions matchCond, SourceData newSource,
-            PossibleProgramPrefix prefix, int pos, PosInProgram relPos, RustyProgramElement src,
+            @Nullable PossibleProgramPrefix prefix, int pos, PosInProgram relPos,
+            RustyProgramElement src,
             Services services) {
-
         final SVInstantiations instantiations = matchCond.getInstantiations();
 
         final PosInProgram prefixEnd = matchPrefixEnd(prefix, pos, relPos);
@@ -144,16 +142,14 @@ public class ContextBlockExpression extends BlockExpression {
         return matchCond;
     }
 
-    /**
-     * computes the PosInProgram of the first element, which is not part of the prefix
-     *
-     * @param prefix the ProgramPrefix the outermost prefix element of the source
-     * @param pos the number of elements to disappear in the context
-     * @param relPos the position of the first active statement of element
-     *        prefix.getPrefixElementAt(pos);
-     * @return the PosInProgram of the first element, which is not part of the prefix
-     */
-    private PosInProgram matchPrefixEnd(final PossibleProgramPrefix prefix, int pos,
+    /// computes the PosInProgram of the first element, which is not part of the prefix
+    ///
+    /// @param prefix the ProgramPrefix the outermost prefix element of the source
+    /// @param pos the number of elements to disappear in the context
+    /// @param relPos the position of the first active statement of element
+    /// prefix.getPrefixElementAt(pos);
+    /// @return the PosInProgram of the first element, which is not part of the prefix
+    private PosInProgram matchPrefixEnd(final @Nullable PossibleProgramPrefix prefix, int pos,
             PosInProgram relPos) {
         PosInProgram prefixEnd = PosInProgram.TOP;
         if (prefix != null) {

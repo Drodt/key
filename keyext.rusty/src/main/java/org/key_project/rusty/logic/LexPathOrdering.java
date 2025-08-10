@@ -12,6 +12,8 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.op.RFunction;
 
+import org.jspecify.annotations.Nullable;
+
 public class LexPathOrdering implements TermOrdering {
     public int compare(Term p_a, Term p_b) {
         final CompRes res = compareHelp(p_a, p_b);
@@ -157,12 +159,11 @@ public class LexPathOrdering implements TermOrdering {
         return false;
     }
 
-    /**
-     * Compare the two given symbols
-     *
-     * @return a number negative, zero or a number positive if <code>p_a</code> is less than, equal,
-     *         or greater than <code>p_b</code>
-     */
+    /// Compare the two given symbols
+    ///
+    /// @return a number negative, zero or a number positive if <code>p_a</code> is less than,
+    /// equal,
+    /// or greater than <code>p_b</code>
     private int compare(Operator aOp, Sort aSort, Operator bOp,
             Sort bSort) {
         if (aOp == bOp) {
@@ -216,17 +217,13 @@ public class LexPathOrdering implements TermOrdering {
     }
 
 
-    /**
-     * Hashmap from <code>Sort</code> to <code>Integer</code>, storing the lengths of maximal paths
-     * from a sort to the top element of the sort lattice.
-     */
+    /// Hashmap from <code>Sort</code> to <code>Integer</code>, storing the lengths of maximal paths
+    /// from a sort to the top element of the sort lattice.
     private final WeakHashMap<Sort, Integer> sortDepthCache = new WeakHashMap<>();
 
-    /**
-     * @return the length of the longest path from <code>s</code> to the top element of the sort
-     *         lattice. Probably this length is not computed correctly here, because the
-     *         representation of sorts in key is completely messed up, but you get the idea
-     */
+    /// @return the length of the longest path from <code>s</code> to the top element of the sort
+    /// lattice. Probably this length is not computed correctly here, because the
+    /// representation of sorts in key is completely messed up, but you get the idea
     private int getSortDepth(Sort s) {
         Integer res = sortDepthCache.get(s);
         if (res == null) {
@@ -257,17 +254,14 @@ public class LexPathOrdering implements TermOrdering {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Base class for metrics on symbols that are used to construct an ordering
-     */
+    /// Base class for metrics on symbols that are used to construct an ordering
     private static abstract class Weighter {
 
-        /**
-         * Compare the weights of two symbols using the function <code>getWeight</code>.
-         *
-         * @return a number negative, zero or a number positive if the weight of <code>p_a</code> is
-         *         less than, equal, or greater than the weight of <code>p_b</code>
-         */
+        /// Compare the weights of two symbols using the function <code>getWeight</code>.
+        ///
+        /// @return a number negative, zero or a number positive if the weight of <code>p_a</code>
+        /// is
+        /// less than, equal, or greater than the weight of <code>p_b</code>
         public int compareWeights(Operator p_a, Operator p_b) {
             final Integer aWeight = getWeight(p_a);
             final Integer bWeight = getWeight(p_b);
@@ -287,13 +281,11 @@ public class LexPathOrdering implements TermOrdering {
             }
         }
 
-        protected abstract Integer getWeight(Operator p_op);
+        protected abstract @Nullable Integer getWeight(Operator p_op);
     }
 
-    /**
-     * Explicit ordering of literals (symbols assigned a weight by this class are regarded as
-     * smaller than all other symbols)
-     */
+    /// Explicit ordering of literals (symbols assigned a weight by this class are regarded as
+    /// smaller than all other symbols)
     private static class LiteralWeighter extends Weighter {
 
         private final Set<String> intFunctionNames = new LinkedHashSet<>();
@@ -321,7 +313,7 @@ public class LexPathOrdering implements TermOrdering {
 
 
 
-        protected Integer getWeight(Operator p_op) {
+        protected @Nullable Integer getWeight(Operator p_op) {
             final String opStr = p_op.name().toString();
 
             if (intFunctionNames.contains(opStr) || theoryFunctionNames.contains(opStr)) {
@@ -336,21 +328,19 @@ public class LexPathOrdering implements TermOrdering {
                 return 3;
             }
             return switch (opStr) {
-            case "add", "intersect", "seqSingleton" -> 6;
-            case "mul", "union", "seqConcat" -> 7;
-            case "div", "infiniteUnion" -> 8;
-            case "jdiv", "setMinus" -> 9;
-            default -> null;
+                case "add", "intersect", "seqSingleton" -> 6;
+                case "mul", "union", "seqConcat" -> 7;
+                case "div", "infiniteUnion" -> 8;
+                case "jdiv", "setMinus" -> 9;
+                default -> null;
             };
         }
     }
 
-    /**
-     * Explicit ordering for different kinds of function symbols; symbols like C::<get> or
-     * C.<nextToCreate> should be smaller than other symbols
-     */
+    /// Explicit ordering for different kinds of function symbols; symbols like C::<get> or
+    /// C.<nextToCreate> should be smaller than other symbols
     private static class FunctionWeighter extends Weighter {
-        protected Integer getWeight(Operator p_op) {
+        protected @Nullable Integer getWeight(Operator p_op) {
             final String opStr = p_op.name().toString();
 
             if (p_op instanceof RFunction rf && rf.isUnique()) {
@@ -380,23 +370,20 @@ public class LexPathOrdering implements TermOrdering {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @return true iff <code>op</code> is a logic variable
-     */
+    /// @return true iff <code>op</code> is a logic variable
     private boolean isVar(Operator op) {
         return op instanceof QuantifiableVariable;
     }
 
-    /**
-     * TODO: this should also be used when comparing terms
-     *
-     * The reduction ordering on integers that is described in "A critical-pair/completion algorithm
-     * for finitely generated ideals in rings", with the difference that positive numbers are here
-     * considered as smaller than negative numbers (with the same absolute value)
-     *
-     * @return a negative number, zero, or a positive number, if <code>a</code> is smaller, equal to
-     *         or greater than <code>b</code>
-     */
+    /// TODO: this should also be used when comparing terms
+    /// The reduction ordering on integers that is described in "A critical-pair/completion
+    /// algorithm
+    /// for finitely generated ideals in rings", with the difference that positive numbers are here
+    /// considered as smaller than negative numbers (with the same absolute value)
+    ///
+    /// @return a negative number, zero, or a positive number, if <code>a</code> is smaller, equal
+    /// to
+    /// or greater than <code>b</code>
     public static int compare(BigInteger a, BigInteger b) {
         final int c = a.abs().compareTo(b.abs());
         if (c != 0) {
@@ -405,11 +392,9 @@ public class LexPathOrdering implements TermOrdering {
         return b.signum() - a.signum();
     }
 
-    /**
-     * @return the result of dividing <code>a</code> by <code>c</code>, such that the remainder
-     *         becomes minimal in the reduction ordering <code>LexPathOrdering.compare</code> on
-     *         integers
-     */
+    /// @return the result of dividing <code>a</code> by <code>c</code>, such that the remainder
+    /// becomes minimal in the reduction ordering <code>LexPathOrdering.compare</code> on
+    /// integers
     public static BigInteger divide(BigInteger a, BigInteger c) {
         final BigInteger[] divRem = a.divideAndRemainder(c);
         while (true) {

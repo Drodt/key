@@ -12,16 +12,14 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 public class AntecSuccTacletGoalTemplate extends TacletGoalTemplate {
-    /** sequent that replaces another one */
+    /// sequent that replaces another one
     private Sequent replaceWith = RustySequentKit.getInstance().getEmptySequent();
 
-    /**
-     * creates new GoalDescription
-     *
-     * @param addedSeq new Sequent to be added
-     * @param addedRules IList<Taclet> contains the new allowed rules at this branch
-     * @param replaceWith the Sequent that replaces another one
-     */
+    /// creates new GoalDescription
+    ///
+    /// @param addedSeq new Sequent to be added
+    /// @param addedRules IList<Taclet> contains the new allowed rules at this branch
+    /// @param replaceWith the Sequent that replaces another one
     public AntecSuccTacletGoalTemplate(Sequent addedSeq, ImmutableList<Taclet> addedRules,
             Sequent replaceWith, ImmutableSet<SchemaVariable> pvs) {
         super(addedSeq, addedRules, pvs);
@@ -34,16 +32,14 @@ public class AntecSuccTacletGoalTemplate extends TacletGoalTemplate {
         this(addedSeq, addedRules, replaceWith, DefaultImmutableSet.nil());
     }
 
-    /**
-     * a Taclet may replace a Sequent by another. The new Sequent is returned. this Sequent.
-     *
-     * @return Sequent being parameter in the rule goal replaceWith(Seq)
-     */
+    /// a Taclet may replace a Sequent by another. The new Sequent is returned. this Sequent.
+    ///
+    /// @return Sequent being parameter in the rule goal replaceWith(Seq)
     public Sequent replaceWith() {
         return replaceWith;
     }
 
-    /** toString */
+    /// toString
     @Override
     public String toString() {
         String result = super.toString();

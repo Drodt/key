@@ -7,8 +7,8 @@ import java.util.*;
 
 import de.uka.ilkd.key.java.*;
 import de.uka.ilkd.key.java.statement.*;
+import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.ProgramPrefix;
-import de.uka.ilkd.key.logic.Term;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.logic.sort.GenericSort;
 import de.uka.ilkd.key.rule.*;
@@ -17,6 +17,7 @@ import de.uka.ilkd.key.strategy.quantifierHeuristics.Metavariable;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.proof.rulefilter.RuleFilter;
@@ -87,19 +88,19 @@ public abstract class TacletIndex {
 
     private static Object getIndexObj(FindTaclet tac) {
         Object indexObj;
-        final Term indexTerm = tac.find();
+        final JTerm indexTerm = tac.find();
         if (indexTerm.javaBlock().isEmpty()) {
             indexObj = indexTerm.op();
             switch (indexObj) {
-            case SortDependingFunction sortDependingFunction ->
-                // indexed independently of sort
-                indexObj = sortDependingFunction.getKind();
-            case ElementaryUpdate ignored ->
-                indexObj = ElementaryUpdate.class;
-            case Modality ignored ->
-                indexObj = Modality.class;
-            default -> {
-            }
+                case SortDependingFunction sortDependingFunction ->
+                    // indexed independently of sort
+                    indexObj = sortDependingFunction.getKind();
+                case ElementaryUpdate ignored ->
+                    indexObj = ElementaryUpdate.class;
+                case JModality ignored ->
+                    indexObj = JModality.class;
+                default -> {
+                }
             }
         } else {
             final JavaProgramElement prg = indexTerm.javaBlock().program();
@@ -188,13 +189,13 @@ public abstract class TacletIndex {
     public void add(NoPosTacletApp tacletApp) {
         Taclet taclet = tacletApp.taclet();
         switch (taclet) {
-        case RewriteTaclet ignored -> insertToMap(tacletApp, rwList);
-        case AntecTaclet ignored -> insertToMap(tacletApp, antecList);
-        case SuccTaclet ignored -> insertToMap(tacletApp, succList);
-        case NoFindTaclet ignored -> noFindList = noFindList.prepend(tacletApp);
-        case null, default ->
-            // should never be reached
-            Debug.fail("Tried to add an unknown type of Taclet");
+            case RewriteTaclet ignored -> insertToMap(tacletApp, rwList);
+            case AntecTaclet ignored -> insertToMap(tacletApp, antecList);
+            case SuccTaclet ignored -> insertToMap(tacletApp, succList);
+            case NoFindTaclet ignored -> noFindList = noFindList.prepend(tacletApp);
+            case null, default ->
+                // should never be reached
+                Debug.fail("Tried to add an unknown type of Taclet");
         }
 
         if (tacletApp.instantiations() != SVInstantiations.EMPTY_SVINSTANTIATIONS) {
@@ -210,13 +211,13 @@ public abstract class TacletIndex {
     public void remove(NoPosTacletApp tacletApp) {
         Taclet rule = tacletApp.taclet();
         switch (rule) {
-        case RewriteTaclet ignored -> removeFromMap(tacletApp, rwList);
-        case AntecTaclet ignored -> removeFromMap(tacletApp, antecList);
-        case SuccTaclet ignored -> removeFromMap(tacletApp, succList);
-        case NoFindTaclet ignored -> noFindList = noFindList.removeAll(tacletApp);
-        case null, default ->
-            // should never be reached
-            Debug.fail("Tried to remove an unknown type of Taclet");
+            case RewriteTaclet ignored -> removeFromMap(tacletApp, rwList);
+            case AntecTaclet ignored -> removeFromMap(tacletApp, antecList);
+            case SuccTaclet ignored -> removeFromMap(tacletApp, succList);
+            case NoFindTaclet ignored -> noFindList = noFindList.removeAll(tacletApp);
+            case null, default ->
+                // should never be reached
+                Debug.fail("Tried to remove an unknown type of Taclet");
         }
 
         if (tacletApp.instantiations() != SVInstantiations.EMPTY_SVINSTANTIATIONS) {
@@ -312,7 +313,7 @@ public abstract class TacletIndex {
 
     @SuppressWarnings("deprecation")
     private ImmutableList<NoPosTacletApp> getListHelp(
-            final HashMap<Object, ImmutableList<NoPosTacletApp>> map, final Term term,
+            final HashMap<Object, ImmutableList<NoPosTacletApp>> map, final JTerm term,
             final boolean ignoreUpdates, final PrefixOccurrences prefixOccurrences) {
 
         ImmutableList<NoPosTacletApp> res = ImmutableSLList.nil();
@@ -332,18 +333,18 @@ public abstract class TacletIndex {
         }
 
         final ImmutableList<NoPosTacletApp> inMap = switch (op) {
-        case SortDependingFunction sortDependingFunction ->
-            map.get(sortDependingFunction.getKind());
-        case ElementaryUpdate ignored -> map.get(ElementaryUpdate.class);
-        case Modality ignored -> map.get(Modality.class);
-        default -> map.get(op);
+            case SortDependingFunction sortDependingFunction ->
+                map.get(sortDependingFunction.getKind());
+            case ElementaryUpdate ignored -> map.get(ElementaryUpdate.class);
+            case JModality ignored -> map.get(JModality.class);
+            default -> map.get(op);
         };
 
         res = merge(res, inMap);
 
         // collect taclets for target term, if updates shall be ignored
         if (ignoreUpdates && op instanceof UpdateApplication) {
-            final Term target = UpdateApplication.getTarget(term);
+            final JTerm target = UpdateApplication.getTarget(term);
             if (!(target.op() instanceof UpdateApplication)) {
                 final ImmutableList<NoPosTacletApp> targetIndexed =
                     getListHelp(map, target, false, prefixOccurrences);
@@ -394,7 +395,7 @@ public abstract class TacletIndex {
      * @param term the term that is used to find the selection
      */
     private ImmutableList<NoPosTacletApp> getList(
-            HashMap<Object, ImmutableList<NoPosTacletApp>> map, Term term, boolean ignoreUpdates) {
+            HashMap<Object, ImmutableList<NoPosTacletApp>> map, JTerm term, boolean ignoreUpdates) {
         return getListHelp(map, term, ignoreUpdates, new PrefixOccurrences());
     }
 
@@ -438,9 +439,9 @@ public abstract class TacletIndex {
         assert pos.isTopLevel();
 
         final ImmutableList<NoPosTacletApp> rwTaclets =
-            getFindTaclet(getList(rwList, (Term) pos.subTerm(), true), filter, pos, services);
+            getFindTaclet(getList(rwList, (JTerm) pos.subTerm(), true), filter, pos, services);
         final ImmutableList<NoPosTacletApp> seqTaclets =
-            getFindTaclet(getList(findTaclets, (Term) pos.subTerm(), true), filter, pos, services);
+            getFindTaclet(getList(findTaclets, (JTerm) pos.subTerm(), true), filter, pos, services);
         return !rwTaclets.isEmpty() ? rwTaclets.prependReverse(seqTaclets)
                 : seqTaclets.prependReverse(rwTaclets);
     }
@@ -457,7 +458,7 @@ public abstract class TacletIndex {
      */
     public ImmutableList<NoPosTacletApp> getRewriteTaclet(PosInOccurrence pos, RuleFilter filter,
             Services services) {
-        return matchTaclets(getList(rwList, (Term) pos.subTerm(), false), filter, pos, services);
+        return matchTaclets(getList(rwList, (JTerm) pos.subTerm(), false), filter, pos, services);
     }
 
 

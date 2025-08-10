@@ -3,45 +3,48 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof.io;
 
-public class ProblemLoaderException extends Exception {
-    private final AbstractProblemLoader origin;
+import org.jspecify.annotations.Nullable;
 
-    public ProblemLoaderException(AbstractProblemLoader origin, Throwable cause) {
+public class ProblemLoaderException extends Exception {
+    private final @Nullable AbstractProblemLoader origin;
+
+    public ProblemLoaderException(@Nullable AbstractProblemLoader origin, Throwable cause) {
         super(cause.getMessage(), cause);
         this.origin = origin;
     }
 
-    public ProblemLoaderException(AbstractProblemLoader origin, String msg, Throwable cause) {
+    public ProblemLoaderException(@Nullable AbstractProblemLoader origin, String msg,
+            Throwable cause) {
         super(msg, cause);
         this.origin = origin;
     }
 
-    public ProblemLoaderException(AbstractProblemLoader origin, String msg) {
+    public ProblemLoaderException(@Nullable AbstractProblemLoader origin, String msg) {
         super(msg);
         this.origin = origin;
     }
 
-    public AbstractProblemLoader getOrigin() {
+    public @Nullable AbstractProblemLoader getOrigin() {
         return origin;
     }
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (getMessage() != null) {
-            sb = sb.append(getMessage());
+            sb.append(getMessage());
         }
-        sb = sb.append(" (");
+        sb.append(" (");
         if (origin == null) {
-            sb = sb.append("unknown origin");
+            sb.append("unknown origin");
         } else {
-            sb = sb.append("file: ").append(origin.getFile());
+            sb.append("file: ").append(origin.getFile());
         }
         if (getCause() != null) {
-            sb = sb.append("; caused by: ");
-            sb = sb.append(getCause());
+            sb.append("; caused by: ");
+            sb.append(getCause());
         }
-        sb = sb.append(')');
+        sb.append(')');
         return sb.toString();
     }
 }

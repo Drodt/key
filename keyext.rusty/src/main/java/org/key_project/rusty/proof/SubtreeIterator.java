@@ -6,11 +6,9 @@ package org.key_project.rusty.proof;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
- * Iterator over subtree. Current implementation iteratively traverses the tree depth-first.
- *
- * @author bruns
- */
+/// Iterator over subtree. Current implementation iteratively traverses the tree depth-first.
+///
+/// @author bruns
 class SubtreeIterator implements Iterator<Node> {
 
     private final Node root;

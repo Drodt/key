@@ -9,20 +9,18 @@ import org.key_project.logic.op.Function;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RFunction;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.collection.ImmutableSet;
 
-/**
- * Expects a loop body and creates the anonymizing update
- * <code>out_1:=anon_1||...||out_n:=anon_n</code>, where anon_1, ..., anon_n are the written
- * variables in the loop body visible to the outside.
- *
- * @author Dominic Steinhoefel
- */
+/// Expects a loop body and creates the anonymizing update
+/// <code>out_1:=anon_1||...||out_n:=anon_n</code>, where anon_1, ..., anon_n are the written
+/// variables in the loop body visible to the outside.
+///
+/// @author Dominic Steinhoefel
 public class CreateLocalAnonUpdate extends AbstractTermTransformer {
     public CreateLocalAnonUpdate() {
         super(new Name("#createLocalAnonUpdate"), 1);
@@ -33,11 +31,11 @@ public class CreateLocalAnonUpdate extends AbstractTermTransformer {
         final Term target = term.sub(0);
 
         // the target term should have a program block
-        if (!(target.op() instanceof Modality mod)) {
+        if (!(target.op() instanceof RModality mod)) {
             return null;
         }
 
-        final var pe = mod.program().program();
+        final var pe = mod.programBlock().program();
 
         final ImmutableSet<ProgramVariable> localOuts = MiscTools.getLocalOuts(pe, services);
         return createLocalAnonUpdate(localOuts, services);

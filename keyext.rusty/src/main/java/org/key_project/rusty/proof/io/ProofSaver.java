@@ -10,26 +10,22 @@ import java.io.IOException;
 import org.key_project.rusty.proof.Proof;
 
 public class ProofSaver extends OutputStreamProofSaver {
-    /**
-     * Save this proof to a file
-     *
-     * @param file file to save proof in
-     * @param proof the {@link Proof} to be saved
-     * @throws IOException on any I/O error
-     */
+    /// Save this proof to a file
+    ///
+    /// @param file file to save proof in
+    /// @param proof the [Proof] to be saved
+    /// @throws IOException on any I/O error
     public static void saveToFile(File file, Proof proof) throws IOException {
         ProofSaver saver = new ProofSaver(proof, file);
         saver.save();
     }
 
-    /**
-     * Save this proof to a file whilst omitting all proof steps.
-     * In effect, this only saves the proof obligation.
-     *
-     * @param file file to save proof in
-     * @param proof the {@link Proof} to be saved
-     * @throws IOException on any I/O error
-     */
+    /// Save this proof to a file whilst omitting all proof steps.
+    /// In effect, this only saves the proof obligation.
+    ///
+    /// @param file file to save proof in
+    /// @param proof the [Proof] to be saved
+    /// @throws IOException on any I/O error
     public static void saveProofObligationToFile(File file, Proof proof) throws IOException {
         ProofSaver saver = new ProofSaver(proof, file, false);
         saver.save();
@@ -51,39 +47,32 @@ public class ProofSaver extends OutputStreamProofSaver {
         this.file = file;
     }
 
-    /**
-     * Create a new proof saver.
-     *
-     * @param proof proof to save
-     * @param file file to save proof into
-     * @param saveProofSteps whether to save proof steps (false -> only proof obligation)
-     */
+    /// Create a new proof saver.
+    ///
+    /// @param proof proof to save
+    /// @param file file to save proof into
+    /// @param saveProofSteps whether to save proof steps (false -> only proof obligation)
     public ProofSaver(Proof proof, File file, boolean saveProofSteps) {
         this(proof, file, "2.12.3 (Rusty)", saveProofSteps);
     }
 
-    /**
-     * Create a new proof saver.
-     *
-     * @param proof proof to save
-     * @param file file to save proof into
-     * @param internalVersion version of KeY to add to the proof log
-     * @param saveProofSteps whether to save proof steps (false -> only proof obligation)
-     */
+    /// Create a new proof saver.
+    ///
+    /// @param proof proof to save
+    /// @param file file to save proof into
+    /// @param internalVersion version of KeY to add to the proof log
+    /// @param saveProofSteps whether to save proof steps (false -> only proof obligation)
     public ProofSaver(Proof proof, File file, String internalVersion, boolean saveProofSteps) {
         super(proof, internalVersion, saveProofSteps);
         this.file = file;
     }
 
-    /**
-     * Save the proof to file referenced by {@code file}.
-     *
-     * The format in which the proof is stored depends on the class. Thr base class creates a plain
-     * output file. Subclasses may choose to use other formats.
-     *
-     * @param file the file to write to
-     * @throws IOException if I/O fails
-     */
+    /// Save the proof to file referenced by `file`.
+    /// The format in which the proof is stored depends on the class. Thr base class creates a plain
+    /// output file. Subclasses may choose to use other formats.
+    ///
+    /// @param file the file to write to
+    /// @throws IOException if I/O fails
     protected void save(File file) throws IOException {
         save(new FileOutputStream(file));
     }

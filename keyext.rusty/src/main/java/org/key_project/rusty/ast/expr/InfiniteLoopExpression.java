@@ -26,7 +26,7 @@ public final class InfiniteLoopExpression implements LoopExpression, LabeledExpr
 
     public InfiniteLoopExpression(ExtList list) {
         label = list.get(Label.class);
-        body = list.get(Expr.class);
+        body = Objects.requireNonNull(list.get(Expr.class));
     }
 
     public @Nullable Label label() {
@@ -71,7 +71,7 @@ public final class InfiniteLoopExpression implements LoopExpression, LabeledExpr
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == null || getClass() != o.getClass())
             return false;
         InfiniteLoopExpression that = (InfiniteLoopExpression) o;

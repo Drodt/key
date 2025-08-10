@@ -3,24 +3,17 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.rule.inst;
 
-/**
- * This exception thrown if there is no appropriate instantiation of the generic sorts occurring
- * within an "SVInstantiations"-object
- */
-
+/// This exception thrown if there is no appropriate instantiation of the generic sorts occurring
+/// within an "SVInstantiations"-object
 import java.io.Serial;
 
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * This exception thrown if there is no appropriate instantiation of the generic sorts occurring
- * within an "SVInstantiations"-object
- */
+/// This exception thrown if there is no appropriate instantiation of the generic sorts occurring
+/// within an "SVInstantiations"-object
 public class GenericSortException extends SortException {
 
-    /**
-     *
-     */
+    ///
     @Serial
     private static final long serialVersionUID = 1372231759025588273L;
 

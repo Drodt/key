@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.stmt;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.visitor.Visitor;
@@ -10,7 +12,9 @@ import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.util.collection.ImmutableArray;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class ExpressionStatement implements Statement, PossibleProgramPrefix {
     private final Expr expression;
@@ -39,7 +43,7 @@ public class ExpressionStatement implements Statement, PossibleProgramPrefix {
     }
 
     @Override
-    public int getChildCount() {
+    public int getChildCount(@UnknownInitialization ExpressionStatement this) {
         return 1;
     }
 
@@ -54,19 +58,20 @@ public class ExpressionStatement implements Statement, PossibleProgramPrefix {
     }
 
     @Override
-    public boolean isPrefix() {
+    public boolean isPrefix(@UnknownInitialization ExpressionStatement this) {
         return true;
     }
 
     @Override
-    public boolean hasNextPrefixElement() {
+    public boolean hasNextPrefixElement(@UnknownInitialization ExpressionStatement this) {
         return getChildCount() != 0 && expression instanceof PossibleProgramPrefix;
     }
 
     @Override
-    public PossibleProgramPrefix getNextPrefixElement() {
+    public PossibleProgramPrefix getNextPrefixElement(
+            @UnknownInitialization ExpressionStatement this) {
         if (hasNextPrefixElement()) {
-            return (PossibleProgramPrefix) expression;
+            return (PossibleProgramPrefix) Objects.requireNonNull(expression);
         }
         throw new IndexOutOfBoundsException("No next prefix element " + this);
     }
@@ -100,7 +105,7 @@ public class ExpressionStatement implements Statement, PossibleProgramPrefix {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(@Nullable Object obj) {
         if (this == obj)
             return true;
         if (obj == null || getClass() != obj.getClass())

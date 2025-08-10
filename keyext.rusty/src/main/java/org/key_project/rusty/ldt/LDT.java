@@ -14,16 +14,17 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public abstract class LDT implements Named {
     private final Name name;
 
-    /** the main sort associated with the LDT */
+    /// the main sort associated with the LDT
     private final Sort sort;
 
-    /** the namespace of functions this LDT feels responsible for */
+    /// the namespace of functions this LDT feels responsible for
     private final Namespace<@NonNull Operator> functions = new Namespace<>();
 
     // -------------------------------------------------------------------------
@@ -31,11 +32,12 @@ public abstract class LDT implements Named {
     // -------------------------------------------------------------------------
 
     protected LDT(Name name, Services services) {
-        sort = services.getNamespaces().sorts().lookup(name);
+        var sort = services.getNamespaces().sorts().lookup(name);
         if (sort == null) {
             throw new RuntimeException("LDT " + name + " not found.\n"
                 + "It seems that there are definitions missing from the .key files.");
         }
+        this.sort = sort;
         this.name = name;
     }
 
@@ -53,23 +55,20 @@ public abstract class LDT implements Named {
     // protected methods
     // -------------------------------------------------------------------------
 
-    /**
-     * adds a function to the LDT
-     *
-     * @return the added function (for convenience reasons)
-     */
-    protected final Function addFunction(Function f) {
+    /// adds a function to the LDT
+    ///
+    /// @return the added function (for convenience reasons)
+    protected final Function addFunction(@UnknownInitialization LDT this, Function f) {
         functions.addSafely(f);
         return f;
     }
 
-    /**
-     * looks up a function in the namespace and adds it to the LDT
-     *
-     * @param funcName the String with the name of the function to look up
-     * @return the added function (for convenience reasons)
-     */
-    protected final Function addFunction(Services services, String funcName) {
+    /// looks up a function in the namespace and adds it to the LDT
+    ///
+    /// @param funcName the String with the name of the function to look up
+    /// @return the added function (for convenience reasons)
+    protected final Function addFunction(@UnknownInitialization LDT this, Services services,
+            String funcName) {
         final Namespace<@NonNull Function> funcNS = services.getNamespaces().functions();
         final Function f = funcNS.lookup(new Name(funcName));
         if (f == null) {
@@ -79,9 +78,10 @@ public abstract class LDT implements Named {
         return addFunction(f);
     }
 
-    public abstract Term translateLiteral(LiteralExpression lit, Services services);
+    public abstract @Nullable Term translateLiteral(LiteralExpression lit, Services services);
 
-    public abstract Function getFunctionFor(BinaryExpression.Operator op, Services services);
+    public abstract @Nullable Function getFunctionFor(BinaryExpression.Operator op,
+            Services services);
 
     public abstract boolean isResponsible(BinaryExpression.Operator op, Term[] subs,
             Services services);
@@ -96,19 +96,16 @@ public abstract class LDT implements Named {
         return sort;
     }
 
-    /**
-     * get the function in this LDT for an operation identified by generic operationName. If the LDT
-     * does not support this named function, it should return null.
-     *
-     * This is used to resolve overloaded symbols.
-     *
-     * For example: "+" may map to "add" for integers, and to "addFloat" for floats.
-     *
-     * @param operationName non-null operationName for a generic function
-     * @param services services to use
-     * @return reference to the respective LDT-specific function for the operation, null if not
-     *         available
-     */
+    /// get the function in this LDT for an operation identified by generic operationName. If the
+    /// LDT
+    /// does not support this named function, it should return null.
+    /// This is used to resolve overloaded symbols.
+    /// For example: "+" may map to "add" for integers, and to "addFloat" for floats.
+    ///
+    /// @param operationName non-null operationName for a generic function
+    /// @param services services to use
+    /// @return reference to the respective LDT-specific function for the operation, null if not
+    /// available
     public @Nullable Function getFunctionFor(String operationName, Services services) {
         // by default an LDT does not support overloaded symbols
         return null;

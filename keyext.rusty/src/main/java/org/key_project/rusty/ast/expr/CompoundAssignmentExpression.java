@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.expr;
 
+import java.util.Objects;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.TupleType;
@@ -25,7 +27,7 @@ public class CompoundAssignmentExpression implements Expr {
     }
 
     public CompoundAssignmentExpression(ExtList list) {
-        op = list.get(BinaryExpression.Operator.class);
+        op = Objects.requireNonNull(list.get(BinaryExpression.Operator.class));
         var exprs = list.collect(Expr.class);
         assert exprs.length == 2;
         left = exprs[0];

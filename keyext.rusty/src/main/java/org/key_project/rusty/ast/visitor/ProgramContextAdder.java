@@ -4,6 +4,7 @@
 package org.key_project.rusty.ast.visitor;
 
 import java.rmi.UnexpectedException;
+import java.util.Objects;
 
 import org.key_project.logic.IntIterator;
 import org.key_project.logic.SyntaxElement;
@@ -16,25 +17,19 @@ import org.key_project.rusty.rule.inst.ContextBlockExpressionInstantiation;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/**
- * A context given as {@link ContextBlockExpressionInstantiation} is wrapped around a given
- * {@link RustyProgramElement}.
- */
+import org.jspecify.annotations.Nullable;
+
+/// A context given as [ContextBlockExpressionInstantiation] is wrapped around a given
+/// [RustyProgramElement].
 public class ProgramContextAdder {
-    /**
-     * singleton instance of the program context adder
-     */
+    /// singleton instance of the program context adder
     public final static ProgramContextAdder INSTANCE = new ProgramContextAdder();
 
-    /**
-     * an empty private constructor to ensure the singleton property
-     */
+    /// an empty private constructor to ensure the singleton property
     private ProgramContextAdder() {
     }
 
-    /**
-     * wraps the context around the statements found in the putIn block
-     */
+    /// wraps the context around the statements found in the putIn block
     public RustyProgramElement start(RustyProgramElement context,
             ContextBlockExpression putIn, ContextBlockExpressionInstantiation ct) {
 
@@ -42,41 +37,40 @@ public class ProgramContextAdder {
             ct.suffix());
     }
 
-    protected RustyProgramElement wrap(RustyProgramElement context, ContextBlockExpression putIn,
+    protected RustyProgramElement wrap(@Nullable RustyProgramElement context,
+            ContextBlockExpression putIn,
             IntIterator prefixPos, PosInProgram suffix) {
         RustyProgramElement body;
 
         RustyProgramElement next =
-            prefixPos.hasNext() ? (RustyProgramElement) context.getChild(prefixPos.next()) : null;
+            prefixPos.hasNext()
+                    ? (RustyProgramElement) Objects.requireNonNull(context)
+                            .getChild(prefixPos.next())
+                    : null;
 
         if (!prefixPos.hasNext()) {
             return createWrapperBody(context, putIn, suffix);
         } else {
             body = wrap(next, putIn, prefixPos, suffix);
-            if (context instanceof BlockExpression be) {
-                return createBlockExprWrapper(be, body);
-            } else if (context instanceof ExpressionStatement es) {
-                return createExpressionStatementWrapper(es, body);
-            } else if (context instanceof FunctionFrame ff) {
-                return createFunctionFrameWrapper(ff, (BlockExpression) body);
-            } else if (context instanceof LoopScope ls) {
-                return createLoopScopeWrapper(ls, (BlockExpression) body);
-            } else {
-                throw new RuntimeException(
-                    new UnexpectedException("Unexpected block type: " + context.getClass()));
-            }
+            return switch (context) {
+                case BlockExpression be -> createBlockExprWrapper(be, body);
+                case ExpressionStatement es -> createExpressionStatementWrapper(es, body);
+                case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
+                case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
+                case null, default -> throw new RuntimeException(
+                    new UnexpectedException(
+                        "Unexpected block type: " + (context != null ? context.getClass() : null)));
+            };
         }
     }
 
-    /**
-     * Replaces the first part in the wrapper block. The replacement is optimized as it just
-     * returns the replacement block if it is the only child of the block to be
-     * constructed and the child is a block too.
-     *
-     * @param wrapper the StatementBlock where to replace the first statement
-     * @param replacement the StatementBlock that replaces the first statement of the block
-     * @return the resulting statement block
-     */
+    /// Replaces the first part in the wrapper block. The replacement is optimized as it just
+    /// returns the replacement block if it is the only child of the block to be
+    /// constructed and the child is a block too.
+    ///
+    /// @param wrapper the StatementBlock where to replace the first statement
+    /// @param replacement the StatementBlock that replaces the first statement of the block
+    /// @return the resulting statement block
     private RustyProgramElement createBlockExprWrapper(BlockExpression wrapper,
             RustyProgramElement replacement) {
         int childCount = wrapper.getChildCount();
@@ -91,28 +85,28 @@ public class ProgramContextAdder {
         return new BlockExpression(body, wrapper.getValue());
     }
 
-    /**
-     * inserts the content of the statement block <code>putIn</code> and adds succeeding children of
-     * the innermost non-terminal element (usually statement block) in the context.
-     *
-     * @param wrapper the RustyProgramElement with the context that has to be wrapped
-     *        around the content of <code>putIn</code>
-     * @param putIn the ContextBlockExpression with content that has to be wrapped by the elements
-     *        hidden in
-     *        the context
-     * @param suffix the PosInProgram describing the position of the first element before the suffix
-     *        of the context
-     * @return the BlockExpression which encloses the content of <code>putIn</code> together with
-     *         the
-     *         succeeding context elements of the innermost context block (attention: in a
-     *         case like <code>{{{oldStmnt; list of further stmnt;}} moreStmnts; }</code> only the
-     *         underscored part is returned <code>{{ __{putIn;....}__ }moreStmnts;}</code> adding
-     *         the other braces including the <code>moreStmnts;</code> part has to be done
-     *         elsewhere.
-     */
-    private RustyProgramElement createWrapperBody(RustyProgramElement wrapper,
+    /// inserts the content of the statement block <code>putIn</code> and adds succeeding children
+    /// of
+    /// the innermost non-terminal element (usually statement block) in the context.
+    ///
+    /// @param wrapper the RustyProgramElement with the context that has to be wrapped
+    /// around the content of <code>putIn</code>
+    /// @param putIn the ContextBlockExpression with content that has to be wrapped by the elements
+    /// hidden in
+    /// the context
+    /// @param suffix the PosInProgram describing the position of the first element before the
+    /// suffix
+    /// of the context
+    /// @return the BlockExpression which encloses the content of <code>putIn</code> together with
+    /// the
+    /// succeeding context elements of the innermost context block (attention: in a
+    /// case like <code>{{{oldStmnt; list of further stmnt;}} moreStmnts; }</code> only the
+    /// underscored part is returned <code>{{ __{putIn;....}__ }moreStmnts;}</code> adding
+    /// the other braces including the <code>moreStmnts;</code> part has to be done
+    /// elsewhere.
+    private RustyProgramElement createWrapperBody(@Nullable RustyProgramElement wrapper,
             ContextBlockExpression putIn, PosInProgram suffix) {
-        if (wrapper instanceof BlockExpression) {
+        if (wrapper instanceof BlockExpression be) {
             final int putInLength = putIn.getChildCount();
 
             // ATTENTION: may be -1
@@ -122,7 +116,7 @@ public class ProgramContextAdder {
 
             int childrenToAdd = putInLength + childLeft;
 
-            if (wrapper instanceof BlockExpression be && be.getValue() != null)
+            if (be.getValue() != null)
                 --childrenToAdd;
 
             if (childLeft == 0 || lastChild == -1) {
@@ -139,7 +133,7 @@ public class ProgramContextAdder {
                 }
             }
 
-            Expr value = ((BlockExpression) wrapper).getValue();
+            Expr value = be.getValue();
             if (putIn.getValue() != null && childrenToAdd < putInLength) {
                 value = putIn.getValue();
             }
@@ -147,10 +141,7 @@ public class ProgramContextAdder {
             return new BlockExpression(body, value);
         } else if (wrapper instanceof ExpressionStatement es) {
             assert putIn.getStatements().isEmpty();
-            if (putIn.getValue() == null) {
-                assert putIn.getValue() != null;
-            }
-            return new ExpressionStatement(putIn.getValue(), es.hasSemi());
+            return new ExpressionStatement(Objects.requireNonNull(putIn.getValue()), es.hasSemi());
         } else {
             throw new RuntimeException("Unexpected context : " + wrapper);
         }
@@ -168,7 +159,8 @@ public class ProgramContextAdder {
             RustyProgramElement replacement) {
         return new ExpressionStatement(
             replacement instanceof BlockExpression be && be.getChildCount() == 1
-                    && be.getValue() != null ? be.getValue() : (Expr) replacement,
+                    && be.getValue() != null ? Objects.requireNonNull(be.getValue())
+                            : (Expr) replacement,
             wrapper.hasSemi());
     }
 

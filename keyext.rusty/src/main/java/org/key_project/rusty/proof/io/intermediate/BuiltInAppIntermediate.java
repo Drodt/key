@@ -8,11 +8,9 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.Pair;
 
-/**
- * Encapsulates intermediate information for constructing a built-in rule application.
- *
- * @author Dominic Scheurer
- */
+/// Encapsulates intermediate information for constructing a built-in rule application.
+///
+/// @author Dominic Scheurer
 public class BuiltInAppIntermediate extends AppIntermediate {
     private String ruleName = null;
     private Pair<Integer, PosInTerm> posInfo = null;

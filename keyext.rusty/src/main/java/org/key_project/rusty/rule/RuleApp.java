@@ -8,29 +8,21 @@ import org.key_project.prover.sequent.PosInOccurrence;
 
 
 public interface RuleApp extends org.key_project.prover.rules.RuleApp {
-    /**
-     * returns the rule of this rule application
-     */
+    /// returns the rule of this rule application
     @Override
     Rule rule();
 
-    /**
-     * returns the PositionInOccurrence (representing a SequentFormula and a position in the
-     * corresponding formula) of this rule application
-     */
+    /// returns the PositionInOccurrence (representing a SequentFormula and a position in the
+    /// corresponding formula) of this rule application
     PosInOccurrence posInOccurrence();
 
-    /**
-     * returns true if all variables are instantiated
-     *
-     * @return true if all variables are instantiated
-     */
+    /// returns true if all variables are instantiated
+    ///
+    /// @return true if all variables are instantiated
     @Override
     boolean complete();
 
-    /**
-     * @return user-friendly name for this rule-application
-     */
+    /// @return user-friendly name for this rule-application
     default String displayName() {
         return rule().displayName();
     }

@@ -3,15 +3,16 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.varcond;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.VariableCondition;
+import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.sv.FormulaSV;
 import org.key_project.rusty.logic.op.sv.TermSV;
-import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.VariableCondition;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 public final class EqualUniqueCondition implements VariableCondition {
@@ -45,10 +46,10 @@ public final class EqualUniqueCondition implements VariableCondition {
 
 
     @Override
-    public MatchConditions check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchConditions mc,
-            Services services) {
-        SVInstantiations svInst = mc.getInstantiations();
+    public MatchResultInfo check(SchemaVariable var, SyntaxElement instCandidate,
+            MatchResultInfo mc,
+            LogicServices services) {
+        SVInstantiations svInst = (SVInstantiations) mc.getInstantiations();
         Term tInst = (Term) svInst.getInstantiation(t);
         Term t2Inst = (Term) svInst.getInstantiation(t2);
         Term resInst = (Term) svInst.getInstantiation(res);
@@ -56,7 +57,7 @@ public final class EqualUniqueCondition implements VariableCondition {
             return mc;
         }
 
-        Term properResInst = equalUnique(tInst, t2Inst, services);
+        Term properResInst = equalUnique(tInst, t2Inst, (Services) services);
         if (properResInst == null) {
             return null;
         } else if (resInst == null) {

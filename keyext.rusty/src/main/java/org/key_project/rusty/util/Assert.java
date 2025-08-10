@@ -13,12 +13,10 @@ public class Assert {
         return FunctionalOperationContractImpl.class.desiredAssertionStatus();
     }
 
-    /**
-     * Check whether two terms (or other sorted objects) are of the same sort.
-     *
-     * @param t1
-     * @param t2
-     */
+    /// Check whether two terms (or other sorted objects) are of the same sort.
+    ///
+    /// @param t1
+    /// @param t2
     public static void assertEqualSort(Sorted t1, Sorted t2) {
         if (!assertionsEnabled()) {
             return;
@@ -31,13 +29,11 @@ public class Assert {
         }
     }
 
-    /**
-     * Check whether the sort of t1 is a subsort of the sort of t2. I.e., check whether a
-     * substitution of t1 for t2 is legal.
-     *
-     * @param t1
-     * @param t2
-     */
+    /// Check whether the sort of t1 is a subsort of the sort of t2. I.e., check whether a
+    /// substitution of t1 for t2 is legal.
+    ///
+    /// @param t1
+    /// @param t2
     public static void assertSubSort(Sorted t1, Sorted t2) {
         if (!assertionsEnabled()) {
             return;

@@ -11,10 +11,11 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class TermFactory {
     private static final ImmutableArray<Term> NO_SUBTERMS = new ImmutableArray<>();
-    private final Map<Term, Term> cache;
+    private final @Nullable Map<Term, Term> cache;
 
 
     // -------------------------------------------------------------------------
@@ -34,12 +35,10 @@ public class TermFactory {
     // public interface
     // -------------------------------------------------------------------------
 
-    /**
-     * Master method for term creation. Should be the only place where terms are created in the
-     * entire system.
-     */
-    public Term createTerm(@NonNull Operator op, ImmutableArray<Term> subs,
-            ImmutableArray<QuantifiableVariable> boundVars) {
+    /// Master method for term creation. Should be the only place where terms are created in the
+    /// entire system.
+    public Term createTerm(Operator op, @Nullable ImmutableArray<Term> subs,
+            @Nullable ImmutableArray<QuantifiableVariable> boundVars) {
         if (subs == null || subs.isEmpty()) {
             subs = NO_SUBTERMS;
         }
@@ -51,8 +50,8 @@ public class TermFactory {
         return createTerm(op, createSubtermArray(subs), null);
     }
 
-    public Term createTerm(Operator op, Term[] subs,
-            ImmutableArray<QuantifiableVariable> boundVars) {
+    public Term createTerm(Operator op, @Nullable Term[] subs,
+            @Nullable ImmutableArray<QuantifiableVariable> boundVars) {
         return createTerm(op, createSubtermArray(subs), boundVars);
     }
 
@@ -68,12 +67,17 @@ public class TermFactory {
     // private interface
     // -------------------------------------------------------------------------
 
-    private ImmutableArray<Term> createSubtermArray(Term[] subs) {
-        return subs == null || subs.length == 0 ? NO_SUBTERMS : new ImmutableArray<>(subs);
+    private ImmutableArray<Term> createSubtermArray(@Nullable Term[] subs) {
+        if (subs == null || subs.length == 0)
+            return NO_SUBTERMS;
+        // Checker framework is imprecise here
+        @SuppressWarnings("type.arguments.not.inferred")
+        ImmutableArray<Term> terms = new ImmutableArray<>(subs);
+        return terms;
     }
 
     private Term doCreateTerm(Operator op, ImmutableArray<Term> subs,
-            ImmutableArray<QuantifiableVariable> boundVars) {
+            @Nullable ImmutableArray<QuantifiableVariable> boundVars) {
 
         final TermImpl newTerm =
             new TermImpl(op, subs, boundVars);

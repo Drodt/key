@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.rule.tacletbuilder;
 
-import de.uka.ilkd.key.logic.Term;
+import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.proof.calculus.JavaDLSequentKit;
 import de.uka.ilkd.key.rule.AntecTaclet;
 
-import org.key_project.prover.rules.Taclet.ApplicationRestriction;
+import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
@@ -33,7 +33,7 @@ public class AntecTacletBuilder extends FindTacletBuilder<AntecTaclet> {
      *
      * @return this AntecTacletBuilder
      */
-    public AntecTacletBuilder setFind(Term findTerm) {
+    public AntecTacletBuilder setFind(JTerm findTerm) {
         return setFind(
             JavaDLSequentKit.createAnteSequent(ImmutableList.of(new SequentFormula(findTerm))));
     }

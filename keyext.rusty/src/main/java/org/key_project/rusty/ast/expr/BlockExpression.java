@@ -20,16 +20,18 @@ import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch, ElseBranch {
     protected final ImmutableList<Statement> statements;
-    protected final Expr value;
+    protected final @Nullable Expr value;
     private final int prefixLength;
 
     private int hashCode = -1;
 
-    public BlockExpression(ImmutableList<Statement> statements, Expr value) {
+    public BlockExpression(ImmutableList<Statement> statements, @Nullable Expr value) {
         this.statements = statements;
         this.value = value;
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
@@ -44,7 +46,8 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
     }
 
     @Override
-    public @NonNull SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(@UnknownInitialization BlockExpression this, int n) {
+        assert statements != null;
         if (0 <= n && n < statements.size())
             return Objects.requireNonNull(statements.get(n));
         if (n == statements.size() && value != null)
@@ -53,7 +56,8 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
     }
 
     @Override
-    public int getChildCount() {
+    public int getChildCount(@UnknownInitialization BlockExpression this) {
+        assert statements != null;
         return statements.size() + (value == null ? 0 : 1);
     }
 
@@ -61,7 +65,7 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
         return statements;
     }
 
-    public Expr getValue() {
+    public @Nullable Expr getValue() {
         return value;
     }
 
@@ -89,17 +93,17 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
     }
 
     @Override
-    public boolean isPrefix() {
+    public boolean isPrefix(@UnknownInitialization BlockExpression this) {
         return getChildCount() != 0;
     }
 
     @Override
-    public boolean hasNextPrefixElement() {
+    public boolean hasNextPrefixElement(@UnknownInitialization BlockExpression this) {
         return getChildCount() != 0 && getChild(0) instanceof PossibleProgramPrefix;
     }
 
     @Override
-    public PossibleProgramPrefix getNextPrefixElement() {
+    public PossibleProgramPrefix getNextPrefixElement(@UnknownInitialization BlockExpression this) {
         if (hasNextPrefixElement()) {
             return (PossibleProgramPrefix) getChild(0);
         }
@@ -122,11 +126,11 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
     }
 
     @Override
-    public int getPrefixLength() {
+    public int getPrefixLength(@UnknownInitialization BlockExpression this) {
         return prefixLength;
     }
 
-    /** computes the prefix elements for the given array of statment block */
+    /// computes the prefix elements for the given array of statment block
     public static ImmutableArray<PossibleProgramPrefix> computePrefixElements(
             PossibleProgramPrefix current) {
         final ArrayList<PossibleProgramPrefix> prefix = new ArrayList<>();
@@ -156,7 +160,7 @@ public class BlockExpression implements Expr, PossibleProgramPrefix, ThenBranch,
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this)
             return true;
         if (o == null || getClass() != o.getClass())

@@ -14,29 +14,23 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A single unit that will be tested during {@link RunAllProofsTest} run.
- *
- * @author Kai Wallisch
- */
+/// A single unit that will be tested during [RunAllProofsTest] run.
+///
+/// @author Kai Wallisch
 public final class RunAllProofsTestUnit implements Serializable {
     private static final long serialVersionUID = -2406881153415390252L;
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsFile.class);
 
-    /**
-     * The name of this test.
-     */
+    /// The name of this test.
     private final String testName;
 
     private final ProofCollectionSettings settings;
     private final List<TestFile> testFiles;
     private final boolean ungrouped;
 
-    /**
-     * Method {@link Object#toString()} is used by class {@link RunAllProofsTest} to determine the
-     * name of a test case. It is overridden here so that test cases can be easily recognized by
-     * their name.
-     */
+    /// Method [#toString()] is used by class [RunAllProofsTest] to determine the
+    /// name of a test case. It is overridden here so that test cases can be easily recognized by
+    /// their name.
     @Override
     public String toString() {
         return testName;
@@ -50,18 +44,14 @@ public final class RunAllProofsTestUnit implements Serializable {
         this.ungrouped = ungrouped;
     }
 
-    /**
-     * Run the test of this unit and return a {@link TestResult}.
-     *
-     * If {@link #ungrouped} is true, the result is the result of that single test. Otherwise all
-     * results are aggregated into a single testresult.
-     *
-     * The way of execution is determined by the {@link #settings}, in particular by the
-     * {@link ProofCollectionSettings#getForkMode() forkmode}.
-     *
-     * @return either a single test result or an aggregated test result, not <code>null</code>.
-     * @param xml
-     */
+    /// Run the test of this unit and return a [TestResult].
+    /// If [#ungrouped] is true, the result is the result of that single test. Otherwise all
+    /// results are aggregated into a single testresult.
+    /// The way of execution is determined by the [#settings], in particular by the
+    /// [forkmode][#getForkMode()].
+    ///
+    /// @return either a single test result or an aggregated test result, not <code>null</code>.
+    /// @param xml
     public TestResult runTest(JunitXmlWriter xml) throws Exception {
         /*
          * List of test results containing one test result for each test file contained in this

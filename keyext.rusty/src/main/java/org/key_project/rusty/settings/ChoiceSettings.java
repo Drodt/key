@@ -14,6 +14,7 @@ import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class ChoiceSettings extends AbstractSettings {
     public static final String CATEGORY = "Choice";
@@ -22,10 +23,8 @@ public class ChoiceSettings extends AbstractSettings {
     private static final String PROP_CHOICE_DEFAULT = "category2Default";
     private static final String PROP_CHOICE_CATEGORIES = "category2Choices";
 
-    /**
-     * maps categories to a set of Strings(representing the choices which are options for this
-     * category).
-     */
+    /// maps categories to a set of Strings(representing the choices which are options for this
+    /// category).
     private Map<String, Set<String>> category2Choices = new LinkedHashMap<>();
     private Map<String, String> category2Default;
 
@@ -47,27 +46,21 @@ public class ChoiceSettings extends AbstractSettings {
     }
 
 
-    /**
-     * returns a copy of the HashMap that maps categories to
-     * their choices.
-     */
+    /// returns a copy of the HashMap that maps categories to
+    /// their choices.
     public Map<String, Set<String>> getChoices() {
         return Collections.unmodifiableMap(category2Choices);
     }
 
-    /**
-     * Returns an immutable view of the current mapping between category and default choices.
-     * <p>
-     * The method name is somewhat misleading.
-     */
+    /// Returns an immutable view of the current mapping between category and default choices.
+    ///
+    /// The method name is somewhat misleading.
     public @NonNull Map<String, String> getDefaultChoices() {
         return Collections.unmodifiableMap(category2Default);
     }
 
 
-    /**
-     * returns the current selected choices as an immutable set
-     */
+    /// returns the current selected choices as an immutable set
     public @NonNull ImmutableSet<Choice> getDefaultChoicesAsSet() {
         return choiceMap2choiceSet(category2Default);
     }
@@ -86,12 +79,11 @@ public class ChoiceSettings extends AbstractSettings {
         // firePropertyChange(PROP_CHOICE_CATEGORIES, old, category2Choices);
     }
 
-    /**
-     * updates <code>category2Choices</code> if new entries are found in <code>choiceNS</code> or if
-     * entries of <code>category2Choices</code> are no longer present in <code>choiceNS</code>
-     *
-     * @param remove remove entries not present in <code>choiceNS</code>
-     */
+    /// updates <code>category2Choices</code> if new entries are found in <code>choiceNS</code> or
+    /// if
+    /// entries of <code>category2Choices</code> are no longer present in <code>choiceNS</code>
+    ///
+    /// @param remove remove entries not present in <code>choiceNS</code>
     public void updateChoices(Namespace<@NonNull Choice> choiceNS, boolean remove) {
         // Translate the given namespace into a map of 'string -> list[string]'
         HashMap<String, Set<String>> c2C = new LinkedHashMap<>();
@@ -141,6 +133,7 @@ public class ChoiceSettings extends AbstractSettings {
     @Override
     public void writeSettings(Configuration props) {
         var category = props.getOrCreateSection(CATEGORY);
+        assert category != null;
         category2Default.forEach(category::set);
     }
 
@@ -153,7 +146,7 @@ public class ChoiceSettings extends AbstractSettings {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) {
             return true;
         }

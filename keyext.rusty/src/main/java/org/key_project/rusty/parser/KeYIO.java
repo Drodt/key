@@ -16,8 +16,6 @@ import org.key_project.prover.rules.Taclet;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.parser.builder.*;
-import org.key_project.rusty.proof.init.ProblemInitializer;
-import org.key_project.rusty.util.parsing.BuildingException;
 import org.key_project.rusty.util.parsing.BuildingIssue;
 
 import org.antlr.v4.runtime.CharStream;
@@ -42,10 +40,8 @@ public class KeYIO {
         this(services, services.getNamespaces());
     }
 
-    /**
-     * @param ctx
-     * @return
-     */
+    /// @param ctx
+    /// @return
     public List<BuildingIssue> evalDeclarations(KeYAst.File ctx) {
         DeclarationBuilder declBuilder = new DeclarationBuilder(services, nss);
         ctx.accept(declBuilder);
@@ -53,9 +49,7 @@ public class KeYIO {
         return declBuilder.getBuildingIssues();
     }
 
-    /**
-     * @param ctx
-     */
+    /// @param ctx
     public List<BuildingIssue> evalFuncAndPred(KeYAst.File ctx) {
         FunctionPredicateBuilder visitor = new FunctionPredicateBuilder(services, nss);
         ctx.accept(visitor);
@@ -67,24 +61,20 @@ public class KeYIO {
         return warnings;
     }
 
-    /**
-     * Given an input string, this function returns a term if parsable.
-     *
-     * @param expr a valid stream
-     * @return a valid term
-     * @throws BuildingException if an unrecoverable error during construction or parsing happened
-     */
+    /// Given an input string, this function returns a term if parsable.
+    ///
+    /// @param expr a valid stream
+    /// @return a valid term
+    /// @throws BuildingException if an unrecoverable error during construction or parsing happened
     public @NonNull Term parseExpression(@NonNull String expr) {
         return parseExpression(CharStreams.fromString(expr));
     }
 
-    /**
-     * Given an input stream, this function returns an term if parsable.
-     *
-     * @param stream a valid stream
-     * @return a valid term
-     * @throws BuildingException if an unrecoverable error during construction or parsing happened
-     */
+    /// Given an input stream, this function returns an term if parsable.
+    ///
+    /// @param stream a valid stream
+    /// @return a valid term
+    /// @throws BuildingException if an unrecoverable error during construction or parsing happened
     public @NonNull Term parseExpression(@NonNull CharStream stream) {
         KeYAst.Term ctx = ParsingFacade.parseExpression(stream);
         ExpressionBuilder visitor = new ExpressionBuilder(services, nss);
@@ -103,14 +93,12 @@ public class KeYIO {
         return new Loader(content, null);
     }
 
-    /**
-     * Loading of complete KeY files into the given schema. Supports recursive loading, but does not
-     * provide support for Java and Rust type informations.
-     * <p>
-     * Little sister of {@link ProblemInitializer}.
-     *
-     * TODO: Remove?
-     */
+    /// Loading of complete KeY files into the given schema. Supports recursive loading, but does
+    /// not
+    /// provide support for Java and Rust type informations.
+    ///
+    /// Little sister of [ProblemInitializer].
+    /// TODO: Remove?
     public class Loader {
         private final URL resource;
         private final CharStream content;

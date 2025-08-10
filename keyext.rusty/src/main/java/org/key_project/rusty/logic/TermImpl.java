@@ -11,23 +11,22 @@ import org.key_project.logic.op.Modality;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 // TODO: Basically everything here can be moved tpo ncore.
 class TermImpl implements Term {
-    /**
-     * A static empty list of terms used for memory reasons.
-     */
+    /// A static empty list of terms used for memory reasons.
     private static final ImmutableArray<Term> EMPTY_TERM_LIST = new ImmutableArray<>();
 
-    /**
-     * A static empty list of quantifiable variables used for memory reasons.
-     */
+    /// A static empty list of quantifiable variables used for memory reasons.
     private static final ImmutableArray<QuantifiableVariable> EMPTY_VAR_LIST =
         new ImmutableArray<>();
 
@@ -39,36 +38,31 @@ class TermImpl implements Term {
     private final ImmutableArray<Term> subs;
     private final ImmutableArray<QuantifiableVariable> boundVars;
 
-    private Sort sort;
+    private @MonotonicNonNull Sort sort;
     private int depth = -1;
 
     private enum ThreeValuedTruth {
         TRUE, FALSE, UNKNOWN
     }
 
-    /**
-     * Cached {@link #hashCode()} value.
-     */
+    /// Cached [#hashCode()] value.
     private int hashcode = -1;
 
-    /**
-     * A cached value for computing the term's rigidness.
-     */
+    /// A cached value for computing the term's rigidness.
     private ThreeValuedTruth rigid = ThreeValuedTruth.UNKNOWN;
     private ThreeValuedTruth containsCodeBlockRecursive = ThreeValuedTruth.UNKNOWN;
-    private ImmutableSet<QuantifiableVariable> freeVars = null;
+    private @MonotonicNonNull ImmutableSet<QuantifiableVariable> freeVars = null;
 
-    /**
-     * Constructs a term for the given operator, with the given sub terms, bounded variables and (if
-     * applicable) the code block on this term.
-     *
-     * @param op the operator of the term, e.g., some arithmetic operation
-     * @param subs the sub terms of the constructed term (whose type is constrained by the used
-     *        operator)
-     * @param boundVars the bounded variables (if applicable), e.g., for quantifiers
-     */
+    /// Constructs a term for the given operator, with the given sub terms, bounded variables and
+    /// (if
+    /// applicable) the code block on this term.
+    ///
+    /// @param op the operator of the term, e.g., some arithmetic operation
+    /// @param subs the sub terms of the constructed term (whose type is constrained by the used
+    /// operator)
+    /// @param boundVars the bounded variables (if applicable), e.g., for quantifiers
     public TermImpl(Operator op, ImmutableArray<Term> subs,
-            ImmutableArray<QuantifiableVariable> boundVars) {
+            @Nullable ImmutableArray<QuantifiableVariable> boundVars) {
         assert op != null;
         assert subs != null;
         this.op = op;
@@ -227,10 +221,8 @@ class TermImpl implements Term {
         visitor.subtreeLeft(this);
     }
 
-    /**
-     * Checks whether the Term is valid on the top level. If this is the case this method returns
-     * the Term unmodified. Otherwise, a TermCreationException is thrown.
-     */
+    /// Checks whether the Term is valid on the top level. If this is the case this method returns
+    /// the Term unmodified. Otherwise, a TermCreationException is thrown.
     public Term checked() {
         op.validTopLevelException(this);
         return this;
@@ -243,7 +235,7 @@ class TermImpl implements Term {
     public boolean containsCodeBlockRecursive() {
         if (containsCodeBlockRecursive == ThreeValuedTruth.UNKNOWN) {
             ThreeValuedTruth result = ThreeValuedTruth.FALSE;
-            if (op instanceof Modality mod && !((RustyBlock) mod.program()).isEmpty()) {
+            if (op instanceof Modality mod && !((RustyBlock) mod.programBlock()).isEmpty()) {
                 result = ThreeValuedTruth.TRUE;
             } else {
                 for (int i = 0, arity = subs.size(); i < arity; i++) {
@@ -263,10 +255,10 @@ class TermImpl implements Term {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if (op() instanceof Modality mod) {
-            if (mod.kind() == org.key_project.rusty.logic.op.Modality.RustyModalityKind.DIA) {
-                sb.append("\\<").append(mod.program()).append("\\>");
+            if (mod.kind() == RModality.RustyModalityKind.DIA) {
+                sb.append("\\<").append(mod.programBlock()).append("\\>");
             } else {
-                sb.append("\\[").append(mod.program()).append("\\]");
+                sb.append("\\[").append(mod.programBlock()).append("\\]");
             }
             sb.append("(").append(sub(0)).append(")");
             return sb.toString();
@@ -283,11 +275,9 @@ class TermImpl implements Term {
         }
     }
 
-    /**
-     * true iff <code>o</code> is syntactically equal to this term
-     */
+    /// true iff <code>o</code> is syntactically equal to this term
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (o == this) {
             return true;
         }

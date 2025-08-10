@@ -14,9 +14,9 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 public abstract class ProgramTransformer implements Statement, Expr, RustyProgramElement {
-    /** the name of the meta construct */
+    /// the name of the meta construct
     private final Name name;
-    /** the encapsulated program element */
+    /// the encapsulated program element
     private final RustyProgramElement body;
 
     protected ProgramTransformer(Name name, RustyProgramElement body) {
@@ -24,22 +24,18 @@ public abstract class ProgramTransformer implements Statement, Expr, RustyProgra
         this.body = body;
     }
 
-    /**
-     * performs the program transformation needed for symbolic program transformation
-     *
-     * @param pe the RustyProgramElement on which the execution is performed
-     * @param services the Services with all necessary information about the java programs
-     * @param svInst the instantiations of the schemavariables
-     * @return the transformated program
-     */
+    /// performs the program transformation needed for symbolic program transformation
+    ///
+    /// @param pe the RustyProgramElement on which the execution is performed
+    /// @param services the Services with all necessary information about the java programs
+    /// @param svInst the instantiations of the schemavariables
+    /// @return the transformated program
     public abstract RustyProgramElement[] transform(RustyProgramElement pe, Services services,
             SVInstantiations svInst);
 
-    /**
-     * returns the name of the meta construct
-     *
-     * @return the name of the meta construct
-     */
+    /// returns the name of the meta construct
+    ///
+    /// @return the name of the meta construct
     public Name name() {
         return name;
     }
@@ -71,7 +67,7 @@ public abstract class ProgramTransformer implements Statement, Expr, RustyProgra
         return 1;
     }
 
-    /** to String */
+    /// to String
     public String toString() {
         return name + "( " + body + ");";
     }

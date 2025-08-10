@@ -15,17 +15,15 @@ import org.key_project.rusty.ast.expr.LoopExpression;
 import org.key_project.rusty.ast.visitor.RustyASTVisitor;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
-import org.key_project.rusty.logic.op.Modality;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.speclang.LoopSpecImpl;
 import org.key_project.rusty.speclang.LoopSpecification;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * Transformer that introduces concrete prestate variables
- */
+/// Transformer that introduces concrete prestate variables
 public class IntroAtPreDefs extends AbstractTermTransformer {
     public IntroAtPreDefs() {
         super(new Name("introAtPreDefs"), 1);
@@ -36,7 +34,7 @@ public class IntroAtPreDefs extends AbstractTermTransformer {
         final TermBuilder tb = services.getTermBuilder();
         final Term target = term.sub(0);
 
-        final var pe = ((Modality) target.op()).program().program();
+        final var pe = ((RModality) target.op()).programBlock().program();
 
         final var fnFrame = RustTools.getInnermostFunctionFrame(pe, services);
 
@@ -47,31 +45,21 @@ public class IntroAtPreDefs extends AbstractTermTransformer {
     }
 
     private class PrestateVariablesUpdater extends RustyASTVisitor {
-        /**
-         * A TermBuilder
-         */
+        /// A TermBuilder
         private final TermBuilder tb;
 
         private final FunctionFrame frame;
 
-        /**
-         * function name for which prestate variables get introduced.
-         */
+        /// function name for which prestate variables get introduced.
         private final String functionName;
 
-        /**
-         * renamings Term form.
-         */
+        /// renamings Term form.
         private final Map<ProgramVariable, Term> atPres = new LinkedHashMap<>();
 
-        /**
-         * renamings ProgramVariable form.
-         */
+        /// renamings ProgramVariable form.
         private final Map<ProgramVariable, ProgramVariable> atPreVars = new LinkedHashMap<>();
 
-        /**
-         * update Term for the prestate variables. Will get completed as the visitor runs.
-         */
+        /// update Term for the prestate variables. Will get completed as the visitor runs.
         private Term atPreUpdate;
 
         public PrestateVariablesUpdater(final FunctionFrame frame, final Services services,

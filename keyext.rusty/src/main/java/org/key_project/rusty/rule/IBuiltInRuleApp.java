@@ -8,21 +8,15 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.util.collection.ImmutableList;
 
 public interface IBuiltInRuleApp extends RuleApp {
-    /**
-     * returns the built-in rule of this rule application
-     */
+    /// returns the built-in rule of this rule application
     BuiltInRule rule();
 
-    /**
-     * Tries to complete the rule application from the available information.
-     */
+    /// Tries to complete the rule application from the available information.
     IBuiltInRuleApp tryToInstantiate(Goal goal);
 
     IBuiltInRuleApp forceInstantiate(Goal goal);
 
-    /**
-     * @return true if tryToInstantiate may be able to complete the app
-     */
+    /// @return true if tryToInstantiate may be able to complete the app
     boolean isSufficientlyComplete();
 
     ImmutableList<PosInOccurrence> assumesInsts();

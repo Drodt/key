@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Comparator;
+import java.util.Objects;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
@@ -46,13 +47,11 @@ public class HirRustyReader {
         return services;
     }
 
-    /**
-     * parses a given RustyBlock using the context to determine the right references
-     *
-     * @param block a String describing a java block
-     * @param context recoder.java.CompilationUnit in which the block has to be interprested
-     * @return the parsed and resolved JavaBlock
-     */
+    /// parses a given RustyBlock using the context to determine the right references
+    ///
+    /// @param block a String describing a java block
+    /// @param context recoder.java.CompilationUnit in which the block has to be interprested
+    /// @return the parsed and resolved JavaBlock
     public RustyBlock readBlock(String block, Context context) {
         try {
             var fn = context.buildFunction(block, true);
@@ -100,16 +99,19 @@ public class HirRustyReader {
                             .findFirst().orElse(null);
                     assert myAdd != null;
                     var target = services.getRustInfo().getFunction(myAdd);
+                    assert target != null;
                     if (services.getNamespaces().functions().lookup(target.name()) == null) {
                         services.getNamespaces().functions().add(target);
                         var factory = new ContractFactory(services);
                         var tb = services.getTermBuilder();
                         var a =
-                            ((BindingPattern) ((FunctionParamPattern) myAdd.params().get(0))
+                            ((BindingPattern) ((FunctionParamPattern) Objects
+                                    .requireNonNull(myAdd.params().get(0)))
                                     .pattern())
                                     .pv();
                         var b =
-                            ((BindingPattern) ((FunctionParamPattern) myAdd.params().get(1))
+                            ((BindingPattern) ((FunctionParamPattern) Objects
+                                    .requireNonNull(myAdd.params().get(1)))
                                     .pattern())
                                     .pv();
                         var result = new ProgramVariable(new Name("result"), a.getKeYRustyType());
@@ -122,18 +124,17 @@ public class HirRustyReader {
                         services.getSpecificationRepository().addContract(contract);
                         ContractPO proofObl = contract.createProofObl(new InitConfig(services));
                         proofObl.readProblem();
-                        System.out.println(proofObl.getPO().getProof(0).getOpenGoals()
-                                .head().getNode().sequent());
+                        System.out.println(
+                            Objects.requireNonNull(proofObl.getPO().getProof(0).getOpenGoals()
+                                    .head()).getNode().sequent());
                     }
                 }
+                assert es != null;
                 return new RustyBlock(es.getExpression());
             } else {
-
-                return null;
+                throw new RuntimeException("TODO");
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ProofInputException e) {
+        } catch (IOException | ProofInputException e) {
             throw new RuntimeException(e);
         }
     }
@@ -165,8 +166,7 @@ public class HirRustyReader {
             throw new RuntimeException(e);
         }
         var hir = Files.readString(path.resolve("hir.json"), Charset.defaultCharset());
-        var wrapperOutput = Crate.parseJSON(hir);
-        return wrapperOutput;
+        return Crate.parseJSON(hir);
     }
 
     public RustyBlock readBlockWithEmptyContext(String s) {
@@ -178,11 +178,9 @@ public class HirRustyReader {
         return readBlock(s, new Context(varNS));
     }
 
-    /**
-     * creates an empty compilation unit with a temporary name.
-     *
-     * @return the new recoder.java.CompilationUnit
-     */
+    /// creates an empty compilation unit with a temporary name.
+    ///
+    /// @return the new recoder.java.CompilationUnit
     public Context createEmptyContext() {
         return new Context(new Namespace<>());
     }

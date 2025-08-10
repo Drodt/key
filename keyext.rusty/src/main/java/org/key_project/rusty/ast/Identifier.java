@@ -10,7 +10,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public record Identifier(Name name) implements Named, RustyProgramElement {
 
     @Override
@@ -38,4 +37,3 @@ public record Identifier(Name name) implements Named, RustyProgramElement {
         throw new RuntimeException("Should never be called");
     }
 }
-//spotless:on

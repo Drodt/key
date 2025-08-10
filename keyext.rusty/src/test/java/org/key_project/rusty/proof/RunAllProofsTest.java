@@ -13,16 +13,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 
 public class RunAllProofsTest {
-    /**
-     * Creates a set of constructor parameters for this class. Uses JUnits parameterized test case
-     * mechanism for to create several test cases from a set of data. {@link Object#toString()} of
-     * first constructor parameter is used to determine name of individual test cases, see
-     * {@link RunAllProofsTestUnit#toString()} for further information.
-     *
-     * @param proofCollection The file name of the index file which parsed to produce test cases
-     * @return The parameters. Each row will be one test case.
-     * @throws IOException If an exceptions occurs while reading and parsing the index file
-     */
+    /// Creates a set of constructor parameters for this class. Uses JUnits parameterized test case
+    /// mechanism for to create several test cases from a set of data. [#toString()] of
+    /// first constructor parameter is used to determine name of individual test cases, see
+    /// [#toString()] for further information.
+    ///
+    /// @param proofCollection The file name of the index file which parsed to produce test cases
+    /// @return The parameters. Each row will be one test case.
+    /// @throws IOException If an exceptions occurs while reading and parsing the index file
     public static Stream<DynamicTest> data(ProofCollection proofCollection) throws IOException {
         /*
          * Create list of constructor parameters that will be returned by this method. Suitable
