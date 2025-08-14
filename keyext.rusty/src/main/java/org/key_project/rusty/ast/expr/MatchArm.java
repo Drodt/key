@@ -11,8 +11,8 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
-public record MatchArm(Pattern pattern, @Nullable Expr guard, Expr body) implements RustyProgramElement {
+public record MatchArm(Pattern pattern, @Nullable Expr guard, Expr body)
+        implements RustyProgramElement {
     @Override
     public void visit(Visitor v) {
         v.performActionOnMatchArm(this);
@@ -51,4 +51,3 @@ public record MatchArm(Pattern pattern, @Nullable Expr guard, Expr body) impleme
         return "";
     }
 }
-//spotless:on

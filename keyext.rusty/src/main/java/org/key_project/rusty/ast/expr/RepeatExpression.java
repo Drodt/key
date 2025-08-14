@@ -14,18 +14,18 @@ import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
 
-public final class RepeatedArrayExpression implements Expr {
+public final class RepeatExpression implements Expr {
     private final Expr expr;
     private final Expr size;
     private final Type ty;
 
-    public RepeatedArrayExpression(Expr expr, Expr size, Type ty) {
+    public RepeatExpression(Expr expr, Expr size, Type ty) {
         this.expr = expr;
         this.size = size;
         this.ty = ty;
     }
 
-    public RepeatedArrayExpression(ExtList changeList, Services services) {
+    public RepeatExpression(ExtList changeList, Services services) {
         expr = Objects.requireNonNull(changeList.removeFirstOccurrence(Expr.class));
         size = Objects.requireNonNull(changeList.removeFirstOccurrence(Expr.class));
         if (size instanceof IntegerLiteralExpression i) {
@@ -82,7 +82,7 @@ public final class RepeatedArrayExpression implements Expr {
             return true;
         if (obj == null || obj.getClass() != this.getClass())
             return false;
-        var that = (RepeatedArrayExpression) obj;
+        var that = (RepeatExpression) obj;
         return Objects.equals(this.expr, that.expr) &&
                 Objects.equals(this.size, that.size) &&
                 Objects.equals(this.ty, that.ty);

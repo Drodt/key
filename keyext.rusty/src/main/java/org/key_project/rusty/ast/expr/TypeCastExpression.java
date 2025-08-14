@@ -11,7 +11,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public record TypeCastExpression(Expr expr, RustType ty) implements Expr {
     @Override
     public void visit(Visitor v) {
@@ -35,7 +34,7 @@ public record TypeCastExpression(Expr expr, RustType ty) implements Expr {
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return expr + " as " + ty;
     }
 
@@ -44,4 +43,3 @@ public record TypeCastExpression(Expr expr, RustType ty) implements Expr {
         return ty.type();
     }
 }
-//spotless:on

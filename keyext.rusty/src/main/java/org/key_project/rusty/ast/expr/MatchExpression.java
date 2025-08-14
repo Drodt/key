@@ -13,7 +13,6 @@ import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public record MatchExpression(Expr expr, ImmutableArray<MatchArm> arms) implements Expr {
     @Override
     public void visit(Visitor v) {
@@ -22,7 +21,8 @@ public record MatchExpression(Expr expr, ImmutableArray<MatchArm> arms) implemen
 
     @Override
     public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return expr;
+        if (n == 0)
+            return expr;
         return Objects.requireNonNull(arms.get(n - 1));
     }
 
@@ -36,7 +36,8 @@ public record MatchExpression(Expr expr, ImmutableArray<MatchArm> arms) implemen
         StringBuilder sb = new StringBuilder();
         sb.append("match (").append(expr).append(") {\n");
         for (int i = 0; i < arms.size(); i++) {
-            if (i > 0) sb.append(", ");
+            if (i > 0)
+                sb.append(", ");
             sb.append(arms.get(i));
         }
         sb.append("}");
@@ -48,4 +49,3 @@ public record MatchExpression(Expr expr, ImmutableArray<MatchArm> arms) implemen
         throw new UnsupportedOperationException();
     }
 }
-//spotless:on

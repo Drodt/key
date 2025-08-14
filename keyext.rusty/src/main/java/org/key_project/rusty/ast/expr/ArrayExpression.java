@@ -14,7 +14,7 @@ import org.key_project.util.collection.ImmutableArray;
 import org.jspecify.annotations.NonNull;
 
 // spotless:off
-public record EnumeratedArrayExpression(ImmutableArray<Expr> elements) implements Expr {
+public record ArrayExpression(ImmutableArray<Expr> elements) implements Expr {
     @Override
     public void visit(Visitor v) {
         v.performActionOnEnumeratedArrayExpression(this);

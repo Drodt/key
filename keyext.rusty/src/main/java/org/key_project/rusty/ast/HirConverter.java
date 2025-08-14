@@ -202,24 +202,135 @@ public class HirConverter {
         var id = expr.hirId();
         var ty = Objects.requireNonNull(types.get(id), "No type for " + expr);
         return switch (expr.kind()) {
+            case ExprKind.ConstBlock e -> convertConstBlockExpr(e);
+            case ExprKind.Array e -> convertArrayExpr(e);
             case ExprKind.Call e -> convertCall(e);
-            case ExprKind.BlockExpr e -> convertBlockExpr(e);
+            case ExprKind.MethodCall e -> convertMethodCall(e);
+            case ExprKind.Tup e -> convertTupleExpr(e);
+            case ExprKind.Binary e -> convertBinary(e);
+            case ExprKind.Unary e -> convertUnary(e, ty);
             case ExprKind.LitExpr(var e) -> convertLitExpr(e, ty);
+            case ExprKind.CastExpr e -> convertCastExpr(e);
+            // TypeExpr? When does this occur?
+            case ExprKind.DropTemps(var e) -> convertExpr(e);
             case ExprKind.Let(var l) -> convertLetExpr(l);
             case ExprKind.If e -> convertIfExpr(e, ty);
             case ExprKind.Loop e -> convertLoopExpr(e, id, ty);
-            case ExprKind.DropTemps(var e) -> convertExpr(e);
+            case ExprKind.Match e -> convertMatchExpr(e, ty);
+            case ExprKind.Closure e -> convertClosure(e);
+            case ExprKind.BlockExpr e -> convertBlockExpr(e);
+            case ExprKind.Assign e -> convertAssign(e, ty);
+            case ExprKind.AssignOp e -> convertAssignOp(e);
+            case ExprKind.Field e -> convertFieldExpr(e);
+            case ExprKind.Index e -> convertIndexExpr(e, ty);
             case ExprKind.Path(var e) -> convertPathExpr(e, ty);
             case ExprKind.AddrOf e -> convertAddrOf(e);
             case ExprKind.Break e -> convertBreakExpr(e);
-            case ExprKind.Assign e -> convertAssign(e, ty);
-            case ExprKind.AssignOp e -> convertAssignOp(e);
-            case ExprKind.Binary e -> convertBinary(e);
-            case ExprKind.Unary e -> convertUnary(e, ty);
+            case ExprKind.Continue e -> convertContinue(e);
+            case ExprKind.Ret e -> convertReturn(e);
+            // Become? What even is that?
+            // InlineAsm?
+            // OffsetOf?
+            case ExprKind.Struct e -> convertStructExpr(e);
             case ExprKind.Repeat e -> convertRepeat(e, ty);
-            case ExprKind.Index e -> convertIndexExpr(e, ty);
+            // case ExprKind.Yield e -> convertYieldExpr(e);
             default -> throw new IllegalArgumentException("Unknown expression: " + expr);
         };
+    }
+
+    private ConstBlockExpression convertConstBlockExpr(ExprKind.ConstBlock e) {
+        var body = (BlockExpression) convertExpr(e.block().body().value());
+        return new ConstBlockExpression(body);
+    }
+
+    private ArrayExpression convertArrayExpr(ExprKind.Array e) {
+        var exprs = new Expr[e.exprs().length];
+        for (int i = 0; i < exprs.length; i++) {
+            exprs[i] = convertExpr(e.exprs()[i]);
+        }
+        return new ArrayExpression(new ImmutableArray<>(exprs));
+    }
+
+    private MethodCallExpression convertMethodCall(ExprKind.MethodCall e) {
+        var args = new Expr[e.args().length];
+        for (int i = 0; i < e.args().length; i++) {
+            args[i] = convertExpr(e.args()[i]);
+        }
+        return new MethodCallExpression(convertExpr(e.callee()), convertPathSegment(e.segment()),
+            new ImmutableArray<>(args));
+    }
+
+    private TupleExpression convertTupleExpr(ExprKind.Tup e) {
+        if (e.exprs().length == 0)
+            return TupleExpression.UNIT;
+        var exprs = new Expr[e.exprs().length];
+        for (int i = 0; i < exprs.length; i++) {
+            exprs[i] = convertExpr(e.exprs()[i]);
+        }
+        return new TupleExpression(new ImmutableArray<>(exprs));
+    }
+
+    private Expr convertCastExpr(ExprKind.CastExpr e) {
+        return new TypeCastExpression(convertExpr(e.expr()), convertHirTy(e.ty()));
+    }
+
+    private MatchExpression convertMatchExpr(ExprKind.Match e, Type ty) {
+        var arms = new MatchArm[e.arms().length];
+        for (int i = 0; i < arms.length; i++) {
+            arms[i] = convertArm(e.arms()[i], ty);
+        }
+        return new MatchExpression(convertExpr(e.expr()), new ImmutableArray<>(arms));
+    }
+
+    private MatchArm convertArm(Arm arm, Type ty) {
+        return new MatchArm(convertPat(arm.pat(), ty),
+            arm.guard() == null ? null : convertExpr(arm.guard()), convertExpr(arm.body()));
+    }
+
+    private ClosureExpression convertClosure(ExprKind.Closure e) {
+        var c = e.closure();
+        var params = new ClosureParam[c.body().params().length];
+        // TODO
+        RustType ty = null;
+        var body = convertExpr(c.body().value());
+        return new ClosureExpression(c.captureClause() instanceof CaptureBy.Value,
+            new ImmutableArray<>(params), ty, body);
+    }
+
+    private FieldExpression convertFieldExpr(ExprKind.Field e) {
+        return new FieldExpression(convertExpr(e.expr()),
+            new Identifier(new Name(convertIdent(e.field()))));
+    }
+
+    private ContinueExpression convertContinue(ExprKind.Continue e) {
+        var label = e.dest() == null ? null : convertDest(e.dest());
+        return new ContinueExpression(label);
+    }
+
+    private ReturnExpression convertReturn(ExprKind.Ret e) {
+        var expr = e.expr() == null ? null : convertExpr(e.expr());
+        return new ReturnExpression(expr);
+    }
+
+    private StructExpression convertStructExpr(ExprKind.Struct e) {
+        var path = convertQPath(e.path());
+        var fields = new StructExprField[e.fields().length];
+        for (int i = 0; i < e.fields().length; i++) {
+            fields[i] = convertExprField(e.fields()[i]);
+        }
+        var tail = switch (e.tail()) {
+            case StructTailExpr.None ignored -> null;
+            case StructTailExpr.Base b -> new BaseStructTailExpression(convertExpr(b.base()));
+            case StructTailExpr.DefaultFields ignored -> new DefaultStructTailExpression();
+            default -> throw new IllegalArgumentException("Unknown struct tail: " + e.tail());
+        };
+        return new StructExpression(path, new ImmutableArray<>(fields), tail);
+    }
+
+    private StructExprField convertExprField(ExprField field) {
+        var name = new Name(field.ident().name());
+        var expr = convertExpr(field.expr());
+        return new StructExprField(new Identifier(name), expr, field.isShorthand());
     }
 
     private CallExpression convertCall(ExprKind.Call call) {
@@ -305,7 +416,15 @@ public class HirConverter {
     }
 
     private BreakExpression convertBreakExpr(ExprKind.Break b) {
-        return new BreakExpression(null, b.expr() != null ? convertExpr(b.expr()) : null);
+        var label = b.dest() == null ? null : convertDest(b.dest());
+        return new BreakExpression(label, b.expr() != null ? convertExpr(b.expr()) : null);
+    }
+
+    private @Nullable Label convertDest(Destination dest) {
+        if (dest.label() == null) {
+            return null;
+        }
+        throw new UnsupportedOperationException("TODO: destination");
     }
 
     private AssignmentExpression convertAssign(ExprKind.Assign assign, Type type) {
@@ -330,8 +449,8 @@ public class HirConverter {
         }, convertExpr(unary.expr()));
     }
 
-    private RepeatedArrayExpression convertRepeat(ExprKind.Repeat repeat, Type type) {
-        return new RepeatedArrayExpression(convertExpr(repeat.expr()),
+    private RepeatExpression convertRepeat(ExprKind.Repeat repeat, Type type) {
+        return new RepeatExpression(convertExpr(repeat.expr()),
             convertConstArg(repeat.len()), type);
     }
 

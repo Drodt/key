@@ -11,7 +11,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public record FieldExpression(Expr base, Identifier field) implements Expr {
     @Override
     public void visit(Visitor v) {
@@ -44,4 +43,3 @@ public record FieldExpression(Expr base, Identifier field) implements Expr {
         throw new UnsupportedOperationException();
     }
 }
-//spotless:on

@@ -299,11 +299,11 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
-    public void performActionOnRepeatedArrayExpression(RepeatedArrayExpression x) {
+    public void performActionOnRepeatedArrayExpression(RepeatExpression x) {
         DefaultAction def = new DefaultAction(x) {
             @Override
             RustyProgramElement createNewElement(ExtList changeList) {
-                return new RepeatedArrayExpression(changeList, services);
+                return new RepeatExpression(changeList, services);
             }
         };
         def.doAction(x);

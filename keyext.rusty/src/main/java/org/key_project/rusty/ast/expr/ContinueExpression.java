@@ -13,8 +13,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
-public record ContinueExpression(@Nullable Label label, @Nullable Expr expr) implements Expr {
+public record ContinueExpression(@Nullable Label label) implements Expr {
     @Override
     public void visit(Visitor v) {
         v.performActionOnContinueExpression(this);
@@ -28,10 +27,8 @@ public record ContinueExpression(@Nullable Label label, @Nullable Expr expr) imp
         if (label != null) {
             --n;
         }
-        if (n == 0 && expr != null) {
-            return expr;
-        }
-        throw new IndexOutOfBoundsException("ContinueExpression has only " + getChildCount() + " children");
+        throw new IndexOutOfBoundsException(
+            "ContinueExpression has only " + getChildCount() + " children");
     }
 
     @Override
@@ -40,21 +37,15 @@ public record ContinueExpression(@Nullable Label label, @Nullable Expr expr) imp
         if (label != null) {
             ++c;
         }
-        if (expr != null) {
-            ++c;
-        }
         return c;
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("continue");
         if (label != null) {
             sb.append(" ").append(label);
-        }
-        if (expr != null) {
-            sb.append(" ").append(expr);
         }
         return sb.toString();
     }
@@ -64,4 +55,3 @@ public record ContinueExpression(@Nullable Label label, @Nullable Expr expr) imp
         return TupleType.UNIT;
     }
 }
-//spotless:on

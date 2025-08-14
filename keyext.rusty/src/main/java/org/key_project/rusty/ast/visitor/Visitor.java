@@ -39,21 +39,15 @@ public interface Visitor {
 
     void performActionOnFieldExpression(FieldExpression x);
 
-    void performActionOnTupleIndexingExpression(TupleIndexingExpression x);
-
     void performActionOnCallExpression(CallExpression x);
 
     void performActionOnIndexExpression(IndexExpression x);
-
-    void performActionOnErrorPropagationExpression(ErrorPropagationExpression x);
 
     void performActionOnBorrowExpression(BorrowExpression x);
 
     void performActionOnDereferenceExpression(DereferenceExpression x);
 
     void performActionOnTypeCastExpression(TypeCastExpression x);
-
-    void performActionOnRangeExpression(RangeExpression x);
 
     void performActionOnCompoundAssignmentExpression(CompoundAssignmentExpression x);
 
@@ -63,35 +57,19 @@ public interface Visitor {
 
     void performActionOnReturnExpression(ReturnExpression x);
 
-    void performActionOnGroupedExpression(GroupedExpression x);
+    void performActionOnEnumeratedArrayExpression(ArrayExpression x);
 
-    void performActionOnEnumeratedArrayExpression(EnumeratedArrayExpression x);
-
-    void performActionOnRepeatedArrayExpression(RepeatedArrayExpression x);
+    void performActionOnRepeatedArrayExpression(RepeatExpression x);
 
     void performActionOnTupleExpression(TupleExpression x);
 
     void performActionOnPathInExpression(PathInExpression x);
 
-    void performActionOnTupleStructExpression(TupleStructExpression x);
-
-    void performActionOnUnitStructExpression(UnitStructExpression x);
-
-    void performActionOnFieldStructExpression(StructStructExpression x);
-
-    void performActionOnEnumVariantFieldless(EnumVariantFieldless x);
-
-    void performActionOnEnumVariantTuple(EnumVariantTuple x);
+    void performActionOnStructExpression(StructExpression x);
 
     void performActionOnClosureExpression(ClosureExpression x);
 
-    void performActionOnEnumVariantStruct(EnumVariantStruct x);
-
     void performActionOnInfiniteLoop(InfiniteLoopExpression x);
-
-    void performActionOnPredicatePatternLoopExpression(PredicatePatternLoopExpression x);
-
-    void performActionOnIteratorLoopExpression(IteratorLoopExpression x);
 
     void performActionOnIfExpression(IfExpression x);
 
@@ -150,4 +128,6 @@ public interface Visitor {
     void performActionOnSortRustType(SortRustType x);
 
     void performActionOnLitPatExpr(LitPatExpr x);
+
+    void performActionOnEmptyPanic(EmptyPanic x);
 }

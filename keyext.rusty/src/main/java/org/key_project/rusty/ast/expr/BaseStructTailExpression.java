@@ -4,26 +4,19 @@
 package org.key_project.rusty.ast.expr;
 
 import org.key_project.logic.SyntaxElement;
-import org.key_project.rusty.ast.Identifier;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
-public record ShorthandEnumExprField(Identifier ident) implements EnumExprField {
+public record BaseStructTailExpression(Expr base) implements StructTail {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return ident;
-        throw new IndexOutOfBoundsException("ShorthandEnumExprField has 1 child");
+        if (n == 0)
+            return base;
+        throw new IndexOutOfBoundsException("BaseStructTailExpression has only 1 child");
     }
 
     @Override
     public int getChildCount() {
         return 1;
     }
-
-    @Override
-    public String toString() {
-        return ident.toString();
-    }
 }
-//spotless:on

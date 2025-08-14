@@ -11,7 +11,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
 public record ReturnExpression(@Nullable Expr expr) implements Expr {
     @Override
     public void visit(Visitor v) {
@@ -23,7 +22,8 @@ public record ReturnExpression(@Nullable Expr expr) implements Expr {
         if (n == 0 && expr != null) {
             return expr;
         }
-        throw new IndexOutOfBoundsException("ReturnExpression has only " + getChildCount() + " children");
+        throw new IndexOutOfBoundsException(
+            "ReturnExpression has only " + getChildCount() + " children");
     }
 
     @Override
@@ -50,4 +50,3 @@ public record ReturnExpression(@Nullable Expr expr) implements Expr {
         throw new UnsupportedOperationException();
     }
 }
-//spotless:on
