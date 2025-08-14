@@ -5,7 +5,6 @@ package org.key_project.rusty.parser.hir.expr;
 
 import org.key_project.rusty.parser.hir.HirId;
 import org.key_project.rusty.parser.hir.Label;
-import org.key_project.rusty.parser.hir.Result;
 
 import org.jspecify.annotations.Nullable;
 

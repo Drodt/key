@@ -197,8 +197,7 @@ public class SchemaConverter {
                 return convertTupleStructExpression(x.structExpr().structExprTuple());
             if (x.structExpr().structExprStruct() != null)
                 return convertStructStructExpression(x.structExpr().structExprStruct());
-        }
-        else if (ctx instanceof RustySchemaParser.EnumerationVariantExpression_Context x) {
+        } else if (ctx instanceof RustySchemaParser.EnumerationVariantExpression_Context x) {
             if (x.enumerationVariantExpr().enumExprStruct() != null)
                 return convertEnumVariantStruct(x.enumerationVariantExpr().enumExprStruct());
             if (x.enumerationVariantExpr().enumExprTuple() != null)
@@ -227,7 +226,7 @@ public class SchemaConverter {
         }
         if (ctx instanceof RustySchemaParser.ConstBlockSchemaContext cb) {
             var sv =
-                    (ProgramSV) lookupSchemaVariable(cb.schemaVariable().getText().substring(2));
+                (ProgramSV) lookupSchemaVariable(cb.schemaVariable().getText().substring(2));
             return new ConstBlockExpression(sv);
         }
         throw new UnsupportedOperationException(
