@@ -10,6 +10,7 @@ blockExpr
 
 expr
    : schemaVariable # SchemaVarExpression
+   | KW_CONST schemaVariable # ConstBlockSchema
    | EXPAND_FN_BODY LPAREN schemaVariable RPAREN # ExpandFnBody
    | FN_FRAME LPAREN schemaVariable COMMA blockExpr RPAREN # FnFrame
    | literalExpr # LiteralExpression

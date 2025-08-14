@@ -188,9 +188,9 @@ public class SchemaConverter {
                 return convertEnumeratedArrayExpression(x);
             else
                 return convertRepeatedArrayExpression(x);
-        if (ctx instanceof RustySchemaParser.TupleExpressionContext x)
+        else if (ctx instanceof RustySchemaParser.TupleExpressionContext x)
             return convertTupleExpression(x);
-        if (ctx instanceof RustySchemaParser.StructExpression_Context x) {
+        else if (ctx instanceof RustySchemaParser.StructExpression_Context x) {
             if (x.structExpr().structExprUnit() != null)
                 return convertUnitStructExpression(x.structExpr().structExprUnit());
             if (x.structExpr().structExprTuple() != null)
@@ -198,7 +198,7 @@ public class SchemaConverter {
             if (x.structExpr().structExprStruct() != null)
                 return convertStructStructExpression(x.structExpr().structExprStruct());
         }
-        if (ctx instanceof RustySchemaParser.EnumerationVariantExpression_Context x) {
+        else if (ctx instanceof RustySchemaParser.EnumerationVariantExpression_Context x) {
             if (x.enumerationVariantExpr().enumExprStruct() != null)
                 return convertEnumVariantStruct(x.enumerationVariantExpr().enumExprStruct());
             if (x.enumerationVariantExpr().enumExprTuple() != null)
@@ -224,6 +224,11 @@ public class SchemaConverter {
             FunctionFrame functionFrame =
                 new FunctionFrame(resultVar, null, convertBlockExpr(ff.blockExpr()));
             return functionFrame;
+        }
+        if (ctx instanceof RustySchemaParser.ConstBlockSchemaContext cb) {
+            var sv =
+                    (ProgramSV) lookupSchemaVariable(cb.schemaVariable().getText().substring(2));
+            return new ConstBlockExpression(sv);
         }
         throw new UnsupportedOperationException(
             "Unknown expr: " + ctx.getText() + " class: " + ctx.getClass());

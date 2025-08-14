@@ -10,7 +10,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-public record ConstBlockExpression(BlockExpression block) implements Expr {
+public record ConstBlockExpression(Expr block) implements Expr {
     @Override
     public @NonNull String toString() {
         return "const " + block;
