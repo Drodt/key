@@ -21,7 +21,7 @@
     (branch "dummy ID"
         (rule "assignment" (formula "1"))
         (rule "simpleExprStmt" (formula "1") (term "1"))
-        (rule "ifElseSplit" (formula "1"))
+        (rule "if_else_split" (formula "1"))
         (branch
            (rule "applyOnRigidFormula" (formula "1"))
            (rule "applyOnPV" (formula "1") (term "0"))

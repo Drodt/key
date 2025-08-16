@@ -135,7 +135,7 @@
             (rule "applyOnPV" (formula "6") (term "0,1,0"))
             (rule "impRight" (formula "6"))
             (rule "letIdentPat" (formula "7") (term "1"))
-            (rule "ifUnfold" (formula "7") (term "1"))
+            (rule "if_unfold" (formula "7") (term "1"))
             (rule "letIdentPatAssign" (formula "7") (term "1"))
             (rule "letIdentPat" (formula "7") (term "1"))
             (rule "equalityComparisonSimple" (formula "7") (term "1"))
