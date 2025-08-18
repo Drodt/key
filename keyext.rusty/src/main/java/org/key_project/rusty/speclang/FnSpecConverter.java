@@ -115,6 +115,11 @@ public class FnSpecConverter {
                 case LitKind.Int(var i, var ignored) -> tb.zTerm(i);
                 default -> throw new IllegalStateException("Unexpected value: " + l.node());
             };
+            case TermKind.Tup(var ts) -> {
+                var terms =
+                    Arrays.stream(ts).map(t -> convert(t, pvMap, target)).toArray(Term[]::new);
+                yield tb.tuple(terms);
+            }
             case TermKind.Path(var p) -> convertPath(p, pvMap, target);
             default -> throw new IllegalStateException("Unexpected value: " + term);
         };
@@ -134,7 +139,7 @@ public class FnSpecConverter {
             case BinOpKind.Le -> intLDT.getLessOrEquals();
             case BinOpKind.Gt -> intLDT.getGreaterThan();
             case BinOpKind.Ge -> intLDT.getGreaterOrEquals();
-            case BinOpKind.Eq ->
+            case BinOpKind.Eq, BinOpKind.LogEq ->
                 left.sort() == RustyDLTheory.FORMULA ? Equality.EQV : Equality.EQUALS;
             case BinOpKind.BitXor, BinOpKind.BitAnd, BinOpKind.BitOr, BinOpKind.Shl, BinOpKind.Rem,
                     BinOpKind.Shr ->

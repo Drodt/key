@@ -108,7 +108,7 @@ public class LoopSpecConverter {
             case BinOpKind.Le -> intLDT.getLessOrEquals();
             case BinOpKind.Gt -> intLDT.getGreaterThan();
             case BinOpKind.Ge -> intLDT.getGreaterOrEquals();
-            case BinOpKind.Eq ->
+            case BinOpKind.Eq, BinOpKind.LogEq ->
                 left.sort() == RustyDLTheory.FORMULA ? Equality.EQV : Equality.EQUALS;
             case BinOpKind.BitXor, BinOpKind.BitAnd, BinOpKind.BitOr, BinOpKind.Shl, BinOpKind.Rem,
                     BinOpKind.Shr ->

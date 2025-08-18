@@ -43,4 +43,9 @@ public class ParametricSortDecl implements Named {
     public String getDocumentation() {
         return documentation;
     }
+
+    @Override
+    public String toString() {
+        return name.toString() + "<" + parameters.toString() + ">";
+    }
 }

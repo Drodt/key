@@ -20,7 +20,9 @@ import org.key_project.rusty.ast.pat.BindingPattern;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
+import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
+import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -678,5 +680,20 @@ public class TermBuilder {
     /// @return a location variable for the given name and type
     public ProgramVariable atPreVar(String baseName, KeYRustyType krt, boolean makeNameUnique) {
         return progVar(baseName + "_at_pre", krt, makeNameUnique);
+    }
+
+    public Term tuple(Term[] terms) {
+        if (terms.length == 0) {
+            return func(services.getNamespaces().functions().lookup("unit"));
+        }
+        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+        for (int i = terms.length - 1; i >= 0; i--) {
+            args = args.prepend(new SortArg(terms[i].sort()));
+        }
+        var pfd = services.getNamespaces().parametricFunctions().lookup("tpl" + terms.length);
+        if (pfd == null) {
+            throw new UnsupportedOperationException("Unsupported tuple length: " + terms.length);
+        }
+        return func(ParametricFunctionInstance.get(pfd, args), terms);
     }
 }

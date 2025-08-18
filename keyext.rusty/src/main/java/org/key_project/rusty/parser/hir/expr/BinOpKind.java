@@ -22,4 +22,5 @@ public enum BinOpKind {
     Ne,
     Ge,
     Gt,
+    LogEq
 }

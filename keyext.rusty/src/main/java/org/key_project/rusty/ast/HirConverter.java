@@ -179,7 +179,8 @@ public class HirConverter {
             null, retTy, null);
         if (fnSpecs != null) {
             var spec = fnSpecs.get(new DefId(id.localDefIndex(), 0));
-            fn2Spec.put(function, Objects.requireNonNull(spec));
+            if (spec != null)
+                fn2Spec.put(function, Objects.requireNonNull(spec, name.toString()));
         }
         localFns.put(id, function);
         fnsToComplete.put(function, fn);
@@ -477,7 +478,7 @@ public class HirConverter {
             case BitOr -> BinaryExpression.Operator.BitOr;
             case Shl -> BinaryExpression.Operator.Shl;
             case Shr -> BinaryExpression.Operator.Shr;
-            case Eq -> BinaryExpression.Operator.Eq;
+            case Eq, LogEq -> BinaryExpression.Operator.Eq;
             case Lt -> BinaryExpression.Operator.Lt;
             case Le -> BinaryExpression.Operator.Le;
             case Ne -> BinaryExpression.Operator.Ne;

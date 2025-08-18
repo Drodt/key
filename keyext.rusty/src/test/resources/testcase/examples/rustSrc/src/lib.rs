@@ -59,6 +59,7 @@ pub fn test_array() -> i32 {
     a[1]
 }
 
+#[spec(name = "tuple", ensures(result === (2, 4)))]
 pub fn test_tuples() -> (i32, i32) {
     let mut a = (1 + 1, 2 * 2);
     a.0 = a.1 - 2;
