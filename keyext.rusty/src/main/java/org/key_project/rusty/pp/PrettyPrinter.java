@@ -655,4 +655,31 @@ public class PrettyPrinter implements Visitor {
         layouter.keyWord("print!");
         layouter.print("()");
     }
+
+    @Override
+    public void performActionOnPtrRustType(PtrRustType x) {
+        layouter.print("*");
+        x.getInner().visit(this);
+    }
+
+    @Override
+    public void performActionOnNeverRustType(NeverRustType x) {
+        layouter.keyWord("!");
+    }
+
+    @Override
+    public void performActionOnArrayRustType(ArrayRustType x) {
+        layouter.print("[");
+        x.getElemTy().visit(this);
+        layouter.print("; ");
+        x.getLen().visit(this);
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnSliceRustType(SliceRustType x) {
+        layouter.print("[");
+        x.getInner().visit(this);
+        layouter.print("]");
+    }
 }

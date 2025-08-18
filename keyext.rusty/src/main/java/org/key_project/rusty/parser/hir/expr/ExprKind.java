@@ -101,6 +101,7 @@ public interface ExprKind {
                 case "ConstBlock" -> ConstBlock.class;
                 case "Array" -> Array.class;
                 case "MethodCall" -> MethodCall.class;
+                case "Tup" -> Tup.class;
                 case "Call" -> Call.class;
                 case "Binary" -> Binary.class;
                 case "Unary" -> Unary.class;

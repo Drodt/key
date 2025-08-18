@@ -520,10 +520,32 @@ public class HirConverter {
 
     private RustType convertHirTy(HirTy ty) {
         return switch (ty.kind()) {
-            case HirTyKind.Path p -> convertPathHirTy(p);
+            case HirTyKind.Slice(var s) -> convertSliceHirTy(s);
+            case HirTyKind.Array(var a, var l) -> convertArrayHirTy(a, l);
+            case HirTyKind.Ptr(var p) -> convertPtrHirTy(p);
             case HirTyKind.Ref(var m) -> convertMutHirTy(m);
+            case HirTyKind.Never ignored -> new NeverRustType();
+            case HirTyKind.Tup(var tys) -> convertTupHirType(tys);
+            case HirTyKind.Path p -> convertPathHirTy(p);
             default -> throw new IllegalArgumentException("Unknown hirty type: " + ty);
         };
+    }
+
+    private RustType convertTupHirType(HirTy[] tys) {
+        var innerTys = Arrays.stream(tys).map(this::convertHirTy).toList();
+        return new TupleRustType(new ImmutableArray<>(innerTys));
+    }
+
+    private RustType convertSliceHirTy(HirTy s) {
+        return new SliceRustType(convertHirTy(s));
+    }
+
+    private RustType convertArrayHirTy(HirTy a, ConstArg l) {
+        return new ArrayRustType(convertHirTy(a), convertConstArg(l), services);
+    }
+
+    private RustType convertPtrHirTy(HirTy p) {
+        return new PtrRustType(convertHirTy(p));
     }
 
     private RustType convertPathHirTy(HirTyKind.Path ty) {

@@ -130,4 +130,12 @@ public interface Visitor {
     void performActionOnLitPatExpr(LitPatExpr x);
 
     void performActionOnEmptyPanic(EmptyPanic x);
+
+    void performActionOnNeverRustType(NeverRustType x);
+
+    void performActionOnPtrRustType(PtrRustType x);
+
+    void performActionOnSliceRustType(SliceRustType x);
+
+    void performActionOnArrayRustType(ArrayRustType x);
 }

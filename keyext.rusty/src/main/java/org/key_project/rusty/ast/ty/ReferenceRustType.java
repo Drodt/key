@@ -9,8 +9,8 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
-public record ReferenceRustType(boolean isMut, RustType inner, ReferenceType type) implements RustType {
+public record ReferenceRustType(boolean isMut, RustType inner, ReferenceType type)
+        implements RustType {
     @Override
     public void visit(Visitor v) {
         v.performActionOnReferenceRustType(this);
@@ -40,4 +40,3 @@ public record ReferenceRustType(boolean isMut, RustType inner, ReferenceType typ
         return sb.toString();
     }
 }
-//spotless:on

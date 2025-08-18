@@ -335,4 +335,24 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     public void performActionOnEmptyPanic(EmptyPanic x) {
         doDefaultAction(x);
     }
+
+    @Override
+    public void performActionOnArrayRustType(ArrayRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnNeverRustType(NeverRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnPtrRustType(PtrRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnSliceRustType(SliceRustType x) {
+        doDefaultAction(x);
+    }
 }

@@ -6,6 +6,7 @@ package org.key_project.rusty.ast.abstraction;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.ty.NeverRustType;
 import org.key_project.rusty.ast.ty.RustType;
 
 public class Never implements Type {
@@ -21,7 +22,7 @@ public class Never implements Type {
 
     @Override
     public RustType toRustType(Services services) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new NeverRustType();
     }
 
     @Override
