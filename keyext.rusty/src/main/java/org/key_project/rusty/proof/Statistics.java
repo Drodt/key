@@ -3,13 +3,17 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+import org.key_project.logic.Name;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.rules.RuleSet;
+import org.key_project.prover.rules.Taclet;
+import org.key_project.rusty.rule.AbstractContractRuleApp;
+import org.key_project.rusty.rule.ContractRuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.EnhancedStringBuffer;
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.Pair;
 
 public class Statistics {
@@ -27,9 +31,22 @@ public class Statistics {
     public final int operationContractApps;
     public final int blockLoopContractApps;
     public final int loopInvApps;
-    // public final long autoModeTimeInMillis;
+    public final long autoModeTimeInMillis;
     public final long timeInMillis;
-    // public final float timePerStepInMillis;
+    public final float timePerStepInMillis;
+
+    private static final Set<Name> symbolicExecNames = new HashSet<>(9);
+    static {
+        symbolicExecNames.add(new Name("function_expand"));
+        symbolicExecNames.add(new Name("simplify_prog"));
+        symbolicExecNames.add(new Name("simplify_autoname"));
+        symbolicExecNames.add(new Name("executeIntegerAssignment"));
+        symbolicExecNames.add(new Name("split_if"));
+        symbolicExecNames.add(new Name("split_cond"));
+        symbolicExecNames.add(new Name("simplify_expression"));
+        symbolicExecNames.add(new Name("loop_scope_expand"));
+        symbolicExecNames.add(new Name("loop_scope_inv"));
+    }
 
     private final List<Pair<String, String>> summaryList = new ArrayList<>(14);
 
@@ -53,9 +70,9 @@ public class Statistics {
         this.operationContractApps = operationContractApps;
         this.blockLoopContractApps = blockLoopContractApps;
         this.loopInvApps = loopInvApps;
-        // this.autoModeTimeInMillis = autoModeTimeInMillis;
+        this.autoModeTimeInMillis = autoModeTimeInMillis;
         this.timeInMillis = timeInMillis;
-        // this.timePerStepInMillis = timePerStepInMillis;
+        this.timePerStepInMillis = timePerStepInMillis;
     }
 
     public Statistics(List<Node> startNodes) {
@@ -122,10 +139,11 @@ public class Statistics {
         this.operationContractApps = operationContractApps;
         this.blockLoopContractApps = blockLoopContractApps;
         this.loopInvApps = loopInvApps;
-        // this.autoModeTimeInMillis = autoModeTimeInMillis;
+        this.autoModeTimeInMillis = autoModeTimeInMillis;
         this.timeInMillis = timeInMillis;
-        // this.timePerStepInMillis = nodes <= 1 ? .0f : (autoModeTimeInMillis / (float) (nodes -
-        // 1));
+        this.timePerStepInMillis = nodes <= 1 ? .0f
+                : (autoModeTimeInMillis / (float) (nodes -
+                        1));
 
         generateSummary(startNodes.get(0).proof());
     }
@@ -156,7 +174,8 @@ public class Statistics {
         this.blockLoopContractApps = tmp.block;
         this.loopInvApps = tmp.inv;
         this.timeInMillis = (System.currentTimeMillis() - startNode.proof().creationTime);
-        // timePerStepInMillis = nodes <= 1 ? .0f : (autoModeTimeInMillis / (float) (nodes - 1));
+        this.autoModeTimeInMillis = startNode.proof().getAutoModeTime();
+        timePerStepInMillis = nodes <= 1 ? .0f : (autoModeTimeInMillis / (float) (nodes - 1));
 
         generateSummary(startNode.proof());
     }
@@ -182,26 +201,23 @@ public class Statistics {
         summaryList.add(new Pair<>("Interactive steps", String.valueOf(stat.interactiveSteps)));
         summaryList.add(new Pair<>("Symbolic execution steps", String.valueOf(stat.symbExApps)));
 
+        final long time = sideProofs ? stat.autoModeTimeInMillis : proof.getAutoModeTime();
 
-        /*
-         * final long time = sideProofs ? stat.autoModeTimeInMillis : proof.getAutoModeTime();
-         *
-         * summaryList.add(new Pair<>("Automode time",
-         * EnhancedStringBuffer.formatTime(time).toString()));
-         * if (time >= 10000L) {
-         * summaryList.add(new Pair<>("Automode time", time + "ms"));
-         * }
-         * if (stat.nodes > 0) {
-         * String avgTime = String.valueOf(stat.timePerStepInMillis);
-         * // round to 3 digits after point
-         * int i = avgTime.indexOf('.') + 4;
-         * if (i > avgTime.length()) {
-         * i = avgTime.length();
-         * }
-         * avgTime = avgTime.substring(0, i);
-         * summaryList.add(new Pair<>("Avg. time per step", avgTime + "ms"));
-         * }
-         */
+        summaryList.add(new Pair<>("Automode time",
+            EnhancedStringBuffer.formatTime(time).toString()));
+        if (time >= 10000L) {
+            summaryList.add(new Pair<>("Automode time", time + "ms"));
+        }
+        if (stat.nodes > 0) {
+            String avgTime = String.valueOf(stat.timePerStepInMillis);
+            // round to 3 digits after point
+            int i = avgTime.indexOf('.') + 4;
+            if (i > avgTime.length()) {
+                i = avgTime.length();
+            }
+            avgTime = avgTime.substring(0, i);
+            summaryList.add(new Pair<>("Avg. time per step", avgTime + "ms"));
+        }
 
         summaryList.add(new Pair<>("Rule applications", ""));
         summaryList.add(new Pair<>("Quantifier instantiations",
@@ -270,28 +286,26 @@ public class Statistics {
             branches += childBranches(node);
             cachedBranches += cachedBranches(node);
             interactive += interactiveRuleApps(node);
-            // symbExApps += NodeInfo.isSymbolicExecutionRuleApplied(node) ? 1 : 0;
+            symbExApps += isSymbolicExecutionRuleApplied(node) ? 1 : 0;
 
             final RuleApp ruleApp = node.getAppliedRuleApp();
             if (ruleApp != null) {
-                /*
-                 * if (ruleApp instanceof de.uka.ilkd.key.rule.OneStepSimplifierRuleApp) {
-                 * oss++;
-                 * ossCaptured += tmpOssCaptured(ruleApp);
-                 * } else if (ruleApp instanceof SMTRuleApp) {
-                 * smt++;
-                 * } else if (ruleApp instanceof UseDependencyContractApp) {
-                 * dep++;
-                 * } else if (ruleApp instanceof ContractRuleApp) {
-                 * contr++;
-                 * } else if (ruleApp instanceof AbstractAuxiliaryContractBuiltInRuleApp) {
-                 * block++;
-                 * } else if (ruleApp instanceof LoopInvariantBuiltInRuleApp) {
-                 * inv++;
-                 * } else if (ruleApp instanceof MergeRuleBuiltInRuleApp) {
-                 * mergeApps++;
-                 * } else
-                 */ if (ruleApp instanceof TacletApp) {
+                // if (ruleApp instanceof OneStepSimplifierRuleApp) {
+                // oss++;
+                // ossCaptured += tmpOssCaptured(ruleApp);
+                // } else if (ruleApp instanceof SMTRuleApp) {
+                // smt++;
+                // } else if (ruleApp instanceof UseDependencyContractApp) {
+                // dep++;
+                /* } else */ if (ruleApp instanceof ContractRuleApp) {
+                    contr++;
+                    // } else if (ruleApp instanceof AbstractAuxiliaryContractBuiltInRuleApp) {
+                    // block++;
+                    // } else if (ruleApp instanceof LoopInvariantBuiltInRuleApp) {
+                    // inv++;
+                    // } else if (ruleApp instanceof MergeRuleBuiltInRuleApp) {
+                    // mergeApps++;
+                } else if (ruleApp instanceof TacletApp) {
                     inv += tmpLoopScopeInvTacletRuleApps(ruleApp);
                     quant += tmpQuantificationRuleApps(ruleApp);
                 }
@@ -349,7 +363,7 @@ public class Statistics {
         /// @param ruleApp The [RuleApp] to check.
         /// @return 1 or 0.
         private int tmpLoopScopeInvTacletRuleApps(final RuleApp ruleApp) {
-            return tacletHasRuleSet(ruleApp, "loop_scope_inv_taclet");
+            return tacletHasRuleSet(ruleApp, "loop_scope_inv");
         }
 
         /// Returns 1 if ruleApp belongs to the given rule set, and 0 otherwise.
@@ -357,10 +371,8 @@ public class Statistics {
         /// @param ruleApp The [RuleApp] to check.
         /// @return 1 or 0.
         private int tacletHasRuleSet(final RuleApp ruleApp, final String ruleSet) {
-            return 1; /*
-                       * ((TacletApp) ruleApp).taclet().getRuleSets().stream()
-                       * .map(rs -> rs.name().toString()).anyMatch(n -> n.equals(ruleSet)) ? 1 : 0;
-                       */
+            return ((TacletApp) ruleApp).taclet().getRuleSets().stream()
+                    .map(rs -> rs.name().toString()).anyMatch(n -> n.equals(ruleSet)) ? 1 : 0;
         }
 
         /// Compute all rule applications regarding quantifiers
@@ -378,5 +390,44 @@ public class Statistics {
             }
             return res;
         }
+    }
+
+    /**
+     * Checks if a rule is applied on the given {@link Node} which performs symbolic execution.
+     *
+     * @param node The {@link Node} to check.
+     * @return {@code true} symbolic execution is performed, {@code false} otherwise.
+     */
+    public static boolean isSymbolicExecutionRuleApplied(Node node) {
+        if (node != null) {
+            return isSymbolicExecutionRuleApplied(node.getAppliedRuleApp());
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if the given {@link RuleApp} performs symbolic execution.
+     *
+     * @param app The {@link RuleApp} to check.
+     * @return {@code true} symbolic execution is performed, {@code false} otherwise.
+     */
+    public static boolean isSymbolicExecutionRuleApplied(RuleApp app) {
+        return app instanceof AbstractContractRuleApp
+                || app instanceof TacletApp
+                        && isSymbolicExecution(((TacletApp) app).taclet());
+    }
+
+    public static boolean isSymbolicExecution(Taclet t) {
+        ImmutableList<RuleSet> list = t.getRuleSets();
+        RuleSet rs;
+        while (!list.isEmpty()) {
+            rs = list.head();
+            if (symbolicExecNames.contains(rs.name())) {
+                return true;
+            }
+            list = list.tail();
+        }
+        return false;
     }
 }

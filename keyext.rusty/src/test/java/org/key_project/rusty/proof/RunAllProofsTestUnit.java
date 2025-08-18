@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /// @author Kai Wallisch
 public final class RunAllProofsTestUnit implements Serializable {
     private static final long serialVersionUID = -2406881153415390252L;
-    private static final Logger LOGGER = LoggerFactory.getLogger(StatisticsFile.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RunAllProofsTestUnit.class);
 
     /// The name of this test.
     private final String testName;

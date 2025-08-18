@@ -57,61 +57,59 @@ public class StatisticsFile {
             return statistics.timeInMillis;
         }
 
-    }, /*
-        * new LongColumn("Automode time (ms)") {
-        *
-        * @Override
-        * long getLongValueFromStatistics(Statistics statistics) {
-        * return statistics.autoModeTimeInMillis;
-        * }
-        *
-        * },
-        */ new Column<Integer>("Closed") {
+    },
+        new LongColumn("Automode time (ms)") {
 
-        @Override
-        Integer addEntry(Statistics statistics, File keyFile, boolean closed) {
-            return closed ? 1 : 0;
-        }
-
-        @Override
-        String[] computeSumAndAverage(List<String> list) {
-            long sum = 0;
-            for (String s : list) {
-                sum += Long.parseLong(s);
+            @Override
+            long getLongValueFromStatistics(Statistics statistics) {
+                return statistics.autoModeTimeInMillis;
             }
-            double avg = ((double) sum) / ((double) list.size());
-            return new String[] { "" + sum, "" + avg };
-        }
+        }, new Column<Integer>("Closed") {
 
-    }, /*
-        * new Column<Double>("Time per step (ms)") {
-        *
-        * @Override
-        * Double addEntry(Statistics statistics, File keyFile, boolean proofClosed) {
-        * return (double) statistics.timePerStepInMillis;
-        * }
-        *
-        * @Override
-        * String[] computeSumAndAverage(List<String> list) {
-        * double sum = 0.0;
-        * for (String s : list) {
-        * sum += Double.parseDouble(s);
-        * }
-        * double avg = sum / ((double) list.size());
-        * return new String[] { "" + sum, "" + avg };
-        * }
-        *
-        * },
-        */ new LongColumn("Total Runtime Memory (kB)") {
+            @Override
+            Integer addEntry(Statistics statistics, File keyFile, boolean closed) {
+                return closed ? 1 : 0;
+            }
 
-        @Override
-        long getLongValueFromStatistics(Statistics statistics) {
-            // get current memory consumption (after GC) in kB
-            Runtime.getRuntime().gc();
-            return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024;
-        }
+            @Override
+            String[] computeSumAndAverage(List<String> list) {
+                long sum = 0;
+                for (String s : list) {
+                    sum += Long.parseLong(s);
+                }
+                double avg = ((double) sum) / ((double) list.size());
+                return new String[] { "" + sum, "" + avg };
+            }
 
-    } };
+        },
+        new Column<Double>("Time per step (ms)") {
+            @Override
+            Double addEntry(Statistics statistics, File keyFile, boolean proofClosed) {
+                return (double) statistics.timePerStepInMillis;
+            }
+
+            @Override
+            String[] computeSumAndAverage(List<String> list) {
+                double sum = 0.0;
+                for (String s : list) {
+                    sum += Double.parseDouble(s);
+                }
+                double avg = sum / ((double) list.size());
+                return new String[] { "" + sum, "" + avg };
+            }
+
+        },
+        new LongColumn("Total Runtime Memory (kB)") {
+
+            @Override
+            long getLongValueFromStatistics(Statistics statistics) {
+                // get current memory consumption (after GC) in kB
+                Runtime.getRuntime().gc();
+                return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())
+                        / 1024;
+            }
+
+        } };
 
     public StatisticsFile(File location) {
         this.statisticsFile = location;

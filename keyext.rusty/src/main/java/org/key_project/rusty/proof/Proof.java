@@ -51,6 +51,8 @@ public class Proof implements ProofObject<Goal>, Named {
     /// the environment of the proof with specs and java model
     private ProofCorrectnessMgt localMgt;
 
+    private long autoModeTime = 0;
+
     /// constructs a new empty proof with name
     private Proof(Name name, InitConfig initConfig) {
         this.name = name;
@@ -305,5 +307,13 @@ public class Proof implements ProofObject<Goal>, Named {
 
         Goal fstGoal = openGoals().head();
         fstGoal.makeLocalNamespacesFrom(ns);
+    }
+
+    public long getAutoModeTime() {
+        return autoModeTime;
+    }
+
+    public void addAutoModeTime(long time) {
+        autoModeTime += time;
     }
 }
