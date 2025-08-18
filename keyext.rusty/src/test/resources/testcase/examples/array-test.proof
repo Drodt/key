@@ -48,7 +48,7 @@
             (rule "applyOnPV" (formula "3") (term "0,0,0"))
             (rule "simplifyUpdate1" (formula "3") (term "1,0,0"))
             (rule "simplifyUpdate1" (formula "3") (term "2,0,0"))
-            (rule "addition_complex_lhs" (formula "3") (term "1"))
+            (rule "assignment_unfold" (formula "3") (term "1"))
             (rule "let_ident_pat_assign" (formula "3") (term "1"))
             (rule "let_ident_pat" (formula "3") (term "1"))
             (rule "assign_addition_unfold_left" (formula "3") (term "1"))
