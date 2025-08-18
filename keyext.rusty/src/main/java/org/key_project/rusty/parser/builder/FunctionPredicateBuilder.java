@@ -14,10 +14,7 @@ import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 import org.key_project.rusty.logic.op.RFunction;
-import org.key_project.rusty.logic.sort.ConstParam;
-import org.key_project.rusty.logic.sort.GenericParameter;
-import org.key_project.rusty.logic.sort.GenericSort;
-import org.key_project.rusty.logic.sort.GenericSortParam;
+import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -44,32 +41,85 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
     public Object visitDatatype_decl(KeYRustyParser.Datatype_declContext ctx) {
         // weigl: all datatypes are free ==> functions are unique!
         // boolean freeAdt = ctx.FREE() != null;
-        var sort = sorts().lookup(ctx.name.getText());
-        var dtNamespace = new Namespace<@NonNull Function>();
-        for (KeYRustyParser.Datatype_constructorContext constructorContext : ctx
-                .datatype_constructor()) {
-            Name name = new Name(constructorContext.name.getText());
-            Sort[] args = new Sort[constructorContext.sortId().size()];
-            var argNames = constructorContext.argName;
-            for (int i = 0; i < args.length; i++) {
-                Sort argSort = accept(constructorContext.sortId(i));
-                args[i] = argSort;
-                var argName = argNames.get(i).getText();
-                var alreadyDefinedFn = dtNamespace.lookup(argName);
-                if (alreadyDefinedFn != null
-                        && (!alreadyDefinedFn.sort().equals(argSort)
-                                || !alreadyDefinedFn.argSort(0).equals(sort))) {
-                    throw new RuntimeException("Name already in namespace: " + argName);
+        Sort sort;
+        if (sorts().lookup(ctx.name.getText()) == null) {
+            // Is parametric
+            var psd = namespaces().parametricSorts().lookup(ctx.name.getText());
+            assert psd != null;
+            ImmutableList<GenericArgument> args = ImmutableList.of();
+            for (int i = psd.getParameters().size() - 1; i >= 0; i--) {
+                var param = psd.getParameters().get(i);
+                if (param instanceof GenericSortParam(GenericSort gs)) {
+                    args = args.prepend(new SortArg(gs));
+                } else if (param instanceof ConstParam cp) {
+                    RFunction f = new RFunction(cp.name(), cp.sort());
+                    args = args.prepend(new TermArg(services.getTermBuilder().func(f)));
                 }
-                Function fn = new RFunction(new Name(argName), argSort, new Sort[] { sort }, null,
-                    false, false);
-                dtNamespace.add(fn);
             }
-            Function function = new RFunction(name, sort, args, null, true, false);
-            namespaces().functions().addSafely(function);
+            sort = ParametricSortInstance.get(psd, args);
+        } else {
+            sort = sorts().lookup(ctx.name.getText());
         }
-        namespaces().functions().addSafely(dtNamespace.allElements());
-        return null;
+        var dtFnNamespace = new Namespace<@NonNull Function>();
+        var dtPfnNamespace = new Namespace<@NonNull ParametricFunctionDecl>();
+
+        var sorts = new Namespace<>(nss.sorts());
+        var consts = new Namespace<>(nss.functions());
+
+        List<GenericParameter> genericParameters = ctx.formal_sort_param_decls() == null ? null
+                : visitFormal_sort_param_decls(ctx.formal_sort_param_decls());
+        if (genericParameters != null) {
+            for (GenericParameter param : genericParameters) {
+                if (param instanceof GenericSortParam(GenericSort gs)) {
+                    sorts.add(gs);
+                } else if (param instanceof ConstParam(Name name, Sort s)) {
+                    consts.add(new RFunction(name, s));
+                }
+            }
+        }
+
+        return withSortAndConsts(sorts, consts, () -> {
+            for (KeYRustyParser.Datatype_constructorContext constructorContext : ctx
+                    .datatype_constructor()) {
+                Name name = new Name(constructorContext.name.getText());
+                Sort[] args = new Sort[constructorContext.sortId().size()];
+                var argNames = constructorContext.argName;
+                for (int i = 0; i < args.length; i++) {
+                    Sort argSort = accept(constructorContext.sortId(i));
+                    args[i] = argSort;
+                    var argName = argNames.get(i).getText();
+                    var alreadyDefinedFn = dtFnNamespace.lookup(argName);
+                    if (alreadyDefinedFn != null
+                            && (!alreadyDefinedFn.sort().equals(argSort)
+                                    || !alreadyDefinedFn.argSort(0).equals(sort))) {
+                        throw new RuntimeException("Name already in namespace: " + argName);
+                    }
+                    if (genericParameters == null) {
+                        Function fn =
+                            new RFunction(new Name(argName), argSort, new Sort[] { sort }, null,
+                                false, false);
+                        dtFnNamespace.add(fn);
+                    } else {
+                        ParametricFunctionDecl fn = new ParametricFunctionDecl(new Name(argName),
+                            ImmutableList.fromList(genericParameters), new ImmutableArray<>(sort),
+                            argSort, null, false, true, false);
+                        dtPfnNamespace.add(fn);
+                    }
+                }
+                if (genericParameters == null) {
+                    Function function = new RFunction(name, sort, args, null, true, false);
+                    namespaces().functions().parent().addSafely(function);
+                } else {
+                    ParametricFunctionDecl fn =
+                        new ParametricFunctionDecl(name, ImmutableList.fromList(genericParameters),
+                            new ImmutableArray<>(args), sort, null, false, true, false);
+                    namespaces().parametricFunctions().addSafely(fn);
+                }
+            }
+            namespaces().functions().parent().addSafely(dtFnNamespace.allElements());
+            namespaces().parametricFunctions().addSafely(dtPfnNamespace.allElements());
+            return null;
+        });
     }
 
 
@@ -82,35 +132,37 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             semanticError(ctx, "Where-to-bind list must have same length as argument list");
         }
 
-        Function p = null;
+        var sorts = new Namespace<>(nss.sorts());
+        var consts = new Namespace<>(nss.functions());
 
-        assert pred_name != null;
-        int separatorIndex = pred_name.indexOf("::");
-        if (separatorIndex > 0) {
-            String sortName = pred_name.substring(0, separatorIndex);
-            String baseName = pred_name.substring(separatorIndex + 2);
-            Sort genSort = lookupSort(sortName);
-            // if (genSort instanceof GenericSort) {
-            // assert argSorts != null;
-            // p = SortDependingFunction.createFirstInstance((GenericSort) genSort,
-            // new Name(baseName), RustyDLTheory.FORMULA, argSorts.toArray(new Sort[0]), false);
-            // }
+        List<GenericParameter> genericParameters = ctx.formal_sort_param_decls() == null ? null
+                : visitFormal_sort_param_decls(ctx.formal_sort_param_decls());
+        if (genericParameters != null) {
+            for (GenericParameter param : genericParameters) {
+                if (param instanceof GenericSortParam(GenericSort gs)) {
+                    sorts.add(gs);
+                } else if (param instanceof ConstParam(Name name, Sort sort)) {
+                    consts.add(new RFunction(name, sort));
+                }
+            }
         }
 
-        if (p == null) {
+        return withSortAndConsts(sorts, consts, () -> {
+            assert pred_name != null;
+
             assert argSorts != null;
-            p = new RFunction(new Name(pred_name), RustyDLTheory.FORMULA,
+            Function p = new RFunction(new Name(pred_name), RustyDLTheory.FORMULA,
                 argSorts.toArray(new Sort[0]),
                 whereToBind == null ? null : whereToBind.toArray(new Boolean[0]), false);
-        }
 
-        if (lookup(p.name()) == null) {
-            functions().add(p);
-        } else {
-            // weigl: agreement on KaKeY meeting: this should be an error.
-            semanticError(ctx, "Predicate '" + p.name() + "' is already defined!");
-        }
-        return null;
+            if (lookup(p.name()) == null) {
+                functions().parent().add(p);
+            } else {
+                // weigl: agreement on KaKeY meeting: this should be an error.
+                semanticError(ctx, "Predicate '" + p.name() + "' is already defined!");
+            }
+            return null;
+        });
     }
 
     @Override

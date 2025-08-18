@@ -19,6 +19,7 @@ import org.key_project.rusty.ast.fn.FunctionParamPattern;
 import org.key_project.rusty.ast.pat.BindingPattern;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.op.*;
+import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -53,6 +54,10 @@ public class TermBuilder {
     // -------------------------------------------------------------------------
 
     public Term var(LogicVariable v) {
+        return tf.createTerm(v);
+    }
+
+    public Term var(OperatorSV v) {
         return tf.createTerm(v);
     }
 

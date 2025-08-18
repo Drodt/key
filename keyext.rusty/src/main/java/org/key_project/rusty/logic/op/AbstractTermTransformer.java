@@ -67,6 +67,8 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
 
     public static final AbstractTermTransformer INTRODUCE_AT_PRE_DEFINITIONS = new IntroAtPreDefs();
 
+    public static final AbstractTermTransformer TO_TUPLE = new ToTuple();
+
     @SuppressWarnings("argument.type.incompatible")
     protected AbstractTermTransformer(Name name, int arity, Sort sort) {
         super(name, createMetaSortArray(arity), sort, Modifier.NONE);
@@ -111,6 +113,18 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
             var pvName = placeName.substring(1, place.op().name().toString().length() - 1);
             var pv = services.getNamespaces().programVariables().lookup(pvName);
             return services.getTermBuilder().elementary(pv, t);
+        }
+    }
+
+    private static class ToTuple extends AbstractTermTransformer {
+        public ToTuple() {
+            super(new Name("toTuple"), 1);
+        }
+
+        @Override
+        public Term transform(Term term, SVInstantiations svInst, Services services) {
+            var sv = term.sub(0);
+            return null;
         }
     }
 
