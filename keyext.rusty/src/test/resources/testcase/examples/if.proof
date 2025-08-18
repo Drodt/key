@@ -20,7 +20,7 @@
 \proof {
     (branch "dummy ID"
         (rule "assignment" (formula "1"))
-        (rule "simpleExprStmt" (formula "1") (term "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
         (rule "if_else_split" (formula "1"))
         (branch
            (rule "applyOnRigidFormula" (formula "1"))
@@ -30,10 +30,10 @@
            (rule "closeFalse" (formula "1"))
         )
         (branch
-           (rule "emptyBlockValue" (formula "2") (term "1"))
+           (rule "empty_block_value" (formula "2") (term "1"))
            (rule "assignment" (formula "2") (term "1"))
-           (rule "simpleExprStmt" (formula "2") (term "1,1"))
-           (rule "emptyModalityValue" (formula "2") (term "1,1"))
+           (rule "simple_expr_stmt" (formula "2") (term "1,1"))
+           (rule "empty_modality_value" (formula "2") (term "1,1"))
            (rule "simplifyUpdate2" (formula "2"))
            (rule "applyOnRigidFormula" (formula "2"))
            (rule "applyOnPV" (formula "2") (term "0"))

@@ -280,12 +280,12 @@ public class BasicTest {
             parseTermForSemisequent("\\<{ let n: u32 = 2u32; n }\\>(i = 2)");
         Sequent s = RustySequentKit.createSequent(antec, succ);
         var proof = new Proof(new Name("Let"), s, TacletForTests.initConfig());
-        applyRule("letIdentPatAssign",
+        applyRule("let_ident_pat_assign",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel(), false),
             proof);
         assertEquals(1, proof.openGoals().size());
-        System.out.println("After letIdentPatAssign:\n" + proof.openGoals().head().sequent());
+        System.out.println("After let_ident_pat_assign:\n" + proof.openGoals().head().sequent());
     }
 
     @Test

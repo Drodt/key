@@ -146,7 +146,7 @@ To run all proofs in the example folder use
 #### Statements
 
 - [x] Expression statement
-  - Handled by the expression rules and `simpleExprStmt`
+  - Handled by the expression rules and `simple_expr_stmt`
 - [x] Let
 - [ ] Empty
 - [ ] Item
