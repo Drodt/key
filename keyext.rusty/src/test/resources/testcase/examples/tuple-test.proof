@@ -1,0 +1,34 @@
+\programSource "./rustSrc";
+
+\proofObligation
+{
+    "class": "org.key_project.rusty.proof.init.loader.FunctionOperationContractPOLoader",
+    "contract": "test_tuple.tuple.0",
+    "name": "tuple_test.tuple"
+}
+
+\proof {
+    (branch "dummy"
+        (rule "impRight" (formula "1"))
+        (rule "function_body_expand" (formula "2"))
+        (rule "let_ident_pat_assign_mut_no_type" (formula "2"))
+        (rule "let_ident_pat_mut_no_type" (formula "2"))
+        (rule "assign_tuple_unfold" (formula "2"))
+        (rule "let_ident_pat_assign" (formula "2"))
+        (rule "let_ident_pat" (formula "2"))
+        (rule "assignmentAdditionI32" (formula "2"))
+        (rule "simple_expr_stmt" (formula "2") (term "1"))
+        (rule "add_literals" (formula "2") (term "0,0"))
+        (rule "assign_tuple_unfold" (formula "2") (term "1"))
+        (rule "let_ident_pat_assign" (formula "2") (term "1"))
+        (rule "let_ident_pat" (formula "2") (term "1"))
+        (rule "assignmentMultiplicationI32" (formula "2") (term "1"))
+        (rule "simple_expr_stmt" (formula "2") (term "1,1"))
+        (rule "sequentialToParallel2" (formula "2"))
+        (rule "simplifyUpdate3" (formula "2") (term "1,0"))
+        (rule "mul_literals" (formula "2") (term "0,1,0"))
+        (rule "assign_tuple" (formula "2") (term "1"))
+
+        (rule "closeTrue" (formula "2"))
+    )
+}

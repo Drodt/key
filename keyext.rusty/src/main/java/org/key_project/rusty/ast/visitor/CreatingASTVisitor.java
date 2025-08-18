@@ -309,6 +309,17 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
         def.doAction(x);
     }
 
+    @Override
+    public void performActionOnTupleExpression(TupleExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new TupleExpression(changeList, services);
+            }
+        };
+        def.doAction(x);
+    }
+
     protected void changed() {
         ExtList list = getTop();
         if (list.isEmpty() || list.getFirst() != CHANGED) {

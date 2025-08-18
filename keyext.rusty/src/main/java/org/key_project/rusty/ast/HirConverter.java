@@ -207,7 +207,7 @@ public class HirConverter {
             case ExprKind.Array e -> convertArrayExpr(e);
             case ExprKind.Call e -> convertCall(e);
             case ExprKind.MethodCall e -> convertMethodCall(e);
-            case ExprKind.Tup e -> convertTupleExpr(e);
+            case ExprKind.Tup e -> convertTupleExpr(e, ty);
             case ExprKind.Binary e -> convertBinary(e);
             case ExprKind.Unary e -> convertUnary(e, ty);
             case ExprKind.LitExpr(var e) -> convertLitExpr(e, ty);
@@ -261,14 +261,14 @@ public class HirConverter {
             new ImmutableArray<>(args));
     }
 
-    private TupleExpression convertTupleExpr(ExprKind.Tup e) {
+    private TupleExpression convertTupleExpr(ExprKind.Tup e, Type type) {
         if (e.exprs().length == 0)
             return TupleExpression.UNIT;
         var exprs = new Expr[e.exprs().length];
         for (int i = 0; i < exprs.length; i++) {
             exprs[i] = convertExpr(e.exprs()[i]);
         }
-        return new TupleExpression(new ImmutableArray<>(exprs));
+        return new TupleExpression(new ImmutableArray<>(exprs), type);
     }
 
     private Expr convertCastExpr(ExprKind.CastExpr e) {

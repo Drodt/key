@@ -10,12 +10,27 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.TupleType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
 
-public record TupleExpression(ImmutableArray<Expr> elements) implements Expr {
-    public static TupleExpression UNIT = new TupleExpression(new ImmutableArray<>());
+public final class TupleExpression implements Expr {
+    public static TupleExpression UNIT =
+        new TupleExpression(new ImmutableArray<>(), TupleType.UNIT);
+    private final ImmutableArray<Expr> elements;
+    private final Type type;
+
+    public TupleExpression(ImmutableArray<Expr> elements, Type type) {
+        this.elements = elements;
+        this.type = type;
+    }
+
+    public TupleExpression(ExtList changeList, Services services) {
+        elements = new ImmutableArray<>(changeList.collect(Expr.class));
+        type = TupleType.getInstance(elements.stream().map(e -> e.type(services)).toList());
+    }
+
 
     public boolean isUnit() {
         return this == UNIT;
@@ -51,9 +66,26 @@ public record TupleExpression(ImmutableArray<Expr> elements) implements Expr {
 
     @Override
     public Type type(Services services) {
-        if (isUnit()) {
-            return TupleType.UNIT;
-        }
-        throw new UnsupportedOperationException();
+        return type;
     }
+
+    public ImmutableArray<Expr> elements() {
+        return elements;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null || obj.getClass() != this.getClass())
+            return false;
+        var that = (TupleExpression) obj;
+        return Objects.equals(this.elements, that.elements);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(elements);
+    }
+
 }

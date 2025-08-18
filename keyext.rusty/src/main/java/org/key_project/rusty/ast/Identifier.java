@@ -34,6 +34,6 @@ public record Identifier(Name name) implements Named, RustyProgramElement {
 
     @Override
     public void visit(Visitor v) {
-        throw new RuntimeException("Should never be called");
+        v.performActionOnIdentifier(this);
     }
 }

@@ -4,6 +4,7 @@
 package org.key_project.rusty.ast.visitor;
 
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.rusty.ast.Identifier;
 import org.key_project.rusty.ast.PathInExpression;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.pat.*;
@@ -138,4 +139,6 @@ public interface Visitor {
     void performActionOnSliceRustType(SliceRustType x);
 
     void performActionOnArrayRustType(ArrayRustType x);
+
+    void performActionOnIdentifier(Identifier x);
 }

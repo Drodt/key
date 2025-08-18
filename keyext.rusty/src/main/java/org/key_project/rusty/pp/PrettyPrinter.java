@@ -5,6 +5,7 @@ package org.key_project.rusty.pp;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.Identifier;
 import org.key_project.rusty.ast.PathInExpression;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.*;
@@ -681,5 +682,10 @@ public class PrettyPrinter implements Visitor {
         layouter.print("[");
         x.getInner().visit(this);
         layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnIdentifier(Identifier x) {
+        layouter.print(x.name().toString());
     }
 }

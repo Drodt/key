@@ -5,6 +5,7 @@ package org.key_project.rusty.ast.visitor;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.Identifier;
 import org.key_project.rusty.ast.PathInExpression;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.*;
@@ -353,6 +354,11 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
 
     @Override
     public void performActionOnSliceRustType(SliceRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnIdentifier(Identifier x) {
         doDefaultAction(x);
     }
 }

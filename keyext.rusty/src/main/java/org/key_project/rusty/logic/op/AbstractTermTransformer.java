@@ -12,12 +12,14 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.AbstractSortedOperator;
 import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.Operator;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.logic.sort.SortImpl;
+import org.key_project.rusty.rule.inst.ProgramListInstantiation;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.CreateFrameCond;
 import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
@@ -124,7 +126,14 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         @Override
         public Term transform(Term term, SVInstantiations svInst, Services services) {
             var sv = term.sub(0);
-            return null;
+            var pes =
+                (ProgramListInstantiation) svInst.getInstantiationEntry((SchemaVariable) sv.op());
+
+            var terms = new Term[pes.getInstantiation().size()];
+            for (int i = 0; i < terms.length; i++) {
+                terms[i] = services.convertToLogicElement(pes.getInstantiation().get(i));
+            }
+            return services.getTermBuilder().tuple(terms);
         }
     }
 

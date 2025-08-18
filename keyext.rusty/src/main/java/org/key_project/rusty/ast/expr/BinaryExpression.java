@@ -114,7 +114,7 @@ public final class BinaryExpression implements Expr {
     public enum Operator implements RustyProgramElement {
         Add("+"),
         Sub("-"),
-        Mul("-"),
+        Mul("*"),
         Div("/"),
         Rem("%"),
         And("&&"),

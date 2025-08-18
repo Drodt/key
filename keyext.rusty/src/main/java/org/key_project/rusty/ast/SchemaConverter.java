@@ -492,7 +492,7 @@ public class SchemaConverter {
         if (ctx.tupleElements() == null)
             return TupleExpression.UNIT;
         return new TupleExpression(new ImmutableArray<>(
-            ctx.tupleElements().expr().stream().map(this::convertExpr).toList()));
+            ctx.tupleElements().expr().stream().map(this::convertExpr).toList()), null);
     }
 
     private PathExpr convertUnitStructExpression(
