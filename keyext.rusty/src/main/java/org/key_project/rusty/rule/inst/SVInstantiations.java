@@ -222,15 +222,12 @@ public class SVInstantiations
     /// stored
     public Term getTermInstantiation(SchemaVariable sv, LogicServices services) {
         final Object inst = getInstantiation(sv);
-        if (inst == null) {
-            return null;
-        } else if (inst instanceof Term) {
-            return (Term) inst;
-        } else if (inst instanceof RustyProgramElement pe) {
-            return convertToLogicElement(pe, (Services) services);
-        } else {
-            throw CONVERT_INSTANTIATION_EXCEPTION;
-        }
+        return switch (inst) {
+            case null -> null;
+            case Term term -> term;
+            case RustyProgramElement pe -> convertToLogicElement(pe, (Services) services);
+            default -> throw CONVERT_INSTANTIATION_EXCEPTION;
+        };
     }
 
     /// adds an update to the update context

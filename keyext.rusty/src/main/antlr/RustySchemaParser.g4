@@ -16,7 +16,7 @@ expr
    | literalExpr # LiteralExpression
    | pathExpr # PathExpression
    | expr DOT pathExprSegment LPAREN callParams? RPAREN # MethodCallExpression
-   | expr DOT identifier # FieldExpression
+   | expr DOT (schemaVariable | identifier) # FieldExpression
    | expr DOT tupleIndex # TupleIndexingExpression
    | expr DOT KW_AWAIT # AwaitExpression
    | expr LPAREN callParams? RPAREN # CallExpression

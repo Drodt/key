@@ -302,8 +302,14 @@ public class SchemaConverter {
     private FieldExpression convertFieldExpression(
             RustySchemaParser.FieldExpressionContext ctx) {
         var base = convertExpr(ctx.expr());
-        var ident = convertIdentifier(ctx.identifier());
-        return new FieldExpression(base, ident);
+        if (ctx.identifier() != null) {
+            var ident = convertIdentifier(ctx.identifier());
+            return new FieldExpression(base, ident);
+        } else {
+            var sv = ctx.schemaVariable();
+            return new FieldExpression(base,
+                (ProgramSV) lookupSchemaVariable(sv.SCHEMA_IDENTIFIER().getText().substring(2)));
+        }
     }
 
     private FieldExpression convertTupleIndexingExpression(

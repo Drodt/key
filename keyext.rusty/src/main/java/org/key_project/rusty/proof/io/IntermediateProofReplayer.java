@@ -334,8 +334,18 @@ public class IntermediateProofReplayer {
         // in a proof of the TimSort method binarySort with several joins.
         ourApp = ourApp.setIfFormulaInstantiations(assumesFormulaList, services);
 
+        if (ourApp == null) {
+            throw new TacletAppConstructionException(
+                "Could not set assumes instantiations for " + tacletName);
+        }
+
         if (!ourApp.complete()) {
             ourApp = ourApp.tryToInstantiate(currGoal.getOverlayServices());
+        }
+
+        if (ourApp == null) {
+            throw new TacletAppConstructionException(
+                "Failed to try to instantiate for " + tacletName);
         }
 
         return ourApp;
