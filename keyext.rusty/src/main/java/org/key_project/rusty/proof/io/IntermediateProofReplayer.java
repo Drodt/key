@@ -194,7 +194,8 @@ public class IntermediateProofReplayer {
                 reportError(ERROR_LOADING_PROOF_LINE, throwable);
             }
         }
-        LOGGER.debug("Proof replay took {}", PerfScope.formatTime(System.nanoTime() - time));
+        LOGGER.debug("Proof replay of {} took {}", proof.name(),
+            PerfScope.formatTime(System.nanoTime() - time));
         return new Result(status, errors, currGoal);
     }
 

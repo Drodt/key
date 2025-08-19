@@ -29,15 +29,19 @@ import org.key_project.rusty.parser.hir.Crate;
 import org.key_project.rusty.proof.init.ContractPO;
 import org.key_project.rusty.proof.init.InitConfig;
 import org.key_project.rusty.proof.init.ProofInputException;
+import org.key_project.rusty.prover.impl.PerfScope;
 import org.key_project.rusty.speclang.ContractFactory;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.rusty.speclang.ProgramVariableCollection;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HirRustyReader {
     private final Services services;
+    private static final Logger LOGGER = LoggerFactory.getLogger(HirRustyReader.class);
 
     public HirRustyReader(Services services, NamespaceSet nss) {
         this.services = services;
@@ -50,7 +54,7 @@ public class HirRustyReader {
     /// parses a given RustyBlock using the context to determine the right references
     ///
     /// @param block a String describing a java block
-    /// @param context recoder.java.CompilationUnit in which the block has to be interprested
+    /// @param context recoder.java.CompilationUnit in which the block has to be interpreted
     /// @return the parsed and resolved JavaBlock
     public RustyBlock readBlock(String block, Context context) {
         try {
@@ -81,13 +85,15 @@ public class HirRustyReader {
                 Path src = tmpDir.resolve("src");
                 Files.createDirectory(src);
                 Path lib = Files.createFile(src.resolve("lib.rs"));
-                System.out.println(fn);
                 Files.writeString(lib, fn, StandardCharsets.UTF_8, StandardOpenOption.WRITE,
                     StandardOpenOption.TRUNCATE_EXISTING);
 
                 var wrapperOutput = getWrapperOutput(tmpDir);
+                var beforeConversion = System.nanoTime();
                 var converter = new HirConverter(services, null);
                 var converted = converter.convertCrate(wrapperOutput.crate());
+                LOGGER.debug("HIR conversion took {}",
+                    PerfScope.formatTime(System.nanoTime() - beforeConversion));
                 BlockExpression body = converted.getVerificationTarget().body();
                 var es = (ExpressionStatement) body.getStatements().get(0);
                 {
@@ -124,9 +130,6 @@ public class HirRustyReader {
                         services.getSpecificationRepository().addContract(contract);
                         ContractPO proofObl = contract.createProofObl(new InitConfig(services));
                         proofObl.readProblem();
-                        System.out.println(
-                            Objects.requireNonNull(proofObl.getPO().getProof(0).getOpenGoals()
-                                    .head()).getNode().sequent());
                     }
                 }
                 assert es != null;
@@ -145,6 +148,8 @@ public class HirRustyReader {
 
     public static Crate.WrapperOutput getWrapperOutput(Path path, boolean clean)
             throws IOException {
+        var startTime = System.nanoTime();
+        long rustCEnd;
         try {
             Process cleanCmd =
                 Runtime.getRuntime().exec(new String[] { "cargo", "clean" }, null, path.toFile());
@@ -164,9 +169,14 @@ public class HirRustyReader {
             assert code == 0 : sb.toString();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } finally {
+            rustCEnd = System.nanoTime();
+            LOGGER.debug("rustc took {}", PerfScope.formatTime(rustCEnd - startTime));
         }
         var hir = Files.readString(path.resolve("hir.json"), Charset.defaultCharset());
-        return Crate.parseJSON(hir);
+        Crate.WrapperOutput output = Crate.parseJSON(hir);
+        LOGGER.debug("JSON parsing took {}", PerfScope.formatTime(System.nanoTime() - rustCEnd));
+        return output;
     }
 
     public RustyBlock readBlockWithEmptyContext(String s) {
