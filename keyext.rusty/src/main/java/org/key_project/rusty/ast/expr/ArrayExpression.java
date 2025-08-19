@@ -7,14 +7,28 @@ import java.util.Objects;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.ArrayType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
-public record ArrayExpression(ImmutableArray<Expr> elements) implements Expr {
+public final class ArrayExpression implements Expr {
+    private final ImmutableArray<Expr> elements;
+    private final Type type;
+
+    public ArrayExpression(ImmutableArray<Expr> elements, Type type) {
+        this.elements = elements;
+        this.type = type;
+    }
+
+    public ArrayExpression(ExtList children, Services services) {
+        elements = new ImmutableArray<>(children.collect(Expr.class));
+        type = ArrayType.getInstance(elements.get(0).type(services), elements().size(), services);
+    }
+
     @Override
     public void visit(Visitor v) {
         v.performActionOnEnumeratedArrayExpression(this);
@@ -47,7 +61,26 @@ public record ArrayExpression(ImmutableArray<Expr> elements) implements Expr {
 
     @Override
     public Type type(Services services) {
-        throw new UnsupportedOperationException();
+        return type;
     }
+
+    public ImmutableArray<Expr> elements() {
+        return elements;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null || obj.getClass() != this.getClass())
+            return false;
+        var that = (ArrayExpression) obj;
+        return Objects.equals(this.elements, that.elements);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(elements);
+    }
+
 }
-//spotless:on

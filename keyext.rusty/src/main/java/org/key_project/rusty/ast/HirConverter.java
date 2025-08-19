@@ -204,7 +204,7 @@ public class HirConverter {
         var ty = Objects.requireNonNull(types.get(id), "No type for " + expr);
         return switch (expr.kind()) {
             case ExprKind.ConstBlock e -> convertConstBlockExpr(e);
-            case ExprKind.Array e -> convertArrayExpr(e);
+            case ExprKind.Array e -> convertArrayExpr(e, ty);
             case ExprKind.Call e -> convertCall(e);
             case ExprKind.MethodCall e -> convertMethodCall(e);
             case ExprKind.Tup e -> convertTupleExpr(e, ty);
@@ -244,12 +244,12 @@ public class HirConverter {
         return new ConstBlockExpression(body);
     }
 
-    private ArrayExpression convertArrayExpr(ExprKind.Array e) {
+    private ArrayExpression convertArrayExpr(ExprKind.Array e, Type ty) {
         var exprs = new Expr[e.exprs().length];
         for (int i = 0; i < exprs.length; i++) {
             exprs[i] = convertExpr(e.exprs()[i]);
         }
-        return new ArrayExpression(new ImmutableArray<>(exprs));
+        return new ArrayExpression(new ImmutableArray<>(exprs), ty);
     }
 
     private MethodCallExpression convertMethodCall(ExprKind.MethodCall e) {

@@ -58,8 +58,8 @@ public class TacletBuilderManipulators {
                 if (negated) {
                     throw new IllegalArgumentException("Negation is not supported");
                 }
-                tb.addVarsNewDependingOn((org.key_project.logic.op.sv.SchemaVariable) arguments[0],
-                    (org.key_project.logic.op.sv.SchemaVariable) arguments[1]);
+                tb.addVarsNewDependingOn((SchemaVariable) arguments[0],
+                    (SchemaVariable) arguments[1]);
             }
         };
     public static final AbstractConditionBuilder DROP_EFFECTLESS_ELEMENTARIES =
@@ -113,8 +113,8 @@ public class TacletBuilderManipulators {
                 if (negated) {
                     throw new IllegalArgumentException("Negation is not supported");
                 }
-                tacletBuilder.addVarsNew((org.key_project.logic.op.sv.SchemaVariable) arguments[0],
-                    (org.key_project.logic.op.sv.SchemaVariable) arguments[1]);
+                tacletBuilder.addVarsNew((SchemaVariable) arguments[0],
+                    (SchemaVariable) arguments[1]);
 
             }
         };
@@ -194,7 +194,7 @@ public class TacletBuilderManipulators {
     }
 
     /// Announce a [TacletBuilderCommand] for the use during the interpretation of asts. This
-    /// affects every following interpretation of rule contextes in
+    /// affects every following interpretation of rule contexts in
     /// [TacletPBuilder].
     public static void register(TacletBuilderCommand... cb) {
         for (TacletBuilderCommand a : cb) {

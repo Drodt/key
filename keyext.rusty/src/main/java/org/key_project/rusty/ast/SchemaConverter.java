@@ -481,10 +481,10 @@ public class SchemaConverter {
     private ArrayExpression convertEnumeratedArrayExpression(
             RustySchemaParser.ArrayExpressionContext ctx) {
         if (ctx.arrayElements() == null)
-            return new ArrayExpression(new ImmutableArray<>());
+            return new ArrayExpression(new ImmutableArray<>(), null);
         assert ctx.arrayElements().SEMI() == null;
         return new ArrayExpression(new ImmutableArray<>(
-            ctx.arrayElements().expr().stream().map(this::convertExpr).toList()));
+            ctx.arrayElements().expr().stream().map(this::convertExpr).toList()), null);
     }
 
     private RepeatExpression convertRepeatedArrayExpression(

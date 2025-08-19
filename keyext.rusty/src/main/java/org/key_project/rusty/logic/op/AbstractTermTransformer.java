@@ -72,6 +72,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
     public static final AbstractTermTransformer TO_TUPLE = new ToTuple();
     public static final AbstractTermTransformer GET_FIELD = new GetField();
     public static final AbstractTermTransformer SET_FIELD = new SetField();
+    public static final AbstractTermTransformer CREATE_ARRAY = new CreateArray();
 
     @SuppressWarnings("argument.type.incompatible")
     protected AbstractTermTransformer(Name name, int arity, Sort sort) {
@@ -300,5 +301,30 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         }
 
         return result.toString();
+    }
+
+    private static class CreateArray extends AbstractTermTransformer {
+        public CreateArray() {
+            super(new Name("createArray"), 2);
+        }
+
+        @Override
+        public Term transform(Term term, SVInstantiations svInst, Services services) {
+            var sort = (ParametricSortInstance) term.sub(0).sort();
+            var sv = (SchemaVariable) term.sub(1).op();
+            var inst = (ProgramListInstantiation) svInst.getInstantiationEntry(sv);
+            var lst = inst.getInstantiation();
+
+            var terms = new Term[lst.size()];
+            for (int i = 0; i < terms.length; i++) {
+                terms[i] = Services.convertToLogicElement(lst.get(i), services);
+            }
+
+            var tb = services.getTermBuilder();
+            var initialArrayOp = new RFunction(new Name(tb.newName("a")), sort);
+            var initialArray = tb.func(initialArrayOp);
+
+            return tb.array(initialArray, terms);
+        }
     }
 }

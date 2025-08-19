@@ -62,6 +62,7 @@ public class ProofCollections {
         array.loadable("array-get-of-repeat.proof");
         array.loadable("array-get-of-set.proof");
         array.loadable("array-test.proof");
+        array.loadable("array-enumerate.proof");
 
         var tuples = c.group("tuples");
         tuples.loadable("tuple-test.proof");

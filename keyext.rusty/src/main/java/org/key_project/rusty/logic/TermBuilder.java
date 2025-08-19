@@ -21,6 +21,7 @@ import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
 import org.key_project.rusty.logic.sort.GenericArgument;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.util.collection.ImmutableArray;
@@ -690,10 +691,25 @@ public class TermBuilder {
         for (int i = terms.length - 1; i >= 0; i--) {
             args = args.prepend(new SortArg(terms[i].sort()));
         }
+        // TODO: add ldt for tuples
         var pfd = services.getNamespaces().parametricFunctions().lookup("tpl" + terms.length);
         if (pfd == null) {
             throw new UnsupportedOperationException("Unsupported tuple length: " + terms.length);
         }
         return func(ParametricFunctionInstance.get(pfd, args), terms);
+    }
+
+    public Term array(Term initialArray, Term[] terms) {
+        var sort = (ParametricSortInstance) initialArray.sort();
+        // TODO: add ldt for arrays
+        var pfd = services.getNamespaces().parametricFunctions().lookup("arr_set");
+        var set = ParametricFunctionInstance.get(pfd, sort.getArgs());
+
+        var res = initialArray;
+        for (var i = terms.length - 1; i >= 0; i--) {
+            res = func(set, res, zTerm(i), terms[i]);
+        }
+
+        return res;
     }
 }

@@ -102,8 +102,8 @@ public abstract class VariableNamer implements InstantiationProposer {
             }
         }
         // get the proposal
-        return (getNameProposalForSchemaVariable(basename, var,
-            app.posInOccurrence(), posOfDeclaration, previousProposals, services));
+        return getNameProposalForSchemaVariable(basename, var,
+            app.posInOccurrence(), posOfDeclaration, previousProposals, services);
     }
 
     // precondition: sv.sort()==ProgramSVSort.VARIABLE
