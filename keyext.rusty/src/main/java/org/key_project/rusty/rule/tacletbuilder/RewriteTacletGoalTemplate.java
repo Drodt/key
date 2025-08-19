@@ -53,4 +53,30 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
     public Object replaceWithExpressionAsObject() {
         return replacewith;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) {
+            return false;
+        }
+        final RewriteTacletGoalTemplate other = (RewriteTacletGoalTemplate) o;
+        return replacewith.equals(other.replacewith);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 37 * result * super.hashCode();
+        result = 37 * result * replacewith.hashCode();
+        return result;
+    }
+
+
+    /** toString */
+    @Override
+    public String toString() {
+        String result = super.toString();
+        result += "\\replacewith(" + replaceWith() + ") ";
+        return result;
+    }
 }

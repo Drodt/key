@@ -59,9 +59,9 @@ pub fn test_array() -> i32 {
     a[1]
 }
 
-#[spec(name = "tuple", ensures(result === (2, 4)))]
+#[spec(name = "tuple", ensures(result === (1, 4)))]
 pub fn test_tuple() -> (i32, i32) {
     let mut a = (1 + 1, 2 * 2);
-    a.0 = a.1 - 2;
+    a.0 = a.1 - 3;
     a
 }

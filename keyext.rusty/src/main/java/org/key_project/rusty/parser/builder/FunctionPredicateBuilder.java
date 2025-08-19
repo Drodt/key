@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
+import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
@@ -42,41 +43,34 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
         // weigl: all datatypes are free ==> functions are unique!
         // boolean freeAdt = ctx.FREE() != null;
         Sort sort;
+        var sorts = new Namespace<>(nss.sorts());
+        var consts = new Namespace<>(nss.functions());
+        ImmutableList<GenericParameter> genericParameters;
         if (sorts().lookup(ctx.name.getText()) == null) {
             // Is parametric
             var psd = namespaces().parametricSorts().lookup(ctx.name.getText());
             assert psd != null;
+            genericParameters = psd.getParameters();
             ImmutableList<GenericArgument> args = ImmutableList.of();
             for (int i = psd.getParameters().size() - 1; i >= 0; i--) {
                 var param = psd.getParameters().get(i);
                 if (param instanceof GenericSortParam(GenericSort gs)) {
                     args = args.prepend(new SortArg(gs));
+                    sorts.add(gs);
                 } else if (param instanceof ConstParam cp) {
                     RFunction f = new RFunction(cp.name(), cp.sort());
-                    args = args.prepend(new TermArg(services.getTermBuilder().func(f)));
+                    Term term = services.getTermBuilder().func(f);
+                    args = args.prepend(new TermArg(term));
+                    consts.add(f);
                 }
             }
             sort = ParametricSortInstance.get(psd, args);
         } else {
             sort = sorts().lookup(ctx.name.getText());
+            genericParameters = null;
         }
         var dtFnNamespace = new Namespace<@NonNull Function>();
         var dtPfnNamespace = new Namespace<@NonNull ParametricFunctionDecl>();
-
-        var sorts = new Namespace<>(nss.sorts());
-        var consts = new Namespace<>(nss.functions());
-
-        List<GenericParameter> genericParameters = ctx.formal_sort_param_decls() == null ? null
-                : visitFormal_sort_param_decls(ctx.formal_sort_param_decls());
-        if (genericParameters != null) {
-            for (GenericParameter param : genericParameters) {
-                if (param instanceof GenericSortParam(GenericSort gs)) {
-                    sorts.add(gs);
-                } else if (param instanceof ConstParam(Name name, Sort s)) {
-                    consts.add(new RFunction(name, s));
-                }
-            }
-        }
 
         return withSortAndConsts(sorts, consts, () -> {
             for (KeYRustyParser.Datatype_constructorContext constructorContext : ctx
@@ -112,7 +106,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                 } else {
                     ParametricFunctionDecl fn =
                         new ParametricFunctionDecl(name, ImmutableList.fromList(genericParameters),
-                            new ImmutableArray<>(args), sort, null, false, true, false);
+                            new ImmutableArray<>(args), sort, null, true, true, false);
                     namespaces().parametricFunctions().addSafely(fn);
                 }
             }
