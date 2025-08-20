@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir;
 
-import org.key_project.rusty.parser.hir.expr.BlockCheckMode;
-import org.key_project.rusty.parser.hir.expr.ExprKind;
-import org.key_project.rusty.parser.hir.expr.LitIntTy;
-import org.key_project.rusty.parser.hir.expr.LitKind;
+import org.key_project.rusty.parser.hir.expr.*;
 import org.key_project.rusty.parser.hir.hirty.HirTyKind;
 import org.key_project.rusty.parser.hir.hirty.PrimHirTy;
 import org.key_project.rusty.parser.hir.item.FnRetTy;
@@ -52,7 +49,13 @@ public record Crate(Mod topMod, HirTyMapping[] types) {
                     .registerTypeAdapter(PatExprKind.class, new PatExprKind.Adapter())
                     .registerTypeAdapter(ConstArgKind.class, new ConstArgKind.Adapter())
                     .registerTypeAdapter(TyConst.class, new TyConst.Adapter())
-                    .registerTypeAdapter(ValTree.class, new ValTree.Adapter()).create();
+                    .registerTypeAdapter(ValTree.class, new ValTree.Adapter())
+                    .registerTypeAdapter(StrStyle.class, new StrStyle.Adapter())
+                    .registerTypeAdapter(LitFloatTy.class, new LitFloatTy.Adapter())
+                    .registerTypeAdapter(ClosureBinder.class, new ClosureBinder.Adapter())
+                    .registerTypeAdapter(YieldSource.class, new YieldSource.Adapter())
+                    .registerTypeAdapter(CaptureBy.class, new CaptureBy.Adapter())
+                    .create();
         return gson.fromJson(json, WrapperOutput.class);
     }
 }

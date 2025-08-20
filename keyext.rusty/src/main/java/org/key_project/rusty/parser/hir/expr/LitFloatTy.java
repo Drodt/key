@@ -3,24 +3,24 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.expr;
 
+import org.key_project.rusty.parser.hir.FloatTy;
 import org.key_project.rusty.parser.hir.HirAdapter;
-import org.key_project.rusty.parser.hir.HirId;
 
 import org.jspecify.annotations.Nullable;
 
-public interface YieldSource {
-    record Await(@Nullable HirId expr) implements YieldSource {
+public interface LitFloatTy {
+    record Suffixed(FloatTy ty) implements LitFloatTy {
     }
 
-    record Yield() implements YieldSource {
+    record Unsuffixed() implements LitFloatTy {
     }
 
-    class Adapter extends HirAdapter<YieldSource> {
+    class Adapter extends HirAdapter<LitFloatTy> {
         @Override
-        public @Nullable Class<? extends YieldSource> getType(String tag) {
+        public @Nullable Class<? extends LitFloatTy> getType(String tag) {
             return switch (tag) {
-                case "Await" -> Await.class;
-                case "Yield" -> Yield.class;
+                case "Suffixed" -> Suffixed.class;
+                case "Unsuffixed" -> Unsuffixed.class;
                 default -> null;
             };
         }

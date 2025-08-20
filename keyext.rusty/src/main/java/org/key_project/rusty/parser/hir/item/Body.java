@@ -7,9 +7,11 @@ import java.util.Arrays;
 
 import org.key_project.rusty.parser.hir.expr.Expr;
 
+import org.jspecify.annotations.NonNull;
+
 public record Body(Param[] params, Expr value) {
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return "Body{" + "params=" + Arrays.toString(params) + ", value=" + value + '}';
     }
 }

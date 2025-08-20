@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.item;
 
-import org.key_project.rusty.parser.hir.GenericParam;
+import org.key_project.rusty.parser.hir.HirId;
 import org.key_project.rusty.parser.hir.Span;
 
-public record Generics(GenericParam[] params, WherePredicate[] predicates,
-        boolean hasWhereClausePredicates, Span whereClauseSpan, Span span) {
+public record WherePredicate(HirId hirId, Span span, WherePredicateKind kind) {
 }

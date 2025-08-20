@@ -160,6 +160,7 @@ public class FnSpecConverter {
             case Not -> child.sort() == RustyDLTheory.FORMULA ? tb.not(child)
                     : tb.equals(child, boolLDT.getFalseTerm());
             case Neg -> tf.createTerm(intLDT.getNeg(), child);
+            case PtrMetadata -> throw new UnsupportedOperationException("PtrMetadata UnOp");
         };
     }
 

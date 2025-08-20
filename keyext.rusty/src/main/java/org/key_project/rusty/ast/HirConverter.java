@@ -447,6 +447,7 @@ public class HirConverter {
             case Deref -> UnaryExpression.Operator.Deref;
             case Not -> UnaryExpression.Operator.Not;
             case Neg -> UnaryExpression.Operator.Neg;
+            case PtrMetadata -> throw new UnsupportedOperationException("PtrMetadata UnOp");
         }, convertExpr(unary.expr()));
     }
 
@@ -455,7 +456,7 @@ public class HirConverter {
             convertConstArg(repeat.len()), type);
     }
 
-    private Expr convertConstArg(org.key_project.rusty.parser.hir.ConstArg len) {
+    private Expr convertConstArg(ConstArg len) {
         var ac = ((ConstArgKind.Anon) len.kind()).ac();
         return convertExpr(ac.body().value());
     }
@@ -708,7 +709,7 @@ public class HirConverter {
                 case U128 -> PrimitiveType.U128;
             };
             case Ty.Ref(var t, var m) -> ReferenceType.get(convertTy(t), m);
-            case Ty.FnDef(var id) -> {
+            case Ty.FnDef(var id, var args) -> {
                 assert id.krate() == 0 : "only local FnDef tys allowed";
                 var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())));
                 yield new FnDefType(fn);

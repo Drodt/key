@@ -1,10 +1,9 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package org.key_project.rusty.parser.hir.expr;
+package org.key_project.rusty.parser.hir.ty;
 
-import org.key_project.rusty.parser.hir.Span;
+import org.key_project.rusty.parser.hir.DefId;
 
-
-public record Lit(LitKind node, Span span) {
+public record ExistentialTraitRef(DefId defId, GenericTyArgKind[] args) {
 }

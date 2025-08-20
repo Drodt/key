@@ -67,6 +67,9 @@ public interface ExprKind {
     record Field(Expr expr, Ident field) implements ExprKind {
     }
 
+    record Index(Expr base, Expr idx, Span span) implements ExprKind {
+    }
+
     record Path(QPath path) implements ExprKind {
     }
 
@@ -89,9 +92,6 @@ public interface ExprKind {
     }
 
     record Yield(Expr expr, YieldSource src) implements ExprKind {
-    }
-
-    record Index(Expr base, Expr idx, Span span) implements ExprKind {
     }
 
     class Adapter extends HirAdapter<ExprKind> {
