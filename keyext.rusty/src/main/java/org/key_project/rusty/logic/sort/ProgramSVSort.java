@@ -11,6 +11,7 @@ import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ConcreteLabel;
 import org.key_project.rusty.ast.Identifier;
+import org.key_project.rusty.ast.Item;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.abstraction.Type;
@@ -69,6 +70,7 @@ public abstract class ProgramSVSort extends SortImpl {
 
     public static final ProgramSVSort LABEL = new LabelSort();
     public static final ProgramSVSort Ident = new IdentSort();
+    public static final ProgramSVSort Item = new ItemSort();
 
     public static final ProgramSVSort NON_MODEL_FUNCTION_BODY = new NonModelFunctionBodySort();
 
@@ -359,6 +361,17 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof FunctionBodyExpression;
+        }
+    }
+
+    private static class ItemSort extends ProgramSVSort {
+        protected ItemSort() {
+            super(new Name("Item"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof Item;
         }
     }
 }
