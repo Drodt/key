@@ -10,6 +10,7 @@ import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleAbortException;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.prover.strategy.RuleApplicationManager;
@@ -93,13 +94,13 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         getNode().setAppliedRuleApp(app);
     }
 
-    public org.key_project.prover.sequent.Sequent sequent() {
+    public Sequent sequent() {
         return getNode().sequent();
     }
 
     @Override
     public @Nullable ImmutableList<@NonNull Goal> apply(
-            org.key_project.prover.rules.@NonNull RuleApp ruleApp) {
+            @NonNull RuleApp ruleApp) {
         final Proof proof = proof();
 
         final Node n = node;
@@ -321,5 +322,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /// @param p the PosInOccurrence encoding the position
     public void changeFormula(SequentFormula sf, PosInOccurrence p) {
         setSequent(sequent().changeFormula(sf, p));
+    }
+
+    @Override
+    public long getTime() {
+        return appliedRuleApps.size();
     }
 }
