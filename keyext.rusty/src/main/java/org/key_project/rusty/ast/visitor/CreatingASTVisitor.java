@@ -93,6 +93,25 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
+    public void performActionOnGhostBlockExpression(GhostBlockExpression x) {
+        ExtList changeList = getTop();
+        if (changeList.getFirst() == CHANGED) {
+            changeList.removeFirst();
+            if (!preservesPositionInfo) {
+                // TODO changeList.removeFirstOccurrence(PositionInfo.class);
+            }
+            var newBlock = new GhostBlockExpression(changeList);
+            addChild(newBlock);
+            changed();
+        } else {
+            doDefaultAction(x);
+        }
+    }
+
+
+
+
+    @Override
     public void performActionOnContextBlockExpression(ContextBlockExpression x) {
         ExtList changeList = getTop();
         if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {

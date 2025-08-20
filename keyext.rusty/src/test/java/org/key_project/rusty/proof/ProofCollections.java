@@ -36,6 +36,7 @@ public class ProofCollections {
         settings.setVerboseOutput(true);
 
         var c = new ProofCollection(settings);
+        /*
         var simple = c.group("simple");
         simple.loadable("simple.proof");
         simple.loadable("if.proof");
@@ -62,7 +63,9 @@ public class ProofCollections {
         array.loadable("array-get-of-repeat.proof");
         array.loadable("array-get-of-set.proof");
         array.loadable("array-test.proof");
-
+        */
+        var ghost = c.group("ghost"); 
+        ghost.loadable("first-ghost.proof");
         // var algos = c.group("algorithms");
         // algos.loadable("binary-search/binary-search.proof"); TODO: fix rml transl err:
         // Implication is not recognized in get_rml_fn_kind

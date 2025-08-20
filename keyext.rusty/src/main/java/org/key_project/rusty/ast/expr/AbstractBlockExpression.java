@@ -139,7 +139,7 @@ public abstract class AbstractBlockExpression
         return h;
     }
 
-    protected int computeHashCode() {
+    public int computeHashCode() {
         return Objects.hash(getClass(), statements, value, prefixLength);
     }
 

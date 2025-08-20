@@ -6,11 +6,12 @@ package org.key_project.rusty.ast.expr;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableList;
+import org.jspecify.annotations.Nullable;
 
 public class BlockExpression extends AbstractBlockExpression {
 
     public BlockExpression(ImmutableList<org.key_project.rusty.ast.stmt.Statement> statements,
-                           org.jspecify.annotations.Nullable Expr value) {
+                           @Nullable Expr value) {
         super(statements, value);
     }
 

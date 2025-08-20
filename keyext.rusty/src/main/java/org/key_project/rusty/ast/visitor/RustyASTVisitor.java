@@ -67,6 +67,12 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     }
 
     @Override
+    public void performActionOnGhostBlockExpression(GhostBlockExpression x) {
+        doDefaultAction(x);
+    }
+
+
+    @Override
     public void performActionOnBooleanLiteralExpression(BooleanLiteralExpression x) {
         doDefaultAction(x);
     }

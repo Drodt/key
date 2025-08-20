@@ -151,5 +151,5 @@ public interface Visitor {
 
     void performActionOnLitPatExpr(LitPatExpr x);
 
-    void performActionOnGhostBlockExpression(GhostBlockExpr x);    
+    void performActionOnGhostBlockExpression(GhostBlockExpression x);    
 }

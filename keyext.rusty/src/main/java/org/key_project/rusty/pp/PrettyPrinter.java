@@ -173,6 +173,31 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
+    public void performActionOnGhostBlockExpression(GhostBlockExpression x) {
+        layouter.keyWord("ghost!");
+        layouter.print(" ");
+
+        if (x.getChildCount() == 0) {
+            markStart(x);
+            layouter.print("{}");
+            markEnd(x);
+        } else {
+            beginBlock();
+            for (Statement stmt : x.getStatements()) {
+                layouter.nl();
+                stmt.visit(this);
+            }
+            if (x.getValue() != null) {
+                layouter.nl();
+                x.getValue().visit(this);
+            }
+            endBlock();
+        }
+    }
+
+
+
+    @Override
     public void performActionOnBooleanLiteralExpression(BooleanLiteralExpression x) {
         layouter.keyWord(x.getValue() ? "true" : "false");
     }

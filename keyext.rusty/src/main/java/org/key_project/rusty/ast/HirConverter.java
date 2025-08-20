@@ -218,6 +218,7 @@ public class HirConverter {
             case ExprKind.Unary e -> convertUnary(e, ty);
             case ExprKind.Repeat e -> convertRepeat(e, ty);
             case ExprKind.Index e -> convertIndexExpr(e, ty);
+            case ExprKind.GhostBlockExpr e -> convertGhostBlockExpr(e);
             default -> throw new IllegalArgumentException("Unknown expression: " + expr);
         };
     }
@@ -232,6 +233,12 @@ public class HirConverter {
         var stmts = Arrays.stream(expr.block().stmts()).map(this::convertStmt).toList();
         var value = expr.block().expr() == null ? null : convertExpr(expr.block().expr());
         return new BlockExpression(ImmutableList.fromList(stmts), value);
+    }
+
+    private GhostBlockExpression convertGhostBlockExpr(ExprKind.GhostBlockExpr expr) {
+        var stmts = Arrays.stream(expr.block().stmts()).map(this::convertStmt).toList();
+        var value = expr.block().expr() == null ? null : convertExpr(expr.block().expr());
+        return new GhostBlockExpression(ImmutableList.fromList(stmts), value);
     }
 
     private LiteralExpression convertLitExpr(Lit expr, Type type) {
