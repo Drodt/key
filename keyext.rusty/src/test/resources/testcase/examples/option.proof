@@ -1,0 +1,8 @@
+\programSource "./option";
+
+\proofObligation
+{
+    "class": "org.key_project.rusty.proof.init.loader.FunctionOperationContractPOLoader",
+    "contract": "option.normal specification case 0.0",
+    "name": "option.normal specification case 0.0"
+}

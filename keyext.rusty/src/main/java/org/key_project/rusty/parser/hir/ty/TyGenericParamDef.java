@@ -3,13 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.ty;
 
-import java.util.Map;
-
 import org.key_project.rusty.parser.hir.DefId;
 
-import org.jspecify.annotations.Nullable;
-
-public record AdtDef(DefId did, Map<Integer, VariantDef> variants, int flags, AdtKind kind,
-        String pathStr,
-        @Nullable TyGenerics foreignGenerics) {
+public record TyGenericParamDef(String name, DefId defId, int index, TyGenericParamDefKind kind) {
 }

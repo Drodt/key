@@ -5,22 +5,21 @@ package org.key_project.rusty.parser.hir.ty;
 
 import org.key_project.rusty.parser.hir.HirAdapter;
 
-import com.google.gson.annotations.SerializedName;
 import org.jspecify.annotations.Nullable;
 
-public interface GenericTyArgKind {
-    record Lifetime() implements GenericTyArgKind {
+public interface TyGenericParamDefKind {
+    record Lifetime() implements TyGenericParamDefKind {
     }
 
-    record Type(Ty ty) implements GenericTyArgKind {
+    record Type(boolean hasDefault, boolean synthetic) implements TyGenericParamDefKind {
     }
 
-    record Const(@SerializedName("const") TyConst _const) implements GenericTyArgKind {
+    record Const(boolean hasDefault, boolean synthetic) implements TyGenericParamDefKind {
     }
 
-    class Adapter extends HirAdapter<GenericTyArgKind> {
+    class Adapter extends HirAdapter<TyGenericParamDefKind> {
         @Override
-        public @Nullable Class<? extends GenericTyArgKind> getType(String tag) {
+        public @Nullable Class<? extends TyGenericParamDefKind> getType(String tag) {
             return switch (tag) {
                 case "Lifetime" -> Lifetime.class;
                 case "Type" -> Type.class;
@@ -29,4 +28,5 @@ public interface GenericTyArgKind {
             };
         }
     }
+
 }

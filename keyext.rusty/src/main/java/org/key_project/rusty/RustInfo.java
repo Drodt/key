@@ -66,6 +66,10 @@ public final class RustInfo {
             var krt = new KeYRustyType(at, at.getSort(services));
             type2KRTCache.put(type, krt);
             return krt;
+        } else if (type instanceof Instantiated i) {
+            var krt = new KeYRustyType(i, i.getSort(services));
+            type2KRTCache.put(type, krt);
+            return krt;
         } else
             throw new IllegalArgumentException("Unsupported type: " + type);
     }

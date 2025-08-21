@@ -1,4 +1,10 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.speclang;
+
+import java.util.Arrays;
+import java.util.Map;
 
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
@@ -15,9 +21,6 @@ import org.key_project.rusty.parser.hir.expr.BinOpKind;
 import org.key_project.rusty.parser.hir.expr.LitKind;
 import org.key_project.rusty.parser.hir.expr.UnOp;
 import org.key_project.rusty.speclang.spec.TermKind;
-
-import java.util.Arrays;
-import java.util.Map;
 
 public abstract class AbstractSpecConverter {
     protected final Services services;

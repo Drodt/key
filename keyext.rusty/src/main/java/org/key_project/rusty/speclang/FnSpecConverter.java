@@ -21,7 +21,7 @@ import org.key_project.rusty.parser.hir.pat.PatKind;
 import org.key_project.rusty.speclang.spec.*;
 import org.key_project.util.collection.ImmutableList;
 
-public class FnSpecConverter  extends AbstractSpecConverter {
+public class FnSpecConverter extends AbstractSpecConverter {
 
     public FnSpecConverter(Services services) {
         super(services);

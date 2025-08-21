@@ -67,6 +67,9 @@ public class ProofCollections {
         var tuples = c.group("tuples");
         tuples.loadable("tuple-test.proof");
 
+        var option = c.group("option");
+        option.loadable("option.proof");
+
         // var algos = c.group("algorithms");
         // algos.loadable("binary-search/binary-search.proof"); TODO: fix rml transl err:
         // Implication is not recognized in get_rml_fn_kind

@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.ty;
 
-import org.key_project.rusty.parser.hir.DefId;
-
-public record TyFieldDef(DefId did, String name, Ty ty) {
+public enum AdtKind {
+    Struct,
+    Union,
+    Enum,
 }

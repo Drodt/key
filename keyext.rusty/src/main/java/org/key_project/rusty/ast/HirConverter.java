@@ -9,6 +9,7 @@ import java.util.*;
 import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.*;
+import org.key_project.rusty.ast.abstraction.Enum;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.fn.Function;
@@ -35,9 +36,7 @@ import org.key_project.rusty.parser.hir.pat.PatKind;
 import org.key_project.rusty.parser.hir.stmt.LetStmt;
 import org.key_project.rusty.parser.hir.stmt.Stmt;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
-import org.key_project.rusty.parser.hir.ty.Ty;
-import org.key_project.rusty.parser.hir.ty.TyConst;
-import org.key_project.rusty.parser.hir.ty.ValTree;
+import org.key_project.rusty.parser.hir.ty.*;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
@@ -53,6 +52,7 @@ public class HirConverter {
 
     private final @Nullable Map<DefId, FnSpec> fnSpecs;
     private final @Nullable Map<HirId, LoopSpec> loopSpecs;
+    private final Map<DefId, Instantiated> adtInstantiations = new HashMap<>();
     private final FnSpecConverter fnSpecConverter;
     private final LoopSpecConverter loopSpecConverter;
 
@@ -551,9 +551,10 @@ public class HirConverter {
     }
 
     private RustType convertPathHirTy(HirTyKind.Path ty) {
-        if (ty.path() instanceof org.key_project.rusty.parser.hir.QPath.Resolved r && r.ty() == null
-                && r.path().res() instanceof org.key_project.rusty.parser.hir.Res.PrimTy pty) {
-            return convertPrimHirType(pty.ty());
+        if (ty.path() instanceof org.key_project.rusty.parser.hir.QPath.Resolved(HirTy ty1, org.key_project.rusty.parser.hir.Path<org.key_project.rusty.parser.hir.Res> path)
+                && ty1 == null
+                && path.res() instanceof org.key_project.rusty.parser.hir.Res.PrimTy(PrimHirTy ty2)) {
+            return convertPrimHirType(ty2);
         }
         return new PathRustType();
     }
@@ -708,9 +709,10 @@ public class HirConverter {
                 case U64 -> PrimitiveType.U64;
                 case U128 -> PrimitiveType.U128;
             };
+            case Ty.Adt(var def, var args) -> getAdt(def, args);
             case Ty.Ref(var t, var m) -> ReferenceType.get(convertTy(t), m);
             case Ty.FnDef(var id, var args) -> {
-                assert id.krate() == 0 : "only local FnDef tys allowed";
+                assert id.krate() == 0 : "only local FnDef tys allowed (" + id + ")";
                 var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())));
                 yield new FnDefType(fn);
             }
@@ -726,6 +728,66 @@ public class HirConverter {
         };
         services.getRustInfo().registerType(type);
         return type;
+    }
+
+    private Type getAdt(AdtDef def, GenericTyArgKind[] args) {
+        return adtInstantiations.computeIfAbsent(def.did(), (did) -> switch (def.kind()) {
+            case Struct -> null;
+            case Union -> null;
+            case Enum -> {
+                var variants = new Variant[def.variants().size()];
+                for (var e : def.variants().entrySet()) {
+                    VariantDef value = e.getValue();
+                    variants[e.getKey()] =
+                        new Variant(new Name(value.name()), convertFields(value.fields()));
+                }
+                ImmutableArray<GenericTyArg> tyArgs = convertGenericArgs(args);
+                ImmutableArray<GenericTyParam> generics;
+                if (def.foreignGenerics() == null)
+                    throw new UnsupportedOperationException("Local generics");
+                else
+                    generics = convertGenerics(def.foreignGenerics());
+
+                var en = new Enum(def.pathStr(), new ImmutableArray<>(variants), generics);
+                yield new Instantiated(en, tyArgs);
+            }
+        });
+    }
+
+    private ImmutableArray<Field> convertFields(Map<Integer, TyFieldDef> fields) {
+        var res = new Field[fields.size()];
+        for (var e : fields.entrySet()) {
+            var field = e.getValue();
+            res[e.getKey()] = new Field(new Name(field.name()), convertTy(field.ty()));
+        }
+        return new ImmutableArray<>(res);
+    }
+
+    private ImmutableArray<GenericTyArg> convertGenericArgs(GenericTyArgKind[] args) {
+        var res = new ArrayList<GenericTyArg>();
+        for (var e : args) {
+            switch (e) {
+                case GenericTyArgKind.Const c ->
+                    throw new UnsupportedOperationException("TODO: const generic arg");
+                case GenericTyArgKind.Type t -> res.add(new GenericTyArgType(convertTy(t.ty())));
+                case GenericTyArgKind.Lifetime ignored -> {
+                }
+                default -> throw new IllegalArgumentException("Unknown arg type: " + e);
+            }
+        }
+        return new ImmutableArray<>(res);
+    }
+
+    private ImmutableArray<GenericTyParam> convertGenerics(TyGenerics generics) {
+        var res = new ArrayList<GenericTyParam>();
+        for (var p : generics.params()) {
+            if (p.kind() instanceof TyGenericParamDefKind.Type) {
+                res.add(new GenericTyParam(new Name(p.name()), false));
+            } else if (p.kind() instanceof TyGenericParamDefKind.Const) {
+                res.add(new GenericTyParam(new Name(p.name()), true));
+            }
+        }
+        return new ImmutableArray<>(res);
     }
 
     // TODO: something other than int
