@@ -3,5 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir;
 
-public record GenericArgs(GenericArg[] args, AssocItemConstraint[] constraints, Span spanExt) {
+public record AssocItemConstraint(HirId hirId, Ident ident, GenericArgs args,
+        AssocItemConstraintKind kind, Span span) {
 }

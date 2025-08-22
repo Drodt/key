@@ -3,5 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.sort.GenericArgument;
+
 public interface GenericTyArg {
+    GenericArgument sortArg(Services services);
 }

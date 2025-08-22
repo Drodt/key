@@ -5,5 +5,5 @@ package org.key_project.rusty.parser.hir.ty;
 
 import org.key_project.rusty.parser.hir.DefId;
 
-public record TyFieldDef(DefId did, String name, Ty ty) {
+public record TyFieldDef(DefId did, String name, Ty ty, Ty instTy) {
 }

@@ -7,10 +7,10 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-public record PathRustType() implements RustType {
+public record PathRustType(Type type) implements RustType {
     @Override
     public Type type() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return type;
     }
 
     @Override

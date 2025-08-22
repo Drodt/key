@@ -3,19 +3,32 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import java.util.Objects;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.RustType;
+import org.key_project.rusty.logic.sort.GenericArgument;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 public record Instantiated(HasGenerics ty, ImmutableArray<GenericTyArg> args) implements Type {
     @Override
-    public @Nullable Sort getSort(Services services) {
-        return null;
+    public @NonNull Sort getSort(Services services) {
+        var psd = ty.sortDecl(services);
+        if (psd == null) {
+            return Objects.requireNonNull(services.getNamespaces().sorts().lookup(ty.name()));
+        } else {
+            ImmutableList<GenericArgument> sortArgs = ImmutableList.of();
+            for (int i = args.size() - 1; i >= 0; i--) {
+                sortArgs = sortArgs.prepend(args.get(i).sortArg(services));
+            }
+            return ParametricSortInstance.get(psd, sortArgs);
+        }
     }
 
     @Override

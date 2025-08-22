@@ -3,5 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir;
 
-public record GenericArgs(GenericArg[] args, AssocItemConstraint[] constraints, Span spanExt) {
+import org.key_project.rusty.parser.hir.ty.AdtDef;
+
+public record DefIdAdtMapping(DefId defId, AdtDef def) {
 }

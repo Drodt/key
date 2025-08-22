@@ -6,8 +6,11 @@ package org.key_project.rusty.ast.abstraction;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.sort.GenericParameter;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -29,7 +32,20 @@ public class Enum implements Adt, Named, HasGenerics {
 
     @Override
     public ParametricSortDecl sortDecl(Services services) {
-        return null;
+        if (params.isEmpty())
+            return null;
+        ImmutableList<GenericParameter> sortParams = ImmutableSLList.nil();
+        for (int i = params.size() - 1; i >= 0; i--) {
+            sortParams = sortParams.prepend(params.get(i).toSortParam(services));
+        }
+        var psd = new ParametricSortDecl(name, false, sortParams, null);
+        var alreadyDefined = services.getNamespaces().parametricSorts().lookup(psd.name());
+        if (alreadyDefined != null) {
+            return alreadyDefined;
+        } else {
+            services.getNamespaces().parametricSorts().addSafely(psd);
+            return psd;
+        }
     }
 
     @Override

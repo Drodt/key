@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.sort;
 
+import java.util.Objects;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.util.collection.ImmutableList;
@@ -10,7 +12,7 @@ import org.key_project.util.collection.Immutables;
 
 import org.jspecify.annotations.NonNull;
 
-public class ParametricSortDecl implements Named {
+public final class ParametricSortDecl implements Named {
     private final Name name;
     private final boolean isAbstract;
     private final String documentation;
@@ -47,5 +49,20 @@ public class ParametricSortDecl implements Named {
     @Override
     public String toString() {
         return name.toString() + "<" + parameters.toString() + ">";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass())
+            return false;
+        ParametricSortDecl that = (ParametricSortDecl) o;
+        return isAbstract == that.isAbstract && Objects.equals(name, that.name)
+                && Objects.equals(documentation, that.documentation)
+                && Objects.equals(parameters, that.parameters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, isAbstract, documentation, parameters);
     }
 }

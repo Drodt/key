@@ -70,8 +70,17 @@ public final class RustInfo {
             var krt = new KeYRustyType(i, i.getSort(services));
             type2KRTCache.put(type, krt);
             return krt;
-        } else
+        } else if (type instanceof GenericTyParam p) {
+            var krt = new KeYRustyType(p);
+            type2KRTCache.put(type, krt);
+            return krt;
+        } else if (type instanceof ForeignFnType f) {
+            var krt = new KeYRustyType(f);
+            type2KRTCache.put(type, krt);
+            return krt;
+        } else {
             throw new IllegalArgumentException("Unsupported type: " + type);
+        }
     }
 
     private @Nullable KeYRustyType getPrimitiveKeYRustyType(String name) {
