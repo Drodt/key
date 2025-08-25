@@ -8,8 +8,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
-public record PathSegment(String ident, Res res)implements RustyProgramElement {
+public record PathSegment(String ident, Res res) implements RustyProgramElement {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
         throw new IndexOutOfBoundsException("PathSegment has no children");
@@ -21,7 +20,7 @@ public record PathSegment(String ident, Res res)implements RustyProgramElement {
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return ident;
     }
 
@@ -30,4 +29,3 @@ public record PathSegment(String ident, Res res)implements RustyProgramElement {
 
     }
 }
-//spotless:on

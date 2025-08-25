@@ -12,8 +12,8 @@ import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
-public record PathInExpression(ImmutableArray<PathExprSegment> segments) implements RustyProgramElement {
+public record PathInExpression(ImmutableArray<PathExprSegment> segments)
+        implements RustyProgramElement {
     @Override
     public void visit(Visitor v) {
         v.performActionOnPathInExpression(this);
@@ -34,4 +34,3 @@ public record PathInExpression(ImmutableArray<PathExprSegment> segments) impleme
         return segments.stream().map(PathExprSegment::toString).collect(Collectors.joining("::"));
     }
 }
-//spotless:on

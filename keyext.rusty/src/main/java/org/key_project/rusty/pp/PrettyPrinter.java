@@ -688,4 +688,9 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnIdentifier(Identifier x) {
         layouter.print(x.name().toString());
     }
+
+    @Override
+    public void performActionOnInferHirTy(InferHirTy x) {
+        layouter.print("_");
+    }
 }

@@ -18,11 +18,12 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
-public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operatorSV) implements Pattern {
+public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operatorSV)
+        implements Pattern {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return operatorSV;
+        if (n == 0)
+            return operatorSV;
         throw new IndexOutOfBoundsException("SchemaVarPattern has only one child");
     }
 
@@ -39,7 +40,8 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
         assert mc != null;
         final SVInstantiations instantiations = mc.getInstantiations();
         final Object instant = instantiations.getInstantiation(operatorSV);
-        if (instant == null || instant.equals(src) || (instant instanceof Term t && t.op().equals(src))) {
+        if (instant == null || instant.equals(src)
+                || (instant instanceof Term t && t.op().equals(src))) {
             mc = addPatternInstantiation(src, mc, instantiations, instant, services);
             if (mc == null) {
                 return null;
@@ -51,7 +53,9 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
         return mc;
     }
 
-    private @Nullable MatchConditions addPatternInstantiation(RustyProgramElement pe, @Nullable MatchConditions mc, SVInstantiations insts, @Nullable Object foundInst, Services services) {
+    private @Nullable MatchConditions addPatternInstantiation(RustyProgramElement pe,
+            @Nullable MatchConditions mc, SVInstantiations insts, @Nullable Object foundInst,
+            Services services) {
         if (mc == null) {
             return null;
         }
@@ -86,9 +90,9 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
         if (reference) {
             sb.append("&");
         }
-        if (mut) sb.append("mut ");
+        if (mut)
+            sb.append("mut ");
         sb.append(operatorSV);
         return sb.toString();
     }
 }
-//spotless:on

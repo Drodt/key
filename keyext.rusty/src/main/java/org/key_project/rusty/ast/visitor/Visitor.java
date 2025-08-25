@@ -141,4 +141,6 @@ public interface Visitor {
     void performActionOnArrayRustType(ArrayRustType x);
 
     void performActionOnIdentifier(Identifier x);
+
+    void performActionOnInferHirTy(InferHirTy x);
 }

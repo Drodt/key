@@ -10,12 +10,11 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
 public record BindingPattern(boolean ref, boolean mutRef, boolean mut, ProgramVariable pv,
-                             @Nullable Pattern opt) implements Pattern {
+        @Nullable Pattern opt) implements Pattern {
 
-public     BindingPattern {
-       assert pv != null : "BindingPattern cannot have a null variable";
+    public BindingPattern {
+        assert pv != null : "BindingPattern cannot have a null variable";
     }
 
     @Override
@@ -25,11 +24,13 @@ public     BindingPattern {
 
     @Override
     public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return pv;
+        if (n == 0)
+            return pv;
         if (n == 1 && opt != null) {
             return opt;
         }
-        throw new IndexOutOfBoundsException("BindingPattern has only " + getChildCount() + " children");
+        throw new IndexOutOfBoundsException(
+            "BindingPattern has only " + getChildCount() + " children");
     }
 
     @Override
@@ -40,10 +41,11 @@ public     BindingPattern {
     @Override
     public String toString() {
         var sb = new StringBuilder();
-        if (mut) sb.append("mut ");
+        if (mut)
+            sb.append("mut ");
         sb.append(pv);
-        if (opt != null) sb.append(" @ ").append(opt);
+        if (opt != null)
+            sb.append(" @ ").append(opt);
         return sb.toString();
     }
 }
-//spotless:on

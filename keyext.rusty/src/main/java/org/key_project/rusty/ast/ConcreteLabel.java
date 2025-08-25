@@ -9,7 +9,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public record ConcreteLabel(Name name) implements Label {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
@@ -26,4 +25,3 @@ public record ConcreteLabel(Name name) implements Label {
 
     }
 }
-//spotless:on

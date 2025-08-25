@@ -10,8 +10,8 @@ import org.key_project.rusty.ast.ty.RustType;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
-public record ClosureParam(@NonNull Pattern pattern, @Nullable RustType ty) implements SyntaxElement {
+public record ClosureParam(@NonNull Pattern pattern, @Nullable RustType ty)
+        implements SyntaxElement {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
         if (n == 0) {
@@ -29,7 +29,7 @@ public record ClosureParam(@NonNull Pattern pattern, @Nullable RustType ty) impl
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(pattern);
         if (ty != null) {
@@ -38,4 +38,3 @@ public record ClosureParam(@NonNull Pattern pattern, @Nullable RustType ty) impl
         return sb.toString();
     }
 }
-//spotless:on

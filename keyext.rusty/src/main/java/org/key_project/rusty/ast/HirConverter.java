@@ -535,6 +535,7 @@ public class HirConverter {
             case HirTyKind.Never ignored -> new NeverRustType();
             case HirTyKind.Tup(var tys) -> convertTupHirType(tys);
             case HirTyKind.Path p -> convertPathHirTy(p);
+            case HirTyKind.Infer ignored -> new InferHirTy();
             default -> throw new IllegalArgumentException("Unknown hirty type: " + ty);
         };
     }
@@ -612,7 +613,7 @@ public class HirConverter {
 
     private PrimitiveRustType convertPrimHirType(PrimHirTy pty) {
         var primTy = switch (pty) {
-            case PrimHirTy.Bool b -> PrimitiveType.BOOL;
+            case PrimHirTy.Bool ignored -> PrimitiveType.BOOL;
             case PrimHirTy.Uint(var uintTy) -> switch (uintTy) {
                 case UintTy.U8 -> PrimitiveType.U8;
                 case UintTy.U16 -> PrimitiveType.U16;

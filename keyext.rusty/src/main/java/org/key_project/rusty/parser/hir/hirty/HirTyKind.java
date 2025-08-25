@@ -40,6 +40,9 @@ public interface HirTyKind {
     record Path(QPath path) implements HirTyKind {
     }
 
+    record Infer() implements HirTyKind {
+    }
+
     // TraitObject?
 
     class Adapter extends HirAdapter<HirTyKind> {
@@ -55,6 +58,7 @@ public interface HirTyKind {
                 case "Tup" -> Tup.class;
                 case "AnonAdt" -> AnonAdt.class;
                 case "Path" -> Path.class;
+                case "Infer" -> Infer.class;
                 default -> null;
             };
         }

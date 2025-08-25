@@ -13,7 +13,6 @@ import org.jspecify.annotations.Nullable;
 ///
 /// @param ident
 /// @param origIdent
-// spotless:off
 public record ExternCrate(String ident, @Nullable String origIdent) implements Item {
     @Override
     public void visit(Visitor v) {
@@ -30,4 +29,3 @@ public record ExternCrate(String ident, @Nullable String origIdent) implements I
         return 0;
     }
 }
-//spotless:on

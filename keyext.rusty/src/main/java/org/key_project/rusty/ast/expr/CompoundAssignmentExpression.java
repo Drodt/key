@@ -14,7 +14,6 @@ import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public class CompoundAssignmentExpression implements Expr {
     private final Expr left;
     private final BinaryExpression.Operator op;
@@ -58,7 +57,7 @@ public class CompoundAssignmentExpression implements Expr {
             case 1 -> op;
             case 2 -> right;
             default -> throw new IndexOutOfBoundsException(
-                    "CompoundAssignmentExpression has only 3 children");
+                "CompoundAssignmentExpression has only 3 children");
         };
     }
 
@@ -77,4 +76,3 @@ public class CompoundAssignmentExpression implements Expr {
         return TupleType.UNIT;
     }
 }
-//spotless:on
