@@ -53,12 +53,11 @@ To run all proofs in the example folder use
   - [x] Tests
   - [ ] Soundness proof
 - Const Block
-  - [ ] Implementation
+  - [x] Implementation
   - [ ] Tests
   - [ ] Soundness proof
 - If
   - [x] Implementation
-    - Are they complete?
   - [ ] Tests
     - Some, not all
   - [ ] Soundness proof
@@ -77,7 +76,7 @@ To run all proofs in the example folder use
   - [ ] Implementation
   - [ ] Tests
   - [ ] Soundness proof
-  - Worked on by BSC student
+  - Worked on by B.Sc. student
 - Unsafe Block
   - [ ] Implementation
   - [ ] Tests
@@ -87,8 +86,8 @@ To run all proofs in the example folder use
   - [ ] Tests
   - [ ] Soundness proof
 - Array Expression
-  - [ ] Implementation
-  - [ ] Tests
+  - [x] Implementation
+  - [x] Tests
   - [ ] Soundness proof
 - Await
   - [ ] Implementation
@@ -108,7 +107,12 @@ To run all proofs in the example folder use
   - [ ] Soundness proof
 - Closure
 - Continue
+  - [ ] Implementation
+    - Partial
 - Field
+  - [ ] Implementation
+    - [x] unnamed fields
+    - [ ] named fields
 - Index
   - [ ] Implementation
     - [x] For arrays
@@ -149,32 +153,31 @@ To run all proofs in the example folder use
   - Handled by the expression rules and `simple_expr_stmt`
 - [x] Let
 - [ ] Empty
-- [ ] Item
+- [x] Item
 
 ### Types
 
 - Primitive
   - Int
-    - [ ] u8
-    - [ ] u16
-    - [ ] u32
-    - [ ] u64
-    - [ ] u128
-    - [ ] usize
-    - [ ] i8
-    - [ ] i16
-    - [ ] i32
-    - [ ] i64
-    - [ ] i128
-    - [ ] isize
+    - [x] u8
+    - [x] u16
+    - [x] u32
+    - [x] u64
+    - [x] u128
+    - [x] usize
+    - [x] i8
+    - [x] i16
+    - [x] i32
+    - [x] i64
+    - [x] i128
+    - [x] isize
   - [x] `bool`
   - Float
     - [ ] f16
     - [ ] f32
     - [ ] f64
     - [ ] f128
-  - [ ] Tuple
-    - [x] Unit
+  - [x] Tuple
   - [x] Array
   - [ ] char
   - [ ] Pointer
@@ -185,7 +188,9 @@ To run all proofs in the example folder use
   - [ ] never
 - ADTs
   - [ ] Structs
+    - [x] foreign structs
   - [ ] Enums
+    - [x] foreign enums
   - [ ] Unions
 
 ### Functions
