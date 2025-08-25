@@ -33,7 +33,7 @@ public class ProgramVariable extends AbstractSortedOperator
     }
 
     public ProgramVariable(Name name, KeYRustyType type) {
-        this(name, Objects.requireNonNull(type.getSort()), type);
+        this(name, Objects.requireNonNull(type.getSort(), name.toString()), type);
     }
 
     @Override

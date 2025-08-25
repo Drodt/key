@@ -20,6 +20,7 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class TupleType implements Type {
@@ -68,7 +69,7 @@ public class TupleType implements Type {
     }
 
     @Override
-    public Name name() {
+    public @NonNull Name name() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -89,5 +90,20 @@ public class TupleType implements Type {
             sb.append(types.get(i).toString());
         }
         return sb.append(")").toString();
+    }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        var its = new ArrayList<Type>();
+        var changed = false;
+        for (Type ty : types) {
+            var it = ty.instantiate(instMap, services);
+            if (it != ty)
+                changed = true;
+            its.add(it);
+        }
+        if (!changed)
+            return this;
+        return getInstance(its);
     }
 }

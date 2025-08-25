@@ -9,8 +9,9 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.ast.abstraction.*;
+import org.key_project.rusty.ast.abstraction.Enum;
+import org.key_project.rusty.ast.abstraction.FnDefType;
 import org.key_project.rusty.ast.fn.Function;
-import org.key_project.rusty.ast.ty.FnDefType;
 import org.key_project.rusty.logic.op.ProgramFunction;
 
 import org.jspecify.annotations.NonNull;
@@ -66,8 +67,8 @@ public final class RustInfo {
             var krt = new KeYRustyType(at, at.getSort(services));
             type2KRTCache.put(type, krt);
             return krt;
-        } else if (type instanceof Instantiated i) {
-            var krt = new KeYRustyType(i, i.getSort(services));
+        } else if (type instanceof Enum e) {
+            var krt = new KeYRustyType(e, e.getSort(services));
             type2KRTCache.put(type, krt);
             return krt;
         } else if (type instanceof GenericTyParam p) {

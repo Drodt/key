@@ -10,6 +10,7 @@ import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.*;
 import org.key_project.rusty.ast.abstraction.Enum;
+import org.key_project.rusty.ast.abstraction.GenericEnum;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.fn.Function;
@@ -573,7 +574,10 @@ public class HirConverter {
                     args.add(new GenericTyArgType(hirTy.type()));
                 }
             }
-            var type = new Instantiated(en, new ImmutableArray<>(args));
+            if (args.isEmpty()) {
+                return new PathRustType((Enum) en);
+            }
+            var type = ((GenericEnum) en).instantiate(new ImmutableArray<>(args), services);
             return new PathRustType(type);
         }
         throw new IllegalArgumentException("Unknown path type: " + ty.path());
@@ -750,7 +754,7 @@ public class HirConverter {
                 yield new ForeignFnType(id, convertGenericArgs(args));
             }
             case Ty.Closure c -> new Closure();
-            case Ty.Never n -> Never.INSTANCE;
+            case Ty.Never ignored -> Never.INSTANCE;
             case Ty.Tuple(var ts) ->
                 TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList());
             case Ty.Array(var arrTy, var len) -> {
@@ -785,13 +789,18 @@ public class HirConverter {
                 }
                 currentParams = null;
 
-                yield new Enum(def.pathStr(), new ImmutableArray<>(variants), generics);
+                yield new GenericEnum(def.pathStr(), new ImmutableArray<>(variants), generics);
             }
         };
     }
 
     private Type convertAdtTy(AdtDef def, GenericTyArgKind[] args) {
-        return new Instantiated(adts.get(def.did()), convertGenericArgs(args));
+        Adt adt = adts.get(def.did());
+        return switch (adt) {
+            case GenericEnum g -> g.instantiate(convertGenericArgs(args), services);
+            case Enum e -> e;
+            default -> throw new IllegalArgumentException("Unknown adt: " + adt);
+        };
 
     }
 

@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import java.util.Map;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.sort.Sort;
@@ -32,5 +34,16 @@ public record GenericTyParam(Name name, boolean isConst) implements Named, Type 
     @Override
     public RustType toRustType(Services services) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        var arg = instMap.get(this);
+        return switch (arg) {
+            case null -> this;
+            case GenericTyArgType(var ty) -> ty;
+            default -> throw new IllegalArgumentException(
+                String.format("Unrecognized argument type: %s", arg));
+        };
     }
 }

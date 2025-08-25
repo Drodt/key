@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import java.util.Map;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
@@ -38,5 +40,13 @@ public class PtrType implements Type {
     @Override
     public @NonNull Name name() {
         return name;
+    }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        var it = inner.instantiate(instMap, services);
+        if (it == inner)
+            return this;
+        return get(it);
     }
 }

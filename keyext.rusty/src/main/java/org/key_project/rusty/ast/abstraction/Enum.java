@@ -3,69 +3,62 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import java.util.Map;
+
 import org.key_project.logic.Name;
-import org.key_project.logic.Named;
+import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.logic.sort.GenericParameter;
+import org.key_project.rusty.ast.ty.RustType;
+import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class Enum implements Adt, Named, HasGenerics {
-    private final Name name;
-    private final ImmutableArray<Variant> variants;
-    private final ImmutableArray<GenericTyParam> params;
-
-    public Enum(String pathStr, ImmutableArray<Variant> variants,
-            ImmutableArray<GenericTyParam> params) {
-        name = new Name(pathStr);
-        this.variants = variants;
-        this.params = params;
-    }
-
-    public ImmutableArray<GenericTyParam> params() {
-        return params;
-    }
-
+/// AN enum with no generic parameters or already instantiated parameters.
+public record Enum(Name name, ImmutableArray<Variant> variants,
+        @Nullable ParametricSortDecl parametricSortDecl,
+        @Nullable ImmutableArray<GenericTyArg> args) implements Type, Adt {
     @Override
-    public ParametricSortDecl sortDecl(Services services) {
-        if (params.isEmpty())
-            return null;
-        ImmutableList<GenericParameter> sortParams = ImmutableSLList.nil();
-        for (int i = params.size() - 1; i >= 0; i--) {
-            sortParams = sortParams.prepend(params.get(i).toSortParam(services));
+    public @Nullable Sort getSort(Services services) {
+        if (parametricSortDecl == null)
+            return services.getNamespaces().sorts().lookup(name);
+        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+        assert this.args != null;
+        for (int i = this.args.size() - 1; i >= 0; i--) {
+            args = args.prepend(this.args.get(i).sortArg(services));
         }
-        var psd = new ParametricSortDecl(name, false, sortParams, null);
-        var alreadyDefined = services.getNamespaces().parametricSorts().lookup(psd.name());
-        if (alreadyDefined != null) {
-            return alreadyDefined;
-        } else {
-            services.getNamespaces().parametricSorts().addSafely(psd);
-            return psd;
-        }
+        return ParametricSortInstance.get(parametricSortDecl, args);
     }
 
     @Override
-    public @NonNull Name name() {
-        return name;
+    public RustType toRustType(Services services) {
+        throw new UnsupportedOperationException("Not supported yet: " + getClass().getSimpleName());
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         var sb = new StringBuilder();
         sb.append(name);
-        if (!params.isEmpty()) {
+        if (args != null) {
             sb.append("<");
-            sb.append(params.get(0));
-            for (int i = 1; i < params.size(); i++) {
+            sb.append(args.get(0));
+            for (int i = 1; i < args.size(); i++) {
                 sb.append(", ");
-                sb.append(params.get(i));
+                sb.append(args.get(i));
             }
             sb.append(">");
         }
         return sb.toString();
+    }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        // We are fully instantiated
+        return this;
     }
 }

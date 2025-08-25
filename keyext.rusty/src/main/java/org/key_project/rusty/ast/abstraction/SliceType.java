@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.key_project.logic.Name;
@@ -41,5 +42,13 @@ public class SliceType implements Type {
     @Override
     public @NonNull Name name() {
         return name;
+    }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        var it = inner.instantiate(instMap, services);
+        if (it == inner)
+            return this;
+        return get(it);
     }
 }
