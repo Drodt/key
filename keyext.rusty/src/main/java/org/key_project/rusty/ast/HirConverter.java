@@ -564,21 +564,42 @@ public class HirConverter {
         }
         if (ty.path() instanceof org.key_project.rusty.parser.hir.QPath.Resolved(var ty1, var path)
                 &&
-                path.res() instanceof org.key_project.rusty.parser.hir.Res.DefRes(var def)
-                && def.kind() instanceof DefKind.Enum) {
-            var en = adts.get(def.id());
-            var args = new ArrayList<GenericTyArg>();
-            for (var a : path.segments()[path.segments().length - 1].args().args()) {
-                if (a instanceof GenericArg.Type(HirTy ty2)) {
-                    RustType hirTy = convertHirTy(ty2);
-                    args.add(new GenericTyArgType(hirTy.type()));
+                path.res() instanceof org.key_project.rusty.parser.hir.Res.DefRes(var def)) {
+            switch (def.kind()) {
+                case DefKind.Enum ignored -> {
+                    var adt = adts.get(def.id());
+                    var args = new ArrayList<GenericTyArg>();
+                    for (var a : path.segments()[path.segments().length - 1].args().args()) {
+                        if (a instanceof GenericArg.Type(HirTy ty2)) {
+                            RustType hirTy = convertHirTy(ty2);
+                            args.add(new GenericTyArgType(hirTy.type()));
+                        }
+                    }
+                    if (args.isEmpty()) {
+                        return new PathRustType((Type) adt);
+                    }
+                    var type = ((GenericAdt) adt).instantiate(new ImmutableArray<>(args), services);
+                    return new PathRustType(type);
+                }
+                case DefKind.Struct ignored -> {
+                    var adt = adts.get(def.id());
+                    var args = new ArrayList<GenericTyArg>();
+                    for (var a : path.segments()[path.segments().length - 1].args().args()) {
+                        if (a instanceof GenericArg.Type(HirTy ty2)) {
+                            RustType hirTy = convertHirTy(ty2);
+                            args.add(new GenericTyArgType(hirTy.type()));
+                        }
+                    }
+                    if (args.isEmpty()) {
+                        return new PathRustType((Type) adt);
+                    }
+                    var type = ((GenericAdt) adt).instantiate(new ImmutableArray<>(args), services);
+                    return new PathRustType(type);
+                }
+                default -> {
                 }
             }
-            if (args.isEmpty()) {
-                return new PathRustType((Enum) en);
-            }
-            var type = ((GenericEnum) en).instantiate(new ImmutableArray<>(args), services);
-            return new PathRustType(type);
+            throw new IllegalArgumentException("Unknown def kind: " + def.kind());
         }
         throw new IllegalArgumentException("Unknown path type: " + ty.path());
     }
@@ -721,6 +742,9 @@ public class HirConverter {
             case DefKind.Enum e -> {
                 yield null;
             }
+            case DefKind.Struct e -> {
+                yield null;
+            }
             default -> throw new IllegalArgumentException("Unknown def: " + def);
         };
     }
@@ -772,26 +796,37 @@ public class HirConverter {
     }
 
     private Adt getAdt(AdtDef def) {
-        return switch (def.kind()) {
-            case Struct -> null;
+        ImmutableArray<GenericTyParam> generics;
+        if (def.foreignGenerics() == null)
+            throw new UnsupportedOperationException("Local generics");
+        else
+            generics = convertGenerics(def.foreignGenerics());
+        Adt adt = switch (def.kind()) {
+            case Struct -> {
+                assert def.variants().size() == 1;
+                var fields = convertFields(def.variants().get(0).fields());
+                var name = new Name(def.pathStr());
+                if (generics.isEmpty())
+                    yield new Struct(name, fields, null, null);
+                else
+                    yield new GenericStruct(name, fields, generics);
+            }
             case Union -> null;
             case Enum -> {
-                ImmutableArray<GenericTyParam> generics;
-                if (def.foreignGenerics() == null)
-                    throw new UnsupportedOperationException("Local generics");
-                else
-                    generics = convertGenerics(def.foreignGenerics());
                 var variants = new Variant[def.variants().size()];
                 for (var e : def.variants().entrySet()) {
                     VariantDef value = e.getValue();
                     variants[e.getKey()] =
                         new Variant(new Name(value.name()), convertFields(value.fields()));
                 }
-                currentParams = null;
-
+                if (generics.isEmpty())
+                    yield new Enum(new Name(def.pathStr()), new ImmutableArray<>(variants), null,
+                        null);
                 yield new GenericEnum(def.pathStr(), new ImmutableArray<>(variants), generics);
             }
         };
+        currentParams = null;
+        return adt;
     }
 
     private Type convertAdtTy(AdtDef def, GenericTyArgKind[] args) {
@@ -799,6 +834,8 @@ public class HirConverter {
         return switch (adt) {
             case GenericEnum g -> g.instantiate(convertGenericArgs(args), services);
             case Enum e -> e;
+            case GenericStruct g -> g.instantiate(convertGenericArgs(args), services);
+            case Struct s -> s;
             default -> throw new IllegalArgumentException("Unknown adt: " + adt);
         };
 

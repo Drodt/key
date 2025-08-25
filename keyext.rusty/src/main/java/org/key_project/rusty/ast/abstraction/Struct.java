@@ -19,8 +19,8 @@ import org.key_project.util.collection.ImmutableSLList;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-/// An enum with no generic parameters or already instantiated parameters.
-public record Enum(Name name, ImmutableArray<Variant> variants,
+/// A struct with no generic parameters or already instantiated parameters.
+public record Struct(Name name, ImmutableArray<Field> fields,
         @Nullable ParametricSortDecl parametricSortDecl,
         @Nullable ImmutableArray<GenericTyArg> args) implements Type, Adt {
     @Override
