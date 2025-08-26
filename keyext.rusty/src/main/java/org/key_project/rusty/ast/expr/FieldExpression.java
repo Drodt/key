@@ -11,7 +11,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-public record FieldExpression(Expr base, FieldIdentifier field) implements Expr {
+public record FieldExpression(Expr base, IFieldIdentifier field) implements Expr {
     @Override
     public void visit(Visitor v) {
         v.performActionOnFieldExpression(this);

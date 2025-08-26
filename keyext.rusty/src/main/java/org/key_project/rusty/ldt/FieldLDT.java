@@ -27,10 +27,15 @@ public class FieldLDT extends LDT {
     private final Services services;
     private final ParametricSortDecl fieldSort;
 
+    private final ParametricFunctionDecl get;
+    private final ParametricFunctionDecl set;
+
     public FieldLDT(Services services) {
         super(NAME, services);
         this.services = services;
         fieldSort = parametricSort();
+        get = addParametricFunction(services, "get");
+        set = addParametricFunction(services, "set");
     }
 
     public RFunction createField(String prefix, Name fieldName, Type type) {
@@ -41,6 +46,14 @@ public class FieldLDT extends LDT {
         var fn = new RFunction(name, sort, new ImmutableArray<>(), null, true);
         services.getNamespaces().functions().addSafely(fn);
         return fn;
+    }
+
+    public ParametricFunctionDecl getGet() {
+        return get;
+    }
+
+    public ParametricFunctionDecl getSet() {
+        return set;
     }
 
     public ParametricFunctionDecl createGenericField(String prefix, Name fieldName, Type type,

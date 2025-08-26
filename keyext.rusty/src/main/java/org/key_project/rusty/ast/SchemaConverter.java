@@ -303,8 +303,7 @@ public class SchemaConverter {
             RustySchemaParser.FieldExpressionContext ctx) {
         var base = convertExpr(ctx.expr());
         if (ctx.identifier() != null) {
-            var ident = convertIdentifier(ctx.identifier());
-            return new FieldExpression(base, ident);
+            throw new UnsupportedOperationException();
         } else {
             var sv = ctx.schemaVariable();
             return new FieldExpression(base,

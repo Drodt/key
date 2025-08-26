@@ -6,13 +6,11 @@ package org.key_project.rusty.ast;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.SyntaxElement;
-import org.key_project.rusty.ast.expr.FieldIdentifier;
 import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-public record Identifier(Name name) implements Named, RustyProgramElement, FieldIdentifier {
-
+public record Identifier(Name name) implements Named, RustyProgramElement {
     @Override
     public @NonNull Name name() {
         return name;
@@ -29,7 +27,7 @@ public record Identifier(Name name) implements Named, RustyProgramElement, Field
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return name().toString();
     }
 

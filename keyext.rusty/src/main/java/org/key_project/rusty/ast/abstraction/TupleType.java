@@ -27,21 +27,28 @@ public class TupleType implements Type {
     public static final TupleType UNIT = new TupleType(new ArrayList<>());
     private static @Nullable Map<List<Type>, TupleType> TYPES = null;
 
-    private List<Type> types;
+    private final List<Type> types;
     private @MonotonicNonNull Sort sort = null;
+    private final ImmutableArray<Field> fields;
 
-    private TupleType(List<Type> types) {
+    private TupleType(List<Type> types, Services services) {
         this.types = types;
+        var pathStr = "::std::tuple::Tuple$";
+        var fields = new Field[types.size()];
+        for (int i = 0; i < types.size(); i++) {
+            // var fn = ;
+            // fields[i] =
+        }
     }
 
-    public static TupleType getInstance(List<Type> types) {
+    public static TupleType getInstance(List<Type> types, Services services) {
         if (types.isEmpty()) {
             return UNIT;
         }
         if (TYPES == null) {
             TYPES = new HashMap<>();
         }
-        return TYPES.computeIfAbsent(types, t -> new TupleType(types));
+        return TYPES.computeIfAbsent(types, t -> new TupleType(types, services));
     }
 
     public List<Type> getTypes() {

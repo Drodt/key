@@ -14,7 +14,7 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.expr.Expr;
-import org.key_project.rusty.ast.expr.FieldIdentifier;
+import org.key_project.rusty.ast.expr.IFieldIdentifier;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.ProgramConstruct;
 import org.key_project.rusty.logic.op.IProgramVariable;
@@ -28,7 +28,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public final class ProgramSV extends OperatorSV
-        implements UpdateableOperator, ProgramConstruct, IProgramVariable, FieldIdentifier {
+        implements UpdateableOperator, ProgramConstruct, IProgramVariable, IFieldIdentifier {
     private final boolean isListSV;
 
     private static final ProgramList EMPTY_LIST_INSTANTIATION =

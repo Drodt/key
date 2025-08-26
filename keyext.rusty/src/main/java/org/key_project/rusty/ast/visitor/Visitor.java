@@ -143,4 +143,6 @@ public interface Visitor {
     void performActionOnIdentifier(Identifier x);
 
     void performActionOnInferHirTy(InferHirTy x);
+
+    void performActionOnFieldIdentifier(FieldIdentifier x);
 }

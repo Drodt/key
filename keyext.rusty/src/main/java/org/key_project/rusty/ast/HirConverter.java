@@ -310,8 +310,16 @@ public class HirConverter {
     }
 
     private FieldExpression convertFieldExpr(ExprKind.Field e) {
-        return new FieldExpression(convertExpr(e.expr()),
-            new Identifier(new Name(convertIdent(e.field()))));
+        Expr base = convertExpr(e.expr());
+        Identifier ident = new Identifier(new Name(convertIdent(e.field())));
+        var baseTy = base.type(services);
+        // var fields = switch (baseTy) {
+        // case Struct s -> s.fields();
+        // case TupleType t ->
+        // };
+        var fieldIdent = new FieldIdentifier(ident);
+        return new FieldExpression(base,
+            fieldIdent);
     }
 
     private ContinueExpression convertContinue(ExprKind.Continue e) {

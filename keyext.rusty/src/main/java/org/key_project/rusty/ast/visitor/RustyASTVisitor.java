@@ -366,4 +366,9 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     public void performActionOnInferHirTy(InferHirTy x) {
         doDefaultAction(x);
     }
+
+    @Override
+    public void performActionOnFieldIdentifier(FieldIdentifier x) {
+        doDefaultAction(x);
+    }
 }
