@@ -9,7 +9,7 @@
 
 \proof {
     (branch "dummy ID"
-        (rule "get_of_set" (formula "1") (term "0"))
+        (rule "arr_get_of_set" (formula "1") (term "0"))
         (rule "eqClose" (formula "1") (term "0,0"))
         (rule "ifthenelse_true" (formula "1") (term "0"))
         (rule "eqClose" (formula "1"))
