@@ -34,7 +34,7 @@ public record FieldExpression(Expr base, FieldIdentifier field) implements Expr 
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return base + "." + field;
     }
 

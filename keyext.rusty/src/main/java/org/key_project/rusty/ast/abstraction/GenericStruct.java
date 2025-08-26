@@ -7,34 +7,13 @@ import java.util.HashMap;
 
 import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.logic.sort.GenericParameter;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.util.collection.ImmutableArray;
-import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
-public record GenericStruct(Name name, ImmutableArray<Field> fields,
-        ImmutableArray<GenericTyParam> params) implements GenericAdt {
-    @Override
-    public ParametricSortDecl sortDecl(Services services) {
-        if (params.isEmpty())
-            return null;
-        ImmutableList<GenericParameter> sortParams = ImmutableSLList.nil();
-        for (int i = params.size() - 1; i >= 0; i--) {
-            sortParams = sortParams.prepend(params.get(i).toSortParam(services));
-        }
-        var psd = new ParametricSortDecl(name, false, sortParams, null);
-        var alreadyDefined = services.getNamespaces().parametricSorts().lookup(psd.name());
-        if (alreadyDefined != null) {
-            return alreadyDefined;
-        } else {
-            services.getNamespaces().parametricSorts().addSafely(psd);
-            return psd;
-        }
-    }
-
+public record GenericStruct(Name name, ImmutableArray<GenericField> fields,
+        ImmutableArray<GenericTyParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
     @Override
     public Type instantiate(ImmutableArray<GenericTyArg> args, Services services) {
         assert args.size() == params().size();
@@ -46,7 +25,7 @@ public record GenericStruct(Name name, ImmutableArray<Field> fields,
         for (int i = 0; i < fs.length; i++) {
             fs[i] = fields.get(i).instantiate(instMap, services);
         }
-        return new Struct(name, new ImmutableArray<>(fs), sortDecl(services), args);
+        return new Struct(name, new ImmutableArray<>(fs), sortDecl, args);
     }
 
     @Override

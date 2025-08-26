@@ -701,8 +701,7 @@ public class TermBuilder {
 
     public Term array(Term initialArray, Term[] terms) {
         var sort = (ParametricSortInstance) initialArray.sort();
-        // TODO: add ldt for arrays
-        var pfd = services.getNamespaces().parametricFunctions().lookup("arr_set");
+        var pfd = services.getLDTs().getArrayLDT().getSet();
         var set = ParametricFunctionInstance.get(pfd, sort.getArgs());
 
         var res = initialArray;

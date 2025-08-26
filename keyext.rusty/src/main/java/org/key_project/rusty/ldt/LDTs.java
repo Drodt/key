@@ -20,6 +20,8 @@ public class LDTs implements Iterable<LDT> {
     private final CharLDT charLDT;
     private final StrLDT strLDT;
     private final NeverLDT neverLDT;
+    private final ArrayLDT arrayLDT;
+    private final FieldLDT fieldLDT;
     private final Map<Name, LDT> map;
 
     public LDTs(Services services) {
@@ -28,12 +30,16 @@ public class LDTs implements Iterable<LDT> {
         charLDT = new CharLDT(services);
         strLDT = new StrLDT(services);
         neverLDT = new NeverLDT(services);
+        arrayLDT = new ArrayLDT(services);
+        fieldLDT = new FieldLDT(services);
         map = new HashMap<>();
         map.put(boolLDT.name(), boolLDT);
         map.put(intLDT.name(), intLDT);
         map.put(charLDT.name(), charLDT);
         map.put(strLDT.name(), strLDT);
         map.put(neverLDT.name(), neverLDT);
+        map.put(arrayLDT.name(), arrayLDT);
+        map.put(fieldLDT.name(), fieldLDT);
     }
 
     public BoolLDT getBoolLDT() {
@@ -54,6 +60,14 @@ public class LDTs implements Iterable<LDT> {
 
     public NeverLDT getNeverLDT() {
         return neverLDT;
+    }
+
+    public ArrayLDT getArrayLDT() {
+        return arrayLDT;
+    }
+
+    public FieldLDT getFieldLDT() {
+        return fieldLDT;
     }
 
     public @Nullable LDT get(Name name) {

@@ -24,6 +24,10 @@ import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.ty.*;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.sort.GenericParameter;
+import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortDecl;
+import org.key_project.rusty.logic.sort.SortImpl;
 import org.key_project.rusty.parser.hir.*;
 import org.key_project.rusty.parser.hir.expr.*;
 import org.key_project.rusty.parser.hir.hirty.*;
@@ -45,6 +49,7 @@ import org.key_project.rusty.speclang.spec.LoopSpec;
 import org.key_project.rusty.speclang.spec.SpecMap;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -802,32 +807,71 @@ public class HirConverter {
             throw new UnsupportedOperationException("Local generics");
         else
             generics = convertGenerics(def.foreignGenerics());
+        Name name1 = new Name(def.pathStr());
+        var name = name1;
+        var genSortParams = getGenericParameters(generics);
         Adt adt = switch (def.kind()) {
             case Struct -> {
                 assert def.variants().size() == 1;
-                var fields = convertFields(def.variants().get(0).fields());
-                var name = new Name(def.pathStr());
-                if (generics.isEmpty())
+                if (generics.isEmpty()) {
+                    var fields = convertFields(def.pathStr(), def.variants().get(0).fields());
                     yield new Struct(name, fields, null, null);
-                else
-                    yield new GenericStruct(name, fields, generics);
+                } else {
+                    var fields =
+                        convertFields(def.pathStr(), def.variants().get(0).fields(), genSortParams);
+                    var sortDecl = getSortDecl(name, genSortParams);
+                    yield new GenericStruct(name, fields, generics, sortDecl);
+                }
             }
             case Union -> null;
             case Enum -> {
-                var variants = new Variant[def.variants().size()];
+                if (generics.isEmpty()) {
+                    var variants = new Variant[def.variants().size()];
+                    for (var e : def.variants().entrySet()) {
+                        VariantDef value = e.getValue();
+                        variants[e.getKey()] =
+                            new Variant(name,
+                                convertFields(def.pathStr() + value.name(), value.fields()));
+                    }
+                    var sort = new SortImpl(name1, false);
+                    services.getNamespaces().sorts().addSafely(sort);
+                    yield new Enum(name1, new ImmutableArray<>(variants), sort);
+                }
+                var sortDecl = getSortDecl(name, genSortParams);
+                var variants = new GenericVariant[def.variants().size()];
                 for (var e : def.variants().entrySet()) {
                     VariantDef value = e.getValue();
                     variants[e.getKey()] =
-                        new Variant(new Name(value.name()), convertFields(value.fields()));
+                        new GenericVariant(name, convertFields(def.pathStr() + value.name(),
+                            value.fields(), genSortParams));
                 }
-                if (generics.isEmpty())
-                    yield new Enum(new Name(def.pathStr()), new ImmutableArray<>(variants), null,
-                        null);
-                yield new GenericEnum(def.pathStr(), new ImmutableArray<>(variants), generics);
+                yield new GenericEnum(name, new ImmutableArray<>(variants), generics, sortDecl);
             }
         };
         currentParams = null;
         return adt;
+    }
+
+    public ParametricSortDecl getSortDecl(Name name, ImmutableList<GenericParameter> params) {
+        var psd = new ParametricSortDecl(name, false, params, null);
+        var alreadyDefined = services.getNamespaces().parametricSorts().lookup(psd.name());
+        if (alreadyDefined != null) {
+            return alreadyDefined;
+        } else {
+            services.getNamespaces().parametricSorts().addSafely(psd);
+            return psd;
+        }
+    }
+
+    private ImmutableList<GenericParameter> getGenericParameters(
+            ImmutableArray<GenericTyParam> params) {
+        if (params.isEmpty())
+            return null;
+        ImmutableList<GenericParameter> sortParams = ImmutableSLList.nil();
+        for (int i = params.size() - 1; i >= 0; i--) {
+            sortParams = sortParams.prepend(params.get(i).toSortParam(services));
+        }
+        return sortParams;
     }
 
     private Type convertAdtTy(AdtDef def, GenericTyArgKind[] args) {
@@ -842,11 +886,28 @@ public class HirConverter {
 
     }
 
-    private ImmutableArray<Field> convertFields(Map<Integer, TyFieldDef> fields) {
+    private ImmutableArray<Field> convertFields(String prefix, Map<Integer, TyFieldDef> fields) {
         var res = new Field[fields.size()];
         for (var e : fields.entrySet()) {
             var field = e.getValue();
-            res[e.getKey()] = new Field(new Name(field.name()), convertTy(field.ty()));
+            Type type = convertTy(field.ty());
+            Name name = new Name(field.name());
+            var fieldConst = services.getLDTs().getFieldLDT().createField(prefix, name, type);
+            res[e.getKey()] = new Field(name, type, fieldConst);
+        }
+        return new ImmutableArray<>(res);
+    }
+
+    private ImmutableArray<GenericField> convertFields(String prefix,
+            Map<Integer, TyFieldDef> fields, ImmutableList<GenericParameter> generics) {
+        var res = new GenericField[fields.size()];
+        for (var e : fields.entrySet()) {
+            var field = e.getValue();
+            Type type = convertTy(field.ty());
+            Name name = new Name(field.name());
+            var fieldConst =
+                services.getLDTs().getFieldLDT().createGenericField(prefix, name, type, generics);
+            res[e.getKey()] = new GenericField(name, type, fieldConst);
         }
         return new ImmutableArray<>(res);
     }
@@ -871,12 +932,13 @@ public class HirConverter {
         assert currentParams == null;
         currentParams = new GenericTyParam[generics.params().length];
         for (var p : generics.params()) {
+            Name name = new Name(p.name());
             if (p.kind() instanceof TyGenericParamDefKind.Type) {
-                GenericTyParam tyParam = new GenericTyParam(new Name(p.name()), false);
+                GenericTyParam tyParam = new GenericTyParam(name, false, new GenericSort(name));
                 currentParams[p.index()] = tyParam;
                 res.add(tyParam);
             } else if (p.kind() instanceof TyGenericParamDefKind.Const) {
-                GenericTyParam tyParam = new GenericTyParam(new Name(p.name()), true);
+                GenericTyParam tyParam = new GenericTyParam(name, true, null);
                 currentParams[p.index()] = tyParam;
                 res.add(tyParam);
             }

@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 public interface GenericAdt extends HasGenerics, Adt {
     @Nullable
-    ParametricSortDecl sortDecl(Services services);
+    ParametricSortDecl sortDecl();
 
     Type instantiate(ImmutableArray<GenericTyArg> args, Services services);
 }

@@ -17,18 +17,21 @@ import org.key_project.rusty.logic.sort.GenericSortParam;
 
 import org.jspecify.annotations.Nullable;
 
-public record GenericTyParam(Name name, boolean isConst) implements Named, Type {
+public record GenericTyParam(Name name, boolean isConst, @Nullable GenericSort sort)
+        implements Named, Type {
     public GenericParameter toSortParam(Services services) {
         if (isConst) {
             // TODO: get sort somewhere
             return new ConstParam(name, null);
         }
-        return new GenericSortParam(new GenericSort(name));
+        return new GenericSortParam(sort);
     }
 
     @Override
     public @Nullable Sort getSort(Services services) {
-        throw new UnsupportedOperationException();
+        if (isConst)
+            throw new UnsupportedOperationException("Cannot get sort for a constant param");
+        return sort;
     }
 
     @Override

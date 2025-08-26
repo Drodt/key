@@ -9,30 +9,18 @@ import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.RustType;
-import org.key_project.rusty.logic.sort.GenericArgument;
-import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.util.collection.ImmutableArray;
-import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /// An enum with no generic parameters or already instantiated parameters.
 public record Enum(Name name, ImmutableArray<Variant> variants,
-        @Nullable ParametricSortDecl parametricSortDecl,
-        @Nullable ImmutableArray<GenericTyArg> args) implements Type, Adt {
+        Sort sort) implements Type, Adt {
     @Override
     public @Nullable Sort getSort(Services services) {
-        if (parametricSortDecl == null)
-            return services.getNamespaces().sorts().lookup(name);
-        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
-        assert this.args != null;
-        for (int i = this.args.size() - 1; i >= 0; i--) {
-            args = args.prepend(this.args.get(i).sortArg(services));
-        }
-        return ParametricSortInstance.get(parametricSortDecl, args);
+        return sort;
     }
 
     @Override
@@ -44,12 +32,12 @@ public record Enum(Name name, ImmutableArray<Variant> variants,
     public @NonNull String toString() {
         var sb = new StringBuilder();
         sb.append(name);
-        if (args != null) {
+        if (sort instanceof ParametricSortInstance psi) {
             sb.append("<");
-            sb.append(args.get(0));
-            for (int i = 1; i < args.size(); i++) {
+            sb.append(psi.getArgs().get(0));
+            for (int i = 1; i < psi.getArgs().size(); i++) {
                 sb.append(", ");
-                sb.append(args.get(i));
+                sb.append(psi.getArgs().get(i));
             }
             sb.append(">");
         }

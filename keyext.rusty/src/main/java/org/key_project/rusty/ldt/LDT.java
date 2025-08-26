@@ -13,6 +13,8 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
+import org.key_project.rusty.logic.op.ParametricFunctionDecl;
+import org.key_project.rusty.logic.sort.ParametricSortDecl;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
@@ -22,10 +24,13 @@ public abstract class LDT implements Named {
     private final Name name;
 
     /// the main sort associated with the LDT
-    private final Sort sort;
+    private final @Nullable Sort sort;
+
+    private final @Nullable ParametricSortDecl parametricSort;
 
     /// the namespace of functions this LDT feels responsible for
     private final Namespace<@NonNull Operator> functions = new Namespace<>();
+    private final Namespace<@NonNull ParametricFunctionDecl> paraFunctions = new Namespace<>();
 
     // -------------------------------------------------------------------------
     // constructors
@@ -33,12 +38,21 @@ public abstract class LDT implements Named {
 
     protected LDT(Name name, Services services) {
         var sort = services.getNamespaces().sorts().lookup(name);
-        if (sort == null) {
-            throw new RuntimeException("LDT " + name + " not found.\n"
-                + "It seems that there are definitions missing from the .key files.");
+        if (sort != null) {
+            this.sort = sort;
+            this.name = name;
+            this.parametricSort = null;
+        } else {
+            var paraSort = services.getNamespaces().parametricSorts().lookup(name);
+            if (paraSort != null) {
+                this.parametricSort = paraSort;
+                this.name = name;
+                this.sort = null;
+            } else {
+                throw new RuntimeException("LDT " + name + " not found.\n"
+                    + "It seems that there are definitions missing from the .key files.");
+            }
         }
-        this.sort = sort;
-        this.name = name;
     }
 
 
@@ -49,6 +63,7 @@ public abstract class LDT implements Named {
                 + "It seems that there are definitions missing from the .key files.");
         }
         this.name = name;
+        this.parametricSort = null;
     }
 
     // -------------------------------------------------------------------------
@@ -60,6 +75,15 @@ public abstract class LDT implements Named {
     /// @return the added function (for convenience reasons)
     protected final Function addFunction(@UnknownInitialization LDT this, Function f) {
         functions.addSafely(f);
+        return f;
+    }
+
+    /// adds a function to the LDT
+    ///
+    /// @return the added function (for convenience reasons)
+    protected final ParametricFunctionDecl addParametricFunction(@UnknownInitialization LDT this,
+            ParametricFunctionDecl f) {
+        paraFunctions.addSafely(f);
         return f;
     }
 
@@ -78,6 +102,22 @@ public abstract class LDT implements Named {
         return addFunction(f);
     }
 
+    /// looks up a parametric function in the namespace and adds it to the LDT
+    ///
+    /// @param funcName the String with the name of the function to look up
+    /// @return the added function (for convenience reasons)
+    protected final ParametricFunctionDecl addParametricFunction(@UnknownInitialization LDT this,
+            Services services,
+            String funcName) {
+        final var paraFuncNS = services.getNamespaces().parametricFunctions();
+        final var f = paraFuncNS.lookup(new Name(funcName));
+        if (f == null) {
+            throw new RuntimeException("LDT: Parametric function " + funcName + " not found.\n"
+                + "It seems that there are definitions missing from the .key files.");
+        }
+        return addParametricFunction(f);
+    }
+
     public abstract @Nullable Term translateLiteral(LiteralExpression lit, Services services);
 
     public abstract @Nullable Function getFunctionFor(BinaryExpression.Operator op,
@@ -92,8 +132,12 @@ public abstract class LDT implements Named {
     public abstract boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
             Services services);
 
-    public Sort targetSort() {
+    public @Nullable Sort targetSort() {
         return sort;
+    }
+
+    public @Nullable ParametricSortDecl parametricSort() {
+        return parametricSort;
     }
 
     /// get the function in this LDT for an operation identified by generic operationName. If the
