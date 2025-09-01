@@ -13,6 +13,7 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ast.ty.TupleRustType;
+import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.SortArg;
@@ -24,21 +25,31 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class TupleType implements Type {
-    public static final TupleType UNIT = new TupleType(new ArrayList<>());
+    public static final TupleType UNIT = new TupleType();
     private static @Nullable Map<List<Type>, TupleType> TYPES = null;
 
     private final List<Type> types;
     private @MonotonicNonNull Sort sort = null;
     private final ImmutableArray<Field> fields;
 
+    private TupleType() {
+        types = new ArrayList<>();
+        fields = new ImmutableArray<>();
+    }
+
     private TupleType(List<Type> types, Services services) {
         this.types = types;
-        var pathStr = "::std::tuple::Tuple$";
+
+        var tupleLDT = services.getLDTs().getTupleLDT();
         var fields = new Field[types.size()];
         for (int i = 0; i < types.size(); i++) {
-            // var fn = ;
-            // fields[i] =
+            var fn = tupleLDT.getFieldFunctions(i);
+            Type type = types.get(i);
+            ImmutableList<GenericArgument> args =
+                ImmutableList.of(new SortArg(type.getSort(services)));
+            fields[i] = new Field(new Name("" + i), type, ParametricFunctionInstance.get(fn, args));
         }
+        this.fields = new ImmutableArray<>(fields);
     }
 
     public static TupleType getInstance(List<Type> types, Services services) {
@@ -53,6 +64,10 @@ public class TupleType implements Type {
 
     public List<Type> getTypes() {
         return types;
+    }
+
+    public ImmutableArray<Field> fields() {
+        return fields;
     }
 
     @Override
@@ -83,7 +98,8 @@ public class TupleType implements Type {
     @Override
     public RustType toRustType(Services services) {
         return new TupleRustType(
-            new ImmutableArray<>(types.stream().map(t -> t.toRustType(services)).toList()));
+            new ImmutableArray<>(types.stream().map(t -> t.toRustType(services)).toList()),
+            services);
     }
 
     @Override
@@ -111,6 +127,6 @@ public class TupleType implements Type {
         }
         if (!changed)
             return this;
-        return getInstance(its);
+        return getInstance(its, services);
     }
 }

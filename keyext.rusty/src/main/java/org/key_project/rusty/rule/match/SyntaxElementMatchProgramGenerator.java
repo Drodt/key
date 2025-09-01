@@ -5,16 +5,14 @@ package org.key_project.rusty.rule.match;
 
 import java.util.ArrayList;
 
+import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.matcher.vm.instruction.VMInstruction;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
-import org.key_project.rusty.logic.sort.GenericSort;
-import org.key_project.rusty.logic.sort.ParametricSortInstance;
-import org.key_project.rusty.logic.sort.SortArg;
-import org.key_project.rusty.logic.sort.TermArg;
+import org.key_project.rusty.logic.sort.*;
 
 import static org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet.*;
 
@@ -57,21 +55,7 @@ public class SyntaxElementMatchProgramGenerator {
                     program.add(gotoNextInstruction());
                     for (int i = 0; i < pfi.getChildCount(); i++) {
                         var arg = pfi.getChild(i);
-                        if (arg instanceof SortArg sa) {
-                            if (sa.sort() instanceof GenericSort gs) {
-                                program.add(getMatchGenericSortInstruction(gs));
-                            } else if (sa.sort() instanceof ParametricSortInstance psi) {
-                                throw new UnsupportedOperationException(
-                                    "TODO @ DD: Parametric sort in generic args!");
-                            } else {
-                                program.add(getMatchIdentityInstruction(sa));
-                            }
-                            program.add(gotoNextInstruction());
-                        } else {
-                            var t = ((TermArg) arg).term();
-                            program.add(gotoNextInstruction());
-                            createProgram(t, program);
-                        }
+                        matchParametricArg(program, arg);
                     }
                 }
                 case ElementaryUpdate elUp -> {
@@ -113,6 +97,36 @@ public class SyntaxElementMatchProgramGenerator {
 
         for (int i = 0; i < pattern.arity(); i++) {
             createProgram(pattern.sub(i), program);
+        }
+    }
+
+    private static void matchParametricArg(ArrayList<VMInstruction> program, SyntaxElement arg) {
+        if (arg instanceof SortArg sa) {
+            if (sa.sort() instanceof GenericSort gs) {
+                program.add(getMatchGenericSortInstruction(gs));
+                program.add(gotoNextInstruction());
+            } else if (sa.sort() instanceof ParametricSortInstance psi) {
+                matchParametricSortInstance(program, psi);
+            } else {
+                program.add(getMatchIdentityInstruction(sa));
+                program.add(gotoNextInstruction());
+            }
+
+        } else {
+            var t = ((TermArg) arg).term();
+            program.add(gotoNextInstruction());
+            createProgram(t, program);
+        }
+    }
+
+    private static void matchParametricSortInstance(ArrayList<VMInstruction> program,
+            ParametricSortInstance psi) {
+        program.add(getSimilarParametricSortInstruction(psi));
+        program.add(gotoNextInstruction());
+        program.add(gotoNextInstruction());
+        for (int i = 0; i < psi.getChildCount(); i++) {
+            var arg = psi.getChild(i);
+            matchParametricArg(program, arg);
         }
     }
 }

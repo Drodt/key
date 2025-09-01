@@ -21,7 +21,7 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
-public class ParametricSortInstance extends AbstractSort {
+public class ParametricSortInstance extends AbstractSort implements SyntaxElement {
     private static final Map<ParametricSortInstance, ParametricSortInstance> CACHE =
         new WeakHashMap<>();
 
@@ -160,5 +160,15 @@ public class ParametricSortInstance extends AbstractSort {
             }
         }
         return get(base, newArgs);
+    }
+
+    @Override
+    public int getChildCount() {
+        return args.size();
+    }
+
+    @Override
+    public @NonNull SyntaxElement getChild(int n) {
+        return Objects.requireNonNull(args.get(n));
     }
 }

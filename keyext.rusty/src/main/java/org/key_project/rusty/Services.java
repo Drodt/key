@@ -12,9 +12,9 @@ import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.prover.proof.ProofServices;
-import org.key_project.rusty.ast.Identifier;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.BinaryExpression;
+import org.key_project.rusty.ast.expr.FieldIdentifier;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 import org.key_project.rusty.ast.expr.TupleExpression;
 import org.key_project.rusty.ldt.LDT;
@@ -200,13 +200,8 @@ public class Services implements LogicServices, ProofServices {
         if (pe instanceof TupleExpression te) {
             return convertTupleExpression(te, services);
         }
-        if (pe instanceof Identifier id) {
-            try {
-                var i = Integer.parseInt(id.toString());
-                return services.getTermBuilder().zTerm(i);
-            } catch (NumberFormatException ignored) {
-
-            }
+        if (pe instanceof FieldIdentifier fi) {
+            return tb.func(fi.field().fieldConst());
         }
         throw new IllegalArgumentException(
             "Unknown or not convertible ProgramElement " + pe + " of type "

@@ -154,5 +154,10 @@ varexp_argument
 ;
 
 funcpred_name
-   : (name = simple_ident_dots | num = INT_LITERAL)
+   : (name = simple_colon_dots | num = INT_LITERAL)
    ;
+
+ simple_colon_dots
+:
+  DOUBLECOLON? simple_ident (DOUBLECOLON simple_ident)*
+;

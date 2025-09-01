@@ -55,14 +55,9 @@ public abstract class LDT implements Named {
         }
     }
 
-
-    protected LDT(Name name, Sort targetSort, Services services) {
-        sort = targetSort;
-        if (sort == null) {
-            throw new RuntimeException("LDT " + name + " not found.\n"
-                + "It seems that there are definitions missing from the .key files.");
-        }
+    protected LDT(Name name) {
         this.name = name;
+        this.sort = null;
         this.parametricSort = null;
     }
 

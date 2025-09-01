@@ -693,4 +693,9 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnInferHirTy(InferHirTy x) {
         layouter.print("_");
     }
+
+    @Override
+    public void performActionOnFieldIdentifier(FieldIdentifier x) {
+        x.identifier().visit(this);
+    }
 }

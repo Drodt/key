@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.key_project.logic.SyntaxElement;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.TupleType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
@@ -16,12 +17,18 @@ public class TupleRustType implements RustType {
     private final ImmutableArray<RustType> types;
     private final Type type;
 
-    public static TupleRustType UNIT = new TupleRustType(new ImmutableArray<>());
+    public static TupleRustType UNIT = new TupleRustType();
 
-    public TupleRustType(ImmutableArray<RustType> types) {
+    public TupleRustType(ImmutableArray<RustType> types, Services services) {
         this.types = types;
         this.type =
-            TupleType.getInstance(types.stream().map(RustType::type).collect(Collectors.toList()));
+            TupleType.getInstance(types.stream().map(RustType::type).collect(Collectors.toList()),
+                services);
+    }
+
+    private TupleRustType() {
+        types = new ImmutableArray<>();
+        type = TupleType.UNIT;
     }
 
     @Override

@@ -70,8 +70,6 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
     public static final AbstractTermTransformer INTRODUCE_AT_PRE_DEFINITIONS = new IntroAtPreDefs();
 
     public static final AbstractTermTransformer TO_TUPLE = new ToTuple();
-    public static final AbstractTermTransformer GET_FIELD = new GetField();
-    public static final AbstractTermTransformer SET_FIELD = new SetField();
     public static final AbstractTermTransformer CREATE_ARRAY = new CreateArray();
 
     @SuppressWarnings("argument.type.incompatible")
@@ -137,86 +135,6 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
                 terms[i] = services.convertToLogicElement(pes.getInstantiation().get(i));
             }
             return services.getTermBuilder().tuple(terms);
-        }
-    }
-
-    private static class GetField extends AbstractTermTransformer {
-        private Term[] numTerms = null;
-
-        public GetField() {
-            super(new Name("getField"), 2);
-        }
-
-        @Override
-        public Term transform(Term term, SVInstantiations svInst, Services services) {
-            if (numTerms == null) {
-                numTerms = new Term[13];
-                for (int i = 0; i <= 12; i++) {
-                    numTerms[i] = services.getTermBuilder().zTerm(i);
-                }
-            }
-
-            var base = term.sub(0);
-            var field = term.sub(1);
-
-            String sortName = base.sort().name().toString();
-            if (sortName.startsWith("Tuple")) {
-                String afterTuple = sortName.split("Tuple")[1];
-                String beforeArgs = afterTuple.split("<")[0];
-                int tupleLen = Integer.parseInt(beforeArgs);
-                for (int i = 0; i < numTerms.length; i++) {
-                    if (numTerms[i].equals(field)) {
-                        var pfd = services.getNamespaces().parametricFunctions()
-                                .lookup("tpl" + tupleLen + "_" + i);
-                        var fn = ParametricFunctionInstance.get(pfd,
-                            ((ParametricSortInstance) base.sort()).getArgs());
-                        return services.getTermBuilder().func(fn, base);
-                    }
-                }
-            }
-
-            throw new UnsupportedOperationException("Unknown field term: " + base + ", " + field);
-        }
-    }
-
-    private static class SetField extends AbstractTermTransformer {
-        private Term[] numTerms = null;
-
-        public SetField() {
-            super(new Name("setField"), 3);
-        }
-
-        @Override
-        public Term transform(Term term, SVInstantiations svInst, Services services) {
-            if (numTerms == null) {
-                numTerms = new Term[13];
-                for (int i = 0; i <= 12; i++) {
-                    numTerms[i] = services.getTermBuilder().zTerm(i);
-                }
-            }
-
-            var base = term.sub(0);
-            var field = term.sub(1);
-            var val = term.sub(2);
-
-            String sortName = base.sort().name().toString();
-            if (sortName.startsWith("Tuple")) {
-                String afterTuple = sortName.split("Tuple")[1];
-                String beforeArgs = afterTuple.split("<")[0];
-                int tupleLen = Integer.parseInt(beforeArgs);
-                for (int i = 0; i < numTerms.length; i++) {
-                    Term numTerm = numTerms[i];
-                    if (numTerm.equals(field)) {
-                        var pfd = services.getNamespaces().parametricFunctions()
-                                .lookup("set_tpl" + tupleLen + "_" + i);
-                        var fn = ParametricFunctionInstance.get(pfd,
-                            ((ParametricSortInstance) base.sort()).getArgs());
-                        return services.getTermBuilder().func(fn, base, val);
-                    }
-                }
-            }
-
-            throw new UnsupportedOperationException("Unknown field term: " + base + ", " + field);
         }
     }
 

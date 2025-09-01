@@ -313,11 +313,19 @@ public class HirConverter {
         Expr base = convertExpr(e.expr());
         Identifier ident = new Identifier(new Name(convertIdent(e.field())));
         var baseTy = base.type(services);
-        // var fields = switch (baseTy) {
-        // case Struct s -> s.fields();
-        // case TupleType t ->
-        // };
-        var fieldIdent = new FieldIdentifier(ident);
+        var fields = switch (baseTy) {
+            case Struct s -> s.fields();
+            case TupleType t -> t.fields();
+            default -> throw new IllegalArgumentException("Unknown expression: " + e.expr());
+        };
+        Field field = null;
+        for (var f : fields) {
+            if (f.name().equals(ident.name())) {
+                field = f;
+                break;
+            }
+        }
+        var fieldIdent = new FieldIdentifier(ident, Objects.requireNonNull(field));
         return new FieldExpression(base,
             fieldIdent);
     }
@@ -555,7 +563,7 @@ public class HirConverter {
 
     private RustType convertTupHirType(HirTy[] tys) {
         var innerTys = Arrays.stream(tys).map(this::convertHirTy).toList();
-        return new TupleRustType(new ImmutableArray<>(innerTys));
+        return new TupleRustType(new ImmutableArray<>(innerTys), services);
     }
 
     private RustType convertSliceHirTy(HirTy s) {
@@ -794,7 +802,7 @@ public class HirConverter {
             case Ty.Closure c -> new Closure();
             case Ty.Never ignored -> Never.INSTANCE;
             case Ty.Tuple(var ts) ->
-                TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList());
+                TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList(), services);
             case Ty.Array(var arrTy, var len) -> {
                 Type elementType = convertTy(arrTy);
                 yield ArrayType.getInstance(elementType, convertTyConst(len), services);

@@ -28,7 +28,8 @@ public final class TupleExpression implements Expr {
 
     public TupleExpression(ExtList changeList, Services services) {
         elements = new ImmutableArray<>(changeList.collect(Expr.class));
-        type = TupleType.getInstance(elements.stream().map(e -> e.type(services)).toList());
+        type =
+            TupleType.getInstance(elements.stream().map(e -> e.type(services)).toList(), services);
     }
 
 

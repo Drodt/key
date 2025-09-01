@@ -315,7 +315,7 @@ public class SchemaConverter {
             RustySchemaParser.TupleIndexingExpressionContext ctx) {
         var base = convertExpr(ctx.expr());
         var idx = new Identifier(new Name(ctx.tupleIndex().INTEGER_LITERAL().getText()));
-        return new FieldExpression(base, idx);
+        return new FieldExpression(base, new FieldIdentifier(idx, null));
     }
 
     private CallExpression convertCallExpression(

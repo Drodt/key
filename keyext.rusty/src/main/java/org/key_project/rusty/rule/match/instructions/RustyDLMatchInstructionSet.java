@@ -15,6 +15,7 @@ import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 
 /// Class encoding the instructions of the matching vm
 public class RustyDLMatchInstructionSet {
@@ -67,6 +68,11 @@ public class RustyDLMatchInstructionSet {
     public static SimilarParametricFunctionInstruction getSimilarParametricFunctionInstruction(
             ParametricFunctionInstance psi) {
         return new SimilarParametricFunctionInstruction(psi);
+    }
+
+    public static SimilarParametricSortInstruction getSimilarParametricSortInstruction(
+            ParametricSortInstance psi) {
+        return new SimilarParametricSortInstruction(psi);
     }
 
     public static MatchIdentityInstruction getMatchIdentityInstruction(
