@@ -5,6 +5,7 @@ package org.key_project.rusty.proof;
 
 import org.key_project.logic.PosInTerm;
 import org.key_project.prover.sequent.*;
+import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.logic.*;
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
@@ -45,11 +46,11 @@ public class BuiltInRuleAppIndex {
         return index;
     }
 
-    public void scanApplicableRules(Goal goal) {
-        scanSimplificationRule(goal);
+    public void scanApplicableRules(Goal goal, NewRuleListener newRuleListener) {
+        scanSimplificationRule(goal, newRuleListener);
     }
 
-    private void scanSimplificationRule(Goal goal) {
+    private void scanSimplificationRule(Goal goal, NewRuleListener listener) {
         ImmutableList<BuiltInRule> rules = index.rules();
         if (!rules.isEmpty()) {
             do {
@@ -57,7 +58,7 @@ public class BuiltInRuleAppIndex {
                 rules = rules.tail();
                 if (builtInRule.isApplicable(goal, null)) {
                     IBuiltInRuleApp app = builtInRule.createApp(null, goal.proof().getServices());
-                    // listener.ruleAdded(app, null);
+                    listener.ruleAdded(app, null);
                 }
             } while (!rules.isEmpty());
             scanSimplificationRule(index.rules(), goal, false);
@@ -109,8 +110,8 @@ public class BuiltInRuleAppIndex {
         }
     }
 
-    public void reportRuleApps(Goal goal) {
-        scanSimplificationRule(goal);
+    public void reportRuleApps(NewRuleListener l, Goal goal) {
+        scanSimplificationRule(goal, l);
     }
 
     /// called if a formula has been replaced

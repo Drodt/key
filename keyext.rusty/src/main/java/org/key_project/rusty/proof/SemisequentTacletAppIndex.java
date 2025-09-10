@@ -9,12 +9,16 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMap;
+import org.key_project.util.collection.ImmutableMapEntry;
+
+import org.jspecify.annotations.NonNull;
 
 public class SemisequentTacletAppIndex {
     private final org.key_project.prover.sequent.Sequent seq;
@@ -110,5 +114,18 @@ public class SemisequentTacletAppIndex {
 
         termIndices = termIndices.put(cfma,
             oldIndex.addTaclet(newTaclet, pos, services, tacletIndex));
+    }
+
+    /// Reports all cached rule apps. Calls ruleAdded on the given NewRuleListener for every cached
+    /// taclet app.
+    void reportRuleApps(NewRuleListener l) {
+        for (final ImmutableMapEntry<@NonNull SequentFormula, TermTacletAppIndex> entry : termIndices) {
+            final SequentFormula cfma = entry.key();
+            final TermTacletAppIndex index = entry.value();
+            final PosInOccurrence pio =
+                new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
+
+            index.reportTacletApps(pio, l);
+        }
     }
 }

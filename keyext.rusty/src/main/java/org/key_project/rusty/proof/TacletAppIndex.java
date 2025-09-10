@@ -5,6 +5,7 @@ package org.key_project.rusty.proof;
 
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.*;
 import org.key_project.util.collection.ImmutableList;
@@ -195,5 +196,24 @@ public class TacletAppIndex {
         final ImmutableList<TacletApp> findTaclets =
             getIndex(pos).getTacletAppAtAndBelow(pos, services);
         return prepend(findTaclets, getNoFindTaclet(services));
+    }
+
+    /// Reports all cached rule apps. Calls ruleAdded on the given NewRuleListener for every cached
+    /// taclet app.
+    public void reportRuleApps(NewRuleListener l, Services services) {
+        if (antecIndex != null) {
+            antecIndex.reportRuleApps(l);
+        }
+        if (succIndex != null) {
+            succIndex.reportRuleApps(l);
+        }
+
+        l.rulesAdded(getNoFindTaclet(services), null);
+    }
+
+    /// Forces all delayed computations to be performed, so that the cache is fully up-to-date
+    /// (NewRuleListener gets informed)
+    public void fillCache() {
+        ensureIndicesExist();
     }
 }

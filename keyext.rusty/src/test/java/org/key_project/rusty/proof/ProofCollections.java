@@ -40,6 +40,7 @@ public class ProofCollections {
         simple.loadable("simple.proof");
         simple.loadable("if.proof");
         simple.loadable("iflet.proof");
+        simple.provable("auto-if.key");
 
         var refs = c.group("references");
         refs.loadable("shared-ref.proof");

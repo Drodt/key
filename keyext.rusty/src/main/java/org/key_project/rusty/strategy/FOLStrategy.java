@@ -123,17 +123,8 @@ public class FOLStrategy extends AbstractFeatureStrategy {
         bindRuleSet(d, "order_terms",
             add(termSmallerThan("commEqLeft", "commEqRight"), longConst(-5000)));
 
-        bindRuleSet(d, "simplify_instanceof_static",
-            add(EqNonDuplicateAppFeature.INSTANCE, longConst(-500)));
-
-        bindRuleSet(d, "evaluate_instanceof", longConst(-500));
-
-        bindRuleSet(d, "instanceof_to_exists", TopLevelFindFeature.ANTEC);
-
         bindRuleSet(d, "try_apply_subst",
             add(EqNonDuplicateAppFeature.INSTANCE, longConst(-10000)));
-
-        bindRuleSet(d, "type_hierarchy_def", -6500);
 
         bindRuleSet(d, "cut", not(isInstantiated("cutFormula")));
 
@@ -256,10 +247,6 @@ public class FOLStrategy extends AbstractFeatureStrategy {
                 add(longConst(-150),
                     ScaleFeature.createScaled(FindDepthFeature.getInstance(), 20)),
                 inftyConst()));
-
-        bindRuleSet(d, "setEqualityBlastingRight", longConst(-100));
-
-
 
         bindRuleSet(d, "elimQuantifier", -1000);
         bindRuleSet(d, "elimQuantifierWithCast", 50);

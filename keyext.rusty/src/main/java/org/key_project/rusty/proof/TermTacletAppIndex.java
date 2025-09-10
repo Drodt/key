@@ -6,6 +6,7 @@ package org.key_project.rusty.proof;
 import org.key_project.logic.Term;
 import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.RuleApp;
@@ -268,5 +269,28 @@ public class TermTacletAppIndex {
         }
 
         return new ImmutableArray<>(result);
+    }
+
+    /// Report all <code>NoPosTacletApp</code> s that are stored by <code>this</code> (and by the
+    /// sub-indices of <code>this</code>).
+    ///
+    /// @param pos The position of this index
+    /// @param listener The listener to which the taclet apps found are supposed to be reported
+    void reportTacletApps(PosInOccurrence pos,
+            NewRuleListener listener) {
+        final ImmutableList<Pair<PosInOccurrence, ImmutableList<NoPosTacletApp>>> result =
+            ImmutableSLList.nil();
+        final ImmutableList<Pair<PosInOccurrence, ImmutableList<NoPosTacletApp>>> allTacletsHereAndBelow =
+            collectAllTacletAppsHereAndBelow(pos, result);
+
+        for (final Pair<PosInOccurrence, ImmutableList<NoPosTacletApp>> pair : allTacletsHereAndBelow) {
+            fireRulesAdded(listener, pair.second, pair.first);
+        }
+    }
+
+    private static void fireRulesAdded(NewRuleListener listener,
+            ImmutableList<NoPosTacletApp> taclets,
+            PosInOccurrence pos) {
+        listener.rulesAdded(taclets, pos);
     }
 }

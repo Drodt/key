@@ -34,7 +34,7 @@ public class NamespaceSet {
     public NamespaceSet(Namespace<@NonNull QuantifiableVariable> varNS,
             Namespace<@NonNull ProgramVariable> progVarNS, Namespace<@NonNull Function> funcNS,
             Namespace<@NonNull Choice> choiceNS,
-            Namespace<@NonNull Sort> sortNS,
+            Namespace<@NonNull Sort> sortNS, Namespace<@NonNull RuleSet> ruleSetNS,
             Namespace<@NonNull ParametricSortDecl> parametricSortNS,
             Namespace<@NonNull ParametricFunctionDecl> parametricFuncNS) {
         assert varNS != null;
@@ -43,6 +43,7 @@ public class NamespaceSet {
         this.funcNS = funcNS;
         this.choiceNS = choiceNS;
         this.sortNS = sortNS;
+        this.ruleSetNS = ruleSetNS;
         this.parametricSortNS = parametricSortNS;
         this.parametricFuncNS = parametricFuncNS;
     }
@@ -153,8 +154,8 @@ public class NamespaceSet {
 
     public NamespaceSet copy() {
         return new NamespaceSet(variables().copy(), programVariables().copy(), functions().copy(),
-            choiceNS.copy(),
-            sorts().copy(), parametricSorts().copy(), parametricFunctions().copy());
+            choiceNS.copy(), sorts().copy(), ruleSetNS.copy(), parametricSorts().copy(),
+            parametricFunctions().copy());
     }
 
     @Override
@@ -188,16 +189,16 @@ public class NamespaceSet {
     @SuppressWarnings("argument.type.incompatible")
     public NamespaceSet getParent() {
         return new NamespaceSet(varNS.parent(), progVarNS.parent(), funcNS.parent(),
-            choiceNS.parent(), sortNS.parent(), parametricSorts().parent(),
+            choiceNS.parent(), sortNS.parent(), ruleSetNS.copy(), parametricSorts().parent(),
             parametricFunctions().parent());
     }
 
     // TODO MU: Rename into sth with wrap or similar
     public NamespaceSet copyWithParent() {
-        return new NamespaceSet(new Namespace<>(variables()),
-            new Namespace<>(programVariables()), new Namespace<>(functions()),
-            new Namespace<>(choices()),
-            new Namespace<>(sorts()), new Namespace<>(parametricSorts()),
+        return new NamespaceSet(new Namespace<>(variables()), new Namespace<>(programVariables()),
+            new Namespace<>(functions()),
+            new Namespace<>(choices()), new Namespace<>(sorts()), new Namespace<>(ruleSets()),
+            new Namespace<>(parametricSorts()),
             new Namespace<>(parametricFunctions()));
     }
 }

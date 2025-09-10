@@ -926,9 +926,9 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
             bindRuleSet(d, "defOps_modHomoEq", -5000);
         } else {
             bindRuleSet(d, "defOps_div", inftyConst());
-            bindRuleSet(d, "defOps_jdiv", inftyConst());
+            bindRuleSet(d, "defOps_rdiv", inftyConst());
 
-            bindRuleSet(d, "defOps_jdiv_inline", add(applyTF("divNum", tf.literal),
+            bindRuleSet(d, "defOps_rdiv_inline", add(applyTF("divNum", tf.literal),
                 applyTF("divDenom", tf.literal), longConst(-4000)));
 
             bindRuleSet(d, "defOps_mod", add(applyTF("divNum", tf.literal),

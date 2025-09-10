@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
@@ -17,27 +18,50 @@ public class RuleAppIndex {
 
     private final TacletIndex tacletIndex;
 
-    private final TacletAppIndex tacletAppIndex;
+    /// Two <code>TacletAppIndex</code> objects, one of which only contains rules that have to be
+    /// applied interactively, and the other one for rules that can also be applied automatic. This
+    /// is used as an optimization, as only the latter index has to be kept up to date while
+    /// applying
+    /// rules automated
+    private final TacletAppIndex interactiveTacletAppIndex;
+    private final TacletAppIndex automatedTacletAppIndex;
 
     private final BuiltInRuleAppIndex builtInRuleAppIndex;
+
+    private NewRuleListener ruleListener = null;
 
     /// The current mode of the index: For <code>autoMode==true</code>, the index
     /// <code>interactiveTacletAppIndex</code> is not updated
     private boolean autoMode;
+
+    private final NewRuleListener newRuleListener = new NewRuleListener() {
+        public void ruleAdded(RuleApp taclet, PosInOccurrence pos) {
+            informNewRuleListener(taclet, pos);
+        }
+
+        @Override
+        public void rulesAdded(ImmutableList<? extends RuleApp> rules,
+                PosInOccurrence pos) {
+            informNewRuleListener(rules, pos);
+        }
+    };
 
     public RuleAppIndex(TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex, Goal goal,
             Services services) {
         this.goal = goal;
         this.tacletIndex = tacletIndex;
         this.builtInRuleAppIndex = builtInRuleAppIndex;
-        tacletAppIndex = new TacletAppIndex(tacletIndex, goal, services);
+        interactiveTacletAppIndex = new TacletAppIndex(tacletIndex, goal, services);
+        automatedTacletAppIndex = new TacletAppIndex(tacletIndex, goal, services);
     }
 
     private RuleAppIndex(TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
-            Goal goal, TacletAppIndex tacletAppIndex) {
+            Goal goal, TacletAppIndex interactiveTacletAppIndex,
+            TacletAppIndex automatedTacletAppIndex) {
         this.goal = goal;
         this.tacletIndex = tacletIndex;
-        this.tacletAppIndex = tacletAppIndex;
+        this.interactiveTacletAppIndex = interactiveTacletAppIndex;
+        this.automatedTacletAppIndex = automatedTacletAppIndex;
         this.builtInRuleAppIndex = builtInRuleAppIndex;
     }
 
@@ -51,7 +75,7 @@ public class RuleAppIndex {
     public ImmutableList<TacletApp> getTacletAppAt(PosInOccurrence pos,
             Services services) {
         ImmutableList<TacletApp> result = ImmutableSLList.nil();
-        result = result.prepend(tacletAppIndex.getTacletAppAt(pos, services));
+        result = result.prepend(interactiveTacletAppIndex.getTacletAppAt(pos, services));
         return result;
     }
 
@@ -60,7 +84,8 @@ public class RuleAppIndex {
     public RuleAppIndex copy(Goal goal) {
         TacletIndex copiedTacletIndex = tacletIndex.copy();
         return new RuleAppIndex(copiedTacletIndex, builtInRuleAppIndex().copy(), goal,
-            tacletAppIndex.copyWith(copiedTacletIndex, goal));
+            interactiveTacletAppIndex.copyWith(copiedTacletIndex, goal),
+            automatedTacletAppIndex.copyWith(copiedTacletIndex, goal));
     }
 
 
@@ -70,7 +95,7 @@ public class RuleAppIndex {
     public void addNoPosTacletApp(NoPosTacletApp tacletApp) {
         tacletIndex.add(tacletApp);
 
-        tacletAppIndex.addedNoPosTacletApp(tacletApp);
+        interactiveTacletAppIndex.addedNoPosTacletApp(tacletApp);
     }
 
     public TacletIndex tacletIndex() {
@@ -88,7 +113,7 @@ public class RuleAppIndex {
             Services services) {
         ImmutableList<TacletApp> result = ImmutableSLList.nil();
         result =
-            result.prepend(tacletAppIndex.getTacletAppAtAndBelow(pos, services));
+            result.prepend(interactiveTacletAppIndex.getTacletAppAtAndBelow(pos, services));
         return result;
     }
 
@@ -104,7 +129,7 @@ public class RuleAppIndex {
     }
 
     public void scanBuiltInRules(Goal goal) {
-        builtInRuleAppIndex().scanApplicableRules(goal);
+        builtInRuleAppIndex().scanApplicableRules(goal, newRuleListener);
     }
 
     /// Report all rule applications that are supposed to be applied automatically, and that are
@@ -113,16 +138,16 @@ public class RuleAppIndex {
     /// @param l the NewRuleListener
     /// @param services the Services
     public void reportAutomatedRuleApps(NewRuleListener l, Services services) {
-        throw new UnsupportedOperationException("TODO: report rule apps");
+        automatedTacletAppIndex.reportRuleApps(l, services);
+        builtInRuleAppIndex.reportRuleApps(l, goal);
     }
 
     /// Ensures that all caches are fully up-to-date
     public void fillCache() {
-        // if (!autoMode) {
-        // interactiveTacletAppIndex.fillCache();
-        // }
-        // automatedTacletAppIndex.fillCache();
-        throw new UnsupportedOperationException("TODO: fill cache");
+        if (!autoMode) {
+            interactiveTacletAppIndex.fillCache();
+        }
+        automatedTacletAppIndex.fillCache();
     }
 
     /// Currently the rule app index can either operate in interactive mode (and contain
@@ -136,5 +161,21 @@ public class RuleAppIndex {
 
     public void autoModeStopped() {
         autoMode = false;
+    }
+
+    /// informs all observers, if a formula has been added, changed or removed
+    private void informNewRuleListener(RuleApp p_app,
+            PosInOccurrence p_pos) {
+        if (ruleListener != null) {
+            ruleListener.ruleAdded(p_app, p_pos);
+        }
+    }
+
+    /// informs all observers, if a formula has been added, changed or removed
+    private void informNewRuleListener(ImmutableList<? extends RuleApp> p_apps,
+            PosInOccurrence p_pos) {
+        if (ruleListener != null) {
+            ruleListener.rulesAdded(p_apps, p_pos);
+        }
     }
 }
