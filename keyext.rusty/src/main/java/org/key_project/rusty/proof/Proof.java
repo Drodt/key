@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
-import java.util.Iterator;
+import java.util.*;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
@@ -15,8 +15,11 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.proof.init.InitConfig;
+import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.ProofCorrectnessMgt;
 import org.key_project.rusty.settings.ProofSettings;
+import org.key_project.rusty.strategy.Strategy;
+import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -33,6 +36,16 @@ public class Proof implements ProofObject<Goal>, Named {
 
     /// the root of the proof
     private @Nullable Node root;
+
+    /// list with prooftree listeners of this proof attention: firing events makes use of array
+    /// list's random access nature
+    private final List<ProofTreeListener> listenerList = new LinkedList<>();
+
+    /**
+     * list of rule app listeners
+     */
+    private final List<RuleAppListener> ruleAppListenerList =
+        Collections.synchronizedList(new ArrayList<>(10));
 
     /// list with the open goals of the proof
     private ImmutableList<Goal> openGoals = ImmutableSLList.nil();
@@ -52,6 +65,8 @@ public class Proof implements ProofObject<Goal>, Named {
     private ProofCorrectnessMgt localMgt;
 
     private long autoModeTime = 0;
+
+    private @Nullable Strategy<@NonNull Goal> activeStrategy;
 
     /// constructs a new empty proof with name
     private Proof(Name name, InitConfig initConfig) {
@@ -315,5 +330,86 @@ public class Proof implements ProofObject<Goal>, Named {
 
     public void addAutoModeTime(long time) {
         autoModeTime += time;
+    }
+
+    public ProofSettings getSettings() {
+        return initConfig.getSettings();
+    }
+
+    /// adds a listener to the proof
+    ///
+    /// @param listener the ProofTreeListener to be added
+    public synchronized void addProofTreeListener(ProofTreeListener listener) {
+        synchronized (listenerList) {
+            listenerList.add(listener);
+        }
+    }
+
+    /// removes a listener from the proof
+    ///
+    /// @param listener the ProofTreeListener to be removed
+    public synchronized void removeProofTreeListener(ProofTreeListener listener) {
+        synchronized (listenerList) {
+            listenerList.remove(listener);
+        }
+    }
+
+    public void addRuleAppListener(RuleAppListener p) {
+        if (p == null) {
+            return;
+        }
+        synchronized (ruleAppListenerList) {
+            ruleAppListenerList.add(p);
+        }
+    }
+
+    public void removeRuleAppListener(RuleAppListener p) {
+        synchronized (ruleAppListenerList) {
+            ruleAppListenerList.remove(p);
+        }
+    }
+
+    public Strategy<Goal> getActiveStrategy() {
+        if (activeStrategy == null) {
+            initStrategy();
+        }
+        return activeStrategy;
+    }
+
+    public void setActiveStrategy(Strategy<@NonNull Goal> activeStrategy) {
+        this.activeStrategy = activeStrategy;
+        getSettings().getStrategySettings().setStrategy(activeStrategy.name());
+        updateStrategyOnGoals();
+
+        // This could be seen as a hack; it's however important that OSS is
+        // refreshed after strategy has been set, otherwise nothing will happen.
+        // OneStepSimplifier.refreshOSS(root.proof());
+    }
+
+    /**
+     * initialises the strategies
+     */
+    private void initStrategy() {
+        StrategyProperties activeStrategyProperties =
+            initConfig.getSettings().getStrategySettings().getActiveStrategyProperties();
+
+        final Profile profile = getServices().getProfile();
+
+        final Name strategy = initConfig.getSettings().getStrategySettings().getStrategy();
+        if (profile.supportsStrategyFactory(strategy)) {
+            setActiveStrategy(
+                profile.getStrategyFactory(strategy).create(this, activeStrategyProperties));
+        } else {
+            setActiveStrategy(
+                profile.getDefaultStrategyFactory().create(this, activeStrategyProperties));
+        }
+    }
+
+    private void updateStrategyOnGoals() {
+        Strategy<@NonNull Goal> ourStrategy = getActiveStrategy();
+
+        for (Goal goal : openGoals()) {
+            goal.setGoalStrategy(ourStrategy);
+        }
     }
 }

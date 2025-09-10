@@ -1,0 +1,140 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.strategy.feature;
+
+import java.util.Iterator;
+import java.util.List;
+
+import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
+import org.key_project.prover.rules.instantiation.InstantiationEntry;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.rusty.logic.op.sv.SkolemTermSV;
+import org.key_project.rusty.logic.op.sv.VariableSV;
+import org.key_project.rusty.proof.Goal;
+import org.key_project.rusty.proof.Node;
+import org.key_project.rusty.rule.PosTacletApp;
+import org.key_project.rusty.rule.TacletApp;
+import org.key_project.rusty.rule.inst.SVInstantiations;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableMap;
+import org.key_project.util.collection.ImmutableMapEntry;
+
+import org.jspecify.annotations.NonNull;
+
+public abstract class AbstractNonDuplicateAppFeature extends BinaryTacletAppFeature {
+    protected AbstractNonDuplicateAppFeature() {}
+
+    /**
+     * Compare whether two <code>PosInOccurrence</code>s are equal. This can be done using
+     * <code>equals</code> or <code>eqEquals</code> (checking for same or equal formulas), which has
+     * to be decided by the subclasses
+     */
+    protected abstract boolean comparePio(TacletApp newApp, TacletApp oldApp,
+            PosInOccurrence newPio,
+            PosInOccurrence oldPio);
+
+    /**
+     * Check whether the old rule application <code>ruleCmp</code> is a duplicate of the new
+     * application <code>newApp</code> at position <code>newPio</code>.<code>newPio</code> can be
+     * <code>null</code>
+     */
+    protected boolean sameApplication(RuleApp ruleCmp, TacletApp newApp, PosInOccurrence newPio) {
+        // compare the rules
+        if (newApp.rule() != ruleCmp.rule()) {
+            return false;
+        }
+
+        final TacletApp cmp = (TacletApp) ruleCmp;
+
+        // compare the position of application
+        if (newPio != null) {
+            if (!(cmp instanceof PosTacletApp)) {
+                return false;
+            }
+            final PosInOccurrence oldPio = cmp.posInOccurrence();
+            if (!comparePio(newApp, cmp, newPio, oldPio)) {
+                return false;
+            }
+        }
+
+
+        // compare the if-sequent instantiations
+        final ImmutableList<AssumesFormulaInstantiation> newAppIfFmlInstantiations =
+            newApp.assumesFormulaInstantiations();
+        final ImmutableList<AssumesFormulaInstantiation> cmpIfFmlInstantiations =
+            cmp.assumesFormulaInstantiations();
+        if (newAppIfFmlInstantiations == null || cmpIfFmlInstantiations == null) {
+            if (newAppIfFmlInstantiations != null || cmpIfFmlInstantiations != null) {
+                return false;
+            }
+        } else {
+
+            final Iterator<AssumesFormulaInstantiation> it0 = newAppIfFmlInstantiations.iterator();
+            final Iterator<AssumesFormulaInstantiation> it1 = cmpIfFmlInstantiations.iterator();
+
+            while (it0.hasNext()) {
+                // this test should be improved
+                if (it0.next().getSequentFormula() != it1.next().getSequentFormula()) {
+                    return false;
+                }
+            }
+        }
+
+        return equalInterestingInsts(newApp.instantiations(), cmp.instantiations());
+    }
+
+    private boolean equalInterestingInsts(SVInstantiations inst0, SVInstantiations inst1) {
+        if (!inst0.getUpdateContext().equals(inst1.getUpdateContext())) {
+            return false;
+        }
+
+        final var interesting0 = inst0.interesting();
+        final var interesting1 = inst1.interesting();
+        return subset(interesting0, interesting1) && subset(interesting1, interesting0);
+    }
+
+    private boolean subset(ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> insts0,
+            ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> insts1) {
+
+        for (ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> entry0 : insts0) {
+            if (entry0.key() instanceof SkolemTermSV || entry0.key() instanceof VariableSV) {
+                continue;
+            }
+
+            final InstantiationEntry<?> instEntry1 = insts1.get(entry0.key());
+
+            if (instEntry1 == null
+                    || !entry0.value().getInstantiation().equals(instEntry1.getInstantiation())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Search for a duplicate of the application <code>app</code> by walking upwards in the proof
+     * tree. Here, we assume that <code>pos</code> is non-null, and as an optimisation we stop as
+     * soon as we have reached a point where the formula containing the focus no longer occurs in
+     * the sequent
+     */
+    protected boolean noDuplicateFindTaclet(TacletApp app,
+            PosInOccurrence pos, Goal goal) {
+        final Node node = goal.getNode();
+        final AppliedRuleAppsNameCache cache =
+            node.proof().getServices().getCaches().getAppliedRuleAppsNameCache();
+        List<RuleApp> apps = cache.get(node, app.rule().name());
+
+        // Check all rules with this name
+        for (RuleApp a : apps) {
+            if (sameApplication(a, app, pos)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}

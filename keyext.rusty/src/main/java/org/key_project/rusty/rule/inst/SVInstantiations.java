@@ -22,6 +22,7 @@ import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static org.key_project.rusty.Services.convertToLogicElement;
 
@@ -42,6 +43,10 @@ public class SVInstantiations
     /// the map with the instantiations to logic terms
     private final ImmutableMap<SchemaVariable, InstantiationEntry<?>> map;
 
+    /// just a list of "interesting" instantiations: these instantiations are not 100% predetermined
+    /// and worth saving in a proof
+    private final ImmutableMap<@NonNull SchemaVariable, @NonNull InstantiationEntry<?>> interesting;
+
     /// updates may be ignored when matching, therefore they need to be added after the application
     /// around the added/replaced parts. These are stored in this list
     private final ImmutableList<Term> updateContext;
@@ -58,22 +63,33 @@ public class SVInstantiations
         genericSortConditions = ImmutableSLList.nil();
         updateContext = ImmutableSLList.nil();
         map = DefaultImmutableMap.nilMap();
-        // interesting = DefaultImmutableMap.nilMap();
+        interesting = DefaultImmutableMap.nilMap();
     }
 
     /// creates a new SVInstantions object using the given map
     ///
     /// @param map the ImmMap<SchemaVariable,InstantiationEntry<?>> with the instantiations
     private SVInstantiations(ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> map,
-            // ImmutableMap<SchemaVariable, InstantiationEntry<?>> interesting,
+            ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> interesting,
             ImmutableList<Term> updateContext,
             GenericSortInstantiations genericSortInstantiations,
             ImmutableList<GenericSortCondition> genericSortConditions) {
         this.map = map;
-        // this.interesting = interesting;
+        this.interesting = interesting;
         this.updateContext = updateContext;
         this.genericSortInstantiations = genericSortInstantiations;
         this.genericSortConditions = genericSortConditions;
+    }
+
+    /// creates a new SVInstantions object using the given map
+    ///
+    /// @param map the ImmMap<SchemaVariable,InstantiationEntry<?>> with the instantiations
+    public SVInstantiations(ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> map,
+            ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> interesting,
+            ImmutableList<Term> updateContext,
+            ImmutableList<GenericSortCondition> genericSortConditions) {
+        this(map, interesting, updateContext, GenericSortInstantiations.EMPTY_INSTANTIATIONS,
+            genericSortConditions);
     }
 
     public GenericSortInstantiations getGenericSortInstantiations() {
@@ -123,7 +139,7 @@ public class SVInstantiations
     /// @return SVInstantiations the new SVInstantiations containing the given pair
     public SVInstantiations add(SchemaVariable sv, InstantiationEntry<?> entry,
             LogicServices services) {
-        return new SVInstantiations(map.put(sv, entry), getUpdateContext(),
+        return new SVInstantiations(map.put(sv, entry), interesting(), getUpdateContext(),
             getGenericSortInstantiations(), getGenericSortConditions()).checkSorts(sv, entry, false,
                 services);
     }
@@ -233,7 +249,7 @@ public class SVInstantiations
     /// adds an update to the update context
     public SVInstantiations addUpdate(Term update) {
         assert update.sort() == RustyDLTheory.UPDATE;
-        return new SVInstantiations(map,
+        return new SVInstantiations(map, interesting(),
             updateContext.append(update),
             getGenericSortInstantiations(), getGenericSortConditions());
     }
@@ -243,7 +259,7 @@ public class SVInstantiations
             // avoid unnecessary creation of SVInstantiations
             return this;
         }
-        return new SVInstantiations(map, updates, getGenericSortInstantiations(),
+        return new SVInstantiations(map, interesting(), updates, getGenericSortInstantiations(),
             getGenericSortConditions());
     }
 
@@ -252,7 +268,7 @@ public class SVInstantiations
             // avoid unnecessary creation of SVInstantiations
             return this;
         }
-        return new SVInstantiations(map, ImmutableSLList.nil(),
+        return new SVInstantiations(map, interesting(), ImmutableSLList.nil(),
             getGenericSortInstantiations(), getGenericSortConditions());
     }
 
@@ -300,18 +316,18 @@ public class SVInstantiations
                 && genericSortConditions.isEmpty() && genericSortInstantiations.isEmpty());
     }
 
-    public SVInstantiations union(
+    public @NonNull SVInstantiations union(
             org.key_project.prover.rules.instantiation.SVInstantiations p_other,
             LogicServices services) {
         final var other = (SVInstantiations) p_other;
-        ImmutableMap<SchemaVariable, InstantiationEntry<?>> result = map;
+        ImmutableMap<@NonNull SchemaVariable, InstantiationEntry<?>> result = map;
 
-        for (ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> entry : other.map) {
+        for (ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> entry : other.map) {
             result = result.put(entry.key(), entry.value());
         }
 
         ImmutableList<Term> updates = getUpdates(other);
-        return new SVInstantiations(result, updates, getGenericSortInstantiations(),
+        return new SVInstantiations(result, interesting(), updates, getGenericSortInstantiations(),
             getGenericSortConditions())
                 .rebuildSorts(services);
     }
@@ -341,13 +357,14 @@ public class SVInstantiations
     /// Add the given additional condition for the generic sort instantiations
     public SVInstantiations add(GenericSortCondition p_c, LogicServices services)
             throws SortException {
-        return new SVInstantiations(map, getUpdateContext(),
+        return new SVInstantiations(map, interesting(), getUpdateContext(),
             getGenericSortInstantiations(), getGenericSortConditions().prepend(p_c))
                 .checkCondition(p_c, false, services);
     }
 
-    public ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> lookupEntryForSV(Name name) {
-        for (ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> e : map) {
+    public ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> lookupEntryForSV(
+            Name name) {
+        for (ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> e : map) {
             if (e.key().name().equals(name)) {
                 return e;
             }
@@ -355,13 +372,15 @@ public class SVInstantiations
         return null; // handle this better!
     }
 
-    public SchemaVariable lookupVar(Name name) {
-        final ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> e = lookupEntryForSV(name);
+    public SchemaVariable lookupVar(@NonNull Name name) {
+        final ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> e =
+            lookupEntryForSV(name);
         return e == null ? null : e.key(); // handle this better!
     }
 
-    public Object lookupValue(Name name) {
-        final ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> e = lookupEntryForSV(name);
+    public @Nullable Object lookupValue(@NonNull Name name) {
+        final ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> e =
+            lookupEntryForSV(name);
         return e == null ? null : e.value().getInstantiation();
     }
 
@@ -379,10 +398,10 @@ public class SVInstantiations
             return false;
         }
 
-        final Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> it =
+        final Iterator<ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>>> it =
             pairIterator();
         while (it.hasNext()) {
-            final ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>> e = it.next();
+            final ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> e = it.next();
             final Object inst = e.value().getInstantiation();
             assert inst != null : "Illegal null instantiation.";
             if (inst instanceof Term instAsTerm) {
@@ -417,7 +436,7 @@ public class SVInstantiations
     /// @param entry the InstantiationEntry the SchemaVariable is instantiated with
     public SVInstantiations replace(SchemaVariable sv, InstantiationEntry<?> entry,
             Services services) {
-        return new SVInstantiations(map.remove(sv).put(sv, entry),
+        return new SVInstantiations(map.remove(sv).put(sv, entry), interesting(),
             getUpdateContext(), GenericSortInstantiations.EMPTY_INSTANTIATIONS,
             getGenericSortConditions()).checkSorts(sv, entry, true, services);
     }
@@ -448,5 +467,25 @@ public class SVInstantiations
     /// @param term the Term the SchemaVariable is instantiated with
     public SVInstantiations replace(SchemaVariable sv, Term term, Services services) {
         return replace(sv, new TermInstantiation(sv, term), services);
+    }
+
+    public ImmutableMap<@NonNull SchemaVariable, @NonNull InstantiationEntry<?>> interesting() {
+        return interesting;
+    }
+
+    /// adds the schemvariable to the set of interesting ones
+    ///
+    /// @throws IllegalInstantiationException, if sv has not yet been instantiated
+    public SVInstantiations makeInteresting(SchemaVariable sv, Services services) {
+        final InstantiationEntry<?> entry = getInstantiationEntry(sv);
+
+        if (entry == null) {
+            throw new IllegalInstantiationException(
+                sv + " cannot be made interesting. As it is not yet in the map.");
+        }
+
+        return new SVInstantiations(map, interesting().put(sv, entry), getUpdateContext(),
+            getGenericSortConditions())
+                .checkSorts(sv, entry, true, services);
     }
 }

@@ -12,6 +12,8 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.Subst;
 import org.key_project.rusty.logic.TermBuilder;
 
+import org.jspecify.annotations.NonNull;
+
 /// Standard first-order substitution operator, resolving clashes but not preventing (usually
 /// unsound) substitution of non-rigid terms across modal operators. Currently, only the subclass
 /// <code>WarySubstOp</code> is used and accessible through the key parser.
@@ -28,7 +30,7 @@ public class SubstOp extends AbstractOperator {
     /// @return sort of the second subterm or throws an IllegalArgumentException if the given term
     /// has no correct (2=) arity
     @Override
-    public Sort sort(Sort[] sorts) {
+    public @NonNull Sort sort(Sort[] sorts) {
         if (sorts.length == 2) {
             return sorts[1];
         } else {

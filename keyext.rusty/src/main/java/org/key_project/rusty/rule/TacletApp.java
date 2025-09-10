@@ -834,11 +834,17 @@ public abstract class TacletApp implements RuleApp {
                 "SchemaVariable " + sv + " could not be matched with program element " + pe
                     + " under the provided constraints " + matchConditions);
         } else {
-            SVInstantiations svInst = cond.getInstantiations();
-            // if (interesting) {
-            // svInst = svInst.makeInteresting(sv, services);
-            // }
+            var svInst =
+                (org.key_project.rusty.rule.inst.SVInstantiations) cond.getInstantiations();
+            if (interesting) {
+                svInst = svInst.makeInteresting(sv, services);
+            }
             return addInstantiation(svInst, services);
         }
+    }
+
+    /// @return true iff the if-instantiation list is not null or no if sequent is needed
+    public boolean assumesInstantionsComplete() {
+        return assumesInstantiations != null || taclet().assumesSequent().isEmpty();
     }
 }

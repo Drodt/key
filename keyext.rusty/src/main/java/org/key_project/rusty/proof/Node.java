@@ -322,4 +322,9 @@ public class Node implements Iterable<Node> {
     public void setNameRecorder(NameRecorder nameRecorder) {
         this.nameRecorder = nameRecorder;
     }
+
+    /// @return true iff this node is the root, i.e., has no parents.
+    public boolean root() {
+        return parent == null;
+    }
 }

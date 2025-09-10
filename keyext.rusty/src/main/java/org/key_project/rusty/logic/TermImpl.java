@@ -21,8 +21,8 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// TODO: Basically everything here can be moved tpo ncore.
-class TermImpl implements Term {
+// TODO: Basically everything here can be moved to ncore.
+public class TermImpl implements Term {
     /// A static empty list of terms used for memory reasons.
     private static final ImmutableArray<Term> EMPTY_TERM_LIST = new ImmutableArray<>();
 

@@ -97,4 +97,8 @@ public class RuleAppIndex {
     public ImmutableList<IBuiltInRuleApp> getBuiltInRules(Goal g, PosInOccurrence pos) {
         return builtInRuleAppIndex().getBuiltInRule(g, pos);
     }
+
+    public void scanBuiltInRules(Goal goal) {
+        builtInRuleAppIndex().scanApplicableRules(goal);
+    }
 }

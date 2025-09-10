@@ -3,6 +3,20 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.settings;
 
-public abstract class AbstractSettings implements Settings {
+import java.beans.PropertyChangeSupport;
 
+public abstract class AbstractSettings implements Settings {
+    protected final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
+
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+        changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+    }
+
+    protected void firePropertyChange(String propertyName, int oldValue, int newValue) {
+        changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+    }
+
+    protected void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
+        changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+    }
 }

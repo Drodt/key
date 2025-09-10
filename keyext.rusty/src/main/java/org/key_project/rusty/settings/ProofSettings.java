@@ -31,11 +31,13 @@ public class ProofSettings {
     /// all setting objects in the following order: heuristicSettings
     private final List<Settings> settings = new LinkedList<>();
 
+    private final StrategySettings strategySettings = new StrategySettings();
     private final ChoiceSettings choiceSettings = new ChoiceSettings();
 
     /// create a proof settings object. When you add a new settings object, PLEASE UPDATE THE LIST
     /// ABOVE AND USE THOSE CONSTANTS INSTEAD OF USING INTEGERS DIRECTLY
     private ProofSettings() {
+        addSettings(strategySettings);
         addSettings(choiceSettings);
     }
 
@@ -116,5 +118,9 @@ public class ProofSettings {
     /// @return the ChoiceSettings object
     public ChoiceSettings getChoiceSettings() {
         return choiceSettings;
+    }
+
+    public StrategySettings getStrategySettings() {
+        return strategySettings;
     }
 }

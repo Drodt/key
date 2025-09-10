@@ -24,6 +24,7 @@ import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.logic.sort.SortArg;
+import org.key_project.rusty.strategy.quantifierHeuristics.Metavariable;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -58,6 +59,10 @@ public class TermBuilder {
 
     public Term var(LogicVariable v) {
         return tf.createTerm(v);
+    }
+
+    public Term var(Metavariable mv) {
+        return tf.createTerm(mv);
     }
 
     public Term var(OperatorSV v) {

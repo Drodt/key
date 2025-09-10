@@ -21,6 +21,7 @@ import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.inst.SVInstantiations;
+import org.key_project.rusty.strategy.Strategy;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -36,6 +37,11 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     private ImmutableList<RuleApp> appliedRuleApps = ImmutableSLList.nil();
 
     private final RuleAppIndex ruleAppIndex;
+
+    /// the strategy object that determines automated application of rules
+    private @Nullable Strategy<@NonNull Goal> goalStrategy = null;
+    /// This is the object which keeps book about all applicable rules.
+    private @Nullable RuleApplicationManager<Goal> ruleAppManager;
 
     /// creates a new goal referencing the given node
     public Goal(Node node, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
@@ -327,5 +333,14 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     @Override
     public long getTime() {
         return appliedRuleApps.size();
+    }
+
+    public ImmutableList<RuleApp> appliedRuleApps() {
+        return appliedRuleApps;
+    }
+
+    public void setGoalStrategy(Strategy<@NonNull Goal> p_goalStrategy) {
+        goalStrategy = p_goalStrategy;
+        ruleAppManager.clearCache();
     }
 }

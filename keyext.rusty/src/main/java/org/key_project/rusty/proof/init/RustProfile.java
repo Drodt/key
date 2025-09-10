@@ -4,6 +4,7 @@
 package org.key_project.rusty.proof.init;
 
 
+import org.key_project.logic.Name;
 import org.key_project.rusty.proof.io.RuleSourceFactory;
 import org.key_project.rusty.proof.mgt.AxiomJustification;
 import org.key_project.rusty.proof.mgt.ComplexRuleJustificationBySpec;
@@ -12,13 +13,18 @@ import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.Rule;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.UseOperationContractRule;
+import org.key_project.rusty.strategy.ModularRustyDLStrategyFactory;
+import org.key_project.rusty.strategy.StrategyFactory;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.collection.ImmutableSet;
 
 public class RustProfile implements Profile {
     public static final String NAME = "Rust Profile";
 
     private static RustProfile defaultInstance;
+
+    public static final StrategyFactory DEFAULT = new ModularRustyDLStrategyFactory();
 
     // maybe move these fields to abstract parent AbstractProfile
     private final RuleCollection standardRules;
@@ -61,5 +67,29 @@ public class RustProfile implements Profile {
             return t.getRuleJustification();
         else
             return AxiomJustification.INSTANCE;
+    }
+
+    @Override
+    public StrategyFactory getDefaultStrategyFactory() {
+        return DEFAULT;
+    }
+
+    protected ImmutableSet<StrategyFactory> getStrategyFactories() {
+        return ImmutableSet.singleton(DEFAULT);
+    }
+
+    @Override
+    public boolean supportsStrategyFactory(Name strategy) {
+        return getStrategyFactory(strategy) != null;
+    }
+
+    @Override
+    public StrategyFactory getStrategyFactory(Name n) {
+        for (StrategyFactory sf : getStrategyFactories()) {
+            if (sf.name().equals(n)) {
+                return sf;
+            }
+        }
+        return null;
     }
 }
