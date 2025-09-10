@@ -378,4 +378,9 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     public FormulaTagManager getFormulaTagManager() {
         return tagManager;
     }
+
+    public boolean isAutomatic() {
+        // TODO
+        return true;
+    }
 }

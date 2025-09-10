@@ -17,6 +17,7 @@ import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.proof.init.InitConfig;
 import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.ProofCorrectnessMgt;
+import org.key_project.rusty.proof.mgt.ProofEnvironment;
 import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.rusty.strategy.Strategy;
 import org.key_project.rusty.strategy.StrategyProperties;
@@ -66,6 +67,9 @@ public class Proof implements ProofObject<Goal>, Named {
 
     private @Nullable Strategy<@NonNull Goal> activeStrategy;
 
+    /// the proof environment (optional)
+    private @Nullable ProofEnvironment env;
+
     /// constructs a new empty proof with name
     private Proof(Name name, InitConfig initConfig) {
         this.name = name;
@@ -88,7 +92,7 @@ public class Proof implements ProofObject<Goal>, Named {
         this(new Name(name), initConfig);
     }
 
-    private Proof(String name, Sequent problem, TacletIndex tacletIndex,
+    public Proof(String name, Sequent problem, TacletIndex tacletIndex,
             BuiltInRuleIndex builtInRules,
             InitConfig initConfig) {
         this(new Name(name), initConfig);
@@ -407,5 +411,76 @@ public class Proof implements ProofObject<Goal>, Named {
         for (Goal goal : openGoals()) {
             goal.setGoalStrategy(ourStrategy);
         }
+    }
+
+    /// return the list of open and enabled goals
+    ///
+    /// @return list of open and enabled goals, never null
+    /// @author mulbrich
+    public ImmutableList<Goal> openEnabledGoals() {
+        return filterEnabledGoals(openGoals);
+    }
+
+    /// filter those goals from a list which are enabled
+    ///
+    /// @param goals non-null list of goals
+    /// @return sublist such that every goal in the list is enabled
+    /// @author mulbrich
+    /// @see Goal#isAutomatic()
+    private ImmutableList<Goal> filterEnabledGoals(ImmutableList<Goal> goals) {
+        ImmutableList<Goal> enabledGoals = ImmutableSLList.nil();
+        for (Goal g : goals) {
+            if (g.isAutomatic()) {
+                enabledGoals = enabledGoals.prepend(g);
+            }
+        }
+        return enabledGoals;
+    }
+
+    public void setEnv(ProofEnvironment env) {
+        this.env = env;
+    }
+
+    /// Currently the rule app index can either operate in interactive mode (and contain
+    /// applications
+    /// of all existing taclets) or in automatic mode (and only contain a restricted set of taclets
+    /// that can possibly be applied automated). This distinction could be replaced with a more
+    /// general way to control the contents of the rule app index
+    public void setRuleAppIndexToAutoMode() {
+        for (final Goal g : openGoals) {
+            g.ruleAppIndex().autoModeStarted();
+        }
+    }
+
+    public void setRuleAppIndexToInteractiveMode() {
+        for (final Goal g : openGoals) {
+            g.ruleAppIndex().autoModeStopped();
+        }
+    }
+
+    /// returns the list of goals of the subtree starting with node.
+    ///
+    /// @param node the Node where to start from
+    /// @return the list of goals of the subtree starting with node
+    public ImmutableList<Goal> getSubtreeGoals(Node node) {
+        return getGoalsBelow(node, openGoals);
+    }
+
+    /// Returns a list of all goals from the provided list that are associated to goals below
+    /// <code>node</code>
+    ///
+    /// @param node the root of the subtree
+    /// @param fromGoals the list of goals from which to select
+    /// @return the goals below node that are contained in <code>fromGoals</code>
+    private static ImmutableList<Goal> getGoalsBelow(Node node, ImmutableList<Goal> fromGoals) {
+        ImmutableList<Goal> result = ImmutableSLList.nil();
+        List<Node> leaves = node.getLeaves();
+        for (final Goal goal : fromGoals) {
+            // if list contains node, remove it to make the list faster later
+            if (leaves.remove(goal.getNode())) {
+                result = result.prepend(goal);
+            }
+        }
+        return result;
     }
 }

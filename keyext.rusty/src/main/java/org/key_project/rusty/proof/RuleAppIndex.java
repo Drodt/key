@@ -21,6 +21,10 @@ public class RuleAppIndex {
 
     private final BuiltInRuleAppIndex builtInRuleAppIndex;
 
+    /// The current mode of the index: For <code>autoMode==true</code>, the index
+    /// <code>interactiveTacletAppIndex</code> is not updated
+    private boolean autoMode;
+
     public RuleAppIndex(TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex, Goal goal,
             Services services) {
         this.goal = goal;
@@ -119,5 +123,18 @@ public class RuleAppIndex {
         // }
         // automatedTacletAppIndex.fillCache();
         throw new UnsupportedOperationException("TODO: fill cache");
+    }
+
+    /// Currently the rule app index can either operate in interactive mode (and contain
+    /// applications
+    /// of all existing taclets) or in automatic mode (and only contain a restricted set of taclets
+    /// that can possibly be applied automated). This distinction could be replaced with a more
+    /// general way to control the contents of the rule app index
+    public void autoModeStarted() {
+        autoMode = true;
+    }
+
+    public void autoModeStopped() {
+        autoMode = false;
     }
 }
