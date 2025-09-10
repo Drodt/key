@@ -166,7 +166,7 @@ class Instantiation {
         return NumberRuleAppCost.create(cost);
     }
 
-    /** get all instances from instancesCostCache subsCache */
+    /// get all instances from instancesCostCache subsCache
     ImmutableSet<Term> getSubstitution() {
         ImmutableSet<Term> res = DefaultImmutableSet.nil();
         for (final Term inst : instancesWithCosts.keySet()) {

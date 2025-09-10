@@ -70,9 +70,7 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         }
     }
 
-    /**
-     * Create a list of new RuleAppContainers that are to be considered for application.
-     */
+    /// Create a list of new RuleAppContainers that are to be considered for application.
     @Override
     public final ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
         var goal = (Goal) p_goal;
@@ -103,10 +101,8 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return res;
     }
 
-    /**
-     * Add all instances of the given taclet app (that are possibly produced using method
-     * <code>instantiateApp</code> of the strategy) to <code>targetList</code>
-     */
+    /// Add all instances of the given taclet app (that are possibly produced using method
+    /// <code>instantiateApp</code> of the strategy) to <code>targetList</code>
     private ImmutableList<RuleAppContainer> addInstances(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, Goal p_goal) {
         if (app.uninstantiatedVars().isEmpty()) {
@@ -115,10 +111,8 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return instantiateApp(app, targetList, p_goal);
     }
 
-    /**
-     * Use the method <code>instantiateApp</code> of the strategy for choosing the values of schema
-     * variables that have not been instantiated so far
-     */
+    /// Use the method <code>instantiateApp</code> of the strategy for choosing the values of schema
+    /// variables that have not been instantiated so far
     private ImmutableList<RuleAppContainer> instantiateApp(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, final Goal p_goal) {
         // just for being able to modify the result-list in an
@@ -137,20 +131,16 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return resA[0];
     }
 
-    /**
-     * Create a container object for the given taclet app, provided that the app is
-     * <code>sufficientlyComplete</code>, and add the container to <code>targetList</code>
-     */
+    /// Create a container object for the given taclet app, provided that the app is
+    /// <code>sufficientlyComplete</code>, and add the container to <code>targetList</code>
     private ImmutableList<RuleAppContainer> addContainer(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, Goal p_goal) {
         return targetList.prepend(
             createContainer(app, getPosInOccurrence(p_goal), p_goal, false));
     }
 
-    /**
-     * Create a container object for the given taclet app, provided that the app is
-     * <code>sufficientlyComplete</code>, and add the container to <code>targetList</code>
-     */
+    /// Create a container object for the given taclet app, provided that the app is
+    /// <code>sufficientlyComplete</code>, and add the container to <code>targetList</code>
     private ImmutableList<RuleAppContainer> addContainer(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, Goal p_goal, RuleAppCost cost) {
         if (!sufficientlyCompleteApp(app)) {
@@ -177,9 +167,7 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return createContainer(getTacletApp(), getPosInOccurrence(p_goal), p_goal, false);
     }
 
-    /**
-     * Create containers for NoFindTaclets.
-     */
+    /// Create containers for NoFindTaclets.
     static RuleAppContainer createAppContainers(NoPosTacletApp p_app, Goal p_goal) {
         return createAppContainers(p_app, null, p_goal);
     }
@@ -204,15 +192,13 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return result;
     }
 
-    /**
-     * Create containers for FindTaclets or NoFindTaclets.
-     *
-     * @param p_app if <code>p_pio</code> is null, <code>p_app</code> has to be a
-     *        <code>TacletApp</code> for a <code>NoFindTaclet</code>, otherwise for a
-     *        <code>FindTaclet</code>.
-     * @return list of containers for currently applicable TacletApps, the cost may be an instance
-     *         of <code>TopRuleAppCost</code>.
-     */
+    /// Create containers for FindTaclets or NoFindTaclets.
+    ///
+    /// @param p_app if <code>p_pio</code> is null, <code>p_app</code> has to be a
+    /// <code>TacletApp</code> for a <code>NoFindTaclet</code>, otherwise for a
+    /// <code>FindTaclet</code>.
+    /// @return list of containers for currently applicable TacletApps, the cost may be an instance
+    /// of <code>TopRuleAppCost</code>.
     static RuleAppContainer createAppContainers(NoPosTacletApp p_app,
             PosInOccurrence p_pio,
             Goal p_goal) {
@@ -228,10 +214,9 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return createContainer(p_app, p_pio, p_goal, true);
     }
 
-    /**
-     * @return true iff instantiation of the assumes-formulas of the stored taclet app exist and are
-     *         valid are still valid, i.e. the referenced formulas still exist
-     */
+    /// @return true iff instantiation of the assumes-formulas of the stored taclet app exist and
+    /// are
+    /// valid are still valid, i.e. the referenced formulas still exist
     protected boolean assumesFormulasStillValid(Goal p_goal) {
         if (getTacletApp().taclet().assumesSequent().isEmpty()) {
             return true;
@@ -263,19 +248,15 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return true;
     }
 
-    /**
-     * @return true iff the stored rule app is applicable for the given sequent, i.e. if the
-     *         find-position does still exist (assumes-formulas are not considered)
-     */
+    /// @return true iff the stored rule app is applicable for the given sequent, i.e. if the
+    /// find-position does still exist (assumes-formulas are not considered)
     protected abstract boolean isStillApplicable(Goal p_goal);
 
     protected PosInOccurrence getPosInOccurrence(Goal p_goal) {
         return null;
     }
 
-    /**
-     * Create a <code>RuleApp</code> that is suitable to be applied or <code>null</code>.
-     */
+    /// Create a <code>RuleApp</code> that is suitable to be applied or <code>null</code>.
     @Override
     public TacletApp completeRuleApp(ProofGoal<?> p_goal) {
         var goal = (Goal) p_goal;

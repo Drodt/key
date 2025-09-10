@@ -6,7 +6,6 @@ package org.key_project.rusty.strategy;
 import org.key_project.logic.Named;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.settings.StrategySettings;
 import org.key_project.rusty.strategy.definition.StrategySettingsDefinition;
 
 import org.jspecify.annotations.NonNull;
@@ -22,11 +21,9 @@ public interface StrategyFactory extends Named {
     /// @return the newly created strategy
     Strategy<@NonNull Goal> create(Proof proof, StrategyProperties strategyProperties);
 
-    /**
-     * Returns the {@link StrategySettingsDefinition} which describes how a user interface has to
-     * look like to edit {@link StrategySettings} supported by created {@link Strategy} instances.
-     *
-     * @return The {@link StrategySettingsDefinition} which describes the user interface.
-     */
+    /// Returns the [StrategySettingsDefinition] which describes how a user interface has to
+    /// look like to edit [StrategySettings] supported by created [Strategy] instances.
+    ///
+    /// @return The [StrategySettingsDefinition] which describes the user interface.
     StrategySettingsDefinition getSettingsDefinition();
 }

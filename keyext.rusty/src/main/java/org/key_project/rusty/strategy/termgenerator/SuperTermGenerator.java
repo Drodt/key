@@ -198,9 +198,7 @@ public abstract class SuperTermGenerator implements TermGenerator<Goal> {
             return res;
         }
 
-        /**
-         * throw an unsupported operation exception as generators do not remove
-         */
+        /// throw an unsupported operation exception as generators do not remove
         @Override
         public void remove() {
             throw new UnsupportedOperationException();

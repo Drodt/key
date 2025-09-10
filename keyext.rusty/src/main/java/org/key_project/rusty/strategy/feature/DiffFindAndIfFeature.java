@@ -17,7 +17,7 @@ import org.key_project.util.collection.ImmutableList;
 /// matched to different members of the sequent. If a taclet has more than one formula in its
 /// <tt>\assumes</tt> part, all of them must be matched to different members.
 public class DiffFindAndIfFeature extends BinaryTacletAppFeature {
-    /** the single instance of this feature */
+    /// the single instance of this feature
     public static final Feature INSTANCE = new DiffFindAndIfFeature();
 
     private DiffFindAndIfFeature() {}

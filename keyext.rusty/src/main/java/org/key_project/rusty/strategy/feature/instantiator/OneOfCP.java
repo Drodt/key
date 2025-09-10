@@ -71,9 +71,7 @@ public class OneOfCP implements Feature {
                 };
             }
 
-            /**
-             * throws an unsupported operation exception
-             */
+            /// throws an unsupported operation exception
             @Override
             public void remove() {
                 throw new UnsupportedOperationException();

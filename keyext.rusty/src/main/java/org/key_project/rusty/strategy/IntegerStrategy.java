@@ -965,14 +965,12 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
                     longConst(-3500))));
     }
 
-    /**
-     * For taclets that need instantiation, but where the instantiation is deterministic and does
-     * not have to be repeated at a later point, we setup the same feature terms both in the cost
-     * computation method and in the instantiation method. The definitions in
-     * <code>setupInstantiationWithoutRetry</code> should give cost infinity to those incomplete
-     * rule applications that will never be instantiated (so that these applications can be removed
-     * from the queue and do not have to be considered again).
-     */
+    /// For taclets that need instantiation, but where the instantiation is deterministic and does
+    /// not have to be repeated at a later point, we setup the same feature terms both in the cost
+    /// computation method and in the instantiation method. The definitions in
+    /// <code>setupInstantiationWithoutRetry</code> should give cost infinity to those incomplete
+    /// rule applications that will never be instantiated (so that these applications can be removed
+    /// from the queue and do not have to be considered again).
     private void setupInstantiationWithoutRetry(RuleSetDispatchFeature d) {
         setupPolySimpInstantiationWithoutRetry(d);
         setupInEqSimpInstantiationWithoutRetry(d);

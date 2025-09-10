@@ -102,11 +102,9 @@ public class QuanEliminationAnalyser {
         return pio;
     }
 
-    /**
-     * The variable <code>var</code> is either eliminable or does not occur on all
-     * conjunctive/disjunctive paths through <code>matrix</code> (depending on whether
-     * <code>ex</code> is true/false)
-     */
+    /// The variable <code>var</code> is either eliminable or does not occur on all
+    /// conjunctive/disjunctive paths through <code>matrix</code> (depending on whether
+    /// <code>ex</code> is true/false)
     public boolean isEliminableVariableSomePaths(QuantifiableVariable var, Term matrix,
             boolean ex) {
         if (!matrix.freeVars()
@@ -133,10 +131,8 @@ public class QuanEliminationAnalyser {
         }
     }
 
-    /**
-     * The variable <code>var</code> is eliminable on all conjunctive/disjunctive paths through
-     * <code>matrix</code> (depending on whether <code>ex</code> is true/false)
-     */
+    /// The variable <code>var</code> is eliminable on all conjunctive/disjunctive paths through
+    /// <code>matrix</code> (depending on whether <code>ex</code> is true/false)
     public boolean isEliminableVariableAllPaths(QuantifiableVariable var, Term matrix, boolean ex) {
         final var op = matrix.op();
 

@@ -67,19 +67,12 @@ public abstract class AbstractBuiltInRuleApp implements IBuiltInRuleApp {
 
     @Override
     public void checkApplicability() {
-
     }
 
     @Override
     public void registerSkolemConstants(Namespace<@NonNull Function> fns) {
-
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see de.uka.ilkd.key.rule.IBuiltInRuleApp#tryToInstantiate(de.uka.ilkd.key.proof.Goal)
-     */
     @Override
     public abstract AbstractBuiltInRuleApp tryToInstantiate(Goal goal);
 

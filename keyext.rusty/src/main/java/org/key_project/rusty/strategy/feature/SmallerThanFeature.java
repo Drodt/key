@@ -25,10 +25,9 @@ public abstract class SmallerThanFeature extends BinaryTacletAppFeature {
         return termOrdering.compare(t1, t2);
     }
 
-    /**
-     * @return <code>true</code> iff each element of <code>list1</code> is strictly smaller than all
-     *         elements of <code>list2</code>
-     */
+    /// @return <code>true</code> iff each element of <code>list1</code> is strictly smaller than
+    /// all
+    /// elements of <code>list2</code>
     protected final boolean lessThan(ImmutableList<Term> list1, ImmutableList<Term> list2,
             PosInOccurrence focus, Goal currentGoal) {
         if (list2.isEmpty()) {

@@ -28,9 +28,7 @@ public class InstantiationCost implements Feature {
         return new InstantiationCost(varInst);
     }
 
-    /**
-     * Compute the cost of a RuleApp.
-     */
+    /// Compute the cost of a RuleApp.
     @Override
     public <Goal extends ProofGoal<@NonNull Goal>> RuleAppCost computeCost(RuleApp app,
             PosInOccurrence pos, Goal goal, MutableState mState) {

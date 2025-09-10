@@ -41,9 +41,7 @@ public class Proof implements ProofObject<Goal>, Named {
     /// list's random access nature
     private final List<ProofTreeListener> listenerList = new LinkedList<>();
 
-    /**
-     * list of rule app listeners
-     */
+    /// list of rule app listeners
     private final List<RuleAppListener> ruleAppListenerList =
         Collections.synchronizedList(new ArrayList<>(10));
 
@@ -386,9 +384,7 @@ public class Proof implements ProofObject<Goal>, Named {
         // OneStepSimplifier.refreshOSS(root.proof());
     }
 
-    /**
-     * initialises the strategies
-     */
+    /// initialises the strategies
     private void initStrategy() {
         StrategyProperties activeStrategyProperties =
             initConfig.getSettings().getStrategySettings().getActiveStrategyProperties();

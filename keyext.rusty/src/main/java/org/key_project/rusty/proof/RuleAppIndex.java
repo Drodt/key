@@ -103,20 +103,16 @@ public class RuleAppIndex {
         builtInRuleAppIndex().scanApplicableRules(goal);
     }
 
-    /**
-     * Report all rule applications that are supposed to be applied automatically, and that are
-     * currently stored by the index
-     *
-     * @param l the NewRuleListener
-     * @param services the Services
-     */
+    /// Report all rule applications that are supposed to be applied automatically, and that are
+    /// currently stored by the index
+    ///
+    /// @param l the NewRuleListener
+    /// @param services the Services
     public void reportAutomatedRuleApps(NewRuleListener l, Services services) {
         throw new UnsupportedOperationException("TODO: report rule apps");
     }
 
-    /**
-     * Ensures that all caches are fully up-to-date
-     */
+    /// Ensures that all caches are fully up-to-date
     public void fillCache() {
         // if (!autoMode) {
         // interactiveTacletAppIndex.fillCache();

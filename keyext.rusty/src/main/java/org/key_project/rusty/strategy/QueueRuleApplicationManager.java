@@ -33,23 +33,18 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
     /// The goal this manager belongs to.
     private @Nullable Goal goal = null;
 
-    /**
-     * Priority queue containing all {@link RuleAppContainer}s that are candidates for application
-     * on a {@link Goal}.
-     */
+    /// Priority queue containing all [RuleAppContainer]s that are candidates for application
+    /// on a [Goal].
     private @Nullable ImmutableHeap<RuleAppContainer> queue = null;
 
-    /**
-     * The minimum {@link RuleAppContainer} from a previous round. It is taken out of queue
-     * temporarily and is put back in during the next round. After all, the corresponding rule still
-     * needs to be taken into consideration for future rule applications.
-     */
+    /// The minimum [RuleAppContainer] from a previous round. It is taken out of queue
+    /// temporarily and is put back in during the next round. After all, the corresponding rule
+    /// still
+    /// needs to be taken into consideration for future rule applications.
     private @Nullable RuleAppContainer previousMinimum = null;
 
-    /**
-     * The next automatic {@link RuleApp} determined by the strategy. Aka result of methods
-     * {@link #next()} and {@link #peekNext()}.
-     */
+    /// The next automatic [RuleApp] determined by the strategy. Aka result of methods
+    /// [#next()] and [#peekNext()].
     private @Nullable RuleApp nextRuleApp = null;
 
     private long nextRuleTime;
@@ -59,9 +54,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         goal = p_goal;
     }
 
-    /**
-     * Clear the heap of applicable rules
-     */
+    /// Clear the heap of applicable rules
     @Override
     public void clearCache() {
         queue = null;
@@ -72,9 +65,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         clearNextRuleApp();
     }
 
-    /**
-     * Add all rules to the heap that are not reported via the <code>RuleListener</code> connection
-     */
+    /// Add all rules to the heap that are not reported via the <code>RuleListener</code> connection
     private void ensureQueueExists() {
         if (queue != null) {
             return;
@@ -100,10 +91,8 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
             goal.proof().getServices());
     }
 
-    /**
-     * Implementation of the method from <code>NewRuleListener</code>. The new rule app is added to
-     * the heap
-     */
+    /// Implementation of the method from <code>NewRuleListener</code>. The new rule app is added to
+    /// the heap
     @Override
     public void ruleAdded(RuleApp rule, PosInOccurrence pos) {
         if (queue == null) {
@@ -118,10 +107,8 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         addRuleApp(c);
     }
 
-    /**
-     * Implementation of the method from <code>NewRuleListener</code>. The new rule app is added to
-     * the heap
-     */
+    /// Implementation of the method from <code>NewRuleListener</code>. The new rule app is added to
+    /// the heap
     @Override
     public void rulesAdded(ImmutableList<? extends RuleApp> rules,
             PosInOccurrence pos) {
@@ -143,9 +130,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         queue = push(rac, queue);
     }
 
-    /**
-     * Add a number of new rule apps to the heap
-     */
+    /// Add a number of new rule apps to the heap
     private static ImmutableHeap<RuleAppContainer> push(Iterator<RuleAppContainer> it,
             ImmutableHeap<RuleAppContainer> sourceQueue) {
         while (it.hasNext()) {
@@ -154,9 +139,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         return sourceQueue;
     }
 
-    /**
-     * Add a new rule app to the heap, provided that the rule app is not infinitely expensive
-     */
+    /// Add a new rule app to the heap, provided that the rule app is not infinitely expensive
     private static ImmutableHeap<RuleAppContainer> push(RuleAppContainer c,
             ImmutableHeap<RuleAppContainer> sourceQueue) {
         if (c.getCost() == TopRuleAppCost.INSTANCE) {
@@ -186,12 +169,10 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         return ImmutableLeftistHeap.<RuleAppContainer>nilHeap().insert(actualApps.iterator());
     }
 
-    /**
-     * @return the first applicable rule app, i.e. the least expensive element of the heap that is
-     *         not obsolete and caches the result of this operation to save some time the next time
-     *         the method nextAndCache() or next() is called. A call of next() empties the cache
-     *         again.
-     */
+    /// @return the first applicable rule app, i.e. the least expensive element of the heap that is
+    /// not obsolete and caches the result of this operation to save some time the next time
+    /// the method nextAndCache() or next() is called. A call of next() empties the cache
+    /// again.
     @Override
     public RuleApp peekNext() {
         ensureQueueExists();
@@ -220,10 +201,8 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         return nextRuleApp;
     }
 
-    /**
-     * @return the first applicable rule app, i.e. the least expensive element of the heap that is
-     *         not obsolete
-     */
+    /// @return the first applicable rule app, i.e. the least expensive element of the heap that is
+    /// not obsolete
     @Override
     public RuleApp next() {
         final RuleApp res = peekNext();
@@ -235,11 +214,9 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         nextRuleApp = null;
     }
 
-    /**
-     * Helper method for {@link #peekNext()}. Searches for the next rule application, at which the
-     * iteration includes all rule app containers that are contained either in primary or secondary
-     * queue.
-     */
+    /// Helper method for [#peekNext()]. Searches for the next rule application, at which the
+    /// iteration includes all rule app containers that are contained either in primary or secondary
+    /// queue.
     private void computeNextRuleApp(ImmutableHeap<@NonNull RuleAppContainer> furtherAppsQueue) {
         /*
          * Working list contains rule apps that cannot be completed in the current round but will be

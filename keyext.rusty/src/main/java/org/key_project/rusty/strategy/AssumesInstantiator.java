@@ -55,10 +55,8 @@ public class AssumesInstantiator {
          */
     }
 
-    /**
-     * Find all possible instantiations of the assumes-sequent formulas within the sequent
-     * {@code goal.sequent()}
-     */
+    /// Find all possible instantiations of the assumes-sequent formulas within the sequent
+    /// `goal.sequent()`
     public void findAssumesFormulaInstantiations() {
         final Sequent p_seq = goal.sequent();
 
@@ -85,12 +83,10 @@ public class AssumesInstantiator {
         return (Taclet) tacletAppContainer.getTacletApp().taclet();
     }
 
-    /**
-     * @param p_all if true then return all formulas of the particular semisequent, otherwise only
-     *        the formulas returned by <code>selectNewFormulas</code>
-     * @return a list of potential if-formula instantiations (analogously to
-     *         <code>IfFormulaInstSeq.createList</code>)
-     */
+    /// @param p_all if true then return all formulas of the particular semisequent, otherwise only
+    /// the formulas returned by <code>selectNewFormulas</code>
+    /// @return a list of potential if-formula instantiations (analogously to
+    /// <code>IfFormulaInstSeq.createList</code>)
     private ImmutableArray<AssumesFormulaInstantiation> getSequentFormulas(boolean p_antec,
             boolean p_all) {
         if (p_all) {
@@ -110,12 +106,10 @@ public class AssumesInstantiator {
         return newFormulas;
     }
 
-    /**
-     * @return a list of potential if-formula instantiations (analogously to
-     *         <code>IfFormulaInstSeq.createList</code>), but consisting only of those formulas of
-     *         the current goal for which the method <code>isNewFormula</code> returns
-     *         <code>true</code>
-     */
+    /// @return a list of potential if-formula instantiations (analogously to
+    /// <code>IfFormulaInstSeq.createList</code>), but consisting only of those formulas of
+    /// the current goal for which the method <code>isNewFormula</code> returns
+    /// <code>true</code>
     private ImmutableArray<AssumesFormulaInstantiation> selectNewFormulas(boolean p_antec) {
         final ImmutableArray<AssumesFormulaInstantiation> allSequentFormulas =
             getAllSequentFormulas(p_antec);
@@ -132,11 +126,9 @@ public class AssumesInstantiator {
         return new ImmutableArray<>(res, 0, i);
     }
 
-    /**
-     * @return true iff the formula described by the argument has been modified (or introduced)
-     *         since the latest point of time when the if-formulas of the enclosing taclet app
-     *         (container) have been matched
-     */
+    /// @return true iff the formula described by the argument has been modified (or introduced)
+    /// since the latest point of time when the if-formulas of the enclosing taclet app
+    /// (container) have been matched
     private boolean isNewFormula(AssumesFormulaInstSeq p_ifInstantiation) {
         final boolean antec = p_ifInstantiation.inAntecedent();
 
@@ -150,11 +142,9 @@ public class AssumesInstantiator {
         return isNewFormulaDirect(p_ifInstantiation);
     }
 
-    /**
-     * @return true iff the formula described by the argument has been modified (or introduced)
-     *         since the latest point of time when the if-formulas of the enclosing taclet app
-     *         (container) have been matched (this method does not use the cache)
-     */
+    /// @return true iff the formula described by the argument has been modified (or introduced)
+    /// since the latest point of time when the if-formulas of the enclosing taclet app
+    /// (container) have been matched (this method does not use the cache)
     private boolean isNewFormulaDirect(AssumesFormulaInstSeq p_ifInstantiation) {
         final boolean antec = p_ifInstantiation.inAntecedent();
 
@@ -188,16 +178,14 @@ public class AssumesInstantiator {
         return p_antec ? allAntecFormulas : allSuccFormulas;
     }
 
-    /**
-     * Recursive function for matching the remaining tail of an if sequent
-     *
-     * @param p_ifSeqTail tail of the current semisequent as list
-     * @param p_ifSeqTail2nd the following semisequent (i.e. antecedent) or null
-     * @param p_matchCond match conditions until now, i.e. after matching the first formulas of the
-     *        assumes-sequent
-     * @param p_alreadyMatchedNewFor at least one new formula has already been matched, i.e. a
-     *        formula that has been modified recently
-     */
+    /// Recursive function for matching the remaining tail of an if sequent
+    ///
+    /// @param p_ifSeqTail tail of the current semisequent as list
+    /// @param p_ifSeqTail2nd the following semisequent (i.e. antecedent) or null
+    /// @param p_matchCond match conditions until now, i.e. after matching the first formulas of the
+    /// assumes-sequent
+    /// @param p_alreadyMatchedNewFor at least one new formula has already been matched, i.e. a
+    /// formula that has been modified recently
     private void findAssumesFormulaInstantiationsHelp(
             ImmutableList<SequentFormula> p_ifSeqTail,
             ImmutableList<SequentFormula> p_ifSeqTail2nd,
@@ -249,9 +237,7 @@ public class AssumesInstantiator {
             p_alreadyMatched, getServices());
     }
 
-    /**
-     * @return Returns the results.
-     */
+    /// @return Returns the results.
     public ImmutableList<NoPosTacletApp> getResults() {
         return results;
     }

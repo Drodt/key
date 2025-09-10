@@ -43,17 +43,12 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
 
     private final boolean checkConditions;
 
-    /**
-     *
-     * @param checkConditions boolean indicating if conditions should be checked
-     */
+    /// @param checkConditions boolean indicating if conditions should be checked
     public TriggeredInstantiations(boolean checkConditions) {
         this.checkConditions = checkConditions;
     }
 
-    /**
-     * Generates all instances
-     */
+    /// Generates all instances
     @Override
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos,
             Goal goal,

@@ -45,7 +45,7 @@ public class FindPrefixRestrictionFeature extends BinaryTacletAppFeature {
         // application.
         ALLOW_UPDATE_AS_PARENT(new RemoveParentUpdateModifier());
 
-        /** wrapped modifier */
+        /// wrapped modifier
         private final Modifier modifier;
 
 

@@ -27,20 +27,17 @@ import org.jspecify.annotations.NonNull;
 public abstract class AbstractNonDuplicateAppFeature extends BinaryTacletAppFeature {
     protected AbstractNonDuplicateAppFeature() {}
 
-    /**
-     * Compare whether two <code>PosInOccurrence</code>s are equal. This can be done using
-     * <code>equals</code> or <code>eqEquals</code> (checking for same or equal formulas), which has
-     * to be decided by the subclasses
-     */
+    /// Compare whether two <code>PosInOccurrence</code>s are equal. This can be done using
+    /// <code>equals</code> or <code>eqEquals</code> (checking for same or equal formulas), which
+    /// has
+    /// to be decided by the subclasses
     protected abstract boolean comparePio(TacletApp newApp, TacletApp oldApp,
             PosInOccurrence newPio,
             PosInOccurrence oldPio);
 
-    /**
-     * Check whether the old rule application <code>ruleCmp</code> is a duplicate of the new
-     * application <code>newApp</code> at position <code>newPio</code>.<code>newPio</code> can be
-     * <code>null</code>
-     */
+    /// Check whether the old rule application <code>ruleCmp</code> is a duplicate of the new
+    /// application <code>newApp</code> at position <code>newPio</code>.<code>newPio</code> can be
+    /// <code>null</code>
     protected boolean sameApplication(RuleApp ruleCmp, TacletApp newApp, PosInOccurrence newPio) {
         // compare the rules
         if (newApp.rule() != ruleCmp.rule()) {
@@ -115,12 +112,10 @@ public abstract class AbstractNonDuplicateAppFeature extends BinaryTacletAppFeat
         return true;
     }
 
-    /**
-     * Search for a duplicate of the application <code>app</code> by walking upwards in the proof
-     * tree. Here, we assume that <code>pos</code> is non-null, and as an optimisation we stop as
-     * soon as we have reached a point where the formula containing the focus no longer occurs in
-     * the sequent
-     */
+    /// Search for a duplicate of the application <code>app</code> by walking upwards in the proof
+    /// tree. Here, we assume that <code>pos</code> is non-null, and as an optimisation we stop as
+    /// soon as we have reached a point where the formula containing the focus no longer occurs in
+    /// the sequent
     protected boolean noDuplicateFindTaclet(TacletApp app,
             PosInOccurrence pos, Goal goal) {
         final Node node = goal.getNode();

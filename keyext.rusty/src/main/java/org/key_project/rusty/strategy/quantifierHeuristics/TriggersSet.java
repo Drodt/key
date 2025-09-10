@@ -70,9 +70,7 @@ public class TriggersSet {
         return DefaultImmutableSet.nil();
     }
 
-    /**
-     * initial all <code>Trigger</code>s by finding triggers in every clauses
-     */
+    /// initial all <code>Trigger</code>s by finding triggers in every clauses
     private void initTriggers(Services services) {
         final QuantifiableVariable var = allTerm.varsBoundHere(0).get(0);
         final var it =
@@ -234,9 +232,7 @@ public class TriggersSet {
             return set;
         }
 
-        /**
-         * Check whether a given term (or a subterm of the term) might be a trigger candidate
-         */
+        /// Check whether a given term (or a subterm of the term) might be a trigger candidate
         private boolean mightContainTriggers(Term term) {
             if (term.freeVars().isEmpty()) {
                 return false;
@@ -249,10 +245,8 @@ public class TriggersSet {
             return UniTrigger.passedLoopTest(term, allTerm);
         }
 
-        /**
-         * Further criteria for triggers. This is just a HACK, there should be a more general
-         * framework for characterising acceptable triggers
-         */
+        /// Further criteria for triggers. This is just a HACK, there should be a more general
+        /// framework for characterising acceptable triggers
         private boolean isAcceptableTrigger(Term term, Services services) {
             final Operator op = term.op();
 
@@ -273,9 +267,7 @@ public class TriggersSet {
              */
         }
 
-        /**
-         * add a uni-trigger to triggers set or add an element of multi-triggers for this clause
-         */
+        /// add a uni-trigger to triggers set or add an element of multi-triggers for this clause
         private void addUniTrigger(Term term, Services services) {
             if (!isAcceptableTrigger(term, services)) {
                 return;
@@ -293,14 +285,13 @@ public class TriggersSet {
         }
 
 
-        /**
-         * find all possible combination of <code>ts</code>. Once a combination of elements contains
-         * all variables of this clause, it will be used to construct the multi-trigger which will
-         * be add to triggers set
-         *
-         * @param ts elements of multi-triggers at the beginning
-         * @return a set of triggers
-         */
+        /// find all possible combination of <code>ts</code>. Once a combination of elements
+        /// contains
+        /// all variables of this clause, it will be used to construct the multi-trigger which will
+        /// be add to triggers set
+        ///
+        /// @param ts elements of multi-triggers at the beginning
+        /// @return a set of triggers
         private Set<ImmutableSet<Trigger>> setMultiTriggers(Iterator<Trigger> ts) {
             Set<ImmutableSet<Trigger>> res = new LinkedHashSet<>();
             if (ts.hasNext()) {
@@ -322,13 +313,12 @@ public class TriggersSet {
             return res;
         }
 
-        /**
-         * try to construct a multi-trigger by given <code>ts</code>
-         *
-         * @param trs a set of trigger
-         * @return true if <code>trs</code> contains all universal varaibles of this clause, and add
-         *         the contstructed multi-trigger to triggers set
-         */
+        /// try to construct a multi-trigger by given <code>ts</code>
+        ///
+        /// @param trs a set of trigger
+        /// @return true if <code>trs</code> contains all universal varaibles of this clause, and
+        /// add
+        /// the contstructed multi-trigger to triggers set
         private boolean addMultiTrigger(ImmutableSet<Trigger> trs) {
             ImmutableSet<QuantifiableVariable> mulqvs =
                 DefaultImmutableSet.nil();

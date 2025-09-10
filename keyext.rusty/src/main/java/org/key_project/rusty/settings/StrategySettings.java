@@ -129,16 +129,12 @@ public class StrategySettings extends AbstractSettings {
         strategyProperties.write(props);
     }
 
-    /**
-     * returns a shallow copy of the strategy properties
-     */
+    /// returns a shallow copy of the strategy properties
     public StrategyProperties getActiveStrategyProperties() {
         return (StrategyProperties) strategyProperties.clone();
     }
 
-    /**
-     * sets the strategy properties if different from current ones
-     */
+    /// sets the strategy properties if different from current ones
     public void setActiveStrategyProperties(StrategyProperties p) {
         var old = this.strategyProperties;
         this.strategyProperties = (StrategyProperties) p.clone();

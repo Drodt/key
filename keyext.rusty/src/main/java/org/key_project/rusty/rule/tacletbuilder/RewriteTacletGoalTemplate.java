@@ -72,7 +72,7 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
     }
 
 
-    /** toString */
+    /// toString
     @Override
     public String toString() {
         String result = super.toString();

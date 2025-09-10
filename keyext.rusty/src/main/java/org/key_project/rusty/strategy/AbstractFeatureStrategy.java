@@ -41,9 +41,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
         this.proof = proof;
     }
 
-    /**
-     * @return Returns the proof.
-     */
+    /// @return Returns the proof.
     protected Proof getProof() {
         return proof;
     }

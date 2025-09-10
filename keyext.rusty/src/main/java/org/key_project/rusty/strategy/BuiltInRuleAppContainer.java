@@ -28,8 +28,6 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
 
     private final IBuiltInRuleApp bir;
 
-
-
     // -------------------------------------------------------------------------
     // constructors
     // -------------------------------------------------------------------------
@@ -43,8 +41,6 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         this.bir = bir;
         assert !(pio != null && positionTag == null) : "Formula " + pio + " does not exist";
     }
-
-
 
     // -------------------------------------------------------------------------
     // internal methods
@@ -67,7 +63,6 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         }
     }
 
-
     /// Copied from FindTaclet.
     private PosInOccurrence getPosInOccurrence(Goal p_goal) {
         final PosInOccurrence topPos =
@@ -77,8 +72,6 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
 
         return applicationPosition.replaceSequentFormula(topPos.sequentFormula());
     }
-
-
 
     // -------------------------------------------------------------------------
     // public interface
@@ -96,7 +89,6 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         return new BuiltInRuleAppContainer(bir, pio, cost, goal);
     }
 
-
     @Override
     public ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
         var goal = (Goal) p_goal;
@@ -112,7 +104,6 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         }
         return ImmutableSLList.<RuleAppContainer>nil().prepend(container);
     }
-
 
     @Override
     public RuleApp completeRuleApp(ProofGoal<?> p_goal) {

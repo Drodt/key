@@ -39,7 +39,7 @@ public class ApplyStrategy extends DefaultProver<@NonNull Proof, Goal> {
     /// [StrategySettings] of the proof provides no customized one.
     private final GoalChooser<Proof, Goal> defaultGoalChooser;
 
-    /** interrupted by the user? */
+    /// interrupted by the user?
     private boolean autoModeActive = false;
 
     // Please create this object beforehand and re-use it.
@@ -199,7 +199,7 @@ public class ApplyStrategy extends DefaultProver<@NonNull Proof, Goal> {
 
     private class ProofListener implements RuleAppListener {
 
-        /** invoked when a rule has been applied */
+        /// invoked when a rule has been applied
         @Override
         public void ruleApplied(ProofEvent e) {
             if (!isAutoModeActive()) {

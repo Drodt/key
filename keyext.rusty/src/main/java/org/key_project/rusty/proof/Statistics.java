@@ -392,12 +392,10 @@ public class Statistics {
         }
     }
 
-    /**
-     * Checks if a rule is applied on the given {@link Node} which performs symbolic execution.
-     *
-     * @param node The {@link Node} to check.
-     * @return {@code true} symbolic execution is performed, {@code false} otherwise.
-     */
+    /// Checks if a rule is applied on the given [Node] which performs symbolic execution.
+    ///
+    /// @param node The [Node] to check.
+    /// @return `true` symbolic execution is performed, `false` otherwise.
     public static boolean isSymbolicExecutionRuleApplied(Node node) {
         if (node != null) {
             return isSymbolicExecutionRuleApplied(node.getAppliedRuleApp());
@@ -406,12 +404,10 @@ public class Statistics {
         }
     }
 
-    /**
-     * Checks if the given {@link RuleApp} performs symbolic execution.
-     *
-     * @param app The {@link RuleApp} to check.
-     * @return {@code true} symbolic execution is performed, {@code false} otherwise.
-     */
+    /// Checks if the given [RuleApp] performs symbolic execution.
+    ///
+    /// @param app The [RuleApp] to check.
+    /// @return `true` symbolic execution is performed, `false` otherwise.
     public static boolean isSymbolicExecutionRuleApplied(RuleApp app) {
         return app instanceof AbstractContractRuleApp
                 || app instanceof TacletApp

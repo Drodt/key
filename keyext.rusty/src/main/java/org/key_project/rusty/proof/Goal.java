@@ -22,6 +22,7 @@ import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.inst.SVInstantiations;
+import org.key_project.rusty.strategy.QueueRuleApplicationManager;
 import org.key_project.rusty.strategy.Strategy;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -43,21 +44,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     private @Nullable Strategy<@NonNull Goal> goalStrategy = null;
     /// This is the object which keeps book about all applicable rules.
     private @Nullable RuleApplicationManager<Goal> ruleAppManager;
-    /**
-     * this object manages the tags for all formulas of the sequent
-     */
+    /// this object manages the tags for all formulas of the sequent
     private FormulaTagManager tagManager;
 
     /// creates a new goal referencing the given node
-    public Goal(Node node, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
-            NamespaceSet localNamespace) {
-        this.node = node;
-        this.localNamespaces = localNamespace;
-        ruleAppIndex =
-            new RuleAppIndex(tacletIndex, builtInRuleAppIndex, this, node.proof().getServices());
-        this.tagManager = new FormulaTagManager(this);
-    }
-
     public Goal(Node n, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
             Services services) {
         this.node = n;
@@ -66,17 +56,19 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         localNamespaces =
             node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
         tagManager = new FormulaTagManager(this);
+        setRuleAppManager(new QueueRuleApplicationManager());
     }
 
     /// copy constructor
     private Goal(Node node, RuleAppIndex ruleAppIndex, ImmutableList<RuleApp> appliedRuleApps,
-            @Nullable FormulaTagManager tagManager,
+            @Nullable FormulaTagManager tagManager, RuleApplicationManager<Goal> ruleAppManager,
             NamespaceSet localNamespace) {
         this.node = node;
         this.ruleAppIndex = ruleAppIndex.copy(this);
         this.appliedRuleApps = appliedRuleApps;
         this.localNamespaces = localNamespace;
         this.tagManager = tagManager == null ? new FormulaTagManager(this) : tagManager;
+        setRuleAppManager(ruleAppManager);
     }
 
     public Node getNode() {
@@ -89,6 +81,20 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             tagManager = new FormulaTagManager(this);
         } else {
             this.node = node;
+        }
+    }
+
+    public void setRuleAppManager(@Nullable RuleApplicationManager<Goal> manager) {
+        if (ruleAppManager != null) {
+            // ruleAppIndex.setNewRuleListener(null);
+            ruleAppManager.setGoal(null);
+        }
+
+        ruleAppManager = manager;
+
+        if (ruleAppManager != null) {
+            // ruleAppIndex.setNewRuleListener(ruleAppManager);
+            ruleAppManager.setGoal(this);
         }
     }
 
@@ -159,7 +165,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
 
     @Override
     public RuleApplicationManager<@NonNull Goal> getRuleAppManager() {
-        return null;
+        return ruleAppManager;
     }
 
     /// creates n new nodes as children of the referenced node and new n goals that have references
@@ -216,15 +222,17 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     public Goal clone(Node node) {
         Goal clone;
         if (node.sequent() != this.node.sequent()) {
-            clone = new Goal(node, ruleAppIndex, appliedRuleApps, null, localNamespaces);
+            clone = new Goal(node, ruleAppIndex, appliedRuleApps, null, ruleAppManager.copy(),
+                localNamespaces);
         } else {
             clone = new Goal(node, ruleAppIndex, appliedRuleApps, getFormulaTagManager().copy(),
+                ruleAppManager.copy(),
                 localNamespaces);
         }
         return clone;
     }
 
-    public Proof proof() {
+    public @NonNull Proof proof() {
         return node.proof();
     }
 
