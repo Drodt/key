@@ -4,6 +4,7 @@
 package org.key_project.rusty.proof;
 
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.rusty.rule.NoPosTacletApp;
@@ -100,5 +101,27 @@ public class RuleAppIndex {
 
     public void scanBuiltInRules(Goal goal) {
         builtInRuleAppIndex().scanApplicableRules(goal);
+    }
+
+    /**
+     * Report all rule applications that are supposed to be applied automatically, and that are
+     * currently stored by the index
+     *
+     * @param l the NewRuleListener
+     * @param services the Services
+     */
+    public void reportAutomatedRuleApps(NewRuleListener l, Services services) {
+        throw new UnsupportedOperationException("TODO: report rule apps");
+    }
+
+    /**
+     * Ensures that all caches are fully up-to-date
+     */
+    public void fillCache() {
+        // if (!autoMode) {
+        // interactiveTacletAppIndex.fillCache();
+        // }
+        // automatedTacletAppIndex.fillCache();
+        throw new UnsupportedOperationException("TODO: fill cache");
     }
 }

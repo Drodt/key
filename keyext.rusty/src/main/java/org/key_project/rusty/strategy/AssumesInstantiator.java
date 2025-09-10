@@ -1,16 +1,9 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.uka.ilkd.key.strategy;
+package org.key_project.rusty.strategy;
 
 import java.util.Iterator;
-
-import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.MatchConditions;
-import de.uka.ilkd.key.rule.NoPosTacletApp;
-import de.uka.ilkd.key.rule.Taclet;
-import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.PosInTerm;
 import org.key_project.prover.caches.AssumesInstantiationCachePool.AssumesInstantiationCache;
@@ -22,13 +15,16 @@ import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.proof.Goal;
+import org.key_project.rusty.rule.MatchConditions;
+import org.key_project.rusty.rule.NoPosTacletApp;
+import org.key_project.rusty.rule.Taclet;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-/**
- * This class implements custom instantiation of if-formulas.
- */
+/// This class implements custom instantiation of if-formulas.
 public class AssumesInstantiator {
     private final Goal goal;
     private final AssumesInstantiationCache assumesInstCache;
@@ -44,7 +40,8 @@ public class AssumesInstantiator {
         this.goal = goal;
         this.tacletAppContainer = tacletAppContainer;
         this.assumesInstCache =
-            goal.proof().getServices().getCaches().getIfInstantiationCache().getCache(goal.node());
+            goal.proof().getServices().getCaches().getAssumesInstantiationCache()
+                    .getCache(goal.getNode());
     }
 
     private void addResult(NoPosTacletApp app) {
@@ -65,27 +62,27 @@ public class AssumesInstantiator {
     public void findAssumesFormulaInstantiations() {
         final Sequent p_seq = goal.sequent();
 
-        Debug.assertTrue(tacletAppContainer.getTacletApp().assumesFormulaInstantiations() == null,
-            "The if formulas have already been instantiated");
+        assert tacletAppContainer.getTacletApp().assumesFormulaInstantiations() == null
+                : "The if formulas have already been instantiated";
 
-        final Sequent ifSequent = getTaclet().assumesSequent();
-        if (ifSequent.isEmpty()) {
+        final Sequent assumesSequent = getTaclet().assumesSequent();
+        if (assumesSequent.isEmpty()) {
             addResult(tacletAppContainer.getTacletApp());
         } else {
             final Services services = getServices();
             allAntecFormulas = AssumesFormulaInstSeq.createList(p_seq, true, services);
             allSuccFormulas = AssumesFormulaInstSeq.createList(p_seq, false, services);
-            findIfFormulaInstantiationsHelp(ifSequent.succedent().asList().reverse(), //// Matching
-                                                                                      //// with the
-                                                                                      //// last
-                                                                                      //// formula
-                ifSequent.antecedent().asList().reverse(), ImmutableSLList.nil(),
+            findAssumesFormulaInstantiationsHelp(assumesSequent.succedent().asList().reverse(), //// Matching
+                //// with the
+                //// last
+                //// formula
+                assumesSequent.antecedent().asList().reverse(), ImmutableSLList.nil(),
                 tacletAppContainer.getTacletApp().matchConditions(), false);
         }
     }
 
     private Taclet getTaclet() {
-        return tacletAppContainer.getTacletApp().taclet();
+        return (Taclet) tacletAppContainer.getTacletApp().taclet();
     }
 
     /**
@@ -201,7 +198,7 @@ public class AssumesInstantiator {
      * @param p_alreadyMatchedNewFor at least one new formula has already been matched, i.e. a
      *        formula that has been modified recently
      */
-    private void findIfFormulaInstantiationsHelp(
+    private void findAssumesFormulaInstantiationsHelp(
             ImmutableList<SequentFormula> p_ifSeqTail,
             ImmutableList<SequentFormula> p_ifSeqTail2nd,
             ImmutableList<AssumesFormulaInstantiation> p_alreadyMatched,
@@ -236,7 +233,7 @@ public class AssumesInstantiator {
         for (final AssumesFormulaInstantiation ifInstantiation : mr.candidates()) {
             final boolean nextAlreadyMatchedNewFor = lastIfFormula || p_alreadyMatchedNewFor
                     || isNewFormula((AssumesFormulaInstSeq) ifInstantiation);
-            findIfFormulaInstantiationsHelp(p_ifSeqTail, p_ifSeqTail2nd,
+            findAssumesFormulaInstantiationsHelp(p_ifSeqTail, p_ifSeqTail2nd,
                 p_alreadyMatched.prepend(ifInstantiation), (MatchConditions) itMC.next(),
                 nextAlreadyMatchedNewFor);
         }

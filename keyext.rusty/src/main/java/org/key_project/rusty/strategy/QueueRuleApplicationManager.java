@@ -1,23 +1,17 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.uka.ilkd.key.strategy;
+package org.key_project.rusty.strategy;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicLong;
 
-import de.uka.ilkd.key.proof.Goal;
-
-import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.RuleApplicationManager;
-import org.key_project.prover.strategy.costbased.MutableState;
-import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
-import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.rusty.proof.Goal;
 import org.key_project.util.collection.ImmutableHeap;
 import org.key_project.util.collection.ImmutableLeftistHeap;
 import org.key_project.util.collection.ImmutableList;
@@ -27,24 +21,16 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
-/**
- * Implementation of {@link RuleApplicationManager} that stores possible {@link RuleApp}s
- * in a priority queue. The element with highest priority in the queue can be obtained via
- * {@link #next()}. This operation will remove the element from the queue. The priority of a given
- * {@link RuleApp} corresponds to its {@link RuleAppCost}. A {@link RuleApp} can be equipped with a
- * {@link RuleAppCost} by converting it into a {@link RuleAppContainer}. The cost of a
- * {@link RuleApp} is computed according to a given {@link Strategy} (see
- * {@link Feature#computeCost(RuleApp, PosInOccurrence, ProofGoal, MutableState)}).
- */
+/// Implementation of [RuleApplicationManager] that stores possible [RuleApp]s
+/// in a priority queue. The element with the highest priority in the queue can be obtained via
+/// [#next()]. This operation will remove the element from the queue. The priority of a given
+/// [RuleApp] corresponds to its [RuleAppCost]. A [RuleApp] can be equipped with a
+/// [RuleAppCost] by converting it into a [RuleAppContainer]. The cost of a
+/// [RuleApp] is computed according to a given [Strategy] (see
+/// [#computeCost(RuleApp,PosInOccurrence,ProofGoal,MutableState)]).
 @NullMarked
 public class QueueRuleApplicationManager implements RuleApplicationManager<Goal> {
-    public static final AtomicLong PERF_QUEUE_OPS = new AtomicLong();
-    public static final AtomicLong PERF_PEEK = new AtomicLong();
-    public static final AtomicLong PERF_CREATE_CONTAINER = new AtomicLong();
-
-    /**
-     * The goal this manager belongs to.
-     */
+    /// The goal this manager belongs to.
     private @Nullable Goal goal = null;
 
     /**
@@ -81,7 +67,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         queue = null;
         previousMinimum = null;
         if (goal != null) {
-            goal.proof().getServices().getCaches().getIfInstantiationCache().releaseAll();
+            goal.proof().getServices().getCaches().getAssumesInstantiationCache().releaseAll();
         }
         clearNextRuleApp();
     }
@@ -126,9 +112,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
             return;
         }
 
-        var time = System.nanoTime();
         RuleAppContainer c = RuleAppContainer.createAppContainer(rule, pos, goal);
-        PERF_CREATE_CONTAINER.addAndGet(System.nanoTime() - time);
 
         ensureQueueExists();
         addRuleApp(c);
@@ -147,10 +131,8 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
             return;
         }
 
-        var time = System.nanoTime();
         final ImmutableList<RuleAppContainer> containers =
             RuleAppContainer.createAppContainers(rules, pos, goal);
-        PERF_CREATE_CONTAINER.addAndGet(System.nanoTime() - time);
         ensureQueueExists();
         for (RuleAppContainer rac : containers) {
             addRuleApp(rac);
@@ -158,12 +140,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
     }
 
     private void addRuleApp(RuleAppContainer rac) {
-        var time = System.nanoTime();
-        try {
-            queue = push(rac, queue);
-        } finally {
-            PERF_QUEUE_OPS.addAndGet(System.nanoTime() - time);
-        }
+        queue = push(rac, queue);
     }
 
     /**
@@ -206,12 +183,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
             }
             actualApps.add(app);
         }
-        var time = System.nanoTime();
-        try {
-            return ImmutableLeftistHeap.<RuleAppContainer>nilHeap().insert(actualApps.iterator());
-        } finally {
-            PERF_QUEUE_OPS.addAndGet(System.nanoTime() - time);
-        }
+        return ImmutableLeftistHeap.<RuleAppContainer>nilHeap().insert(actualApps.iterator());
     }
 
     /**
@@ -222,35 +194,30 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
      */
     @Override
     public RuleApp peekNext() {
-        var otime = System.nanoTime();
-        try {
-            ensureQueueExists();
+        ensureQueueExists();
 
-            final long currentTime = goal.getTime();
-            if (currentTime != nextRuleTime) {
-                clearNextRuleApp();
-                nextRuleTime = currentTime;
-            }
-
-            if (nextRuleApp != null) {
-                return nextRuleApp;
-            }
-
-            goal.ruleAppIndex().fillCache();
-
-            /*
-             * Create further appcontainers from previous minimum, which was removed from queue in a
-             * previous round.
-             */
-            ImmutableHeap<@NonNull RuleAppContainer> furtherAppsQueue =
-                createFurtherApps(previousMinimum, goal);
-            previousMinimum = null;
-
-            computeNextRuleApp(furtherAppsQueue);
-            return nextRuleApp;
-        } finally {
-            PERF_PEEK.addAndGet(System.nanoTime() - otime);
+        final long currentTime = goal.getTime();
+        if (currentTime != nextRuleTime) {
+            clearNextRuleApp();
+            nextRuleTime = currentTime;
         }
+
+        if (nextRuleApp != null) {
+            return nextRuleApp;
+        }
+
+        goal.ruleAppIndex().fillCache();
+
+        /*
+         * Create further appcontainers from previous minimum, which was removed from queue in a
+         * previous round.
+         */
+        ImmutableHeap<@NonNull RuleAppContainer> furtherAppsQueue =
+            createFurtherApps(previousMinimum, goal);
+        previousMinimum = null;
+
+        computeNextRuleApp(furtherAppsQueue);
+        return nextRuleApp;
     }
 
     /**
@@ -295,41 +262,26 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
             if (queue.isEmpty()) {
                 // Use furtherAppsQueue in case queue is empty.
                 furtherAppsQueueUsed = true;
-                var time = System.nanoTime();
-                try {
-                    minRuleAppContainer = furtherAppsQueue.findMin();
-                    furtherAppsQueue = furtherAppsQueue.deleteMin();
-                } finally {
-                    PERF_QUEUE_OPS.addAndGet(System.nanoTime() - time);
-                }
+                minRuleAppContainer = furtherAppsQueue.findMin();
+                furtherAppsQueue = furtherAppsQueue.deleteMin();
             } else if (furtherAppsQueue.isEmpty()) {
                 // Use queue in case furtherAppsQueueUsed is empty.
                 furtherAppsQueueUsed = false;
-                var time = System.nanoTime();
-                try {
-                    minRuleAppContainer = queue.findMin();
-                    queue = queue.deleteMin();
-                } finally {
-                    PERF_QUEUE_OPS.addAndGet(System.nanoTime() - time);
-                }
+                minRuleAppContainer = queue.findMin();
+                queue = queue.deleteMin();
             } else {
                 // Neither queue is empty. Find a minimum that ranges over both
                 // queues.
-                var time = System.nanoTime();
-                try {
-                    RuleAppContainer queueMin = queue.findMin();
-                    RuleAppContainer furtherAppsQueueMin = furtherAppsQueue.findMin();
-                    assert (queueMin != null && furtherAppsQueueMin != null);
-                    furtherAppsQueueUsed = queueMin.compareTo(furtherAppsQueueMin) > 0;
-                    if (furtherAppsQueueUsed) {
-                        furtherAppsQueue = furtherAppsQueue.deleteMin();
-                        minRuleAppContainer = furtherAppsQueueMin;
-                    } else {
-                        queue = queue.deleteMin();
-                        minRuleAppContainer = queueMin;
-                    }
-                } finally {
-                    PERF_QUEUE_OPS.addAndGet(System.nanoTime() - time);
+                RuleAppContainer queueMin = queue.findMin();
+                RuleAppContainer furtherAppsQueueMin = furtherAppsQueue.findMin();
+                assert (queueMin != null && furtherAppsQueueMin != null);
+                furtherAppsQueueUsed = queueMin.compareTo(furtherAppsQueueMin) > 0;
+                if (furtherAppsQueueUsed) {
+                    furtherAppsQueue = furtherAppsQueue.deleteMin();
+                    minRuleAppContainer = furtherAppsQueueMin;
+                } else {
+                    queue = queue.deleteMin();
+                    minRuleAppContainer = queueMin;
                 }
             }
 
@@ -354,14 +306,9 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
                      * Create further apps if found in main queue. Rule apps obtained this way will
                      * be considered during the current round.
                      */
-                    var time = System.nanoTime();
-                    try {
-                        furtherAppsQueue =
-                            push(minRuleAppContainer.createFurtherApps(goal).iterator(),
-                                furtherAppsQueue);
-                    } finally {
-                        PERF_QUEUE_OPS.addAndGet(System.nanoTime() - time);
-                    }
+                    furtherAppsQueue =
+                        push(minRuleAppContainer.createFurtherApps(goal).iterator(),
+                            furtherAppsQueue);
                 }
             } else {
                 /*
@@ -374,13 +321,8 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         /*
          * Put remaining elements into main queue, so they can be considered in the upcoming rounds.
          */
-        var time = System.nanoTime();
-        try {
-            queue = queue.insert(workingList.iterator());
-            queue = queue.insert(furtherAppsQueue);
-        } finally {
-            PERF_QUEUE_OPS.addAndGet(System.nanoTime() - time);
-        }
+        queue = queue.insert(workingList.iterator());
+        queue = queue.insert(furtherAppsQueue);
     }
 
     @Override
@@ -396,5 +338,4 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         res.previousMinimum = previousMinimum;
         return res;
     }
-
 }

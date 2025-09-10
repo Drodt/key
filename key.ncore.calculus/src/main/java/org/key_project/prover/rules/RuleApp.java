@@ -5,7 +5,9 @@ package org.key_project.prover.rules;
 
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -47,4 +49,7 @@ public interface RuleApp {
     /// @return the [PosInOccurrence] with the position information
     @Nullable
     PosInOccurrence posInOccurrence();
+
+    <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
+            ProofGoal<G> goal, boolean initial);
 }

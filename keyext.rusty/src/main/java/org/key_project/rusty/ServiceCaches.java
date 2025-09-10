@@ -8,8 +8,10 @@ import java.util.Map;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
+import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
+import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
 import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
 import org.key_project.rusty.strategy.feature.AbstractBetaFeature.TermInfo;
@@ -77,6 +79,8 @@ public class ServiceCaches implements SessionCaches {
         new LRUCache<>(2000);
     private LRUCache<@NonNull Term, @NonNull ImmutableSet<@NonNull Metavariable>> mvCache =
         new LRUCache<>(2000);
+    private final AssumesInstantiationCachePool<Node> assumesInstantiationCache =
+        new AssumesInstantiationCachePool<>();
 
     // private final LRUCache<Term, Polynomial> polynomialCache = new LRUCache<>(2000);
 
@@ -135,5 +139,9 @@ public class ServiceCaches implements SessionCaches {
 
     public LRUCache<@NonNull Term, @NonNull ImmutableSet<@NonNull Metavariable>> getMVCache() {
         return mvCache;
+    }
+
+    public AssumesInstantiationCachePool<Node> getAssumesInstantiationCache() {
+        return assumesInstantiationCache;
     }
 }

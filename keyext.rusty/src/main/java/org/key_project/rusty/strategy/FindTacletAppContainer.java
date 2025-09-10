@@ -1,13 +1,9 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.uka.ilkd.key.strategy;
+package org.key_project.rusty.strategy;
 
-import de.uka.ilkd.key.logic.JTerm;
-import de.uka.ilkd.key.logic.op.UpdateApplication;
-import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.NoPosTacletApp;
-
+import org.key_project.logic.Term;
 import org.key_project.logic.op.Modality;
 import org.key_project.logic.op.Operator;
 import org.key_project.prover.indexing.FormulaTag;
@@ -16,11 +12,12 @@ import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
+import org.key_project.rusty.logic.op.UpdateApplication;
+import org.key_project.rusty.proof.Goal;
+import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
-
-import static de.uka.ilkd.key.logic.equality.IrrelevantTermLabelsProperty.IRRELEVANT_TERM_LABELS_PROPERTY;
 
 /**
  * Instances of this class are immutable
@@ -122,7 +119,7 @@ public class FindTacletAppContainer extends TacletAppContainer {
             }
 
             if (changeIndex == -1) {
-                final JTerm beforeChangeTerm = (JTerm) changePIO.getSubTerm();
+                final Term beforeChangeTerm = changePIO.getSubTerm();
                 final Operator beforeChangeOp = beforeChangeTerm.op();
 
                 // special case: a taclet application is not affected by changes
@@ -133,12 +130,11 @@ public class FindTacletAppContainer extends TacletAppContainer {
                 if (beforeChangeOp instanceof Modality beforeChangeMod) {
                     final PosInOccurrence afterChangePos =
                         changePos.replaceSequentFormula(newFormula);
-                    final JTerm afterChangeTerm = (JTerm) afterChangePos.subTerm();
+                    final Term afterChangeTerm = afterChangePos.subTerm();
                     if (afterChangeTerm.op() instanceof Modality afterChangeMod) {
                         return beforeChangeMod.kind() == afterChangeMod.kind()
                                 && beforeChangeTerm.sub(0)
-                                        .equalsModProperty(afterChangeTerm.sub(0),
-                                            IRRELEVANT_TERM_LABELS_PROPERTY);
+                                        .equals(afterChangeTerm.sub(0));
                     } else {
                         return false;
                     }

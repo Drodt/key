@@ -11,6 +11,9 @@ import de.uka.ilkd.key.java.ProgramElement;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.RenameTable;
+import de.uka.ilkd.key.proof.Goal;
+import de.uka.ilkd.key.strategy.FindTacletAppContainer;
+import de.uka.ilkd.key.strategy.NoFindTacletAppContainer;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.LogicServices;
@@ -18,10 +21,12 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -297,5 +302,18 @@ public class NoPosTacletApp extends TacletApp {
     private boolean updateContextCompatible(MatchConditions p_mc) {
         return instantiations().getUpdateContext()
                 .equals(p_mc.getInstantiations().getUpdateContext());
+    }
+
+    @Override
+    public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(
+            @Nullable PosInOccurrence pos, ProofGoal<G> p_goal, boolean initial) {
+        var goal = (Goal) p_goal;
+        var cost = goal.getGoalStrategy().computeCost(this, pos, goal);
+        final long localAge = initial ? -1 : p_goal.getTime();
+        if (pos == null) {
+            return new NoFindTacletAppContainer(this, cost, localAge);
+        } else {
+            return new FindTacletAppContainer(this, pos, cost, goal, localAge);
+        }
     }
 }

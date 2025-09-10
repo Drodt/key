@@ -1,11 +1,7 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.uka.ilkd.key.strategy;
-
-import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.BuiltInRule;
-import de.uka.ilkd.key.rule.IBuiltInRuleApp;
+package org.key_project.rusty.strategy;
 
 import org.key_project.prover.indexing.FormulaTag;
 import org.key_project.prover.proof.ProofGoal;
@@ -14,20 +10,19 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
+import org.key_project.rusty.proof.Goal;
+import org.key_project.rusty.rule.BuiltInRule;
+import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-
-/**
- * Instances of this class are immutable
- */
+/// Instances of this class are immutable
 public class BuiltInRuleAppContainer extends RuleAppContainer {
-    /**
-     * The position of the rule app in two different representations: <code>positionTag</code>
-     * denotes the concerned formula and survives modifications of the sequent and of parts of the
-     * formula, and <code>applicationPosition</code> is the original position for which the rule app
-     * was created
-     */
+    /// The position of the rule app in two different representations: <code>positionTag</code>
+    /// denotes the concerned formula and survives modifications of the sequent and of parts of the
+    /// formula, and <code>applicationPosition</code> is the original position for which the rule
+    /// app
+    /// was created
     private final FormulaTag positionTag;
     private final PosInOccurrence applicationPosition;
 
@@ -55,10 +50,8 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // internal methods
     // -------------------------------------------------------------------------
 
-    /**
-     * @return true iff the stored rule app is applicable for the given sequent, i.e. if the bound
-     *         position does still exist (if-formulas are not considered)
-     */
+    /// @return true iff the stored rule app is applicable for the given sequent, i.e. if the bound
+    /// position does still exist (if-formulas are not considered)
     private boolean isStillApplicable(Goal goal) {
         if (applicationPosition == null) {
             return bir.rule().isApplicable(goal, null);
@@ -75,9 +68,7 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     }
 
 
-    /**
-     * Copied from FindTaclet.
-     */
+    /// Copied from FindTaclet.
     private PosInOccurrence getPosInOccurrence(Goal p_goal) {
         final PosInOccurrence topPos =
             p_goal.getFormulaTagManager().getPosForTag(positionTag);
@@ -93,12 +84,11 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // public interface
     // -------------------------------------------------------------------------
 
-    /**
-     * Create container for RuleApp.
-     *
-     * @return container for the currently applicable BuiltInRuleApp, the cost may be an instance of
-     *         <code>TopRuleAppCost</code>.
-     */
+    /// Create container for RuleApp.
+    ///
+    /// @return container for the currently applicable BuiltInRuleApp, the cost may be an instance
+    /// of
+    /// <code>TopRuleAppCost</code>.
     static RuleAppContainer createAppContainer(IBuiltInRuleApp bir,
             PosInOccurrence pio,
             Goal goal) {

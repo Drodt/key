@@ -6,6 +6,7 @@ package org.key_project.rusty.proof;
 import java.util.Collection;
 
 import org.key_project.logic.op.Function;
+import org.key_project.prover.indexing.FormulaTagManager;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleAbortException;
 import org.key_project.prover.rules.RuleApp;
@@ -42,6 +43,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     private @Nullable Strategy<@NonNull Goal> goalStrategy = null;
     /// This is the object which keeps book about all applicable rules.
     private @Nullable RuleApplicationManager<Goal> ruleAppManager;
+    /**
+     * this object manages the tags for all formulas of the sequent
+     */
+    private FormulaTagManager tagManager;
 
     /// creates a new goal referencing the given node
     public Goal(Node node, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
@@ -50,6 +55,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         this.localNamespaces = localNamespace;
         ruleAppIndex =
             new RuleAppIndex(tacletIndex, builtInRuleAppIndex, this, node.proof().getServices());
+        this.tagManager = new FormulaTagManager(this);
     }
 
     public Goal(Node n, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
@@ -59,15 +65,18 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         appliedRuleApps = ImmutableSLList.nil();
         localNamespaces =
             node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
+        tagManager = new FormulaTagManager(this);
     }
 
     /// copy constructor
     private Goal(Node node, RuleAppIndex ruleAppIndex, ImmutableList<RuleApp> appliedRuleApps,
+            @Nullable FormulaTagManager tagManager,
             NamespaceSet localNamespace) {
         this.node = node;
         this.ruleAppIndex = ruleAppIndex.copy(this);
         this.appliedRuleApps = appliedRuleApps;
         this.localNamespaces = localNamespace;
+        this.tagManager = tagManager == null ? new FormulaTagManager(this) : tagManager;
     }
 
     public Node getNode() {
@@ -75,7 +84,12 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     }
 
     public void setNode(Node node) {
-        this.node = node;
+        if (this.node.sequent() != node.sequent()) {
+            this.node = node;
+            tagManager = new FormulaTagManager(this);
+        } else {
+            this.node = node;
+        }
     }
 
     /// returns the namespaces for this goal.
@@ -201,7 +215,12 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /// @return Object the clone
     public Goal clone(Node node) {
         Goal clone;
-        clone = new Goal(node, ruleAppIndex, appliedRuleApps, localNamespaces);
+        if (node.sequent() != this.node.sequent()) {
+            clone = new Goal(node, ruleAppIndex, appliedRuleApps, null, localNamespaces);
+        } else {
+            clone = new Goal(node, ruleAppIndex, appliedRuleApps, getFormulaTagManager().copy(),
+                localNamespaces);
+        }
         return clone;
     }
 
@@ -342,5 +361,13 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     public void setGoalStrategy(Strategy<@NonNull Goal> p_goalStrategy) {
         goalStrategy = p_goalStrategy;
         ruleAppManager.clearCache();
+    }
+
+    public Strategy<@NonNull Goal> getGoalStrategy() {
+        return goalStrategy;
+    }
+
+    public FormulaTagManager getFormulaTagManager() {
+        return tagManager;
     }
 }

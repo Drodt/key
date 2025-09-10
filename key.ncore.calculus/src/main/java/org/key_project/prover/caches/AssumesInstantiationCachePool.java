@@ -1,7 +1,7 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.uka.ilkd.key.strategy;
+package org.key_project.prover.caches;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -9,24 +9,23 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
-import de.uka.ilkd.key.proof.Node;
-
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
 import org.key_project.util.LRUCache;
 import org.key_project.util.collection.ImmutableArray;
 
-/**
- * Direct-mapped cache of lists of formulas (potential instantiations of if-formulas of taclets)
- * that were modified after a certain point of time
- * <p>
- * Hashmaps of the particular lists of formulas; the keys of the maps is the point of time that
- * separates old from new (modified) formulas
- * <p>
- * Keys: Long Values: IList<IfFormulaInstantiation>
- */
-public class IfInstantiationCachePool {
+import org.jspecify.annotations.NonNull;
 
-    public final LRUCache<Node, AssumesInstantiationCache> cacheMgr = new LRUCache<>(10);
+/// Direct-mapped cache of lists of formulas (potential instantiations of if-formulas of taclets)
+/// that were modified after a certain point of time
+///
+/// Hashmaps of the particular lists of formulas; the keys of the maps is the point of time that
+/// separates old from new (modified) formulas
+///
+/// Keys: Long Values: IList<IfFormulaInstantiation>
+/// @param <Node> Type of the proof tree nodes.
+public class AssumesInstantiationCachePool<Node> {
+    public final LRUCache<@NonNull Node, @NonNull AssumesInstantiationCache> cacheMgr =
+        new LRUCache<>(10);
 
     public AssumesInstantiationCache getCache(Node n) {
         AssumesInstantiationCache cache;

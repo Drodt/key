@@ -31,11 +31,13 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.instantiation.*;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.sequent.*;
+import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
@@ -1224,4 +1226,9 @@ public abstract class TacletApp implements RuleApp {
         return result;
     }
 
+    @Override
+    public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
+            ProofGoal<G> goal, boolean initial) {
+        throw new UnsupportedOperationException("Not supported for taclet app " + getClass());
+    }
 }
