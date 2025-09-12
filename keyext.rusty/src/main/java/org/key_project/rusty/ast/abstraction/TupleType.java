@@ -28,6 +28,7 @@ public class TupleType implements Type {
     public static final TupleType UNIT = new TupleType();
     private static @Nullable Map<List<Type>, TupleType> TYPES = null;
 
+    private final Name name;
     private final List<Type> types;
     private @MonotonicNonNull Sort sort = null;
     private final ImmutableArray<Field> fields;
@@ -35,6 +36,7 @@ public class TupleType implements Type {
     private TupleType() {
         types = new ArrayList<>();
         fields = new ImmutableArray<>();
+        name = new Name("()");
     }
 
     private TupleType(List<Type> types, Services services) {
@@ -42,14 +44,20 @@ public class TupleType implements Type {
 
         var tupleLDT = services.getLDTs().getTupleLDT();
         var fields = new Field[types.size()];
+        var name = new StringBuilder().append('(');
         for (int i = 0; i < types.size(); i++) {
             var fn = tupleLDT.getFieldFunctions(i);
             Type type = types.get(i);
+            name.append(type.name());
+            if (i != types.size() - 1) {
+                name.append(", ");
+            }
             ImmutableList<GenericArgument> args =
                 ImmutableList.of(new SortArg(type.getSort(services)));
             fields[i] = new Field(new Name("" + i), type, ParametricFunctionInstance.get(fn, args));
         }
         this.fields = new ImmutableArray<>(fields);
+        this.name = new Name(name.append(')').toString());
     }
 
     public static TupleType getInstance(List<Type> types, Services services) {
@@ -92,7 +100,7 @@ public class TupleType implements Type {
 
     @Override
     public @NonNull Name name() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return name;
     }
 
     @Override

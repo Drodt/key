@@ -36,9 +36,13 @@ public class TupleRustType implements RustType {
         return type;
     }
 
+    public ImmutableArray<RustType> getTypes() {
+        return types;
+    }
+
     @Override
     public void visit(Visitor v) {
-
+        v.performActionOnTupleRustType(this);
     }
 
     @Override
@@ -49,5 +53,10 @@ public class TupleRustType implements RustType {
     @Override
     public int getChildCount() {
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return type.toString();
     }
 }

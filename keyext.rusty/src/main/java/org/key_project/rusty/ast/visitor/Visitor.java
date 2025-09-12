@@ -145,4 +145,6 @@ public interface Visitor {
     void performActionOnInferHirTy(InferHirTy x);
 
     void performActionOnFieldIdentifier(FieldIdentifier x);
+
+    void performActionOnTupleRustType(TupleRustType x);
 }

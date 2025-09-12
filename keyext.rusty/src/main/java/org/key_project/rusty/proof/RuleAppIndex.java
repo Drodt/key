@@ -5,6 +5,7 @@ package org.key_project.rusty.proof;
 
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
@@ -12,6 +13,8 @@ import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
+
+import org.jspecify.annotations.Nullable;
 
 public class RuleAppIndex {
     private final Goal goal;
@@ -53,6 +56,8 @@ public class RuleAppIndex {
         this.builtInRuleAppIndex = builtInRuleAppIndex;
         interactiveTacletAppIndex = new TacletAppIndex(tacletIndex, goal, services);
         automatedTacletAppIndex = new TacletAppIndex(tacletIndex, goal, services);
+
+        setNewRuleListeners();
     }
 
     private RuleAppIndex(TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
@@ -63,6 +68,8 @@ public class RuleAppIndex {
         this.interactiveTacletAppIndex = interactiveTacletAppIndex;
         this.automatedTacletAppIndex = automatedTacletAppIndex;
         this.builtInRuleAppIndex = builtInRuleAppIndex;
+
+        setNewRuleListeners();
     }
 
     /// returns the set of rule applications for the given heuristics at the given position of the
@@ -96,6 +103,19 @@ public class RuleAppIndex {
         tacletIndex.add(tacletApp);
 
         interactiveTacletAppIndex.addedNoPosTacletApp(tacletApp);
+    }
+
+    /**
+     * called if a formula has been replaced
+     *
+     * @param sci SequentChangeInfo describing the change of the sequent
+     */
+    public void sequentChanged(SequentChangeInfo sci) {
+        if (!autoMode) {
+            interactiveTacletAppIndex.sequentChanged(sci);
+        }
+        automatedTacletAppIndex.sequentChanged(sci);
+        builtInRuleAppIndex.sequentChanged(goal, sci, newRuleListener);
     }
 
     public TacletIndex tacletIndex() {
@@ -177,5 +197,20 @@ public class RuleAppIndex {
         if (ruleListener != null) {
             ruleListener.rulesAdded(p_apps, p_pos);
         }
+    }
+
+    /**
+     * adds a change listener to the index
+     *
+     * @param l the AppIndexListener to add
+     */
+    public void setNewRuleListener(@Nullable NewRuleListener l) {
+        ruleListener = l;
+    }
+
+    private void setNewRuleListeners() {
+        interactiveTacletAppIndex.setNewRuleListener(newRuleListener);
+        automatedTacletAppIndex.setNewRuleListener(newRuleListener);
+        builtInRuleAppIndex.setNewRuleListener(newRuleListener);
     }
 }

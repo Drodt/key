@@ -5,6 +5,7 @@ package org.key_project.rusty.proof;
 
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.*;
@@ -25,7 +26,10 @@ public class TacletAppIndex {
     /// The sequent with the formulas for which taclet indices are hold by this object. Invariant:
     /// <code>seq != null</code> implies that the indices <code>antecIndex</code>,
     /// <code>succIndex</code> are up-to-date for the sequent <code>seq</code>
-    private org.key_project.prover.sequent.Sequent seq;
+    private Sequent seq;
+
+    /// Object to which the appearance of new taclet apps is reported
+    private NewRuleListener newRuleListener = NullNewRuleListener.INSTANCE;
 
     public TacletAppIndex(TacletIndex tacletIndex, Goal goal, Services services) {
         this(tacletIndex, null, null, goal, null);
@@ -33,7 +37,7 @@ public class TacletAppIndex {
 
     private TacletAppIndex(TacletIndex tacletIndex, SemisequentTacletAppIndex antecIndex,
             SemisequentTacletAppIndex succIndex, @NonNull Goal goal,
-            org.key_project.prover.sequent.Sequent seq) {
+            Sequent seq) {
         this.tacletIndex = tacletIndex;
         this.antecIndex = antecIndex;
         this.succIndex = succIndex;
@@ -93,9 +97,11 @@ public class TacletAppIndex {
         this.seq = getNode().sequent();
 
         antecIndex =
-            new SemisequentTacletAppIndex(getSequent(), true, getServices(), tacletIndex());
+            new SemisequentTacletAppIndex(getSequent(), true, getServices(), tacletIndex(),
+                newRuleListener);
         succIndex =
-            new SemisequentTacletAppIndex(getSequent(), false, getServices(), tacletIndex());
+            new SemisequentTacletAppIndex(getSequent(), false, getServices(), tacletIndex(),
+                newRuleListener);
     }
 
     private Services getServices() {
@@ -129,6 +135,10 @@ public class TacletAppIndex {
     private SemisequentTacletAppIndex getIndex(PosInOccurrence pos) {
         ensureIndicesExist();
         return pos.isInAntec() ? antecIndex : succIndex;
+    }
+
+    public void setNewRuleListener(NewRuleListener newRuleListener) {
+        this.newRuleListener = newRuleListener;
     }
 
     private static ImmutableList<TacletApp> prepend(ImmutableList<TacletApp> l1,
@@ -165,11 +175,29 @@ public class TacletAppIndex {
         return new TacletAppIndex(p_tacletIndex, antecIndex, succIndex, goal, getSequent());
     }
 
-    private void updateIndices(final NoPosTacletApp newTaclet) {
+    /**
+     * called if a formula has been replaced
+     *
+     * @param sci SequentChangeInfo describing the change of the sequent
+     */
+    public void sequentChanged(
+            SequentChangeInfo sci) {
+        if (sci.getOriginalSequent() != getSequent()) {
+            // we are not up-to-date and have to rebuild everything (lazy)
+            clearIndexes();
+        } else {
+            updateIndices(sci);
+        }
+    }
+
+    private void updateIndices(SequentChangeInfo sci) {
+        seq = sci.sequent();
+
         antecIndex =
-            antecIndex.addTaclet(newTaclet, getServices(), tacletIndex);
+            antecIndex.sequentChanged(sci, getServices(), tacletIndex, newRuleListener);
+
         succIndex =
-            succIndex.addTaclet(newTaclet, getServices(), tacletIndex);
+            succIndex.sequentChanged(sci, getServices(), tacletIndex, newRuleListener);
     }
 
     /// updates the internal caches after a new Taclet with instantiation information has been added
@@ -177,11 +205,37 @@ public class TacletAppIndex {
     ///
     /// @param tacletApp the partially instantiated Taclet to add
     public void addedNoPosTacletApp(NoPosTacletApp tacletApp) {
+        // if (indexCaches.isRelevantTaclet(tacletApp.taclet())) {
+        // // we must flush the index cache, and we must no longer use a cache
+        // // that we share with other instances of <code>TacletAppIndex</code>
+        // // (that maybe live of different goals)
+        // createNewIndexCache();
+        // }
+
+        if (isOutdated()) {
+            // we are not up-to-date and have to rebuild everything (lazy)
+            clearIndexes();
+            return;
+        }
         if (tacletApp.taclet() instanceof NoFindTaclet) {
+            newRuleListener.ruleAdded(tacletApp, null);
             return;
         }
 
         updateIndices(tacletApp);
+    }
+
+    private void updateIndices(final NoPosTacletApp newTaclet) {
+        antecIndex =
+            antecIndex.addSingleTaclet(newTaclet, getServices(), tacletIndex, newRuleListener);
+        succIndex =
+            succIndex.addSingleTaclet(newTaclet, getServices(), tacletIndex, newRuleListener);
+    }
+
+    public void clearIndexes() {
+        seq = null; // This leads to a delayed rebuild
+        antecIndex = null;
+        succIndex = null;
     }
 
     /// returns the rule applications at the given PosInOccurrence and at all Positions below this.

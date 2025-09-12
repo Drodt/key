@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.key_project.logic.op.Function;
 import org.key_project.prover.indexing.FormulaTagManager;
@@ -44,6 +46,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     private @Nullable Strategy<@NonNull Goal> goalStrategy = null;
     /// This is the object which keeps book about all applicable rules.
     private @Nullable RuleApplicationManager<Goal> ruleAppManager;
+    /**
+     * goal listeners
+     */
+    private List<GoalListener> listeners = new ArrayList<>(10);
     /// this object manages the tags for all formulas of the sequent
     private FormulaTagManager tagManager;
 
@@ -86,14 +92,14 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
 
     public void setRuleAppManager(@Nullable RuleApplicationManager<Goal> manager) {
         if (ruleAppManager != null) {
-            // ruleAppIndex.setNewRuleListener(null);
+            ruleAppIndex.setNewRuleListener(null);
             ruleAppManager.setGoal(null);
         }
 
         ruleAppManager = manager;
 
         if (ruleAppManager != null) {
-            // ruleAppIndex.setNewRuleListener(ruleAppManager);
+            ruleAppIndex.setNewRuleListener(ruleAppManager);
             ruleAppManager.setGoal(this);
         }
     }
@@ -248,6 +254,20 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
         getNode().setSequent(sci.sequent());
         // getNode().getNodeInfo().setSequentChangeInfo(sci);
+        fireSequentChanged(sci);
+    }
+
+    /**
+     * informs all goal listeners about a change of the sequent to reduce unnecessary object
+     * creation the necessary information is passed to the listener as parameters and not through an
+     * event object.
+     */
+    private void fireSequentChanged(SequentChangeInfo sci) {
+        getFormulaTagManager().sequentChanged(sci, getTime());
+        ruleAppIndex.sequentChanged(sci);
+        for (GoalListener listener : listeners) {
+            listener.sequentChanged(this, sci);
+        }
     }
 
     public void setBranchLabel(String name) {

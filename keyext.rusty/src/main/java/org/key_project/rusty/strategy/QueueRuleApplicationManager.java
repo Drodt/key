@@ -27,7 +27,7 @@ import org.jspecify.annotations.Nullable;
 /// [RuleApp] corresponds to its [RuleAppCost]. A [RuleApp] can be equipped with a
 /// [RuleAppCost] by converting it into a [RuleAppContainer]. The cost of a
 /// [RuleApp] is computed according to a given [Strategy] (see
-/// [#computeCost(RuleApp,PosInOccurrence,ProofGoal,MutableState)]).
+/// [#computeCost(RuleApp,PosInOccurrence, ProofGoal , MutableState)]).
 @NullMarked
 public class QueueRuleApplicationManager implements RuleApplicationManager<Goal> {
     /// The goal this manager belongs to.

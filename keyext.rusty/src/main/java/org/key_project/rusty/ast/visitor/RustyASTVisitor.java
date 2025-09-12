@@ -371,4 +371,9 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     public void performActionOnFieldIdentifier(FieldIdentifier x) {
         doDefaultAction(x);
     }
+
+    @Override
+    public void performActionOnTupleRustType(TupleRustType x) {
+        doDefaultAction(x);
+    }
 }

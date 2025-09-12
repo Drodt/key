@@ -698,4 +698,18 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnFieldIdentifier(FieldIdentifier x) {
         x.identifier().visit(this);
     }
+
+    @Override
+    public void performActionOnTupleRustType(TupleRustType x) {
+        layouter.print("(");
+        var tys = x.getTypes();
+        for (int i = 0; i < tys.size(); i++) {
+            var ty = tys.get(i);
+            ty.visit(this);
+            if (i < tys.size() - 1) {
+                layouter.print(", ");
+            }
+        }
+        layouter.print(")");
+    }
 }

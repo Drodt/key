@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.key_project.logic.PosInTerm;
-import org.key_project.prover.sequent.PosInOccurrence;
-import org.key_project.prover.sequent.Sequent;
-import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.prover.sequent.*;
 import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.NoPosTacletApp;
@@ -23,7 +23,7 @@ import org.jspecify.annotations.NonNull;
 public class SemisequentTacletAppIndex {
     private final org.key_project.prover.sequent.Sequent seq;
     private final boolean antec;
-    private ImmutableMap<org.key_project.prover.sequent.SequentFormula, TermTacletAppIndex> termIndices =
+    private ImmutableMap<SequentFormula, TermTacletAppIndex> termIndices =
         DefaultImmutableMap.nilMap();
 
     /// Create an index object for the semisequent determined by <code>s</code> and
@@ -33,10 +33,11 @@ public class SemisequentTacletAppIndex {
     /// the
     /// succedent
     SemisequentTacletAppIndex(Sequent s, boolean antec, Services services,
-            TacletIndex tacletIndex) {
+            TacletIndex tacletIndex, NewRuleListener listener) {
         this.seq = s;
         this.antec = antec;
-        addTermIndices((antec ? s.antecedent() : s.succedent()).asList(), services, tacletIndex);
+        addTermIndices((antec ? s.antecedent() : s.succedent()).asList(), services, tacletIndex,
+            listener);
     }
 
     private SemisequentTacletAppIndex(SemisequentTacletAppIndex orig) {
@@ -48,23 +49,24 @@ public class SemisequentTacletAppIndex {
     /// Add indices for the given formulas to the map <code>termIndices</code>. Existing entries are
     /// replaced with the new indices. Note: destructive, use only when constructing new index
     private void addTermIndices(
-            ImmutableList<? super org.key_project.prover.sequent.SequentFormula> cfmas,
+            ImmutableList<? super SequentFormula> cfmas,
             Services services,
-            TacletIndex tacletIndex) {
+            TacletIndex tacletIndex, NewRuleListener listener) {
         while (!cfmas.isEmpty()) {
-            final org.key_project.prover.sequent.SequentFormula cfma =
-                (org.key_project.prover.sequent.SequentFormula) cfmas.head();
+            final SequentFormula cfma =
+                (SequentFormula) cfmas.head();
             cfmas = cfmas.tail();
-            addTermIndex(cfma, services, tacletIndex);
+            addTermIndex(cfma, services, tacletIndex, listener);
         }
     }
 
     /// Add an index for the given formula to the map <code>termIndices</code>. An existing entry is
     /// replaced with the new one. Note: destructive, use only when constructing new index
-    private void addTermIndex(org.key_project.prover.sequent.SequentFormula cfma, Services services,
-            TacletIndex tacletIndex) {
+    private void addTermIndex(SequentFormula cfma, Services services,
+            TacletIndex tacletIndex, NewRuleListener listener) {
         final PosInOccurrence pos = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
-        termIndices = termIndices.put(cfma, TermTacletAppIndex.create(pos, services, tacletIndex));
+        termIndices =
+            termIndices.put(cfma, TermTacletAppIndex.create(pos, services, tacletIndex, listener));
     }
 
     public SemisequentTacletAppIndex copy() {
@@ -88,32 +90,40 @@ public class SemisequentTacletAppIndex {
         return getTermIndex(pos).getTacletAppAtAndBelow(pos, services);
     }
 
-    /// Create an index that additionally contains the taclet
-    public SemisequentTacletAppIndex addTaclet(NoPosTacletApp newTaclet, Services services,
-            TacletIndex tacletIndex) {
-        final SemisequentTacletAppIndex result = copy();
-        final Iterator<org.key_project.prover.sequent.SequentFormula> it =
-            termIndices.keyIterator();
-
-        while (it.hasNext()) {
-            result.addTaclet(newTaclet, it.next(), services, tacletIndex);
-        }
-
-        return result;
-    }
-
     /// Update the index for the given formula, which is supposed to be an element of the map
     /// <code>termIndices</code>, by adding the taclets that are selected by <code>filter</code>
     /// Note: destructive, use only when constructing new index
     private void addTaclet(NoPosTacletApp newTaclet, SequentFormula cfma, Services services,
-            TacletIndex tacletIndex) {
+            TacletIndex tacletIndex, NewRuleListener listener) {
         final TermTacletAppIndex oldIndex = termIndices.get(cfma);
         assert oldIndex != null : "Term index that is supposed to be updated " + "does not exist";
 
         final PosInOccurrence pos = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
 
         termIndices = termIndices.put(cfma,
-            oldIndex.addTaclet(newTaclet, pos, services, tacletIndex));
+            oldIndex.addTaclet(newTaclet, pos, services, tacletIndex, listener));
+    }
+
+    /// Create an index that additionally contains the taclet
+    public SemisequentTacletAppIndex addSingleTaclet(NoPosTacletApp newTaclet, Services services,
+            TacletIndex tacletIndex, NewRuleListener listener) {
+        final SemisequentTacletAppIndex result = copy();
+        final Iterator<SequentFormula> it =
+            termIndices.keyIterator();
+
+        while (it.hasNext()) {
+            var cfma = it.next();
+            final TermTacletAppIndex oldIndex = termIndices.get(cfma);
+            assert oldIndex != null
+                    : "Term index that is supposed to be updated " + "does not exist";
+
+            final PosInOccurrence pos = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
+
+            termIndices = termIndices.put(cfma,
+                oldIndex.addTaclet(newTaclet, pos, services, tacletIndex, listener));
+        }
+
+        return result;
     }
 
     /// Reports all cached rule apps. Calls ruleAdded on the given NewRuleListener for every cached
@@ -126,6 +136,113 @@ public class SemisequentTacletAppIndex {
                 new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
 
             index.reportTacletApps(pio, l);
+        }
+    }
+
+    /**
+     * called if a formula has been replaced
+     *
+     * @param sci SequentChangeInfo describing the change of the sequent
+     */
+    public SemisequentTacletAppIndex sequentChanged(
+            SequentChangeInfo sci,
+            Services services,
+            TacletIndex tacletIndex, NewRuleListener listener) {
+        if (sci.hasChanged(antec)) {
+            final SemisequentTacletAppIndex result = copy();
+
+            result.removeTermIndices(sci.removedFormulas(antec));
+
+            result.updateTermIndices(sci.modifiedFormulas(antec), services, tacletIndex, listener);
+
+            result.addTermIndices(sci.addedFormulas(antec), services, tacletIndex, listener);
+            return result;
+        }
+
+        return this;
+    }
+
+    /**
+     * Remove the indices for the given formulas from the map <code>termIndices</code>. Note:
+     * destructive, use only when constructing new index
+     */
+    private void removeTermIndices(
+            ImmutableList<SequentFormula> cfmas) {
+        for (SequentFormula cfma : cfmas) {
+            removeTermIndex(cfma);
+        }
+    }
+
+    /**
+     * Remove the index for the given formula from the map <code>termIndices</code>. Note:
+     * destructive, use only when constructing new index
+     */
+    private void removeTermIndex(SequentFormula cfma) {
+        termIndices = termIndices.remove(cfma);
+    }
+
+    private void updateTermIndices(
+            ImmutableList<FormulaChangeInfo> infos,
+            Services services, TacletIndex tacletIndex, NewRuleListener listener) {
+
+        // remove original indices
+        final List<TermTacletAppIndex> oldIndices = removeFormulas(infos);
+
+        updateTermIndices(oldIndices, infos, services, tacletIndex, listener);
+    }
+
+    /**
+     * Remove the formulas that are listed as modified by <code>infos</code>
+     *
+     * @return the old indices in the same order as the list <code>infos</code> Note: destructive,
+     *         use only when constructing new index
+     */
+    private List<TermTacletAppIndex> removeFormulas(
+            ImmutableList<FormulaChangeInfo> infos) {
+        var oldIndices = new ArrayList<TermTacletAppIndex>(infos.size());
+
+        for (FormulaChangeInfo info : infos) {
+            final SequentFormula oldFor = info.getOriginalFormula();
+
+            oldIndices.add(termIndices.get(oldFor));
+            removeTermIndex(oldFor);
+        }
+
+        return oldIndices;
+    }
+
+    /**
+     * Update the given list of term indices according to the list <code>infos</code> of
+     * modification information. Both lists have to be compatible, i.e. same length and same order.
+     * The new indices are inserted in the map <code>termIndices</code>. Note: destructive, use only
+     * when constructing new index
+     */
+    private void updateTermIndices(List<TermTacletAppIndex> oldIndices,
+            ImmutableList<FormulaChangeInfo> infos,
+            Services services,
+            TacletIndex tacletIndex,
+            NewRuleListener listener) {
+        final Iterator<FormulaChangeInfo> infoIt =
+            infos.iterator();
+        final Iterator<TermTacletAppIndex> oldIndexIt = oldIndices.iterator();
+
+        while (infoIt.hasNext()) {
+            final FormulaChangeInfo info = infoIt.next();
+            final SequentFormula newFor = info.newFormula();
+            final TermTacletAppIndex oldIndex = oldIndexIt.next();
+
+            if (oldIndex == null)
+            // completely rebuild the term index
+            {
+                addTermIndex(newFor, services, tacletIndex, listener);
+            } else {
+                final PosInOccurrence oldPos =
+                    info.positionOfModification();
+                final PosInOccurrence newPos =
+                    oldPos.replaceSequentFormula(newFor);
+                termIndices = termIndices.put(newFor,
+                    oldIndex.update(newPos, services, tacletIndex, listener/* , indexCaches */));
+            }
         }
     }
 }
