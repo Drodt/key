@@ -93,4 +93,17 @@ public final class RustModel {
         }
         return getModelTag().equals(other.getModelTag());
     }
+
+    /// Transform the current state into a string with valid declarations inside a KeY file.
+    /// In particular, it uses `\programSource` and `\includes`
+    /// directive
+    /// if necessary.
+    public String asKeYString() {
+        return (modelDir != null ? "\n\\programSource \"%s\";".formatted(modelDir)
+                : "")
+                +
+                (includedFiles != null && !includedFiles.isEmpty() ? "\n\\include %s;".formatted(
+                    includedFiles)
+                        : "");
+    }
 }

@@ -198,7 +198,6 @@ public class ApplyStrategy extends DefaultProver<@NonNull Proof, Goal> {
     }
 
     private class ProofListener implements RuleAppListener {
-
         /// invoked when a rule has been applied
         @Override
         public void ruleApplied(ProofEvent e) {

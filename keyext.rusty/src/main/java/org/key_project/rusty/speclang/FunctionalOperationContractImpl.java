@@ -11,15 +11,22 @@ import java.util.function.UnaryOperator;
 
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.Path;
+import org.key_project.rusty.ast.PathSegment;
+import org.key_project.rusty.ast.ResDef;
+import org.key_project.rusty.ast.expr.*;
+import org.key_project.rusty.ast.stmt.ExpressionStatement;
+import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.ProgramFunction;
-import org.key_project.rusty.logic.op.ProgramVariable;
-import org.key_project.rusty.logic.op.RModality;
+import org.key_project.rusty.logic.op.*;
+import org.key_project.rusty.pp.LogicPrinter;
+import org.key_project.rusty.pp.NotationInfo;
 import org.key_project.rusty.proof.OpReplacer;
 import org.key_project.rusty.proof.init.ContractPO;
 import org.key_project.rusty.proof.init.FunctionalOperationContractPO;
 import org.key_project.rusty.proof.init.InitConfig;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -375,5 +382,60 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
             originalMby, originalPost,
             originalModifiable, originalParamVars, originalResultVar, globalDefs, newId, toBeSaved,
             services);
+    }
+
+    @Override
+    public String proofToString(Services services) {
+        assert toBeSaved;
+        final StringBuilder sb = new StringBuilder();
+        sb.append(baseName).append(" {\n");
+
+        // print var decls
+        sb.append("  \\programVariables {\n");
+        for (var originalParamVar : originalParamVars) {
+            sb.append("    ").append(originalParamVar.proofToString());
+        }
+        if (originalResultVar != null) {
+            sb.append("    ").append(originalResultVar.proofToString());
+        }
+        sb.append("  }\n");
+
+        // prepare Rust program
+        final Expr[] args = new ProgramVariable[originalParamVars.size()];
+        int i = 0;
+        for (var arg : originalParamVars) {
+            args[i++] = arg;
+        }
+        ResDef resDef = new ResDef(fn);
+        PathSegment segment = new PathSegment(fn.getFunction().name().toString(), resDef);
+        PathExpr callee =
+            new PathExpr(new Path<>(resDef, new ImmutableArray<>(segment)), fn.getType());
+        final var ce = new CallExpression(callee, new ImmutableArray<>(args));
+        final Expr call;
+        if (originalResultVar == null) {
+            call = ce;
+        } else {
+            call = new AssignmentExpression(originalResultVar, ce);
+        }
+        var callStatement = new ExpressionStatement(call, true);
+        final BlockExpression sblock = new BlockExpression(ImmutableList.of(callStatement), null);
+        final RustyBlock rb = new RustyBlock(sblock);
+
+        // print contract term
+        final Term modalityTerm =
+            tb.prog(modalityKind, rb, originalPost);
+        final Term contractTerm =
+            tb.tf().createTerm(Junctor.IMP, originalPre, modalityTerm);
+        final LogicPrinter lp = LogicPrinter.purePrinter(new NotationInfo(), null);
+        lp.printTerm(contractTerm);
+        sb.append(lp.result());
+
+        // print modifiable
+        lp.reset();
+        lp.printTerm(originalModifiable);
+        sb.append("  \\modifiable ").append(lp.result());
+
+        sb.append("};\n");
+        return sb.toString();
     }
 }

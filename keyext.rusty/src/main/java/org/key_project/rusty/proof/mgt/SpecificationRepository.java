@@ -103,4 +103,13 @@ public class SpecificationRepository {
         // TODO: Java uses a pair of lines and loops. Why? Do we need that?
         return loopInvs.get(loop);
     }
+
+    /// Returns all registered contracts.
+    public ImmutableSet<Contract> getAllContracts() {
+        ImmutableSet<Contract> result = DefaultImmutableSet.nil();
+        for (ImmutableSet<Contract> s : contracts.values()) {
+            result = result.union(s);
+        }
+        return result;
+    }
 }

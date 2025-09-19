@@ -359,7 +359,7 @@ public class TacletIndex {
         ImmutableList<NoPosTacletApp> res = ImmutableSLList.nil();
         final Operator op = term.op();
 
-        if (op instanceof RModality mod) {
+        if (op instanceof RModality mod && mod.programBlock().program().getChildCount() != 0) {
             prefixOccurrences.reset();
             final var sb = (BlockExpression) mod.programBlock().program();
             res = getRustyTacletList(map, (RustyProgramElement) sb.getChild(0), prefixOccurrences);

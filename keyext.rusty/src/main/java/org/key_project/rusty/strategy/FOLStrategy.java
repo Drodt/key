@@ -76,7 +76,7 @@ public class FOLStrategy extends AbstractFeatureStrategy {
         bindRuleSet(d, "closure", -15000);
         bindRuleSet(d, "alpha", -7000);
         bindRuleSet(d, "delta", -6000);
-        bindRuleSet(d, "simplify_boolean", -200);
+        bindRuleSet(d, "simplify_bool", -200);
 
         final Feature findDepthFeature =
             FindDepthFeature.getInstance();

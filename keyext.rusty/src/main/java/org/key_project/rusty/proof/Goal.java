@@ -20,6 +20,8 @@ import org.key_project.prover.strategy.RuleApplicationManager;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.proof.proofevent.NodeChangeJournal;
+import org.key_project.rusty.proof.proofevent.RuleAppInfo;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.TacletApp;
@@ -135,6 +137,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             @NonNull RuleApp ruleApp) {
         final Proof proof = proof();
 
+        final NodeChangeJournal journal = new NodeChangeJournal(proof, this);
+        addGoalListener(journal);
         final Node n = node;
 
         /*
@@ -166,6 +170,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
 
         adaptNamespacesNewGoals(goalList);
+        final RuleAppInfo ruleAppInfo = journal.getRuleAppInfo(ruleApp);
+        proof.fireRuleApplied(new ProofEvent(proof, ruleAppInfo, goalList));
         return goalList;
     }
 
@@ -235,6 +241,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
                 ruleAppManager.copy(),
                 localNamespaces);
         }
+        clone.listeners = (List<GoalListener>) ((ArrayList<GoalListener>) listeners).clone();
+        // clone.automatic = this.automatic;
         return clone;
     }
 
@@ -392,6 +400,9 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     }
 
     public Strategy<@NonNull Goal> getGoalStrategy() {
+        if (goalStrategy == null) {
+            goalStrategy = proof().getActiveStrategy();
+        }
         return goalStrategy;
     }
 
@@ -402,5 +413,22 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     public boolean isAutomatic() {
         // TODO
         return true;
+    }
+
+    /// adds the listener l to the list of goal listeners. Attention: A listener added to this goal
+    /// will be taken over when splitting into subgoals.
+    ///
+    /// @param l the GoalListener to be added
+    public void addGoalListener(GoalListener l) {
+        listeners.add(l);
+    }
+
+    /// removes the listener l from the list of goal listeners. Attention: The listener is just
+    /// removed from 'this' goal not from the other goals. (All goals can be accessed via proof
+    /// openGoals())
+    ///
+    /// @param l the GoalListener to be removed
+    public void removeGoalListener(GoalListener l) {
+        listeners.remove(l);
     }
 }

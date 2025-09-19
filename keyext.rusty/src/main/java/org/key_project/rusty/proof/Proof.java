@@ -105,18 +105,20 @@ public class Proof implements ProofObject<Goal>, Named {
         setRoot(rootNode);
     }
 
-    public Proof(String name, Term problem, InitConfig initConfig) {
+    public Proof(String name, Term problem, String header, InitConfig initConfig) {
         this(name,
             RustySequentKit
                     .createSuccSequent(ImmutableSLList.singleton(new SequentFormula(problem))),
             initConfig.createTacletIndex(),
             initConfig.createBuiltInRuleIndex(),
             initConfig);
+        problemHeader = header;
     }
 
-    public Proof(Name name, Sequent problem, InitConfig initConfig) {
+    public Proof(Name name, Sequent problem, String header, InitConfig initConfig) {
         this(name.toString(), problem, initConfig.createTacletIndex(),
             initConfig.createBuiltInRuleIndex(), initConfig);
+        problemHeader = header;
     }
 
     public Services getServices() {
@@ -482,5 +484,14 @@ public class Proof implements ProofObject<Goal>, Named {
             }
         }
         return result;
+    }
+
+    /// fires the event that a rule has been applied
+    protected void fireRuleApplied(ProofEvent p_e) {
+        synchronized (ruleAppListenerList) {
+            for (RuleAppListener ral : ruleAppListenerList) {
+                ral.ruleApplied(p_e);
+            }
+        }
     }
 }

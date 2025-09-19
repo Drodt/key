@@ -16,6 +16,8 @@ public class RustTools {
     public static RustyProgramElement getActiveExpr(RustyBlock rb) {
         assert rb.program() != null;
 
+        if (rb.program().getChildCount() == 0)
+            return rb.program();
         RustyProgramElement result = (RustyProgramElement) rb.program().getChild(0);
         while ((result instanceof PossibleProgramPrefix)
                 && !(result instanceof BlockExpression be && be.getChildCount() == 0)) {

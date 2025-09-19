@@ -13,6 +13,7 @@ import org.key_project.rusty.proof.mgt.AxiomJustification;
 import org.key_project.rusty.proof.mgt.ComplexRuleJustificationBySpec;
 import org.key_project.rusty.proof.mgt.RuleJustification;
 import org.key_project.rusty.prover.impl.DefaultGoalChooserFactory;
+import org.key_project.rusty.prover.impl.DepthFirstGoalChooserFactory;
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.Rule;
 import org.key_project.rusty.rule.Taclet;
@@ -40,7 +41,7 @@ public class RustProfile implements Profile {
     protected RustProfile(String standardRuleFilename) {
         standardRules = new RuleCollection(
             RuleSourceFactory.fromDefaultLocation(standardRuleFilename), initBuiltInRules());
-        this.prototype = getDefaultGoalChooserBuilder();
+        this.prototype = new DepthFirstGoalChooserFactory();
     }
 
     public RustProfile() {

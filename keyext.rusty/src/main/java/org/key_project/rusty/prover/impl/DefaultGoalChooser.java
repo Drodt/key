@@ -69,7 +69,6 @@ public class DefaultGoalChooser implements GoalChooser<@NonNull Proof, @NonNull 
                 findMinimalSubtree(currentSubtreeRoot);
             }
         } else {
-
             for (final Goal goal : p_goals) {
                 selectedList = selectedList.prepend(goal);
             }
