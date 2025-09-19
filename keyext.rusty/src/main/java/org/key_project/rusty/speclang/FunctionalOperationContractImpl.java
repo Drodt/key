@@ -430,10 +430,12 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
         lp.printTerm(contractTerm);
         sb.append(lp.result());
 
-        // print modifiable
-        lp.reset();
-        lp.printTerm(originalModifiable);
-        sb.append("  \\modifiable ").append(lp.result());
+        if (originalModifiable != null) {
+            // print modifiable
+            lp.reset();
+            lp.printTerm(originalModifiable);
+            sb.append("  \\modifiable ").append(lp.result());
+        }
 
         sb.append("};\n");
         return sb.toString();
