@@ -76,4 +76,4 @@ checkstyle-diff.txt
 
 # to be generated
 rust-wrapper/rml/crates/rml-contracts/hir.json
-keyext.rusty/**/*.save.proof
+keyext.rusty/**/*.proof
