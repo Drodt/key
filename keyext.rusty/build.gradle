@@ -1,10 +1,11 @@
 plugins {
     id 'java'
-    id 'antlr'
 }
 
 group = 'org.key_project'
 version = '2.13.0'
+
+configurations { antlr4 }
 
 repositories {
     mavenCentral()
@@ -14,7 +15,8 @@ dependencies {
     implementation('com.google.code.gson:gson:2.11.0')
     testImplementation(platform('org.junit:junit-bom:5.10.0'))
     testImplementation('org.junit.jupiter:junit-jupiter')
-    antlr('org.antlr:antlr4:4.13.1')
+    antlr4 "org.antlr:antlr4:4.13.2"
+    api "org.antlr:antlr4-runtime:4.13.2"
     api(project(':key.ncore'))
     api(project(':key.ncore.calculus'))
     api(project(':key.util'))
@@ -24,9 +26,37 @@ test {
     useJUnitPlatform()
 }
 
-generateGrammarSource {
-    arguments += ["-visitor", "-lib" , "../key.ncore/src/main/antlr/"]
+//generateGrammarSource {
+//    arguments += ["-visitor", "-lib" , "../key.ncore/src/main/antlr/"]
+//}
+
+def antlr4OutputKey = String.valueOf(projectDir) + '/build/generated-src/antlr/main/org/key_project/rusty/parser'
+
+sourceSets.main.java.srcDirs(String.valueOf(projectDir) + '/build/generated-src/antlr/main/')
+
+tasks.register('runAntlr4Key', JavaExec) {
+    //see incremental task api, prevents rerun if nothing has changed.
+    inputs.files "src/main/antlr/KeYRustyLexer.g4", "src/main/antlr/RustyLexer.g4",
+                 "src/main/antlr/RustySchemaLexer.g4",
+                 "src/main/antlr/KeYRustyParser.g4", "src/main/antlr/RustyParser.g4",
+                 "src/main/antlr/RustySchemaParser.g4"
+    outputs.dir antlr4OutputKey
+    classpath = configurations.antlr4
+    mainClass.set("org.antlr.v4.Tool")
+    args = ["-visitor",
+            "-lib", "../key.ncore/src/main/antlr/",
+            "-Xexact-output-dir", "-o", antlr4OutputKey,
+            //"-package", "org.key_project.rusty.parser",
+            "src/main/antlr/KeYRustyLexer.g4", "src/main/antlr/RustyLexer.g4",
+            "src/main/antlr/RustySchemaLexer.g4",
+            "src/main/antlr/KeYRustyParser.g4", "src/main/antlr/RustyParser.g4",
+            "src/main/antlr/RustySchemaParser.g4"]
+    doFirst {
+        file(antlr4OutputKey).mkdirs()
+        println("create $antlr4OutputKey")
+    }
 }
+compileJava.dependsOn runAntlr4Key
 
 tasks.register('testRunAllProofs', Test) {
     description = 'Prove/reload all .key/.proof files tagged for regression testing'
