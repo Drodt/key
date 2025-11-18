@@ -87,7 +87,7 @@ public class HirRustyReader {
 
                 var wrapperOutput = getWrapperOutput(tmpDir);
                 var converter = new HirConverter(services, null);
-                var converted = converter.convertCrate(wrapperOutput.crate());
+                var converted = converter.convertCrate(wrapperOutput);
                 BlockExpression body = converted.getVerificationTarget().body();
                 var es = (ExpressionStatement) body.getStatements().get(0);
                 {
@@ -139,17 +139,17 @@ public class HirRustyReader {
         }
     }
 
-    public static Crate.WrapperOutput getWrapperOutput(Path path) throws IOException {
+    public static Crate getWrapperOutput(Path path) throws IOException {
         return getWrapperOutput(path, false);
     }
 
-    public static Crate.WrapperOutput getWrapperOutput(Path path, boolean clean)
+    public static Crate getWrapperOutput(Path path, boolean clean)
             throws IOException {
         try {
             Process cleanCmd =
                 Runtime.getRuntime().exec(new String[] { "cargo", "clean" }, null, path.toFile());
             cleanCmd.waitFor();
-            var command = new String[] { "cargo", "key", "-o", "hir.json" };
+            var command = new String[] { "cargo", "rml", "-o", "hir.json" };
             Process cmd = Runtime.getRuntime().exec(command, null, path.toFile());
             var stdErr = cmd.getErrorStream();
             var errReader = new BufferedReader(new InputStreamReader(stdErr));

@@ -156,8 +156,8 @@ public final class ProblemInitializer {
             try {
                 var output =
                     HirRustyReader.getWrapperOutput(Path.of(rustPath).toAbsolutePath().normalize());
-                var converter = new HirConverter(initConfig.getServices(), output.specs());
-                converter.convertCrate(output.crate());
+                var converter = new HirConverter(initConfig.getServices(), null);
+                converter.convertCrate(output);
             } catch (IOException e) {
                 throw new ProofInputException(e);
             }

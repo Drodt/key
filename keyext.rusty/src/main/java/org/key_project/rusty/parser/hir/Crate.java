@@ -26,10 +26,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 
 public record Crate(Mod topMod, HirTyMapping[] types) {
-    public record WrapperOutput(Crate crate, SpecMap specs) {
-    }
-
-    public static WrapperOutput parseJSON(String json) {
+    public static Crate parseJSON(String json) {
         var gson =
             new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                     .registerTypeAdapter(ItemKind.class, new ItemKind.Adapter())
@@ -53,6 +50,6 @@ public record Crate(Mod topMod, HirTyMapping[] types) {
                     .registerTypeAdapter(ConstArgKind.class, new ConstArgKind.Adapter())
                     .registerTypeAdapter(TyConst.class, new TyConst.Adapter())
                     .registerTypeAdapter(ValTree.class, new ValTree.Adapter()).create();
-        return gson.fromJson(json, WrapperOutput.class);
+        return gson.fromJson(json, Crate.class);
     }
 }

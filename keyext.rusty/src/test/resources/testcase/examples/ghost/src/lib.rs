@@ -6,6 +6,7 @@ use rml_contracts::*;
 
 #[spec(ensures(true))]
 fn foo() {
-    
-
+    let x = 1;
+    let y = ghost!{ x + 2 };
+    let z = x - 1;
 }
