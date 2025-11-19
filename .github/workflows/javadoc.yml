@@ -19,7 +19,7 @@ jobs:
           distribution: 'corretto'
           cache: 'gradle'
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
       - name: Build Documentation with Gradle
         run: ./gradlew alldoc
 
@@ -27,7 +27,7 @@ jobs:
         run: tar cvfj javadoc.tar.bz2 build/docs/javadoc
 
       - name: Upload Javadoc
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: javadoc
           path: "javadoc.tar.bz2"
