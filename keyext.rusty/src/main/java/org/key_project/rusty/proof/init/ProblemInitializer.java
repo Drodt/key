@@ -162,8 +162,8 @@ public final class ProblemInitializer {
                 var output =
                     HirRustyReader.getWrapperOutput(Path.of(rustPath).toAbsolutePath().normalize());
                 var beforeConversion = System.nanoTime();
-                var converter = new HirConverter(initConfig.getServices(), output.specs());
-                converter.convertCrate(output.crate());
+                var converter = new HirConverter(initConfig.getServices());
+                converter.convertCrate(output);
                 LOGGER.debug("HIR conversion took {}",
                     PerfScope.formatTime(System.nanoTime() - beforeConversion));
             } catch (IOException e) {

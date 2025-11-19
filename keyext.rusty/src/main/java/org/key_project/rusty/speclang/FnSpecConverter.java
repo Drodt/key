@@ -27,8 +27,8 @@ public class FnSpecConverter extends AbstractSpecConverter {
         super(services);
     }
 
-    public List<FunctionalOperationContract> convert(FnSpec fnSpec, ProgramFunction target) {
-        return Arrays.stream(fnSpec.cases()).flatMap(c -> convert(c, target)).toList();
+    public List<FunctionalOperationContract> convert(SpecCase[] fnSpecCases, ProgramFunction target) {
+        return Arrays.stream(fnSpecCases).flatMap(c -> convert(c, target)).toList();
     }
 
     public Stream<FunctionalOperationContract> convert(SpecCase specCase, ProgramFunction target) {

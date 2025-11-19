@@ -44,9 +44,6 @@ import org.key_project.rusty.parser.hir.stmt.StmtKind;
 import org.key_project.rusty.parser.hir.ty.*;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
-import org.key_project.rusty.speclang.spec.FnSpec;
-import org.key_project.rusty.speclang.spec.LoopSpec;
-import org.key_project.rusty.speclang.spec.SpecMap;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -56,30 +53,15 @@ import org.jspecify.annotations.Nullable;
 public class HirConverter {
     private final Services services;
 
-    private final @Nullable Map<DefId, FnSpec> fnSpecs;
-    private final @Nullable Map<HirId, LoopSpec> loopSpecs;
     private final Map<DefId, Adt> adts = new HashMap<>();
     private final FnSpecConverter fnSpecConverter;
     private final LoopSpecConverter loopSpecConverter;
     private @Nullable GenericTyParam[] currentParams = null;
 
-    public HirConverter(Services services, @Nullable SpecMap specs) {
+    public HirConverter(Services services) {
         this.services = services;
         fnSpecConverter = new FnSpecConverter(services);
         loopSpecConverter = new LoopSpecConverter(services);
-        if (specs != null) {
-            fnSpecs = new HashMap<>(specs.fnSpecs().length);
-            loopSpecs = new HashMap<>(specs.loopSpecs().length);
-            for (var e : specs.fnSpecs()) {
-                fnSpecs.put(e.id(), e.value());
-            }
-            for (var e : specs.loopSpecs()) {
-                loopSpecs.put(e.id(), e.value());
-            }
-        } else {
-            fnSpecs = null;
-            loopSpecs = null;
-        }
     }
 
     public Services getServices() {
@@ -89,7 +71,6 @@ public class HirConverter {
     private final Map<HirId, ProgramVariable> pvs = new HashMap<>();
     private final Map<HirId, Type> types = new HashMap<>();
     private final Map<LocalDefId, Function> localFns = new HashMap<>();
-    private final Map<Function, FnSpec> fn2Spec = new HashMap<>();
 
     private @Nullable Function currentFn = null;
 
@@ -118,8 +99,8 @@ public class HirConverter {
         }
         for (var fn : fnsToComplete.keySet()) {
             currentFn = fn;
-            var spec = fn2Spec.get(fn);
             var hirFn = fnsToComplete.get(fn);
+            var specCases = hirFn.specCases();
             boolean isCtxFn = fn.name().toString().equals(Context.TMP_FN_NAME);
             int paramLength = hirFn.sig().decl().inputs().length;
             int selfCount = 0;
@@ -137,9 +118,9 @@ public class HirConverter {
             fn.setParams(new ImmutableArray<>(params));
             fn.setBody((BlockExpression) convertExpr(hirFn.body().value()));
             services.getRustInfo().registerFunction(fn);
-            if (spec != null) {
+            if (specCases.length > 0) {
                 var contracts =
-                    fnSpecConverter.convert(spec,
+                    fnSpecConverter.convert(specCases,
                         Objects.requireNonNull(services.getRustInfo().getFunction(fn)));
                 for (var contract : contracts) {
                     services.getSpecificationRepository().addContract(contract);
@@ -174,9 +155,10 @@ public class HirConverter {
             return new ImmutableArray<>(lst);
         });
         var kind = switch (use.useKind()) {
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.Single -> Use.UseKind.Single;
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.Glob -> Use.UseKind.Glob;
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.ListStem -> Use.UseKind.ListStem;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.Single ignored -> Use.UseKind.Single;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.Glob ignored -> Use.UseKind.Glob;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.ListStem ignored -> Use.UseKind.ListStem;
+            default -> throw new IllegalArgumentException("Unknown use kind: " + use);
         };
         return new Use(path, kind);
     }
@@ -188,11 +170,6 @@ public class HirConverter {
         @SuppressWarnings("argument.type.incompatible")
         Function function = new Function(name, Function.ImplicitSelfKind.None,
             null, retTy, null);
-        if (fnSpecs != null) {
-            var spec = fnSpecs.get(new DefId(id.localDefIndex(), 0));
-            if (spec != null)
-                fn2Spec.put(function, Objects.requireNonNull(spec, name.toString()));
-        }
         localFns.put(id, function);
         fnsToComplete.put(function, fn);
         return function;
@@ -424,8 +401,8 @@ public class HirConverter {
         var body = convertBlockExpr(new ExprKind.BlockExpr(l.block()));
         var le = new InfiniteLoopExpression(null, body);
 
-        if (loopSpecs != null && loopSpecs.containsKey(id)) {
-            var ls = loopSpecConverter.convert(loopSpecs.get(id), Objects.requireNonNull(currentFn),
+        if (l.spec() != null) {
+            var ls = loopSpecConverter.convert(l.spec(), Objects.requireNonNull(currentFn),
                 le, pvs);
             services.getSpecificationRepository().addLoopSpec(ls);
         }
