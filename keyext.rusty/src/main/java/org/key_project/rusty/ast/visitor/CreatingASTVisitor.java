@@ -110,7 +110,6 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
 
 
 
-
     @Override
     public void performActionOnContextBlockExpression(ContextBlockExpression x) {
         ExtList changeList = getTop();
