@@ -5,14 +5,13 @@ package org.key_project.rusty.ast.expr;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.Identifier;
+import org.key_project.rusty.ast.abstraction.TupleType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
-public record FieldExpression(Expr base, Identifier field) implements Expr {
+public record FieldExpression(Expr base, IFieldIdentifier field) implements Expr {
     @Override
     public void visit(Visitor v) {
         v.performActionOnFieldExpression(this);
@@ -35,13 +34,17 @@ public record FieldExpression(Expr base, Identifier field) implements Expr {
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return base + "." + field;
     }
 
     @Override
     public Type type(Services services) {
-        throw new UnsupportedOperationException();
+        var baseTy = base.type(services);
+        if (baseTy instanceof TupleType tt) {
+            var idx = Integer.parseInt(field.name().toString());
+            return tt.getTypes().get(idx);
+        }
+        throw new UnsupportedOperationException("Type of field expr");
     }
 }
-//spotless:on

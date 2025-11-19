@@ -14,8 +14,8 @@
 \proof {
     (branch "dummy ID"
         (rule "assignment" (formula "1"))
-        (rule "simpleExprStmt" (formula "1") (term "1"))
-        (rule "emptyModalityValue" (formula "1") (term "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "empty_modality_value" (formula "1") (term "1"))
         (rule "applyOnRigidFormula" (formula "1"))
         (rule "applyOnPV" (formula "1") (term "0"))
         (rule "applyOnRigidTerm" (formula "1") (term "1"))

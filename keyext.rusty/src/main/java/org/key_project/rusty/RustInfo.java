@@ -9,8 +9,9 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.ast.abstraction.*;
+import org.key_project.rusty.ast.abstraction.Enum;
+import org.key_project.rusty.ast.abstraction.FnDefType;
 import org.key_project.rusty.ast.fn.Function;
-import org.key_project.rusty.ast.ty.FnDefType;
 import org.key_project.rusty.logic.op.ProgramFunction;
 
 import org.jspecify.annotations.NonNull;
@@ -38,44 +39,49 @@ public final class RustInfo {
     public KeYRustyType getKeYRustyType(Type type) {
         if (type2KRTCache.containsKey(type)) {
             return type2KRTCache.get(type);
-        }
-        if (type instanceof PrimitiveType pt) {
+        } else if (type instanceof PrimitiveType pt) {
             return getPrimitiveKeYRustyType(pt);
-        }
-        if (type instanceof TupleType tt && tt == TupleType.UNIT) {
-            var sort = services.getNamespaces().sorts().lookup("Unit");
-            assert sort != null;
+        } else if (type instanceof TupleType tt) {
+            var sort = tt.getSort(services);
             var krt = new KeYRustyType(type, sort);
             type2KRTCache.put(type, krt);
             return krt;
-        }
-        if (type instanceof ReferenceType rt) {
+        } else if (type instanceof ReferenceType rt) {
             var sort = rt.getSort(services);
             var krt = new KeYRustyType(type, sort);
             type2KRTCache.put(type, krt);
             return krt;
-        }
-        if (type instanceof FnDefType ft) {
+        } else if (type instanceof FnDefType ft) {
             var krt = new KeYRustyType(ft);
             type2KRTCache.put(type, krt);
             return krt;
-        }
-        if (type instanceof Never nt) {
+        } else if (type instanceof Never nt) {
             var krt = new KeYRustyType(nt);
             type2KRTCache.put(type, krt);
             return krt;
-        }
-        if (type instanceof Closure ct) {
+        } else if (type instanceof Closure ct) {
             var krt = new KeYRustyType(ct);
             type2KRTCache.put(type, krt);
             return krt;
-        }
-        if (type instanceof ArrayType at) {
+        } else if (type instanceof ArrayType at) {
             var krt = new KeYRustyType(at, at.getSort(services));
             type2KRTCache.put(type, krt);
             return krt;
+        } else if (type instanceof Enum e) {
+            var krt = new KeYRustyType(e, e.getSort(services));
+            type2KRTCache.put(type, krt);
+            return krt;
+        } else if (type instanceof GenericTyParam p) {
+            var krt = new KeYRustyType(p);
+            type2KRTCache.put(type, krt);
+            return krt;
+        } else if (type instanceof ForeignFnType f) {
+            var krt = new KeYRustyType(f);
+            type2KRTCache.put(type, krt);
+            return krt;
+        } else {
+            throw new IllegalArgumentException("Unsupported type: " + type);
         }
-        throw new IllegalArgumentException("Unsupported type: " + type);
     }
 
     private @Nullable KeYRustyType getPrimitiveKeYRustyType(String name) {

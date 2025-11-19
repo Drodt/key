@@ -96,5 +96,4 @@ public class ContractRuleApp extends AbstractContractRuleApp {
         return UseOperationContractRule.computeInstantiation(posInOccurrence().subTerm(),
             services).fn();
     }
-
 }

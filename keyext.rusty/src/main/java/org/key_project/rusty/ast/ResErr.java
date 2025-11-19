@@ -6,7 +6,8 @@ package org.key_project.rusty.ast;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-// spotless:off
+import org.jspecify.annotations.NonNull;
+
 public record ResErr() implements Res {
     @Override
     public void visit(Visitor v) {
@@ -14,7 +15,7 @@ public record ResErr() implements Res {
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         throw new IndexOutOfBoundsException("No child " + n + " of " + this);
     }
 
@@ -23,4 +24,3 @@ public record ResErr() implements Res {
         return 0;
     }
 }
-//spotless:on

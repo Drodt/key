@@ -10,6 +10,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ConcreteLabel;
+import org.key_project.rusty.ast.Item;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.abstraction.Type;
@@ -27,8 +28,6 @@ public abstract class ProgramSVSort extends SortImpl {
     // ----------- Types of Expression Program SVs ----------------------------
     public static final ProgramSVSort LEFT_HAND_SIDE = new LeftHandSideSort();
     public static final ProgramSVSort VARIABLE = new ProgramVariableSort();
-    // TODO: remove
-    public static final ProgramSVSort U32Variable = new SortedVariableSort("u32");
     public static final ProgramSVSort SIMPLE_EXPRESSION = new SimpleExpressionSort();
     public static final ProgramSVSort SIMPLE_EXPRESSION_U8 =
         new TypedSimpleExpressionSort(PrimitiveType.U8);
@@ -69,6 +68,8 @@ public abstract class ProgramSVSort extends SortImpl {
     public static final ProgramSVSort TYPE_PRIMITIVE = new TypeReferencePrimitiveSort();
 
     public static final ProgramSVSort LABEL = new LabelSort();
+    public static final ProgramSVSort Ident = new FieldIdentSort();
+    public static final ProgramSVSort Item = new ItemSort();
 
     public static final ProgramSVSort NON_MODEL_FUNCTION_BODY = new NonModelFunctionBodySort();
 
@@ -340,6 +341,17 @@ public abstract class ProgramSVSort extends SortImpl {
         }
     }
 
+    private static class FieldIdentSort extends ProgramSVSort {
+        protected FieldIdentSort() {
+            super(new Name("FieldIdent"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof FieldIdentifier;
+        }
+    }
+
     private static class NonModelFunctionBodySort extends ProgramSVSort {
         protected NonModelFunctionBodySort() {
             super(new Name("NonModelFunctionBody"));
@@ -348,6 +360,17 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof FunctionBodyExpression;
+        }
+    }
+
+    private static class ItemSort extends ProgramSVSort {
+        protected ItemSort() {
+            super(new Name("Item"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof Item;
         }
     }
 }

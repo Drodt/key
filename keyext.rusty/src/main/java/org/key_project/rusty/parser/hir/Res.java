@@ -7,7 +7,6 @@ import org.key_project.rusty.parser.hir.hirty.PrimHirTy;
 
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
 public interface Res {
     record PrimTy(PrimHirTy ty) implements Res {
     }
@@ -34,4 +33,3 @@ public interface Res {
         }
     }
 }
-//spotless:on

@@ -41,6 +41,7 @@ public class ProofCollections {
         simple.loadable("simple.proof");
         simple.loadable("if.proof");
         simple.loadable("iflet.proof");
+        simple.provable("auto-if.key");
 
         var refs = c.group("references");
         refs.loadable("shared-ref.proof");
@@ -63,8 +64,16 @@ public class ProofCollections {
         array.loadable("array-get-of-repeat.proof");
         array.loadable("array-get-of-set.proof");
         array.loadable("array-test.proof");
+        array.loadable("array-enumerate.proof");
+
+        var tuples = c.group("tuples");
+        tuples.loadable("tuple-test.proof");
+
+        var option = c.group("option");
+        option.loadable("option.proof");
         */
-        var ghost = c.group("ghost"); 
+
+        var ghost = c.group("ghost");
         ghost.loadable("first-ghost.proof");
         // var algos = c.group("algorithms");
         // algos.loadable("binary-search/binary-search.proof"); TODO: fix rml transl err:

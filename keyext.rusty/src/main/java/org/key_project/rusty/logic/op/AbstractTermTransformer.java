@@ -12,12 +12,14 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.AbstractSortedOperator;
 import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.Operator;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.logic.sort.SortImpl;
+import org.key_project.rusty.rule.inst.ProgramListInstantiation;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.CreateFrameCond;
 import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
@@ -67,6 +69,9 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
 
     public static final AbstractTermTransformer INTRODUCE_AT_PRE_DEFINITIONS = new IntroAtPreDefs();
 
+    public static final AbstractTermTransformer TO_TUPLE = new ToTuple();
+    public static final AbstractTermTransformer CREATE_ARRAY = new CreateArray();
+
     @SuppressWarnings("argument.type.incompatible")
     protected AbstractTermTransformer(Name name, int arity, Sort sort) {
         super(name, createMetaSortArray(arity), sort, Modifier.NONE);
@@ -111,6 +116,25 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
             var pvName = placeName.substring(1, place.op().name().toString().length() - 1);
             var pv = services.getNamespaces().programVariables().lookup(pvName);
             return services.getTermBuilder().elementary(pv, t);
+        }
+    }
+
+    private static class ToTuple extends AbstractTermTransformer {
+        public ToTuple() {
+            super(new Name("toTuple"), 1);
+        }
+
+        @Override
+        public Term transform(Term term, SVInstantiations svInst, Services services) {
+            var sv = term.sub(0);
+            var pes =
+                (ProgramListInstantiation) svInst.getInstantiationEntry((SchemaVariable) sv.op());
+
+            var terms = new Term[pes.getInstantiation().size()];
+            for (int i = 0; i < terms.length; i++) {
+                terms[i] = services.convertToLogicElement(pes.getInstantiation().get(i));
+            }
+            return services.getTermBuilder().tuple(terms);
         }
     }
 
@@ -195,5 +219,30 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         }
 
         return result.toString();
+    }
+
+    private static class CreateArray extends AbstractTermTransformer {
+        public CreateArray() {
+            super(new Name("createArray"), 2);
+        }
+
+        @Override
+        public Term transform(Term term, SVInstantiations svInst, Services services) {
+            var sort = (ParametricSortInstance) term.sub(0).sort();
+            var sv = (SchemaVariable) term.sub(1).op();
+            var inst = (ProgramListInstantiation) svInst.getInstantiationEntry(sv);
+            var lst = inst.getInstantiation();
+
+            var terms = new Term[lst.size()];
+            for (int i = 0; i < terms.length; i++) {
+                terms[i] = Services.convertToLogicElement(lst.get(i), services);
+            }
+
+            var tb = services.getTermBuilder();
+            var initialArrayOp = new RFunction(new Name(tb.newName("a")), sort);
+            var initialArray = tb.func(initialArrayOp);
+
+            return tb.array(initialArray, terms);
+        }
     }
 }

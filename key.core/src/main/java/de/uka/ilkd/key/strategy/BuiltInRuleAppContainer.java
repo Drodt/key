@@ -3,15 +3,17 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.strategy;
 
-import de.uka.ilkd.key.proof.FormulaTag;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.BuiltInRule;
 import de.uka.ilkd.key.rule.IBuiltInRuleApp;
 
+import org.key_project.prover.indexing.FormulaTag;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
+import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
@@ -20,7 +22,6 @@ import org.key_project.util.collection.ImmutableSLList;
  * Instances of this class are immutable
  */
 public class BuiltInRuleAppContainer extends RuleAppContainer {
-
     /**
      * The position of the rule app in two different representations: <code>positionTag</code>
      * denotes the concerned formula and survives modifications of the sequent and of parts of the
@@ -38,7 +39,7 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // constructors
     // -------------------------------------------------------------------------
 
-    private BuiltInRuleAppContainer(IBuiltInRuleApp bir,
+    public BuiltInRuleAppContainer(IBuiltInRuleApp bir,
             PosInOccurrence pio, RuleAppCost cost,
             Goal goal) {
         super(bir, cost);
@@ -105,28 +106,10 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         return new BuiltInRuleAppContainer(bir, pio, cost, goal);
     }
 
-    /**
-     * Create container for RuleApp.
-     *
-     * @return container for the currently applicable BuiltInRuleApp, the cost may be an instance of
-     *         <code>TopRuleAppCost</code>.
-     */
-    static ImmutableList<RuleAppContainer> createInitialAppContainers(
-            ImmutableList<IBuiltInRuleApp> birs, PosInOccurrence pio,
-            Goal goal) {
-        ImmutableList<RuleAppContainer> result = ImmutableSLList.nil();
-
-        for (IBuiltInRuleApp bir : birs) {
-            result = result.prepend(createAppContainer(bir, pio, goal));
-        }
-
-        return result;
-    }
-
-
 
     @Override
-    public ImmutableList<RuleAppContainer> createFurtherApps(Goal goal) {
+    public ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
+        var goal = (Goal) p_goal;
         if (!isStillApplicable(goal)) {
             return ImmutableSLList.nil();
         }
@@ -142,7 +125,8 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
 
 
     @Override
-    public RuleApp completeRuleApp(Goal goal) {
+    public RuleApp completeRuleApp(ProofGoal<?> p_goal) {
+        var goal = (Goal) p_goal;
         if (!isStillApplicable(goal)) {
             return null;
         }

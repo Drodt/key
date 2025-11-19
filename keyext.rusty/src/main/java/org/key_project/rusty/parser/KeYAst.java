@@ -12,6 +12,7 @@ import org.key_project.rusty.proof.init.Includes;
 import org.key_project.rusty.settings.Configuration;
 import org.key_project.rusty.settings.ProofSettings;
 
+import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
@@ -86,6 +87,30 @@ public abstract class KeYAst<T extends ParserRuleContext> {
                 return a.PROOF().getSymbol();
             }
             return null;
+        }
+
+        /**
+         * Extracts the decls and taclets into a string.
+         * The problem header may contain the bootstrap classpath,
+         * the regular classpath, the Java source file to load,
+         * include statements to load other files, configuration of options,
+         * declarations of sorts, program variables, schema variables, predicates, and more.
+         * See the grammar (KeYParser.g4) for more possible elements.
+         */
+        public String getProblemHeader() {
+            final KeYRustyParser.DeclsContext decls = ctx.decls();
+            if (decls != null && decls.getChildCount() > 0) {
+                final Token start = decls.start;
+                final Token stop = decls.stop;
+                if (start != null && stop != null) {
+                    int a = start.getStartIndex();
+                    int b = stop.getStopIndex();
+                    Interval interval = new Interval(a, b);
+                    CharStream input = ctx.start.getInputStream();
+                    return input.getText(interval);
+                }
+            }
+            return "";
         }
     }
 

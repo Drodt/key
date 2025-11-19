@@ -39,9 +39,7 @@ public interface UserInterfaceControl {
     ///
     /// @param profile An optional [Profile] to use. If it is `null` the default profile
     /// [#getDefaultProfile()] is used.
-    /// @param file The java file to open.
-    /// @param classPaths The class path entries to use.
-    /// @param bootClassPath The boot class path to use.
+    /// @param file The file to open.
     /// @param includes Optional includes to consider.
     /// @param poPropertiesToForce Some optional [Properties] for the PO which extend or
     /// overwrite saved PO [Properties].
@@ -52,8 +50,8 @@ public interface UserInterfaceControl {
     /// @param callbackProofLoaded receives the proof after it is loaded, but before it is replayed
     /// @return The opened [AbstractProblemLoader].
     /// @throws ProblemLoaderException Occurred Exception.
-    AbstractProblemLoader load(Profile profile, File file, List<File> classPaths,
-            File bootClassPath, List<File> includes, Properties poPropertiesToForce,
+    AbstractProblemLoader load(Profile profile, File file, List<File> includes,
+            Properties poPropertiesToForce,
             boolean forceNewProfileOfNewProofs,
             Consumer<Proof> callbackProofLoaded) throws ProblemLoaderException;
 
@@ -65,6 +63,11 @@ public interface UserInterfaceControl {
     /// @return The instantiated [Proof].
     /// @throws ProofInputException Occurred Exception.
     Proof createProof(InitConfig initConfig, ProofOblInput input) throws ProofInputException;
+
+    /// Returns the used [ProofControl].
+    ///
+    /// @return The used [ProofControl].
+    ProofControl getProofControl();
 
     /// Registers an already created [ProofAggregate] in this [UserInterfaceControl].
     ///

@@ -15,7 +15,6 @@ import org.key_project.util.ExtList;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
 public class BorrowExpression implements Expr {
     private final boolean mut;
     private final Expr expr;
@@ -45,7 +44,8 @@ public class BorrowExpression implements Expr {
 
     @Override
     public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return expr;
+        if (n == 0)
+            return expr;
         throw new IndexOutOfBoundsException("BorrowExpression has only one child");
     }
 
@@ -58,7 +58,8 @@ public class BorrowExpression implements Expr {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("&");
-        if (mut) sb.append("mut ");
+        if (mut)
+            sb.append("mut ");
         sb.append(expr);
         return sb.toString();
     }
@@ -70,7 +71,8 @@ public class BorrowExpression implements Expr {
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass())
+            return false;
         BorrowExpression that = (BorrowExpression) o;
         return mut == that.mut && Objects.equals(expr, that.expr);
     }
@@ -80,4 +82,3 @@ public class BorrowExpression implements Expr {
         return Objects.hash(mut, expr);
     }
 }
-//spotless:on

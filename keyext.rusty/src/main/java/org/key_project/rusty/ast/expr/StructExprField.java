@@ -4,6 +4,23 @@
 package org.key_project.rusty.ast.expr;
 
 import org.key_project.logic.SyntaxElement;
+import org.key_project.rusty.ast.Identifier;
 
-public interface StructExprField extends SyntaxElement {
+import org.jspecify.annotations.NonNull;
+
+public record StructExprField(Identifier name, Expr expr, boolean isShorthand)
+        implements SyntaxElement {
+    @Override
+    public @NonNull SyntaxElement getChild(int n) {
+        if (n == 0)
+            return name;
+        if (n == 1)
+            return expr;
+        throw new IndexOutOfBoundsException("StructExprField has only two children");
+    }
+
+    @Override
+    public int getChildCount() {
+        return 1;
+    }
 }

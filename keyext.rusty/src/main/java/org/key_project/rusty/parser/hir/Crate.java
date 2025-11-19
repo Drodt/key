@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir;
 
-import org.key_project.rusty.parser.hir.expr.BlockCheckMode;
-import org.key_project.rusty.parser.hir.expr.ExprKind;
-import org.key_project.rusty.parser.hir.expr.LitIntTy;
-import org.key_project.rusty.parser.hir.expr.LitKind;
+import org.key_project.rusty.parser.hir.expr.*;
 import org.key_project.rusty.parser.hir.hirty.HirTyKind;
 import org.key_project.rusty.parser.hir.hirty.PrimHirTy;
 import org.key_project.rusty.parser.hir.item.FnRetTy;
@@ -16,16 +13,14 @@ import org.key_project.rusty.parser.hir.pat.PatExprKind;
 import org.key_project.rusty.parser.hir.pat.PatKind;
 import org.key_project.rusty.parser.hir.stmt.LocalSource;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
-import org.key_project.rusty.parser.hir.ty.Ty;
-import org.key_project.rusty.parser.hir.ty.TyConst;
-import org.key_project.rusty.parser.hir.ty.ValTree;
+import org.key_project.rusty.parser.hir.ty.*;
 import org.key_project.rusty.speclang.spec.SpecMap;
 import org.key_project.rusty.speclang.spec.TermKind;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 
-public record Crate(Mod topMod, HirTyMapping[] types) {
+public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
     public record WrapperOutput(Crate crate, SpecMap specs) {
     }
 
@@ -52,7 +47,17 @@ public record Crate(Mod topMod, HirTyMapping[] types) {
                     .registerTypeAdapter(PatExprKind.class, new PatExprKind.Adapter())
                     .registerTypeAdapter(ConstArgKind.class, new ConstArgKind.Adapter())
                     .registerTypeAdapter(TyConst.class, new TyConst.Adapter())
-                    .registerTypeAdapter(ValTree.class, new ValTree.Adapter()).create();
+                    .registerTypeAdapter(ValTree.class, new ValTree.Adapter())
+                    .registerTypeAdapter(StrStyle.class, new StrStyle.Adapter())
+                    .registerTypeAdapter(LitFloatTy.class, new LitFloatTy.Adapter())
+                    .registerTypeAdapter(ClosureBinder.class, new ClosureBinder.Adapter())
+                    .registerTypeAdapter(YieldSource.class, new YieldSource.Adapter())
+                    .registerTypeAdapter(CaptureBy.class, new CaptureBy.Adapter())
+                    .registerTypeAdapter(GenericTyArgKind.class, new GenericTyArgKind.Adapter())
+                    .registerTypeAdapter(TyGenericParamDefKind.class,
+                        new TyGenericParamDefKind.Adapter())
+                    .registerTypeAdapter(GenericArg.class, new GenericArg.Adapter())
+                    .create();
         return gson.fromJson(json, WrapperOutput.class);
     }
 }

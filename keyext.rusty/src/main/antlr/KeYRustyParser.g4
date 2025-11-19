@@ -88,6 +88,17 @@ datatype_decl:
   SEMI
 ;
 
+datatype_constructor:
+  name=simple_ident
+  (
+    LPAREN
+    (argName+=simple_ident COLON argSort+=sortId
+     (COMMA argName+=simple_ident COLON argSort+=sortId)*
+    )?
+    RPAREN
+  )?
+;
+
 sortId
 :
     id=simple_ident_dots formal_sort_args?
@@ -115,6 +126,16 @@ func_decl
     SEMI
 ;
 
+pred_decl
+:
+  doc=DOC_COMMENT?
+  pred_name = funcpred_name
+  formal_sort_param_decls?
+  (whereToBind=where_to_bind)?
+  argSorts=arg_sorts
+  SEMI
+;
+
 accessterm
 :
   // OLD
@@ -133,5 +154,10 @@ varexp_argument
 ;
 
 funcpred_name
-   : (name = simple_ident_dots | num = INT_LITERAL)
+   : (name = simple_colon_dots | num = INT_LITERAL)
    ;
+
+ simple_colon_dots
+:
+  DOUBLECOLON? simple_ident (DOUBLECOLON simple_ident)*
+;

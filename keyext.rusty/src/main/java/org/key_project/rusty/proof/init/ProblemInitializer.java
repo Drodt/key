@@ -30,6 +30,7 @@ import org.key_project.rusty.proof.RustModel;
 import org.key_project.rusty.proof.io.*;
 import org.key_project.rusty.proof.io.consistency.FileRepo;
 import org.key_project.rusty.proof.mgt.AxiomJustification;
+import org.key_project.rusty.prover.impl.PerfScope;
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.Rule;
 import org.key_project.rusty.util.MiscTools;
@@ -38,9 +39,13 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public final class ProblemInitializer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProblemInitializer.class);
+
     private static InitConfig baseConfig;
     private final Services services;
 
@@ -156,8 +161,11 @@ public final class ProblemInitializer {
             try {
                 var output =
                     HirRustyReader.getWrapperOutput(Path.of(rustPath).toAbsolutePath().normalize());
+                var beforeConversion = System.nanoTime();
                 var converter = new HirConverter(initConfig.getServices(), output.specs());
                 converter.convertCrate(output.crate());
+                LOGGER.debug("HIR conversion took {}",
+                    PerfScope.formatTime(System.nanoTime() - beforeConversion));
             } catch (IOException e) {
                 throw new ProofInputException(e);
             }

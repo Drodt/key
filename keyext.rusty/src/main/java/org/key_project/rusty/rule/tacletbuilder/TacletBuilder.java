@@ -120,14 +120,14 @@ public abstract class TacletBuilder<T extends Taclet> {
 
     /// adds a new _new_ variable to the variable conditions of the Taclet: v is new and has the
     /// same type as peerSV
-    public void addVarsNew(org.key_project.logic.op.sv.SchemaVariable v,
-            org.key_project.logic.op.sv.SchemaVariable peerSV) {
+    public void addVarsNew(SchemaVariable v,
+            SchemaVariable peerSV) {
         addVarsNew(new NewVarcond(v, peerSV));
     }
 
     /// adds a new _new_ variable to the variable conditions of the Taclet: v is new and has the
     /// given type
-    public void addVarsNew(org.key_project.logic.op.sv.SchemaVariable v, KeYRustyType type) {
+    public void addVarsNew(SchemaVariable v, KeYRustyType type) {
         if (type == null) {
             throw new NullPointerException("given type is null");
         }
@@ -145,26 +145,26 @@ public abstract class TacletBuilder<T extends Taclet> {
 
     /// adds a new _NotFreeIn_ variable pair to the variable conditions of the Taclet: v0 is not
     /// free in v1.
-    public void addVarsNotFreeIn(org.key_project.logic.op.sv.SchemaVariable v0,
-            org.key_project.logic.op.sv.SchemaVariable v1) {
+    public void addVarsNotFreeIn(SchemaVariable v0,
+            SchemaVariable v1) {
         varsNotFreeIn = varsNotFreeIn.prepend(new NotFreeIn(v0, v1));
     }
 
 
-    public void addVarsNotFreeIn(Iterable<? extends org.key_project.logic.op.sv.SchemaVariable> v0,
-            Iterable<? extends org.key_project.logic.op.sv.SchemaVariable> v1) {
-        for (org.key_project.logic.op.sv.SchemaVariable boundSV : v0) {
-            for (org.key_project.logic.op.sv.SchemaVariable schemaVar : v1) {
+    public void addVarsNotFreeIn(Iterable<? extends SchemaVariable> v0,
+            Iterable<? extends SchemaVariable> v1) {
+        for (SchemaVariable boundSV : v0) {
+            for (SchemaVariable schemaVar : v1) {
                 addVarsNotFreeIn(boundSV, schemaVar);
             }
         }
     }
 
 
-    public void addVarsNotFreeIn(Iterable<? extends org.key_project.logic.op.sv.SchemaVariable> v0,
-            org.key_project.logic.op.sv.SchemaVariable... v1) {
-        for (org.key_project.logic.op.sv.SchemaVariable boundSV : v0) {
-            for (org.key_project.logic.op.sv.SchemaVariable schemaVar : v1) {
+    public void addVarsNotFreeIn(Iterable<? extends SchemaVariable> v0,
+            SchemaVariable... v1) {
+        for (SchemaVariable boundSV : v0) {
+            for (SchemaVariable schemaVar : v1) {
                 addVarsNotFreeIn(boundSV, schemaVar);
             }
         }
@@ -173,7 +173,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     /// Add a "v0 depending on v1"-statement. "v0" may not occur within the `if` sequent or the
     /// `find`
     /// formula/term, however, this is not checked
-    public void addVarsNewDependingOn(org.key_project.logic.op.sv.SchemaVariable v0,
+    public void addVarsNewDependingOn(SchemaVariable v0,
             SchemaVariable v1) {
         varsNewDependingOn = varsNewDependingOn.prepend(new NewDependingOn(v0, v1));
     }

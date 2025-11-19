@@ -424,6 +424,9 @@ public abstract class AbstractProblemLoader {
             problemInitializer.tryReadProof(parser, (KeYUserProblemFile) envInput);
             parserResult = parser.getResult();
 
+            // Parser is no longer needed, set it to null to free memory.
+            parser = null;
+
             replayer = new IntermediateProofReplayer(this, proof, parserResult);
             replayResult =
                 replayer.replay();

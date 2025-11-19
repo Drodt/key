@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.key_project.logic.Name;
@@ -14,6 +15,7 @@ import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.logic.sort.TermArg;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class ArrayType implements Type {
@@ -58,8 +60,16 @@ public class ArrayType implements Type {
     }
 
     @Override
-    public Name name() {
+    public @NonNull Name name() {
         return name;
+    }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        var it = elementType.instantiate(instMap, services);
+        if (it == elementType)
+            return this;
+        return getInstance(it, length, services);
     }
 
     record TypeAndLen(Type ty, int len) {

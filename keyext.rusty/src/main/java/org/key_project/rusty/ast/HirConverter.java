@@ -9,6 +9,8 @@ import java.util.*;
 import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.*;
+import org.key_project.rusty.ast.abstraction.Enum;
+import org.key_project.rusty.ast.abstraction.GenericEnum;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.fn.Function;
@@ -22,6 +24,10 @@ import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.ty.*;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.sort.GenericParameter;
+import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortDecl;
+import org.key_project.rusty.logic.sort.SortImpl;
 import org.key_project.rusty.parser.hir.*;
 import org.key_project.rusty.parser.hir.expr.*;
 import org.key_project.rusty.parser.hir.hirty.*;
@@ -35,9 +41,7 @@ import org.key_project.rusty.parser.hir.pat.PatKind;
 import org.key_project.rusty.parser.hir.stmt.LetStmt;
 import org.key_project.rusty.parser.hir.stmt.Stmt;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
-import org.key_project.rusty.parser.hir.ty.Ty;
-import org.key_project.rusty.parser.hir.ty.TyConst;
-import org.key_project.rusty.parser.hir.ty.ValTree;
+import org.key_project.rusty.parser.hir.ty.*;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
@@ -45,6 +49,7 @@ import org.key_project.rusty.speclang.spec.LoopSpec;
 import org.key_project.rusty.speclang.spec.SpecMap;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -53,8 +58,10 @@ public class HirConverter {
 
     private final @Nullable Map<DefId, FnSpec> fnSpecs;
     private final @Nullable Map<HirId, LoopSpec> loopSpecs;
+    private final Map<DefId, Adt> adts = new HashMap<>();
     private final FnSpecConverter fnSpecConverter;
     private final LoopSpecConverter loopSpecConverter;
+    private @Nullable GenericTyParam[] currentParams = null;
 
     public HirConverter(Services services, @Nullable SpecMap specs) {
         this.services = services;
@@ -100,6 +107,10 @@ public class HirConverter {
 
     public Crate convertCrate(org.key_project.rusty.parser.hir.Crate crate) {
         currentFn = null;
+        for (var adt : crate.adts()) {
+            var def = getAdt(adt.def());
+            adts.put(adt.defId(), def);
+        }
         Crate crate1 = new Crate(convertMod(crate.topMod()));
         for (var m : crate.types()) {
             var ty = convertTy(m.ty());
@@ -179,7 +190,8 @@ public class HirConverter {
             null, retTy, null);
         if (fnSpecs != null) {
             var spec = fnSpecs.get(new DefId(id.localDefIndex(), 0));
-            fn2Spec.put(function, Objects.requireNonNull(spec));
+            if (spec != null)
+                fn2Spec.put(function, Objects.requireNonNull(spec, name.toString()));
         }
         localFns.put(id, function);
         fnsToComplete.put(function, fn);
@@ -202,25 +214,152 @@ public class HirConverter {
         var id = expr.hirId();
         var ty = Objects.requireNonNull(types.get(id), "No type for " + expr);
         return switch (expr.kind()) {
+            case ExprKind.ConstBlock e -> convertConstBlockExpr(e);
+            case ExprKind.Array e -> convertArrayExpr(e, ty);
             case ExprKind.Call e -> convertCall(e);
-            case ExprKind.BlockExpr e -> convertBlockExpr(e);
+            case ExprKind.MethodCall e -> convertMethodCall(e);
+            case ExprKind.Tup e -> convertTupleExpr(e, ty);
+            case ExprKind.Binary e -> convertBinary(e);
+            case ExprKind.Unary e -> convertUnary(e, ty);
             case ExprKind.LitExpr(var e) -> convertLitExpr(e, ty);
+            case ExprKind.CastExpr e -> convertCastExpr(e);
+            // TypeExpr? When does this occur?
+            case ExprKind.DropTemps(var e) -> convertExpr(e);
             case ExprKind.Let(var l) -> convertLetExpr(l);
             case ExprKind.If e -> convertIfExpr(e, ty);
             case ExprKind.Loop e -> convertLoopExpr(e, id, ty);
-            case ExprKind.DropTemps(var e) -> convertExpr(e);
+            case ExprKind.Match e -> convertMatchExpr(e, ty);
+            case ExprKind.Closure e -> convertClosure(e);
+            case ExprKind.BlockExpr e -> convertBlockExpr(e);
+            case ExprKind.Assign e -> convertAssign(e, ty);
+            case ExprKind.AssignOp e -> convertAssignOp(e);
+            case ExprKind.Field e -> convertFieldExpr(e);
+            case ExprKind.Index e -> convertIndexExpr(e, ty);
             case ExprKind.Path(var e) -> convertPathExpr(e, ty);
             case ExprKind.AddrOf e -> convertAddrOf(e);
             case ExprKind.Break e -> convertBreakExpr(e);
-            case ExprKind.Assign e -> convertAssign(e, ty);
-            case ExprKind.AssignOp e -> convertAssignOp(e);
-            case ExprKind.Binary e -> convertBinary(e);
-            case ExprKind.Unary e -> convertUnary(e, ty);
+            case ExprKind.Continue e -> convertContinue(e);
+            case ExprKind.Ret e -> convertReturn(e);
+            // Become? What even is that?
+            // InlineAsm?
+            // OffsetOf?
+            case ExprKind.Struct e -> convertStructExpr(e);
             case ExprKind.Repeat e -> convertRepeat(e, ty);
-            case ExprKind.Index e -> convertIndexExpr(e, ty);
+            // case ExprKind.Yield e -> convertYieldExpr(e);
             case ExprKind.GhostBlockExpr e -> convertGhostBlockExpr(e);
             default -> throw new IllegalArgumentException("Unknown expression: " + expr);
         };
+    }
+
+    private ConstBlockExpression convertConstBlockExpr(ExprKind.ConstBlock e) {
+        var body = (BlockExpression) convertExpr(e.block().body().value());
+        return new ConstBlockExpression(body);
+    }
+
+    private ArrayExpression convertArrayExpr(ExprKind.Array e, Type ty) {
+        var exprs = new Expr[e.exprs().length];
+        for (int i = 0; i < exprs.length; i++) {
+            exprs[i] = convertExpr(e.exprs()[i]);
+        }
+        return new ArrayExpression(new ImmutableArray<>(exprs), ty);
+    }
+
+    private MethodCallExpression convertMethodCall(ExprKind.MethodCall e) {
+        var args = new Expr[e.args().length];
+        for (int i = 0; i < e.args().length; i++) {
+            args[i] = convertExpr(e.args()[i]);
+        }
+        return new MethodCallExpression(convertExpr(e.callee()), convertPathSegment(e.segment()),
+            new ImmutableArray<>(args));
+    }
+
+    private TupleExpression convertTupleExpr(ExprKind.Tup e, Type type) {
+        if (e.exprs().length == 0)
+            return TupleExpression.UNIT;
+        var exprs = new Expr[e.exprs().length];
+        for (int i = 0; i < exprs.length; i++) {
+            exprs[i] = convertExpr(e.exprs()[i]);
+        }
+        return new TupleExpression(new ImmutableArray<>(exprs), type);
+    }
+
+    private Expr convertCastExpr(ExprKind.CastExpr e) {
+        return new TypeCastExpression(convertExpr(e.expr()), convertHirTy(e.ty()));
+    }
+
+    private MatchExpression convertMatchExpr(ExprKind.Match e, Type ty) {
+        var arms = new MatchArm[e.arms().length];
+        for (int i = 0; i < arms.length; i++) {
+            arms[i] = convertArm(e.arms()[i], ty);
+        }
+        return new MatchExpression(convertExpr(e.expr()), new ImmutableArray<>(arms));
+    }
+
+    private MatchArm convertArm(Arm arm, Type ty) {
+        return new MatchArm(convertPat(arm.pat(), ty),
+            arm.guard() == null ? null : convertExpr(arm.guard()), convertExpr(arm.body()));
+    }
+
+    private ClosureExpression convertClosure(ExprKind.Closure e) {
+        var c = e.closure();
+        var params = new ClosureParam[c.body().params().length];
+        // TODO
+        RustType ty = null;
+        var body = convertExpr(c.body().value());
+        return new ClosureExpression(c.captureClause() instanceof CaptureBy.Value,
+            new ImmutableArray<>(params), ty, body);
+    }
+
+    private FieldExpression convertFieldExpr(ExprKind.Field e) {
+        Expr base = convertExpr(e.expr());
+        Identifier ident = new Identifier(new Name(convertIdent(e.field())));
+        var baseTy = base.type(services);
+        var fields = switch (baseTy) {
+            case Struct s -> s.fields();
+            case TupleType t -> t.fields();
+            default -> throw new IllegalArgumentException("Unknown expression: " + e.expr());
+        };
+        Field field = null;
+        for (var f : fields) {
+            if (f.name().equals(ident.name())) {
+                field = f;
+                break;
+            }
+        }
+        var fieldIdent = new FieldIdentifier(ident, Objects.requireNonNull(field));
+        return new FieldExpression(base,
+            fieldIdent);
+    }
+
+    private ContinueExpression convertContinue(ExprKind.Continue e) {
+        var label = e.dest() == null ? null : convertDest(e.dest());
+        return new ContinueExpression(label);
+    }
+
+    private ReturnExpression convertReturn(ExprKind.Ret e) {
+        var expr = e.expr() == null ? null : convertExpr(e.expr());
+        return new ReturnExpression(expr);
+    }
+
+    private StructExpression convertStructExpr(ExprKind.Struct e) {
+        var path = convertQPath(e.path());
+        var fields = new StructExprField[e.fields().length];
+        for (int i = 0; i < e.fields().length; i++) {
+            fields[i] = convertExprField(e.fields()[i]);
+        }
+        var tail = switch (e.tail()) {
+            case StructTailExpr.None ignored -> null;
+            case StructTailExpr.Base b -> new BaseStructTailExpression(convertExpr(b.base()));
+            case StructTailExpr.DefaultFields ignored -> new DefaultStructTailExpression();
+            default -> throw new IllegalArgumentException("Unknown struct tail: " + e.tail());
+        };
+        return new StructExpression(path, new ImmutableArray<>(fields), tail);
+    }
+
+    private StructExprField convertExprField(ExprField field) {
+        var name = new Name(field.ident().name());
+        var expr = convertExpr(field.expr());
+        return new StructExprField(new Identifier(name), expr, field.isShorthand());
     }
 
     private CallExpression convertCall(ExprKind.Call call) {
@@ -312,7 +451,15 @@ public class HirConverter {
     }
 
     private BreakExpression convertBreakExpr(ExprKind.Break b) {
-        return new BreakExpression(null, b.expr() != null ? convertExpr(b.expr()) : null);
+        var label = b.dest() == null ? null : convertDest(b.dest());
+        return new BreakExpression(label, b.expr() != null ? convertExpr(b.expr()) : null);
+    }
+
+    private @Nullable Label convertDest(Destination dest) {
+        if (dest.label() == null) {
+            return null;
+        }
+        throw new UnsupportedOperationException("TODO: destination");
     }
 
     private AssignmentExpression convertAssign(ExprKind.Assign assign, Type type) {
@@ -334,15 +481,16 @@ public class HirConverter {
             case Deref -> UnaryExpression.Operator.Deref;
             case Not -> UnaryExpression.Operator.Not;
             case Neg -> UnaryExpression.Operator.Neg;
+            case PtrMetadata -> throw new UnsupportedOperationException("PtrMetadata UnOp");
         }, convertExpr(unary.expr()));
     }
 
-    private RepeatedArrayExpression convertRepeat(ExprKind.Repeat repeat, Type type) {
-        return new RepeatedArrayExpression(convertExpr(repeat.expr()),
+    private RepeatExpression convertRepeat(ExprKind.Repeat repeat, Type type) {
+        return new RepeatExpression(convertExpr(repeat.expr()),
             convertConstArg(repeat.len()), type);
     }
 
-    private Expr convertConstArg(org.key_project.rusty.parser.hir.ConstArg len) {
+    private Expr convertConstArg(ConstArg len) {
         var ac = ((ConstArgKind.Anon) len.kind()).ac();
         return convertExpr(ac.body().value());
     }
@@ -365,7 +513,7 @@ public class HirConverter {
             case BitOr -> BinaryExpression.Operator.BitOr;
             case Shl -> BinaryExpression.Operator.Shl;
             case Shr -> BinaryExpression.Operator.Shr;
-            case Eq -> BinaryExpression.Operator.Eq;
+            case Eq, LogEq -> BinaryExpression.Operator.Eq;
             case Lt -> BinaryExpression.Operator.Lt;
             case Le -> BinaryExpression.Operator.Le;
             case Ne -> BinaryExpression.Operator.Ne;
@@ -408,18 +556,81 @@ public class HirConverter {
 
     private RustType convertHirTy(HirTy ty) {
         return switch (ty.kind()) {
-            case HirTyKind.Path p -> convertPathHirTy(p);
+            case HirTyKind.Slice(var s) -> convertSliceHirTy(s);
+            case HirTyKind.Array(var a, var l) -> convertArrayHirTy(a, l);
+            case HirTyKind.Ptr(var p) -> convertPtrHirTy(p);
             case HirTyKind.Ref(var m) -> convertMutHirTy(m);
+            case HirTyKind.Never ignored -> new NeverRustType();
+            case HirTyKind.Tup(var tys) -> convertTupHirType(tys);
+            case HirTyKind.Path p -> convertPathHirTy(p);
+            case HirTyKind.Infer ignored -> new InferHirTy();
             default -> throw new IllegalArgumentException("Unknown hirty type: " + ty);
         };
     }
 
+    private RustType convertTupHirType(HirTy[] tys) {
+        var innerTys = Arrays.stream(tys).map(this::convertHirTy).toList();
+        return new TupleRustType(new ImmutableArray<>(innerTys), services);
+    }
+
+    private RustType convertSliceHirTy(HirTy s) {
+        return new SliceRustType(convertHirTy(s));
+    }
+
+    private RustType convertArrayHirTy(HirTy a, ConstArg l) {
+        return new ArrayRustType(convertHirTy(a), convertConstArg(l), services);
+    }
+
+    private RustType convertPtrHirTy(HirTy p) {
+        return new PtrRustType(convertHirTy(p));
+    }
+
     private RustType convertPathHirTy(HirTyKind.Path ty) {
-        if (ty.path() instanceof org.key_project.rusty.parser.hir.QPath.Resolved r && r.ty() == null
-                && r.path().res() instanceof org.key_project.rusty.parser.hir.Res.PrimTy pty) {
-            return convertPrimHirType(pty.ty());
+        if (ty.path() instanceof org.key_project.rusty.parser.hir.QPath.Resolved(HirTy ty1, org.key_project.rusty.parser.hir.Path<org.key_project.rusty.parser.hir.Res> path)
+                && ty1 == null
+                && path.res() instanceof org.key_project.rusty.parser.hir.Res.PrimTy(PrimHirTy ty2)) {
+            return convertPrimHirType(ty2);
         }
-        return new PathRustType();
+        if (ty.path() instanceof org.key_project.rusty.parser.hir.QPath.Resolved(var ty1, var path)
+                &&
+                path.res() instanceof org.key_project.rusty.parser.hir.Res.DefRes(var def)) {
+            switch (def.kind()) {
+                case DefKind.Enum ignored -> {
+                    var adt = adts.get(def.id());
+                    var args = new ArrayList<GenericTyArg>();
+                    for (var a : path.segments()[path.segments().length - 1].args().args()) {
+                        if (a instanceof GenericArg.Type(HirTy ty2)) {
+                            RustType hirTy = convertHirTy(ty2);
+                            args.add(new GenericTyArgType(hirTy.type()));
+                        }
+                    }
+                    if (args.isEmpty()) {
+                        return new PathRustType((Type) adt);
+                    }
+                    var type = ((GenericAdt) adt).instantiate(new ImmutableArray<>(args), services);
+                    return new PathRustType(type);
+                }
+                case DefKind.Struct ignored -> {
+                    var adt = adts.get(def.id());
+                    var args = new ArrayList<GenericTyArg>();
+                    for (var a : path.segments()[path.segments().length - 1].args().args()) {
+                        if (a instanceof GenericArg.Type(HirTy ty2)) {
+                            RustType hirTy = convertHirTy(ty2);
+                            args.add(new GenericTyArgType(hirTy.type()));
+                        }
+                    }
+                    if (args.isEmpty()) {
+                        return new PathRustType((Type) adt);
+                    }
+                    var type = ((GenericAdt) adt).instantiate(new ImmutableArray<>(args), services);
+                    return new PathRustType(type);
+                }
+                default -> {
+                }
+            }
+            throw new IllegalArgumentException("Unknown def kind: " + def.kind());
+        }
+        throw new IllegalArgumentException("Unknown path type: " + ty.path());
     }
 
     private RustType convertMutHirTy(MutHirTy m) {
@@ -430,7 +641,7 @@ public class HirConverter {
 
     private PrimitiveRustType convertPrimHirType(PrimHirTy pty) {
         var primTy = switch (pty) {
-            case PrimHirTy.Bool b -> PrimitiveType.BOOL;
+            case PrimHirTy.Bool ignored -> PrimitiveType.BOOL;
             case PrimHirTy.Uint(var uintTy) -> switch (uintTy) {
                 case UintTy.U8 -> PrimitiveType.U8;
                 case UintTy.U16 -> PrimitiveType.U16;
@@ -549,6 +760,20 @@ public class HirConverter {
                 yield fn;
             }
             case DefKind.Mod m -> null;
+            case DefKind.Constructor(Ctor(var of, var isFnCtor)) -> {
+                if (of == CtorOf.Variant) {
+                    // TODO: more info
+                    yield new VariantConstructor();
+                } else {
+                    throw new UnsupportedOperationException("Struct ctor: " + def);
+                }
+            }
+            case DefKind.Enum e -> {
+                yield null;
+            }
+            case DefKind.Struct e -> {
+                yield null;
+            }
             default -> throw new IllegalArgumentException("Unknown def: " + def);
         };
     }
@@ -572,24 +797,176 @@ public class HirConverter {
                 case U64 -> PrimitiveType.U64;
                 case U128 -> PrimitiveType.U128;
             };
+            case Ty.Adt(var def, var args) -> convertAdtTy(def, args);
             case Ty.Ref(var t, var m) -> ReferenceType.get(convertTy(t), m);
-            case Ty.FnDef(var id) -> {
-                assert id.krate() == 0 : "only local FnDef tys allowed";
-                var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())));
-                yield new FnDefType(fn);
+            case Ty.FnDef(var id, var args) -> {
+                if (id.krate() == 0) {
+                    var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())));
+                    yield new FnDefType(fn);
+                }
+                yield new ForeignFnType(id, convertGenericArgs(args));
             }
             case Ty.Closure c -> new Closure();
-            case Ty.Never n -> Never.INSTANCE;
+            case Ty.Never ignored -> Never.INSTANCE;
             case Ty.Tuple(var ts) ->
-                TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList());
+                TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList(), services);
             case Ty.Array(var arrTy, var len) -> {
                 Type elementType = convertTy(arrTy);
                 yield ArrayType.getInstance(elementType, convertTyConst(len), services);
+            }
+            case Ty.Param(var p) -> {
+                assert currentParams != null;
+                yield currentParams[p.index()];
             }
             default -> throw new IllegalArgumentException("Unknown ty: " + ty);
         };
         services.getRustInfo().registerType(type);
         return type;
+    }
+
+    private Adt getAdt(AdtDef def) {
+        ImmutableArray<GenericTyParam> generics;
+        if (def.foreignGenerics() == null)
+            throw new UnsupportedOperationException("Local generics");
+        else
+            generics = convertGenerics(def.foreignGenerics());
+        Name name1 = new Name(def.pathStr());
+        var name = name1;
+        var genSortParams = getGenericParameters(generics);
+        Adt adt = switch (def.kind()) {
+            case Struct -> {
+                assert def.variants().size() == 1;
+                if (generics.isEmpty()) {
+                    var fields = convertFields(def.pathStr(), def.variants().get(0).fields());
+                    yield new Struct(name, fields, null, null);
+                } else {
+                    var fields =
+                        convertFields(def.pathStr(), def.variants().get(0).fields(), genSortParams);
+                    var sortDecl = getSortDecl(name, genSortParams);
+                    yield new GenericStruct(name, fields, generics, sortDecl);
+                }
+            }
+            case Union -> null;
+            case Enum -> {
+                if (generics.isEmpty()) {
+                    var variants = new Variant[def.variants().size()];
+                    for (var e : def.variants().entrySet()) {
+                        VariantDef value = e.getValue();
+                        variants[e.getKey()] =
+                            new Variant(name,
+                                convertFields(def.pathStr() + value.name(), value.fields()));
+                    }
+                    var sort = new SortImpl(name1, false);
+                    services.getNamespaces().sorts().addSafely(sort);
+                    yield new Enum(name1, new ImmutableArray<>(variants), sort);
+                }
+                var sortDecl = getSortDecl(name, genSortParams);
+                var variants = new GenericVariant[def.variants().size()];
+                for (var e : def.variants().entrySet()) {
+                    VariantDef value = e.getValue();
+                    variants[e.getKey()] =
+                        new GenericVariant(name, convertFields(def.pathStr() + value.name(),
+                            value.fields(), genSortParams));
+                }
+                yield new GenericEnum(name, new ImmutableArray<>(variants), generics, sortDecl);
+            }
+        };
+        currentParams = null;
+        return adt;
+    }
+
+    public ParametricSortDecl getSortDecl(Name name, ImmutableList<GenericParameter> params) {
+        var psd = new ParametricSortDecl(name, false, params, null);
+        var alreadyDefined = services.getNamespaces().parametricSorts().lookup(psd.name());
+        if (alreadyDefined != null) {
+            return alreadyDefined;
+        } else {
+            services.getNamespaces().parametricSorts().addSafely(psd);
+            return psd;
+        }
+    }
+
+    private ImmutableList<GenericParameter> getGenericParameters(
+            ImmutableArray<GenericTyParam> params) {
+        if (params.isEmpty())
+            return null;
+        ImmutableList<GenericParameter> sortParams = ImmutableSLList.nil();
+        for (int i = params.size() - 1; i >= 0; i--) {
+            sortParams = sortParams.prepend(params.get(i).toSortParam(services));
+        }
+        return sortParams;
+    }
+
+    private Type convertAdtTy(AdtDef def, GenericTyArgKind[] args) {
+        Adt adt = adts.get(def.did());
+        return switch (adt) {
+            case GenericEnum g -> g.instantiate(convertGenericArgs(args), services);
+            case Enum e -> e;
+            case GenericStruct g -> g.instantiate(convertGenericArgs(args), services);
+            case Struct s -> s;
+            default -> throw new IllegalArgumentException("Unknown adt: " + adt);
+        };
+
+    }
+
+    private ImmutableArray<Field> convertFields(String prefix, Map<Integer, TyFieldDef> fields) {
+        var res = new Field[fields.size()];
+        for (var e : fields.entrySet()) {
+            var field = e.getValue();
+            Type type = convertTy(field.ty());
+            Name name = new Name(field.name());
+            var fieldConst = services.getLDTs().getFieldLDT().createField(prefix, name, type);
+            res[e.getKey()] = new Field(name, type, fieldConst);
+        }
+        return new ImmutableArray<>(res);
+    }
+
+    private ImmutableArray<GenericField> convertFields(String prefix,
+            Map<Integer, TyFieldDef> fields, ImmutableList<GenericParameter> generics) {
+        var res = new GenericField[fields.size()];
+        for (var e : fields.entrySet()) {
+            var field = e.getValue();
+            Type type = convertTy(field.ty());
+            Name name = new Name(field.name());
+            var fieldConst =
+                services.getLDTs().getFieldLDT().createGenericField(prefix, name, type, generics);
+            res[e.getKey()] = new GenericField(name, type, fieldConst);
+        }
+        return new ImmutableArray<>(res);
+    }
+
+    private ImmutableArray<GenericTyArg> convertGenericArgs(GenericTyArgKind[] args) {
+        var res = new ArrayList<GenericTyArg>();
+        for (var e : args) {
+            switch (e) {
+                case GenericTyArgKind.Const c ->
+                    throw new UnsupportedOperationException("TODO: const generic arg");
+                case GenericTyArgKind.Type t -> res.add(new GenericTyArgType(convertTy(t.ty())));
+                case GenericTyArgKind.Lifetime ignored -> {
+                }
+                default -> throw new IllegalArgumentException("Unknown arg type: " + e);
+            }
+        }
+        return new ImmutableArray<>(res);
+    }
+
+    private ImmutableArray<GenericTyParam> convertGenerics(TyGenerics generics) {
+        var res = new ArrayList<GenericTyParam>();
+        assert currentParams == null;
+        currentParams = new GenericTyParam[generics.params().length];
+        for (var p : generics.params()) {
+            Name name = new Name(p.name());
+            if (p.kind() instanceof TyGenericParamDefKind.Type) {
+                GenericTyParam tyParam = new GenericTyParam(name, false, new GenericSort(name));
+                currentParams[p.index()] = tyParam;
+                res.add(tyParam);
+            } else if (p.kind() instanceof TyGenericParamDefKind.Const) {
+                GenericTyParam tyParam = new GenericTyParam(name, true, null);
+                currentParams[p.index()] = tyParam;
+                res.add(tyParam);
+            }
+        }
+        return new ImmutableArray<>(res);
     }
 
     // TODO: something other than int

@@ -7,12 +7,12 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 
 public class NewVarcond implements org.key_project.prover.rules.conditions.NewVarcond {
-    private final org.key_project.logic.op.sv.SchemaVariable sv;
-    private final org.key_project.logic.op.sv.SchemaVariable peerSV;
+    private final SchemaVariable sv;
+    private final SchemaVariable peerSV;
     private final KeYRustyType type;
 
-    public NewVarcond(org.key_project.logic.op.sv.SchemaVariable sv,
-            org.key_project.logic.op.sv.SchemaVariable peerSV) {
+    public NewVarcond(SchemaVariable sv,
+            SchemaVariable peerSV) {
         assert sv != null;
         assert peerSV != null;
         this.sv = sv;
@@ -20,7 +20,7 @@ public class NewVarcond implements org.key_project.prover.rules.conditions.NewVa
         type = null;
     }
 
-    public NewVarcond(org.key_project.logic.op.sv.SchemaVariable sv, KeYRustyType type) {
+    public NewVarcond(SchemaVariable sv, KeYRustyType type) {
         assert sv != null;
         assert type != null;
         this.sv = sv;
@@ -28,7 +28,7 @@ public class NewVarcond implements org.key_project.prover.rules.conditions.NewVa
         this.type = type;
     }
 
-    public org.key_project.logic.op.sv.SchemaVariable getSchemaVariable() {
+    public SchemaVariable getSchemaVariable() {
         return sv;
     }
 

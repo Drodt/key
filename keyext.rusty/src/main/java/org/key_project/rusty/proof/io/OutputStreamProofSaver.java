@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
 import org.key_project.logic.Term;
+import org.key_project.logic.op.Modality;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -25,7 +26,12 @@ import org.key_project.rusty.pp.PrettyPrinter;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.init.Profile;
+import org.key_project.rusty.proof.mgt.RuleJustification;
+import org.key_project.rusty.proof.mgt.RuleJustificationBySpec;
+import org.key_project.rusty.rule.ContractRuleApp;
+import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.rusty.rule.TacletApp;
+import org.key_project.rusty.rule.UseOperationContractRule;
 import org.key_project.rusty.rule.inst.TermInstantiation;
 import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.util.collection.ImmutableList;
@@ -125,7 +131,7 @@ public class OutputStreamProofSaver {
              * ps.print(((InfFlowProof) proof).printIFSymbols());
              * }
              */
-            final org.key_project.prover.sequent.Sequent problemSeq = proof.root().sequent();
+            final Sequent problemSeq = proof.root().sequent();
             ps.println("\\problem {");
             if (problemSeq.antecedent().isEmpty() && problemSeq.succedent().size() == 1) {
                 // Problem statement is a single formula ...
@@ -213,7 +219,7 @@ public class OutputStreamProofSaver {
         for (final AssumesFormulaInstantiation aL : l) {
             if (aL instanceof AssumesFormulaInstSeq assumesIS) {
                 final org.key_project.prover.sequent.SequentFormula f = aL.getSequentFormula();
-                s.append(" (ifseqformula \"")
+                s.append(" (assumesSeqFormula \"")
                         .append(node.sequent()
                                 .formulaNumberInSequent(assumesIS.inAntecedent(), f))
                         .append("\")");
@@ -226,7 +232,7 @@ public class OutputStreamProofSaver {
                * .append("\")");
                * }
                */ else {
-                throw new IllegalArgumentException("Unknown If-Seq-Formula type");
+                throw new IllegalArgumentException("Unknown Assumes-Seq-Formula type");
             }
         }
 
@@ -255,11 +261,9 @@ public class OutputStreamProofSaver {
 
         if (appliedRuleApp instanceof TacletApp) {
             printSingleTacletApp((TacletApp) appliedRuleApp, node, prefix, output);
-        } /*
-           * else if (appliedRuleApp instanceof IBuiltInRuleApp) {
-           * printSingleBuiltInRuleApp((IBuiltInRuleApp) appliedRuleApp, node, prefix, output);
-           * }
-           */
+        } else if (appliedRuleApp instanceof IBuiltInRuleApp iba) {
+            printSingleBuiltInRuleApp(iba, node, prefix, output);
+        }
     }
 
     /// Print applied rule(s) for a proof node and its decendants into the passed writer.
@@ -302,7 +306,7 @@ public class OutputStreamProofSaver {
         }
     }
 
-    public static String posInOccurrence2Proof(org.key_project.prover.sequent.Sequent seq,
+    public static String posInOccurrence2Proof(Sequent seq,
             PosInOccurrence pos) {
         if (pos == null) {
             return "";
@@ -366,7 +370,7 @@ public class OutputStreamProofSaver {
         } else if (val instanceof Term) {
             return printTerm((Term) val, services, shortAttrNotation);
         } else if (val instanceof Sequent) {
-            return printSequent((org.key_project.prover.sequent.Sequent) val, services);
+            return printSequent((Sequent) val, services);
         } else if (val instanceof Name) {
             return val.toString();
         } else if (val instanceof TermInstantiation) {
@@ -380,7 +384,7 @@ public class OutputStreamProofSaver {
         }
     }
 
-    private static String printSequent(org.key_project.prover.sequent.Sequent val,
+    private static String printSequent(Sequent val,
             Services services) {
         final LogicPrinter printer = createLogicPrinter(services, services == null);
         printer.printSequent(val);
@@ -391,5 +395,73 @@ public class OutputStreamProofSaver {
         final NotationInfo ni = new NotationInfo();
 
         return LogicPrinter.purePrinter(ni, (shortAttrNotation ? serv : null));
+    }
+
+    /// Print applied built-in rule for a single built-in rule application into the passed writer.
+    ///
+    /// @param appliedRuleApp the rule application to be printed
+    /// @param prefix a string which the printed rule is concatenated to
+    /// @param output the writer in which the rule is printed
+    /// @throws IOException an exception thrown when printing fails
+    private void printSingleBuiltInRuleApp(IBuiltInRuleApp appliedRuleApp, Node node, String prefix,
+            Appendable output) throws IOException {
+        output.append(prefix);
+        output.append(" (builtin \"");
+        output.append(appliedRuleApp.rule().name().toString());
+        output.append("\"");
+        output.append(posInOccurrence2Proof(node.sequent(), appliedRuleApp.posInOccurrence()));
+
+        output.append(newNames2Proof(node));
+        output.append(builtinRuleAssumesInsts(node, appliedRuleApp.assumesInsts()));
+
+        if (appliedRuleApp.rule() instanceof UseOperationContractRule) {
+            printRuleJustification(appliedRuleApp, output);
+
+            // for operation contract rules we add the modality under which the rule was applied
+            // -> needed for proof management tool
+            if (appliedRuleApp.rule() instanceof UseOperationContractRule) {
+                if (appliedRuleApp instanceof ContractRuleApp app) {
+                    Modality modality = (Modality) app.programTerm().op();
+                    output.append(" (modality \"");
+                    output.append(modality.toString());
+                    output.append("\")");
+                }
+            }
+        }
+
+        output.append("");
+        // userInteraction2Proof(node, output);
+        // notes2Proof(node, output);
+        output.append(")\n");
+    }
+
+    /// Print rule justification for applied built-in rule application into the passed writer.
+    ///
+    /// @param appliedRuleApp the rule application to be printed
+    /// @param output the writer in which the rule is printed
+    /// @throws IOException an exception thrown when printing fails
+    private void printRuleJustification(IBuiltInRuleApp appliedRuleApp, Appendable output)
+            throws IOException {
+        final RuleJustification ruleJusti = proof.getInitConfig().getJustifInfo()
+                .getJustification(appliedRuleApp, proof.getServices());
+
+        assert ruleJusti instanceof RuleJustificationBySpec
+                : "Please consult bug #1111 if this fails.";
+
+        final RuleJustificationBySpec ruleJustiBySpec = (RuleJustificationBySpec) ruleJusti;
+        output.append(" (contract \"");
+        output.append(ruleJustiBySpec.spec().getName());
+        output.append("\")");
+    }
+
+    public String builtinRuleAssumesInsts(Node node,
+            ImmutableList<PosInOccurrence> assumesInstantiations) {
+        StringBuilder s = new StringBuilder();
+        for (final PosInOccurrence posOfAssumesInstatiation : assumesInstantiations) {
+            s.append(" (assumesInst \"\" ");
+            s.append(posInOccurrence2Proof(node.sequent(), posOfAssumesInstatiation));
+            s.append(")");
+        }
+        return s.toString();
     }
 }

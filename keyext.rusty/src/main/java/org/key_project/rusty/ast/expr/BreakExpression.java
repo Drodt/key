@@ -13,7 +13,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
 public record BreakExpression(@Nullable Label label, @Nullable Expr expr) implements Expr {
     @Override
     public void visit(Visitor v) {
@@ -31,7 +30,8 @@ public record BreakExpression(@Nullable Label label, @Nullable Expr expr) implem
         if (n == 0 && expr != null) {
             return expr;
         }
-        throw new IndexOutOfBoundsException("BreakExpression has only " + getChildCount() + " children");
+        throw new IndexOutOfBoundsException(
+            "BreakExpression has only " + getChildCount() + " children");
     }
 
     @Override
@@ -61,8 +61,7 @@ public record BreakExpression(@Nullable Label label, @Nullable Expr expr) implem
 
     @Override
     public Type type(Services services) {
-// Is it never?
+        // Is it never?
         return TupleType.UNIT;
     }
 }
-//spotless:on
