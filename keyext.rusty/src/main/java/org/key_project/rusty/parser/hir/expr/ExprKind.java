@@ -35,8 +35,8 @@ public interface ExprKind {
     record BlockExpr(Block block) implements ExprKind {
     }
 
-    record GhostBlockExpr(Block block) implements ExprKind{
-        
+    record GhostBlockExpr(Block block) implements ExprKind {
+
     }
 
     record Assign(Expr left, Expr right, Span span) implements ExprKind {
@@ -73,7 +73,7 @@ public interface ExprKind {
                 case "If" -> If.class;
                 case "Loop" -> Loop.class;
                 case "Block" -> BlockExpr.class;
-                case "GhostBlock" -> GhostBlockExpr.class; 
+                case "GhostBlock" -> GhostBlockExpr.class;
                 case "Assign" -> Assign.class;
                 case "AssignOp" -> AssignOp.class;
                 case "Path" -> Path.class;
