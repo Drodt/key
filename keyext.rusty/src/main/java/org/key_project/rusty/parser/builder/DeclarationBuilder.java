@@ -52,7 +52,7 @@ public class DeclarationBuilder extends DefaultBuilder {
     @Override
     public Object visitDecls(KeYRustyParser.DeclsContext ctx) {
         mapMapOf(ctx.option_decls(), ctx.options_choice(), ctx.ruleset_decls(),
-            ctx.sort_decls(),
+            ctx.sort_decls(), ctx.datatype_decls(),
             ctx.prog_var_decls(), ctx.schema_var_decls());
         return null;
     }

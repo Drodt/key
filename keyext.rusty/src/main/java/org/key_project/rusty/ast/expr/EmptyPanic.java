@@ -16,7 +16,7 @@ public record EmptyPanic() implements Expr {
 
     @Override
     public void visit(Visitor v) {
-
+        v.performActionOnEmptyPanic(this);
     }
 
     @Override

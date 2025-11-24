@@ -10,11 +10,11 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
 public record RustyBlock(RustyProgramElement program) implements Program {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return program;
+        if (n == 0)
+            return program;
         throw new IndexOutOfBoundsException("RustyBlock " + this + " has only one child");
     }
 
@@ -34,9 +34,12 @@ public record RustyBlock(RustyProgramElement program) implements Program {
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (o == this) return true;
-        if (!(o instanceof RustyBlock(RustyProgramElement program1))) return false;
-        if (program1 == null) return program() == null;
+        if (o == this)
+            return true;
+        if (!(o instanceof RustyBlock(RustyProgramElement program1)))
+            return false;
+        if (program1 == null)
+            return program() == null;
         return program1.equals(program());
     }
 
@@ -46,4 +49,3 @@ public record RustyBlock(RustyProgramElement program) implements Program {
         return 17 + ((program() == null) ? 0 : program().hashCode());
     }
 }
-//spotless:on

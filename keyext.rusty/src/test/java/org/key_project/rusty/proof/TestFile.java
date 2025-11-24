@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.key_project.rusty.control.DefaultUserInterfaceControl;
 import org.key_project.rusty.control.KeYEnvironment;
 import org.key_project.rusty.proof.io.AbstractProblemLoader.ReplayResult;
 import org.key_project.rusty.proof.io.ProblemLoaderException;
@@ -120,7 +121,7 @@ public class TestFile {
             // File that the created proof will be saved to.
             File proofFile = new File(keyFile.getAbsolutePath() + ".proof");
 
-            KeYEnvironment env = null;
+            KeYEnvironment<DefaultUserInterfaceControl> env = null;
             Proof loadedProof = null;
             boolean success;
             try {
@@ -164,7 +165,7 @@ public class TestFile {
                     return getRunAllProofsTestResult(catched, true);
                 }
 
-                // autoMode(env, loadedProof, script);
+                autoMode(env, loadedProof);
 
                 if (testProperty == TestProperty.PROVABLE
                         || testProperty == TestProperty.NOT_PROVABLE) {
@@ -206,6 +207,15 @@ public class TestFile {
         }
     }
 
+    /// By overriding this method we can change the way how we invoke automode, for instance if we
+    /// want to use a different strategy.
+    protected void autoMode(KeYEnvironment<DefaultUserInterfaceControl> env, Proof loadedProof)
+            throws Exception {
+        // Run KeY prover.
+        // auto mode
+        env.getProofControl().startAndWaitForAutoMode(loadedProof);
+    }
+
     /// Override this method in order to change reload behaviour.
     protected void reload(boolean verbose, File proofFile, Proof loadedProof, boolean success)
             throws Exception {
@@ -219,7 +229,7 @@ public class TestFile {
         }
     }
 
-    private KeYEnvironment load(
+    private KeYEnvironment<DefaultUserInterfaceControl> load(
             File keyFile) throws ProblemLoaderException {
         return KeYEnvironment.load(keyFile);
     }

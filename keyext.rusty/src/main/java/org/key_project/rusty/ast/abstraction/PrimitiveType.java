@@ -82,4 +82,9 @@ public final class PrimitiveType implements Type {
     public RustType toRustType(Services services) {
         return new PrimitiveRustType(this);
     }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        return this;
+    }
 }

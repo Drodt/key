@@ -4,8 +4,6 @@
 package de.uka.ilkd.key.strategy;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.proof.Goal;
@@ -13,6 +11,7 @@ import de.uka.ilkd.key.rule.*;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -20,6 +19,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
+import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
@@ -81,14 +81,15 @@ public abstract class TacletAppContainer extends RuleAppContainer {
      * Create a list of new RuleAppContainers that are to be considered for application.
      */
     @Override
-    public final ImmutableList<RuleAppContainer> createFurtherApps(Goal p_goal) {
-        if (!isStillApplicable(p_goal)
+    public final ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
+        var goal = (Goal) p_goal;
+        if (!isStillApplicable(goal)
                 || (getTacletApp().assumesInstantionsComplete()
-                        && !assumesFormulasStillValid(p_goal))) {
+                        && !assumesFormulasStillValid(goal))) {
             return ImmutableSLList.nil();
         }
 
-        final TacletAppContainer newCont = createContainer(p_goal);
+        final TacletAppContainer newCont = createContainer(goal);
         if (newCont.getCost() instanceof TopRuleAppCost) {
             return ImmutableSLList.nil();
         }
@@ -97,12 +98,12 @@ public abstract class TacletAppContainer extends RuleAppContainer {
             ImmutableSLList.<RuleAppContainer>nil().prepend(newCont);
 
         if (getTacletApp().assumesInstantionsComplete()) {
-            res = addInstances(getTacletApp(), res, p_goal);
+            res = addInstances(getTacletApp(), res, goal);
         } else {
-            for (NoPosTacletApp tacletApp : incMatchAssumesFormulas(p_goal)) {
+            for (NoPosTacletApp tacletApp : incMatchAssumesFormulas(goal)) {
                 final NoPosTacletApp app = tacletApp;
-                res = addContainer(app, res, p_goal);
-                res = addInstances(app, res, p_goal);
+                res = addContainer(app, res, goal);
+                res = addInstances(app, res, goal);
             }
         }
 
@@ -184,57 +185,6 @@ public abstract class TacletAppContainer extends RuleAppContainer {
     }
 
     /**
-     * Create containers for NoFindTaclets.
-     */
-    static RuleAppContainer createAppContainers(NoPosTacletApp p_app, Goal p_goal) {
-        return createAppContainers(p_app, null, p_goal);
-    }
-
-    protected static ImmutableList<RuleAppContainer> createInitialAppContainers(
-            ImmutableList<NoPosTacletApp> p_app,
-            PosInOccurrence p_pio, Goal p_goal) {
-
-        List<RuleAppCost> costs = new LinkedList<>();
-
-        for (NoPosTacletApp app : p_app) {
-            costs.add(p_goal.getGoalStrategy().computeCost(app, p_pio, p_goal));
-        }
-
-        ImmutableList<RuleAppContainer> result = ImmutableSLList.nil();
-        for (RuleAppCost cost : costs) {
-            final TacletAppContainer container =
-                createContainer(p_app.head(), p_pio, p_goal, cost, true);
-            result = result.prepend(container);
-            p_app = p_app.tail();
-        }
-        return result;
-    }
-
-    /**
-     * Create containers for FindTaclets or NoFindTaclets.
-     *
-     * @param p_app if <code>p_pio</code> is null, <code>p_app</code> has to be a
-     *        <code>TacletApp</code> for a <code>NoFindTaclet</code>, otherwise for a
-     *        <code>FindTaclet</code>.
-     * @return list of containers for currently applicable TacletApps, the cost may be an instance
-     *         of <code>TopRuleAppCost</code>.
-     */
-    static RuleAppContainer createAppContainers(NoPosTacletApp p_app,
-            PosInOccurrence p_pio,
-            Goal p_goal) {
-        if (!(p_pio == null ? p_app.taclet() instanceof NoFindTaclet
-                : p_app.taclet() instanceof FindTaclet))
-        // faster than <code>assertTrue</code>
-        {
-            Debug.fail("Wrong type of taclet " + p_app.taclet());
-        }
-
-        // Create an initial container for the given taclet; the if-formulas of
-        // the taclet are only matched lazy (by <code>createFurtherApps()</code>
-        return createContainer(p_app, p_pio, p_goal, true);
-    }
-
-    /**
      * @return true iff instantiation of the assumes-formulas of the stored taclet app exist and are
      *         valid are still valid, i.e. the referenced formulas still exist
      */
@@ -282,18 +232,19 @@ public abstract class TacletAppContainer extends RuleAppContainer {
      * Create a <code>RuleApp</code> that is suitable to be applied or <code>null</code>.
      */
     @Override
-    public TacletApp completeRuleApp(Goal p_goal) {
-        if (!(isStillApplicable(p_goal) && assumesFormulasStillValid(p_goal))) {
+    public TacletApp completeRuleApp(ProofGoal<?> p_goal) {
+        var goal = (Goal) p_goal;
+        if (!(isStillApplicable(goal) && assumesFormulasStillValid(goal))) {
             return null;
         }
 
         TacletApp app = getTacletApp();
-        PosInOccurrence pio = getPosInOccurrence(p_goal);
-        if (!p_goal.getGoalStrategy().isApprovedApp(app, pio, p_goal)) {
+        PosInOccurrence pio = getPosInOccurrence(goal);
+        if (!goal.getGoalStrategy().isApprovedApp(app, pio, goal)) {
             return null;
         }
 
-        Services services = p_goal.proof().getServices();
+        Services services = goal.proof().getServices();
         if (pio != null) {
             app = app.setPosInOccurrence(pio, services);
             if (app == null) {
@@ -302,7 +253,7 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         }
 
         if (!app.complete()) {
-            return app.tryToInstantiate(services.getOverlay(p_goal.getLocalNamespaces()));
+            return app.tryToInstantiate(services.getOverlay(goal.getLocalNamespaces()));
         } else if (!app.isExecutable()) {
             return null;
         } else {

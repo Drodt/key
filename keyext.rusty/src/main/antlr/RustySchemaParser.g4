@@ -10,18 +10,18 @@ blockExpr
 
 expr
    : schemaVariable # SchemaVarExpression
+   | KW_CONST schemaVariable # ConstBlockSchema
    | EXPAND_FN_BODY LPAREN schemaVariable RPAREN # ExpandFnBody
    | FN_FRAME LPAREN schemaVariable COMMA blockExpr RPAREN # FnFrame
    | literalExpr # LiteralExpression
    | pathExpr # PathExpression
    | expr DOT pathExprSegment LPAREN callParams? RPAREN # MethodCallExpression
-   | expr DOT identifier # FieldExpression
+   | expr DOT (schemaVariable | identifier) # FieldExpression
    | expr DOT tupleIndex # TupleIndexingExpression
    | expr DOT KW_AWAIT # AwaitExpression
    | expr LPAREN callParams? RPAREN # CallExpression
    | expr LPAREN callParams? RPAREN AT # FunctionBodyExpression
    | expr LSQUAREBRACKET expr RSQUAREBRACKET # IndexExpression
-   | expr QUESTION # ErrorPropagationExpression
    | (AND | ANDAND) KW_MUT? expr # BorrowExpression
    | STAR expr # DereferenceExpression
    | (MINUS | NOT) expr # NegationExpression
@@ -35,13 +35,9 @@ expr
    | expr comparisonOperator expr # ComparisonExpression
    | expr ANDAND expr # LazyBooleanExpression
    | expr OROR expr # LazyBooleanExpression
-   | expr DOTDOT expr? # RangeExpression
-   | DOTDOT expr? # RangeExpression
-   | DOTDOTEQ expr # RangeExpression
-   | expr DOTDOTEQ expr # RangeExpression
    | expr EQ expr # AssignmentExpression
    | expr compoundAssignOperator expr # CompoundAssignmentExpression
-   | KW_CONTINUE label? expr? # ContinueExpression
+   | KW_CONTINUE label? # ContinueExpression
    | KW_BREAK label? expr? # BreakExpression
    | KW_RETURN expr? # ReturnExpression
    | LPAREN expr RPAREN # GroupedExpression

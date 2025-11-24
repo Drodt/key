@@ -11,7 +11,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.jspecify.annotations.NonNull;
 
 public record Identifier(Name name) implements Named, RustyProgramElement {
-
     @Override
     public @NonNull Name name() {
         return name;
@@ -28,12 +27,12 @@ public record Identifier(Name name) implements Named, RustyProgramElement {
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return name().toString();
     }
 
     @Override
     public void visit(Visitor v) {
-        throw new RuntimeException("Should never be called");
+        v.performActionOnIdentifier(this);
     }
 }

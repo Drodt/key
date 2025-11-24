@@ -5,9 +5,11 @@ package org.key_project.rusty.parser.hir;
 
 import java.util.Arrays;
 
+import org.jspecify.annotations.NonNull;
+
 public record Path<R>(Span span, R res, PathSegment[] segments) {
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return "Path{" +
             "span=" + span +
             ", res=" + res +

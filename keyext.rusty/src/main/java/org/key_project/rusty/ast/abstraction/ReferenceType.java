@@ -91,4 +91,12 @@ public final class ReferenceType implements Type {
     public RustType toRustType(Services services) {
         return new ReferenceRustType(isMut, inner.toRustType(services), this);
     }
+
+    @Override
+    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+        var it = inner.instantiate(instMap, services);
+        if (it == inner)
+            return this;
+        return get(it, isMut);
+    }
 }

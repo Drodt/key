@@ -99,4 +99,11 @@ public interface Contract extends SpecificationElement {
     /// @param contract the contract
     /// @return the proof obligation
     ProofOblInput createProofObl(InitConfig initConfig, Contract contract);
+
+    /// Returns a parseable String representation of the contract. Precondition: toBeSaved() must be
+    /// true.
+    ///
+    /// @param services the services instance
+    /// @return the (parseable) String representation
+    String proofToString(Services services);
 }

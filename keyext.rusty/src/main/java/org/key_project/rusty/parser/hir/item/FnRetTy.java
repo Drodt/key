@@ -5,6 +5,8 @@ package org.key_project.rusty.parser.hir.item;
 
 import java.lang.reflect.Type;
 
+import org.jspecify.annotations.Nullable;
+import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.Span;
 import org.key_project.rusty.parser.hir.hirty.HirTy;
 
@@ -20,17 +22,14 @@ public interface FnRetTy {
     record DefaultReturn(Span span) implements FnRetTy {
     }
 
-    class Adapter implements JsonDeserializer<FnRetTy> {
+    class Adapter extends HirAdapter<FnRetTy> {
         @Override
-        public FnRetTy deserialize(JsonElement jsonElement, Type type,
-                JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-            var obj = jsonElement.getAsJsonObject();
-            if (obj.has("Return")) {
-                return new Return(
-                    jsonDeserializationContext.deserialize(obj.get("Return"), HirTy.class));
-            }
-            return new DefaultReturn(
-                jsonDeserializationContext.deserialize(obj.get("DefaultReturn"), Span.class));
+        public @Nullable Class<? extends FnRetTy> getType(String tag) {
+            return switch (tag) {
+                case "Return" -> Return.class;
+                case "DefaultReturn" -> DefaultReturn.class;
+                default -> null;
+            };
         }
     }
 }

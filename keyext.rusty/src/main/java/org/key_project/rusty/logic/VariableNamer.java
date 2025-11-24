@@ -32,6 +32,7 @@ import org.key_project.rusty.rule.NewVarcond;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.KeYCollections;
 
 import org.jspecify.annotations.Nullable;
 
@@ -102,8 +103,8 @@ public abstract class VariableNamer implements InstantiationProposer {
             }
         }
         // get the proposal
-        return (getNameProposalForSchemaVariable(basename, var,
-            app.posInOccurrence(), posOfDeclaration, previousProposals, services));
+        return getNameProposalForSchemaVariable(basename, var,
+            app.posInOccurrence(), posOfDeclaration, previousProposals, services);
     }
 
     // precondition: sv.sort()==ProgramSVSort.VARIABLE
@@ -143,7 +144,7 @@ public abstract class VariableNamer implements InstantiationProposer {
     private String getBaseNameProposal(Type type) {
         String result;
         String name = type.name().toString();
-        // name = MiscTools.filterAlphabetic(name);
+        name = KeYCollections.filterAlphabetic(name);
         if (!name.isEmpty()) {
             result = name.substring(0, 1).toLowerCase();
         } else {

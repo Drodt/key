@@ -6,8 +6,12 @@ package org.key_project.rusty.control;
 import java.io.File;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
+import org.key_project.prover.engine.ProverTaskListener;
+import org.key_project.prover.engine.TaskFinishedInfo;
+import org.key_project.prover.engine.TaskStartedInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.ProofAggregate;
@@ -18,8 +22,17 @@ import org.key_project.rusty.proof.io.ProblemLoaderException;
 import org.key_project.rusty.proof.io.SingleThreadProblemLoader;
 import org.key_project.rusty.proof.mgt.ProofEnvironment;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractUserInterfaceControl
-        implements UserInterfaceControl, ProblemLoaderControl {
+        implements UserInterfaceControl, ProblemLoaderControl, ProverTaskListener {
+    private static final Logger LOGGER =
+        LoggerFactory.getLogger(AbstractUserInterfaceControl.class);
+
+    /// The registered [ProverTaskListener].
+    private final List<ProverTaskListener> proverTaskListener = new CopyOnWriteArrayList<>();
+
     /// Constructor.
     protected AbstractUserInterfaceControl() {
 
@@ -46,8 +59,8 @@ public abstract class AbstractUserInterfaceControl
 
     /// {@inheritDoc}
     @Override
-    public AbstractProblemLoader load(Profile profile, File file, List<File> classPath,
-            File bootClassPath, List<File> includes, Properties poPropertiesToForce,
+    public AbstractProblemLoader load(Profile profile, File file, List<File> includes,
+            Properties poPropertiesToForce,
             boolean forceNewProfileOfNewProofs,
             Consumer<Proof> callback) throws ProblemLoaderException {
         AbstractProblemLoader loader = null;
@@ -86,5 +99,77 @@ public abstract class AbstractUserInterfaceControl
     /// @return The instantiated [ProblemInitializer].
     protected ProblemInitializer createProblemInitializer(Profile profile) {
         return new ProblemInitializer(new Services(profile));
+    }
+
+    @Override
+    public void loadingStarted(AbstractProblemLoader loader) {
+
+    }
+
+    @Override
+    public void loadingFinished(AbstractProblemLoader loader,
+            IPersistablePO.LoadedPOContainer poContainer,
+            ProofAggregate proofList, AbstractProblemLoader.ReplayResult result)
+            throws ProblemLoaderException {
+        if (proofList != null) {
+            // avoid double registration at spec repos as that is done already earlier in
+            // createProof
+            // the UI method should just do the necessarily UI registrations
+            createProofEnvironmentAndRegisterProof(poContainer.getProofOblInput(), proofList,
+                loader.getInitConfig());
+        }
+    }
+
+    @Override
+    public void taskStarted(TaskStartedInfo info) {
+        fireTaskStarted(info);
+    }
+
+    @Override
+    public void taskProgress(int position) {
+        fireTaskProgress(position);
+    }
+
+    @Override
+    public void taskFinished(TaskFinishedInfo info) {
+        fireTaskFinished(info);
+    }
+
+    /// Fires the event [#taskStarted(TaskStartedInfo)] to all listener.
+    ///
+    /// @param info the [TaskStartedInfo] containing general information about the task that is
+    /// just about to start
+    protected void fireTaskStarted(TaskStartedInfo info) {
+        synchronized (proverTaskListener) {
+            for (ProverTaskListener l : proverTaskListener) {
+                l.taskStarted(info);
+            }
+        }
+    }
+
+    /// Fires the event [#taskProgress(int)] to all listener.
+    ///
+    /// @param position The current position.
+    protected void fireTaskProgress(int position) {
+        synchronized (proverTaskListener) {
+            for (ProverTaskListener l : proverTaskListener) {
+                l.taskProgress(position);
+            }
+        }
+    }
+
+    /// Fires the event [#taskFinished(TaskFinishedInfo)] to all listener.
+    ///
+    /// @param info The [TaskFinishedInfo].
+    protected void fireTaskFinished(TaskFinishedInfo info) {
+        try {
+            synchronized (proverTaskListener) {
+                for (ProverTaskListener l : proverTaskListener) {
+                    l.taskFinished(info);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("failed to fire task finished event ", e);
+        }
     }
 }

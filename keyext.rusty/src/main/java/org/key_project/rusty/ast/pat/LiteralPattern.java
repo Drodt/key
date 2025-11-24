@@ -6,7 +6,6 @@ package org.key_project.rusty.ast.pat;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-// spotless:off
 public record LiteralPattern() implements Pattern {
     @Override
     public SyntaxElement getChild(int n) {
@@ -23,4 +22,3 @@ public record LiteralPattern() implements Pattern {
         v.performActionOnLiteralPattern(this);
     }
 }
-//spotless:on

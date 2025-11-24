@@ -5,6 +5,7 @@ package org.key_project.rusty.ast.visitor;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.Identifier;
 import org.key_project.rusty.ast.PathInExpression;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.*;
@@ -138,22 +139,7 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     }
 
     @Override
-    public void performActionOnEnumeratedArrayExpression(EnumeratedArrayExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnEnumVariantFieldless(EnumVariantFieldless x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnEnumVariantTuple(EnumVariantTuple x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnErrorPropagationExpression(ErrorPropagationExpression x) {
+    public void performActionOnEnumeratedArrayExpression(ArrayExpression x) {
         doDefaultAction(x);
     }
 
@@ -163,12 +149,7 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     }
 
     @Override
-    public void performActionOnFieldStructExpression(StructStructExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnGroupedExpression(GroupedExpression x) {
+    public void performActionOnStructExpression(StructExpression x) {
         doDefaultAction(x);
     }
 
@@ -188,12 +169,7 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     }
 
     @Override
-    public void performActionOnRangeExpression(RangeExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnRepeatedArrayExpression(RepeatedArrayExpression x) {
+    public void performActionOnRepeatedArrayExpression(RepeatExpression x) {
         doDefaultAction(x);
     }
 
@@ -208,27 +184,7 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     }
 
     @Override
-    public void performActionOnTupleIndexingExpression(TupleIndexingExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnTupleStructExpression(TupleStructExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
     public void performActionOnTypeCastExpression(TypeCastExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnUnitStructExpression(UnitStructExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnEnumVariantStruct(EnumVariantStruct x) {
         doDefaultAction(x);
     }
 
@@ -243,22 +199,12 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     }
 
     @Override
-    public void performActionOnIteratorLoopExpression(IteratorLoopExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
     public void performActionOnMatchArm(MatchArm x) {
         doDefaultAction(x);
     }
 
     @Override
     public void performActionOnMatchExpression(MatchExpression x) {
-        doDefaultAction(x);
-    }
-
-    @Override
-    public void performActionOnPredicatePatternLoopExpression(PredicatePatternLoopExpression x) {
         doDefaultAction(x);
     }
 
@@ -389,6 +335,51 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
 
     @Override
     public void performActionOnLitPatExpr(LitPatExpr x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnEmptyPanic(EmptyPanic x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnArrayRustType(ArrayRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnNeverRustType(NeverRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnPtrRustType(PtrRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnSliceRustType(SliceRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnIdentifier(Identifier x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnInferHirTy(InferHirTy x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnFieldIdentifier(FieldIdentifier x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnTupleRustType(TupleRustType x) {
         doDefaultAction(x);
     }
 }

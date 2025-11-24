@@ -7,4 +7,5 @@ public enum UnOp {
     Deref,
     Not,
     Neg,
+    PtrMetadata
 }

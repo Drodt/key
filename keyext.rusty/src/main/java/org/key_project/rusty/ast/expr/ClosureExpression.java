@@ -13,9 +13,9 @@ import org.key_project.util.collection.ImmutableArray;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-// spotless:off
-public record ClosureExpression(boolean move, ImmutableArray<ClosureParam> params, @Nullable RustType ty,
-                                Expr body) implements Expr {
+public record ClosureExpression(boolean move, ImmutableArray<ClosureParam> params,
+        @Nullable RustType ty,
+        Expr body) implements Expr {
     @Override
     public void visit(Visitor v) {
         v.performActionOnClosureExpression(this);
@@ -27,9 +27,12 @@ public record ClosureExpression(boolean move, ImmutableArray<ClosureParam> param
             return params.get(n);
         }
         n -= params.size();
-        if (n == 0 && ty != null) return ty;
-        if (n == 0) return body;
-        throw new IndexOutOfBoundsException("ClosureExpression has only " + getChildCount() + " children");
+        if (n == 0 && ty != null)
+            return ty;
+        if (n == 0)
+            return body;
+        throw new IndexOutOfBoundsException(
+            "ClosureExpression has only " + getChildCount() + " children");
     }
 
     @Override
@@ -60,4 +63,3 @@ public record ClosureExpression(boolean move, ImmutableArray<ClosureParam> param
         throw new UnsupportedOperationException();
     }
 }
-//spotless:on

@@ -23,7 +23,7 @@ public record FunctionBodyExpression(@Nullable ProgramVariable resultVar, Progra
     @Override
     public SyntaxElement getChild(int n) {
         if (resultVar != null) {
-            if (resultVar != null)
+            if (n == 0)
                 return resultVar;
             --n;
         } ;
