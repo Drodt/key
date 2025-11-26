@@ -9,11 +9,17 @@ public interface ConstArgKind {
     record Anon(AnonConst ac) implements ConstArgKind {
     }
 
+    record Path(QPath path) implements ConstArgKind {}
+
+    record Infer(Span span) implements ConstArgKind {}
+
     class Adapter extends HirAdapter<ConstArgKind> {
         @Override
         public @Nullable Class<? extends ConstArgKind> getType(String tag) {
             return switch (tag) {
                 case "Anon" -> Anon.class;
+                case "Path" -> Path.class;
+                case "Infer" -> Infer.class;
                 default -> null;
             };
         }

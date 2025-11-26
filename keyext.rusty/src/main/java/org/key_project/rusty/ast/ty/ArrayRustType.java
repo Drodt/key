@@ -6,6 +6,7 @@ package org.key_project.rusty.ast.ty;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.ArrayType;
+import org.key_project.rusty.ast.abstraction.IntArrayLen;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.expr.IntegerLiteralExpression;
@@ -25,7 +26,7 @@ public class ArrayRustType implements RustType {
             case IntegerLiteralExpression le -> le.getValue().intValue();
             default -> throw new IllegalStateException("Unexpected value: " + len);
         };
-        ty = ArrayType.getInstance(elemTy.type(), length, services);
+        ty = ArrayType.getInstance(elemTy.type(), new IntArrayLen(length), services);
     }
 
     public RustType getElemTy() {

@@ -8,6 +8,7 @@ import java.util.Objects;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.ArrayType;
+import org.key_project.rusty.ast.abstraction.IntArrayLen;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.ExtList;
@@ -26,7 +27,7 @@ public final class ArrayExpression implements Expr {
 
     public ArrayExpression(ExtList children, Services services) {
         elements = new ImmutableArray<>(children.collect(Expr.class));
-        type = ArrayType.getInstance(elements.get(0).type(services), elements().size(), services);
+        type = ArrayType.getInstance(elements.get(0).type(services), new IntArrayLen(elements().size()), services);
     }
 
     @Override

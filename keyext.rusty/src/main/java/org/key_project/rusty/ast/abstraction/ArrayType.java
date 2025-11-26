@@ -22,26 +22,26 @@ public class ArrayType implements Type {
     private static final WeakHashMap<TypeAndLen, ArrayType> INSTANCES = new WeakHashMap<>();
 
     private final Type elementType;
-    private final int length;
+    private final ArrayLen length;
     private final Sort sort;
     private final Name name;
 
-    private ArrayType(Type elementType, int length, Services services) {
+    private ArrayType(Type elementType, ArrayLen length, Services services) {
         this.elementType = elementType;
         this.length = length;
         var psd = services.getNamespaces().parametricSorts().lookup("Array");
         sort = ParametricSortInstance.get(psd,
             ImmutableList.of(new SortArg(elementType.getSort(services)),
-                new TermArg(services.getTermBuilder().zTerm(length))));
+                new TermArg(length.toTerm(services))));
         name = new Name("[" + elementType + "; " + length + "]");
     }
 
-    public static ArrayType getInstance(Type elementType, int length, Services services) {
+    public static ArrayType getInstance(Type elementType, ArrayLen length, Services services) {
         return INSTANCES.computeIfAbsent(new TypeAndLen(elementType, length),
             k -> new ArrayType(elementType, length, services));
     }
 
-    public int getLength() {
+    public ArrayLen getLength() {
         return length;
     }
 
@@ -72,6 +72,6 @@ public class ArrayType implements Type {
         return getInstance(it, length, services);
     }
 
-    record TypeAndLen(Type ty, int len) {
+    record TypeAndLen(Type ty, ArrayLen len) {
     }
 }

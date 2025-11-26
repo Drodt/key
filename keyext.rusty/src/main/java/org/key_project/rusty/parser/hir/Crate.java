@@ -19,6 +19,7 @@ import org.key_project.rusty.speclang.spec.TermKind;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
+import org.key_project.rusty.speclang.spec.TermStmtKind;
 
 public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
     public record WrapperOutput(Crate crate, SpecMap specs) {
@@ -57,6 +58,8 @@ public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
                     .registerTypeAdapter(TyGenericParamDefKind.class,
                         new TyGenericParamDefKind.Adapter())
                     .registerTypeAdapter(GenericArg.class, new GenericArg.Adapter())
+                    .registerTypeAdapter(ConstExprKind.class, new ConstExprKind.Adapter())
+                    .registerTypeAdapter(TermStmtKind.class, new TermStmtKind.Adapter())
                     .create();
         return gson.fromJson(json, WrapperOutput.class);
     }

@@ -42,6 +42,7 @@ import org.key_project.rusty.parser.hir.stmt.LetStmt;
 import org.key_project.rusty.parser.hir.stmt.Stmt;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
 import org.key_project.rusty.parser.hir.ty.*;
+import org.key_project.rusty.parser.hir.ty.TyConst;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
@@ -92,6 +93,7 @@ public class HirConverter {
     private final Map<Function, FnSpec> fn2Spec = new HashMap<>();
 
     private @Nullable Function currentFn = null;
+    private Stack<>
 
     /// We first convert all functions except their bodies. Then we convert those later.
     private final Map<Function, Fn> fnsToComplete =
@@ -805,7 +807,7 @@ public class HirConverter {
                 TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList(), services);
             case Ty.Array(var arrTy, var len) -> {
                 Type elementType = convertTy(arrTy);
-                yield ArrayType.getInstance(elementType, convertTyConst(len), services);
+                yield ArrayType.getInstance(elementType, convertTyConst(len).toLength(), services);
             }
             case Ty.Param(var p) -> {
                 assert currentParams != null;
@@ -963,10 +965,13 @@ public class HirConverter {
     }
 
     // TODO: something other than int
-    private int convertTyConst(TyConst tc) {
-        var vc = (TyConst.ValueConst) tc;
-        return (int) switch (vc.value().valtree()) {
-            case ValTree.Leaf(var si) -> si.data();
+    private org.key_project.rusty.ast.abstraction.TyConst convertTyConst(TyConst tc) {
+        return switch (tc) {
+            case TyConst.ValueConst(var vc) -> new TyConstValue(switch (vc.valtree()) {
+               case ValTree.Leaf(var si) -> (int) si.data();
+                default -> throw new IllegalArgumentException("Unknown ty const: " + tc);
+            });
+            case TyConst.Param(var pc) -> null;
             default -> throw new IllegalArgumentException("Unknown ty const: " + tc);
         };
     }
