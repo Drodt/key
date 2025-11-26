@@ -35,7 +35,7 @@ public record SchemaType(ProgramSV sv) implements Type {
     }
 
     @Override
-    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         throw new UnsupportedOperationException();
     }
 }

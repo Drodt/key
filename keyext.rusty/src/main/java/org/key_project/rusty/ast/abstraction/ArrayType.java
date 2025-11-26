@@ -65,7 +65,7 @@ public class ArrayType implements Type {
     }
 
     @Override
-    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         var it = elementType.instantiate(instMap, services);
         if (it == elementType)
             return this;

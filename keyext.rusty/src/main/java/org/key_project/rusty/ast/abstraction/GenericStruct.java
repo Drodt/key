@@ -13,11 +13,11 @@ import org.key_project.util.collection.ImmutableArray;
 import org.jspecify.annotations.NonNull;
 
 public record GenericStruct(Name name, ImmutableArray<GenericField> fields,
-        ImmutableArray<GenericTyParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
+        ImmutableArray<GenericParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
     @Override
     public Type instantiate(ImmutableArray<GenericTyArg> args, Services services) {
         assert args.size() == params().size();
-        var instMap = new HashMap<GenericTyParam, GenericTyArg>();
+        var instMap = new HashMap<GenericParam, GenericTyArg>();
         for (int i = 0; i < params().size(); i++) {
             instMap.put(params().get(i), args.get(i));
         }

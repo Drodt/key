@@ -9,9 +9,11 @@ public interface ConstArgKind {
     record Anon(AnonConst ac) implements ConstArgKind {
     }
 
-    record Path(QPath path) implements ConstArgKind {}
+    record Path(QPath path) implements ConstArgKind {
+    }
 
-    record Infer(Span span) implements ConstArgKind {}
+    record Infer(Span span) implements ConstArgKind {
+    }
 
     class Adapter extends HirAdapter<ConstArgKind> {
         @Override

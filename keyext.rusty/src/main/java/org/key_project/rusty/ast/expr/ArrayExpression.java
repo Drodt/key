@@ -27,7 +27,8 @@ public final class ArrayExpression implements Expr {
 
     public ArrayExpression(ExtList children, Services services) {
         elements = new ImmutableArray<>(children.collect(Expr.class));
-        type = ArrayType.getInstance(elements.get(0).type(services), new IntArrayLen(elements().size()), services);
+        type = ArrayType.getInstance(elements.get(0).type(services),
+            new IntArrayLen(elements().size()), services);
     }
 
     @Override

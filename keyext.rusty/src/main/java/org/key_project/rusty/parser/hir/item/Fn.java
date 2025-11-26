@@ -6,5 +6,6 @@ package org.key_project.rusty.parser.hir.item;
 import org.key_project.rusty.parser.hir.Ident;
 import org.key_project.rusty.parser.hir.ty.TyGenerics;
 
-public record Fn(Ident ident, FnSig sig, Generics generics, Body body, TyGenerics tyGenerics) implements ItemKind {
+public record Fn(Ident ident, FnSig sig, Generics generics, Body body, TyGenerics tyGenerics)
+        implements ItemKind {
 }

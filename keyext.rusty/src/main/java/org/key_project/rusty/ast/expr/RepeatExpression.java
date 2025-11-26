@@ -30,7 +30,8 @@ public final class RepeatExpression implements Expr {
         expr = Objects.requireNonNull(changeList.removeFirstOccurrence(Expr.class));
         size = Objects.requireNonNull(changeList.removeFirstOccurrence(Expr.class));
         if (size instanceof IntegerLiteralExpression i) {
-            ty = ArrayType.getInstance(expr.type(services), new IntArrayLen(i.getValue().intValue()), services);
+            ty = ArrayType.getInstance(expr.type(services),
+                new IntArrayLen(i.getValue().intValue()), services);
         } else {
             throw new UnsupportedOperationException("TODO: extract int from " + size);
         }

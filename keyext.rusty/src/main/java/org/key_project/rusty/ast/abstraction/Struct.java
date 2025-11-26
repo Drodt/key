@@ -57,7 +57,7 @@ public record Struct(Name name, ImmutableArray<Field> fields,
     }
 
     @Override
-    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         // We are fully instantiated
         return this;
     }

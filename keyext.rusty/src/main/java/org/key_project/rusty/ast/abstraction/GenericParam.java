@@ -3,12 +3,13 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
-import org.key_project.logic.Term;
+import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.Def;
+import org.key_project.rusty.logic.sort.GenericParameter;
 
-public record IntArrayLen(int len) implements ArrayLen {
-    @Override
-    public Term toTerm(Services services) {
-        return services.getTermBuilder().zTerm(len);
-    }
+public interface GenericParam extends Def {
+    GenericParameter toSortParam(Services services);
+
+    Name name();
 }

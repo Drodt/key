@@ -3,5 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir;
 
-public record GenericParam() {
+public record GenericParam(HirId hirId, LocalDefId defId, ParamName name, Span span,
+        GenericParamKind kind) {
 }

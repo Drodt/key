@@ -3,24 +3,28 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.speclang.spec;
 
-import com.google.gson.annotations.SerializedName;
 import org.key_project.rusty.parser.hir.*;
 import org.key_project.rusty.parser.hir.expr.BinOp;
 import org.key_project.rusty.parser.hir.expr.Lit;
 import org.key_project.rusty.parser.hir.expr.MatchSource;
 import org.key_project.rusty.parser.hir.expr.UnOp;
-
-import org.jspecify.annotations.Nullable;
 import org.key_project.rusty.parser.hir.ty.Ty;
 
+import com.google.gson.annotations.SerializedName;
+import org.jspecify.annotations.Nullable;
+
 public interface TermKind {
-    record Array(Term[] terms) implements TermKind {}
+    record Array(Term[] terms) implements TermKind {
+    }
 
-    record Call(Term callee, Term[] args) implements TermKind {}
+    record Call(Term callee, Term[] args) implements TermKind {
+    }
 
-    record MethodCall(PathSegment path, Term callee, Term[] args, Span span) implements TermKind{}
+    record MethodCall(PathSegment path, Term callee, Term[] args, Span span) implements TermKind {
+    }
 
-    record Tup(Term[] terms) implements TermKind {}
+    record Tup(Term[] terms) implements TermKind {
+    }
 
     record Binary(BinOp op, Term left, Term right) implements TermKind {
     }
@@ -31,21 +35,29 @@ public interface TermKind {
     record Lit(org.key_project.rusty.parser.hir.expr.Lit lit) implements TermKind {
     }
 
-    record Cast(Term term, Ty ty) implements TermKind{}
+    record Cast(Term term, Ty ty) implements TermKind {
+    }
 
-    record Let(TermLet let) implements TermKind{}
+    record Let(TermLet let) implements TermKind {
+    }
 
-    record If(Term cond, Term then, @SerializedName("else") @Nullable Term els) implements TermKind{}
+    record If(Term cond, Term then, @SerializedName("else") @Nullable Term els)
+            implements TermKind {
+    }
 
-    record Match(Term term, TermArm[] arms, MatchSource src) implements TermKind{}
+    record Match(Term term, TermArm[] arms, MatchSource src) implements TermKind {
+    }
 
     // Closure
 
-    record Block(TermBlock block) implements TermKind{}
+    record Block(TermBlock block) implements TermKind {
+    }
 
-    record Field(Term term, Ident field) implements TermKind{}
+    record Field(Term term, Ident field) implements TermKind {
+    }
 
-    record Index(Term term, Term idx, Span span) implements TermKind{}
+    record Index(Term term, Term idx, Span span) implements TermKind {
+    }
 
     record Path(QPath path) implements TermKind {
     }
@@ -56,7 +68,8 @@ public interface TermKind {
 
     // Repeat
 
-    record Quantor(QuantorKind kind, QuantorParam param, Term term) implements TermKind{}
+    record Quantor(QuantorKind kind, QuantorParam param, Term term) implements TermKind {
+    }
 
     // Model
 

@@ -45,7 +45,7 @@ public record Enum(Name name, ImmutableArray<Variant> variants,
     }
 
     @Override
-    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         // We are fully instantiated
         return this;
     }

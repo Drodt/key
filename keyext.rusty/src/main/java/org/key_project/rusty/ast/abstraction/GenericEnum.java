@@ -17,11 +17,11 @@ import org.key_project.util.collection.ImmutableSLList;
 import org.jspecify.annotations.NonNull;
 
 public record GenericEnum(Name name, ImmutableArray<GenericVariant> variants,
-        ImmutableArray<GenericTyParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
+        ImmutableArray<GenericParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
     @Override
     public Type instantiate(ImmutableArray<GenericTyArg> args, Services services) {
         assert args.size() == params().size();
-        var instMap = new HashMap<GenericTyParam, GenericTyArg>();
+        var instMap = new HashMap<GenericParam, GenericTyArg>();
         ImmutableList<GenericArgument> sortArgs = ImmutableSLList.nil();
         for (int i = params().size() - 1; i >= 0; i--) {
             instMap.put(params().get(i), args.get(i));
