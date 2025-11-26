@@ -5,16 +5,22 @@ package org.key_project.rusty.speclang;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.*;
+import org.key_project.rusty.ast.Def;
+import org.key_project.rusty.ast.Res;
+import org.key_project.rusty.ast.fn.Function;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.TermFactory;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.op.Junctor;
+import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
-import org.key_project.rusty.parser.hir.HirId;
+import org.key_project.rusty.parser.hir.*;
 import org.key_project.rusty.parser.hir.QPath;
 import org.key_project.rusty.parser.hir.expr.BinOp;
 import org.key_project.rusty.parser.hir.expr.BinOpKind;
@@ -80,6 +86,10 @@ public abstract class AbstractSpecConverter {
             if (pvo != null)
                 return tb.var(pvo);
         }
+        if (path instanceof org.key_project.rusty.parser.hir.QPath.Resolved r) {
+            var cPath = convertRes(r.path().res(), pvMap);
+
+        }
         throw new IllegalArgumentException("Unknown path: " + path);
     }
 
@@ -107,6 +117,51 @@ public abstract class AbstractSpecConverter {
             }
             case TermKind.Path(var p) -> convertPath(p, pvMap);
             default -> throw new IllegalStateException("Unexpected value: " + term);
+        };
+    }
+
+    private Term convertRes(org.key_project.rusty.parser.hir.Res res,Map<HirId, ProgramVariable> pvMap) {
+        return switch (res) {
+            case org.key_project.rusty.parser.hir.Res.Local(var id) -> {
+                var pvo = pvMap.get(id);
+                if (pvo != null)
+                    yield tb.var(pvo);
+            }
+            case org.key_project.rusty.parser.hir.Res.DefRes(var def) ->
+                    new ResDef(convertDef(def));
+            case org.key_project.rusty.parser.hir.Res.Err e -> new ResErr();
+            default -> throw new IllegalArgumentException("Unknown hirty type: " + res);
+        };
+    }
+
+    private Def convertDef(org.key_project.rusty.parser.hir.Def def) {
+        final LocalDefId localDefId = new LocalDefId(def.id().index());
+        return switch (def.kind()) {
+            case DefKind.Fn f -> {
+                Function lfn =
+                        Objects.requireNonNull(localFns.get(localDefId));
+                ProgramFunction fn = services.getRustInfo().getFunction(lfn);
+                // TODO: We might have to resolve this in a 2nd step to avoid this being done before
+                // the fn is loaded
+                yield fn;
+            }
+            case DefKind.Mod m -> null;
+            case DefKind.Constructor(Ctor(var of, var isFnCtor)) -> {
+                if (of == CtorOf.Variant) {
+                    // TODO: more info
+                    yield new VariantConstructor();
+                } else {
+                    throw new UnsupportedOperationException("Struct ctor: " + def);
+                }
+            }
+            case DefKind.Enum e -> {
+                yield null;
+            }
+            case DefKind.Struct e -> {
+                yield null;
+            }
+            case DefKind.ConstParam ignored -> localParams.get(localDefId);
+            default -> throw new IllegalArgumentException("Unknown def: " + def);
         };
     }
 }
