@@ -165,7 +165,7 @@ public class HirConverter {
             if (spec != null) {
                 var contracts =
                     fnSpecConverter.convert(spec,
-                        Objects.requireNonNull(services.getRustInfo().getFunction(fn)));
+                        Objects.requireNonNull(services.getRustInfo().getFunction(fn), "Could not get function for " + fn));
                 for (var contract : contracts) {
                     services.getSpecificationRepository().addContract(contract);
                 }
@@ -351,7 +351,7 @@ public class HirConverter {
                 break;
             }
         }
-        var fieldIdent = new FieldIdentifier(ident, Objects.requireNonNull(field));
+        var fieldIdent = new FieldIdentifier(ident, Objects.requireNonNull(field, "Missing field: " + ident));
         return new FieldExpression(base,
             fieldIdent);
     }
@@ -444,7 +444,7 @@ public class HirConverter {
         var le = new InfiniteLoopExpression(null, body);
 
         if (loopSpecs != null && loopSpecs.containsKey(id)) {
-            var ls = loopSpecConverter.convert(loopSpecs.get(id), Objects.requireNonNull(currentFn),
+            var ls = loopSpecConverter.convert(loopSpecs.get(id), Objects.requireNonNull(currentFn, "Missing local fn"),
                 le, pvs);
             services.getSpecificationRepository().addLoopSpec(ls);
         }
@@ -741,7 +741,7 @@ public class HirConverter {
             @Nullable Type ty) {
         return switch (pe.kind()) {
             case PatExprKind.Lit(var l, var n) ->
-                new LitPatExpr(convertLitExpr(l, Objects.requireNonNull(ty)), n);
+                new LitPatExpr(convertLitExpr(l, Objects.requireNonNull(ty, "Missing type for " + pe)), n);
             default -> throw new IllegalArgumentException("Unknown patExpr: " + pe);
         };
     }
@@ -781,7 +781,7 @@ public class HirConverter {
         return switch (def.kind()) {
             case DefKind.Fn f -> {
                 Function lfn =
-                    Objects.requireNonNull(localFns.get(localDefId));
+                    Objects.requireNonNull(localFns.get(localDefId), "Missing local fn for " + localDefId);
                 ProgramFunction fn = services.getRustInfo().getFunction(lfn);
                 // TODO: We might have to resolve this in a 2nd step to avoid this being done before
                 // the fn is loaded
@@ -830,7 +830,7 @@ public class HirConverter {
             case Ty.Ref(var t, var m) -> ReferenceType.get(convertTy(t), m);
             case Ty.FnDef(var id, var args) -> {
                 if (id.krate() == 0) {
-                    var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())));
+                    var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())), "Could not find function for " + id);
                     yield new FnDefType(fn);
                 }
                 yield new ForeignFnType(id, convertGenericArgs(args));
