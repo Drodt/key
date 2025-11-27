@@ -82,6 +82,7 @@ import org.jspecify.annotations.NonNull;
 public abstract class Taclet extends org.key_project.prover.rules.Taclet implements Rule {
     /// This map contains (a, b) if there is a substitution {b a} somewhere in this taclet
     private ImmutableMap<@NonNull SchemaVariable, SchemaVariable> svNameCorrespondences = null;
+    protected ImmutableList<@NonNull SchemaVariable> noFreeVarIns;
 
     /// Integer to cache the hashcode
     private int hashcode = 0;
@@ -108,10 +109,12 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
             ChoiceExpr choices, boolean surviveSmbExec,
-            ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
             tacletAnnotations);
         this.surviveSymbExec = surviveSmbExec;
+        this.noFreeVarIns = noFreeVarIns;
     }
 
     /// creates a Schematic Theory Specific Rule (Taclet) with the given parameters.
@@ -132,9 +135,10 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
             ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
-            ChoiceExpr choices, ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ChoiceExpr choices, ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         this(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices, false,
-            tacletAnnotations);
+            tacletAnnotations, noFreeVarIns);
     }
 
     protected void createAndInitializeMatcher() {

@@ -57,7 +57,7 @@ public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBui
                 varsNewDependingOn,
                 variableConditions),
             goals, ruleSets, attrs, (Term) find, prefixBuilder.getPrefixMap(),
-            choices, surviveSmbExec, tacletAnnotations);
+            choices, surviveSmbExec, tacletAnnotations, noFreeVarIns);
         // t.setOrigin(origin);
         return (T) t;
     }

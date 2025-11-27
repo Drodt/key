@@ -29,6 +29,8 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
+import org.jspecify.annotations.NonNull;
+
 public abstract class TacletBuilder<T extends Taclet> {
     protected final static Name NONAME = new Name("unnamed");
 
@@ -37,7 +39,8 @@ public abstract class TacletBuilder<T extends Taclet> {
     protected Name name = NONAME;
     protected Sequent ifseq = RustySequentKit.getInstance().getEmptySequent();
     protected ImmutableList<NewVarcond> varsNew = ImmutableSLList.nil();
-    protected ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
+    protected final ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
+    protected ImmutableList<@NonNull SchemaVariable> noFreeVarIns = ImmutableSLList.nil();
     protected ImmutableList<NewDependingOn> varsNewDependingOn =
         ImmutableSLList.nil();
     protected ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> goals =
@@ -143,33 +146,6 @@ public abstract class TacletBuilder<T extends Taclet> {
         varsNew = varsNew.prepend(nv);
     }
 
-    /// adds a new _NotFreeIn_ variable pair to the variable conditions of the Taclet: v0 is not
-    /// free in v1.
-    public void addVarsNotFreeIn(SchemaVariable v0,
-            SchemaVariable v1) {
-        varsNotFreeIn = varsNotFreeIn.prepend(new NotFreeIn(v0, v1));
-    }
-
-
-    public void addVarsNotFreeIn(Iterable<? extends SchemaVariable> v0,
-            Iterable<? extends SchemaVariable> v1) {
-        for (SchemaVariable boundSV : v0) {
-            for (SchemaVariable schemaVar : v1) {
-                addVarsNotFreeIn(boundSV, schemaVar);
-            }
-        }
-    }
-
-
-    public void addVarsNotFreeIn(Iterable<? extends SchemaVariable> v0,
-            SchemaVariable... v1) {
-        for (SchemaVariable boundSV : v0) {
-            for (SchemaVariable schemaVar : v1) {
-                addVarsNotFreeIn(boundSV, schemaVar);
-            }
-        }
-    }
-
     /// Add a "v0 depending on v1"-statement. "v0" may not occur within the `if` sequent or the
     /// `find`
     /// formula/term, however, this is not checked
@@ -262,6 +238,14 @@ public abstract class TacletBuilder<T extends Taclet> {
 
     public void setRuleSets(ImmutableList<RuleSet> rs) {
         ruleSets = rs;
+    }
+
+    public void addNoFreeVarIn(SchemaVariable sv) {
+        noFreeVarIns = noFreeVarIns.prepend(sv);
+    }
+
+    public Iterator<@NonNull SchemaVariable> noFreeVarIns() {
+        return noFreeVarIns.iterator();
     }
 
     public static class TacletBuilderException extends IllegalArgumentException {

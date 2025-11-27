@@ -40,9 +40,10 @@ public class NoFindTaclet extends Taclet {
             ImmutableList<TacletGoalTemplate> goalTemplates, ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
-            ChoiceExpr choices, ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ChoiceExpr choices, ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, null, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
-            tacletAnnotations);
+            tacletAnnotations, noFreeVarIns);
     }
 
     @Override
@@ -75,6 +76,6 @@ public class NoFindTaclet extends Taclet {
         final TacletAttributes attrs = new TacletAttributes(displayName(), trigger);
 
         return new NoFindTaclet(new Name(s), applPart, goalTemplates(), getRuleSets(), attrs,
-            prefixMap, choices, tacletAnnotations);
+            prefixMap, choices, tacletAnnotations, noFreeVarIns);
     }
 }

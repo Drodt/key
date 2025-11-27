@@ -9,7 +9,6 @@ import java.util.Iterator;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.prover.rules.conditions.NotFreeIn;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.FormulaSV;
@@ -46,16 +45,17 @@ public class TacletPrefixBuilder {
 
     /// removes all variables x that are declared as x not free in sv from the currently bound vars
     /// set.
-    private int removeNotFreeIn(SchemaVariable sv) {
+    private int removeNoFreeVarIn(SchemaVariable sv) {
         int result = numberOfCurrentlyBoundVars;
-        Iterator<NotFreeIn> it = tacletBuilder.varsNotFreeIn();
+        Iterator<@NonNull SchemaVariable> it = tacletBuilder.noFreeVarIns();
         while (it.hasNext()) {
-            NotFreeIn notFreeIn = it.next();
-            if (notFreeIn.second() == sv) {
-                // TODO: result = result.remove(notFreeIn.first());
+            SchemaVariable v = it.next();
+            if (v == sv) {
+                result -= 1;
+                break;
             }
         }
-        return result;
+        return Math.max(0, result);
     }
 
     private void visit(Term t) {
@@ -65,17 +65,14 @@ public class TacletPrefixBuilder {
         }
         if (t.op() instanceof SchemaVariable sv && t.arity() == 0) {
             if (sv instanceof TermSV || sv instanceof FormulaSV || sv instanceof UpdateSV) {
-                int numberOfBoundVars = removeNotFreeIn(sv);
+                int numberOfBoundVars = removeNoFreeVarIn(sv);
                 TacletPrefix prefix = (TacletPrefix) prefixMap.get(sv);
                 if (prefix == null || prefix.prefixLength() == numberOfBoundVars) {
                     setPrefixOfOccurrence(sv, numberOfBoundVars);
                 } else {
-                    // TODO: For now, don't report an error. It's likely not needed
-                    /*
-                     * throw new TacletPrefixBuilder.InvalidPrefixException(
-                     * tacletBuilder.getName().toString(), sv, prefix,
-                     * numberOfBoundVars);
-                     */
+                    throw new TacletPrefixBuilder.InvalidPrefixException(
+                        tacletBuilder.getName().toString(), sv, prefix,
+                        numberOfBoundVars);
                 }
             }
         }

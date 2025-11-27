@@ -27,6 +27,7 @@ varexpId
  | SAME
  | ISSUBTYPE
  | HASSORT
+ | NO_FREE_VAR_IN
  ;
 
 elementary_update_term: a=mutating_update_term (ASSIGN b=mutating_update_term)?;

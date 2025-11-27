@@ -20,6 +20,7 @@ GET_INVARIANT : '\\getInvariant';
 GET_VARIANT   : '\\getVariant';
 IS_LABELED    : '\\isLabeled';
 DIFFERENT     : '\\different';
+NO_FREE_VAR_IN : '\\noFreeVarIn';
 
 OPENTYPEPARAMS:'<' '[';
 CLOSETYPEPARAMS:']' '>';
