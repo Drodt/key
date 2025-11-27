@@ -3,8 +3,8 @@
 \proofObligation
 {
     "class": "org.key_project.rusty.proof.init.loader.FunctionOperationContractPOLoader",
-    "contract": "binary_search_array.normal specification case 0.0",
-    "name": "binary_search_array.normal specification case 0.0"
+    "contract": "contains.normal specification case 0.0",
+    "name": "contains.normal specification case 0.0"
 }
 
 \proof {

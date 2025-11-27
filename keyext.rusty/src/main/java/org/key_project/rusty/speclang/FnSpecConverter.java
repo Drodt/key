@@ -22,13 +22,16 @@ import org.key_project.rusty.speclang.spec.*;
 import org.key_project.util.collection.ImmutableList;
 
 public class FnSpecConverter extends AbstractSpecConverter {
-
     public FnSpecConverter(Services services) {
         super(services);
     }
 
     public List<FunctionalOperationContract> convert(FnSpec fnSpec, ProgramFunction target) {
-        return Arrays.stream(fnSpec.cases()).flatMap(c -> convert(c, target)).toList();
+        setLocalParams(target.getFunction().getLocalIdsToGenericParams());
+        List<FunctionalOperationContract> contracts =
+            Arrays.stream(fnSpec.cases()).flatMap(c -> convert(c, target)).toList();
+        clearLocalParams();
+        return contracts;
     }
 
     public Stream<FunctionalOperationContract> convert(SpecCase specCase, ProgramFunction target) {
@@ -37,11 +40,16 @@ public class FnSpecConverter extends AbstractSpecConverter {
         final var result = new ProgramVariable(new Name("result"), target.getType());
         var pre = mapAndJoinTerms(specCase.pre(), target, result);
         var post = mapAndJoinTerms(specCase.post(), target, result);
-        var variant = specCase.variant() == null ? null
-                : convert(specCase.variant().value(),
-                    params2PVs(specCase.variant().params(), target, result));
-        var diverges = convert(specCase.diverges().value(),
-            params2PVs(specCase.diverges().params(), target, result));
+        Term variant;
+        if (specCase.variant() == null) variant = null;
+        else {
+            setCtx(new ConversionCtx(params2PVs(specCase.variant().params(), target, result)));
+            variant = convert(specCase.variant().value());
+        }
+        setCtx(new ConversionCtx(params2PVs(specCase.diverges().params(), target, result)));
+        var diverges = convert(specCase.diverges().value()
+            );
+        clearCtx();
         var paramVars = ImmutableList.fromList(target.getFunction().params().stream().map(p -> {
             var fp = (FunctionParamPattern) p;
             var bp = (BindingPattern) fp.pattern();
@@ -63,7 +71,12 @@ public class FnSpecConverter extends AbstractSpecConverter {
     private Term mapAndJoinTerms(WithParams<org.key_project.rusty.speclang.spec.Term>[] terms,
             ProgramFunction target, ProgramVariable resultVar) {
         return Arrays.stream(terms)
-                .map(wp -> convert(wp.value(), params2PVs(wp.params(), target, resultVar)))
+                .map(wp -> {
+                    setCtx(new ConversionCtx(params2PVs(wp.params(), target, resultVar)));
+                     var c = convert(wp.value());
+                     clearCtx();
+                     return c;
+                })
                 .reduce(tb.tt(), tb::and);
     }
 

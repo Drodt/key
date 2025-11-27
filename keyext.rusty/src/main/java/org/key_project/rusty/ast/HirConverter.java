@@ -143,6 +143,7 @@ public class HirConverter {
                         localParams.put(p.defId(), currentParams[i - lifetimes]);
                     }
                 }
+                fn.setGenericParams(localParams, currentParams);
             }
             boolean isCtxFn = fn.name().toString().equals(Context.TMP_FN_NAME);
             int paramLength = hirFn.sig().decl().inputs().length;
@@ -542,6 +543,7 @@ public class HirConverter {
             case Ne -> BinaryExpression.Operator.Ne;
             case Ge -> BinaryExpression.Operator.Ge;
             case Gt -> BinaryExpression.Operator.Gt;
+            case Implication -> throw new UnsupportedOperationException("Not allowed in normal code");
         };
     }
 

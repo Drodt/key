@@ -27,7 +27,7 @@ public class ParametricFunctionInstance extends RFunction {
 
     public static ParametricFunctionInstance get(ParametricFunctionDecl decl,
             ImmutableList<GenericArgument> args) {
-        assert args.size() == decl.getParameters().size();
+        assert args.size() == decl.getParameters().size() : args.size() + " != " + decl.getParameters().size();
         var instMap = getInstMap(decl, args);
         var argSorts = instantiate(decl, instMap);
         var sort = instantiate(decl.sort(), instMap);

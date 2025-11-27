@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.fn;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -10,9 +11,11 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.Item;
+import org.key_project.rusty.ast.abstraction.GenericParam;
 import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.parser.hir.LocalDefId;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
@@ -24,6 +27,8 @@ public final class Function implements Item, Named {
     private ImmutableArray<FunctionParam> params;
     private final RustType returnType;
     private BlockExpression body;
+    private Map<LocalDefId, GenericParam> localIdsToGenericParams;
+    private @Nullable GenericParam[] genericParams;
 
     public Function(Name name, ImplicitSelfKind selfKind, ImmutableArray<FunctionParam> params,
             RustType returnType, BlockExpression body) {
@@ -32,6 +37,20 @@ public final class Function implements Item, Named {
         this.params = params;
         this.returnType = returnType;
         this.body = body;
+    }
+
+    public void setGenericParams(Map<LocalDefId, GenericParam> localParams,
+            @Nullable GenericParam[] currentParams) {
+        this.localIdsToGenericParams = localParams;
+        this.genericParams = currentParams;
+    }
+
+    public Map<LocalDefId, GenericParam> getLocalIdsToGenericParams() {
+        return localIdsToGenericParams;
+    }
+
+    public @Nullable GenericParam[] getGenericParams() {
+        return genericParams;
     }
 
     public enum ImplicitSelfKind {

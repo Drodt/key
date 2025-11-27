@@ -716,4 +716,11 @@ public class TermBuilder {
 
         return res;
     }
+
+    public Term arrayGet(Term array, Term idx) {
+        var sort = (ParametricSortInstance) array.sort();
+        var pfd = services.getLDTs().getArrayLDT().getGet();
+        var get = ParametricFunctionInstance.get(pfd, sort.getArgs());
+        return func(get, array, idx);
+    }
 }

@@ -3,40 +3,113 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.speclang;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import org.key_project.logic.Term;
+import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.*;
-import org.key_project.rusty.ast.Def;
-import org.key_project.rusty.ast.Res;
-import org.key_project.rusty.ast.fn.Function;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
+import org.key_project.rusty.ast.abstraction.GenericParam;
+import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.TermFactory;
-import org.key_project.rusty.logic.op.Equality;
-import org.key_project.rusty.logic.op.Junctor;
-import org.key_project.rusty.logic.op.ProgramFunction;
-import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.*;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.parser.hir.*;
 import org.key_project.rusty.parser.hir.QPath;
 import org.key_project.rusty.parser.hir.expr.BinOp;
 import org.key_project.rusty.parser.hir.expr.BinOpKind;
 import org.key_project.rusty.parser.hir.expr.LitKind;
 import org.key_project.rusty.parser.hir.expr.UnOp;
+import org.key_project.rusty.speclang.spec.QuantorKind;
+import org.key_project.rusty.speclang.spec.QuantorParam;
 import org.key_project.rusty.speclang.spec.TermKind;
+
+import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractSpecConverter {
     protected final Services services;
     protected final TermBuilder tb;
     protected final TermFactory tf;
 
+    protected @Nullable Map<LocalDefId, GenericParam> localParams = null;
+    protected @Nullable ConversionCtx ctx = null;
+
+    public static final class ConversionCtx {
+        private final Map<HirId, ProgramVariable> pvMap;
+        private final Stack<HirId> boundVars = new Stack<>();
+        private final Map<HirId, Sort> bvSorts = new HashMap<>();
+
+        public ConversionCtx(Map<HirId, ProgramVariable> pvMap) {
+            this.pvMap = pvMap;
+        }
+
+        @Nullable
+        ProgramVariable getPV(HirId id) {
+            return pvMap.get(id);
+        }
+
+        @Nullable
+        LogicVariable getLogicVar(HirId id) {
+            for (int i = 0; i < boundVars.size(); i++) {
+                if (boundVars.get(i).equals(id)) {
+                    return new LogicVariable(i+1, bvSorts.get(id));
+                }
+            }
+            return null;
+        }
+
+        void registerBoundVar(HirId id, BoundVariable bv) {
+            boundVars.push(id);
+            bvSorts.put(id, bv.sort());
+        }
+
+        void popBoundVar() {
+            var id = boundVars.pop();
+            bvSorts.remove(id);
+        }
+
+        Term getTerm(HirId id, TermBuilder tb) {
+            var pv = getPV(id);
+            if (pv != null) {
+                return tb.var(pv);
+            }
+            var lv = Objects.requireNonNull(getLogicVar(id), "No PV or LV for " + id);
+            return tb.var(lv);
+        }
+
+        @Override
+        public String toString() {
+            return "ConversionCtx[" +
+                "pvMap=" + pvMap + ", " +
+                "boundVars=" + boundVars + ", " +
+                "bvSorts=" + bvSorts + ']';
+        }
+    }
+
     public AbstractSpecConverter(Services services) {
         this.services = services;
         this.tb = services.getTermBuilder();
         this.tf = services.getTermFactory();
+    }
+
+    protected void setCtx(ConversionCtx ctx) {
+        this.ctx = ctx;
+    }
+
+    protected void clearCtx() {
+        this.ctx = null;
+    }
+
+    protected void setLocalParams(Map<LocalDefId, GenericParam> localParams) {
+        this.localParams = localParams;
+    }
+
+    protected void clearLocalParams() {
+        this.localParams = null;
     }
 
     public Term convert(BinOp op, Term left, Term right) {
@@ -59,6 +132,7 @@ public abstract class AbstractSpecConverter {
                     BinOpKind.Shr ->
                 throw new RuntimeException("TODO");
             case BinOpKind.Ne -> Junctor.NOT;
+            case BinOpKind.Implication -> Junctor.IMP;
         };
         if (o == Junctor.NOT) {
             return tb.not(tb.equals(left, right));
@@ -78,31 +152,27 @@ public abstract class AbstractSpecConverter {
         };
     }
 
-    public Term convertPath(QPath path, Map<HirId, ProgramVariable> pvMap) {
+    public Term convertPath(QPath path) {
         if (path instanceof QPath.Resolved r
                 && r.path().segments().length == 1
                 && r.path().res() instanceof org.key_project.rusty.parser.hir.Res.Local(HirId id)) {
-            var pvo = pvMap.get(id);
-            if (pvo != null)
-                return tb.var(pvo);
+            return ctx.getTerm(id, tb);
         }
         if (path instanceof org.key_project.rusty.parser.hir.QPath.Resolved r) {
-            var cPath = convertRes(r.path().res(), pvMap);
-
+            return convertResToTerm(r.path().res());
         }
         throw new IllegalArgumentException("Unknown path: " + path);
     }
 
-    public Term convert(org.key_project.rusty.speclang.spec.Term term,
-            Map<HirId, ProgramVariable> pvMap) {
+    public Term convert(org.key_project.rusty.speclang.spec.Term term) {
         return switch (term.kind()) {
             case TermKind.Binary(var op, var left, var right) -> {
-                var l = convert(left, pvMap);
-                var r = convert(right, pvMap);
+                var l = convert(left);
+                var r = convert(right);
                 yield convert(op, l, r);
             }
             case TermKind.Unary(var op, var child) -> {
-                var c = convert(child, pvMap);
+                var c = convert(child);
                 yield convert(op, c);
             }
             case TermKind.Lit(var l) -> switch (l.node()) {
@@ -112,55 +182,71 @@ public abstract class AbstractSpecConverter {
             };
             case TermKind.Tup(var ts) -> {
                 var terms =
-                    Arrays.stream(ts).map(t -> convert(t, pvMap)).toArray(Term[]::new);
+                    Arrays.stream(ts).map(this::convert).toArray(Term[]::new);
                 yield tb.tuple(terms);
             }
-            case TermKind.Path(var p) -> convertPath(p, pvMap);
+            case TermKind.Path(var p) -> convertPath(p);
+            case TermKind.Quantor q -> convertQuantor(q);
+            case TermKind.Index i -> convertIndex(i);
             default -> throw new IllegalStateException("Unexpected value: " + term);
         };
     }
 
-    private Term convertRes(org.key_project.rusty.parser.hir.Res res,Map<HirId, ProgramVariable> pvMap) {
-        return switch (res) {
-            case org.key_project.rusty.parser.hir.Res.Local(var id) -> {
-                var pvo = pvMap.get(id);
-                if (pvo != null)
-                    yield tb.var(pvo);
+    private Term convertIndex(TermKind.Index i) {
+        var indexed = convert(i.term());
+        var idx = convert(i.idx());
+        return constructIndexTerm(indexed, idx);
+    }
+
+    private Term constructIndexTerm(Term indexed, Term idx) {
+        if (indexed.sort() instanceof ParametricSortInstance psi) {
+            if (psi.getBase() == services.getLDTs().getArrayLDT().parametricSort()) {
+                return tb.arrayGet(indexed, idx);
             }
+            if (psi.getBase() == services.getLDTs().getsRefLDT().parametricSort()) {
+                var base = services.getLDTs().getsRefLDT().getDerefS();
+                var deref = ParametricFunctionInstance.get(base, psi.getArgs());
+                return constructIndexTerm(tb.func(deref, indexed), idx);
+            }
+        }
+        throw new IllegalArgumentException("Index undefined for: " + indexed);
+    }
+
+    private Term convertQuantor(TermKind.Quantor q) {
+        var param = convertQuantorParam(q.param());
+        ctx.registerBoundVar(q.param().hirId(), param);
+        var term = convert(q.term());
+        ctx.popBoundVar();
+        return q.kind() == QuantorKind.Exists ? tb.ex(param, term) : tb.all(param, term);
+    }
+
+    private BoundVariable convertQuantorParam(QuantorParam p) {
+        var name = services.getVariableNamer().getTemporaryNameProposal(p.ident().name());
+        // TODO: get type from rml
+        var ty = services.getRustInfo().getKeYRustyType(PrimitiveType.USIZE);
+        return new BoundVariable(name, ty.getSort());
+    }
+
+    private Term convertResToTerm(org.key_project.rusty.parser.hir.Res res) {
+        return switch (res) {
+            case org.key_project.rusty.parser.hir.Res.Local(var id) -> ctx.getTerm(id, tb);
             case org.key_project.rusty.parser.hir.Res.DefRes(var def) ->
-                    new ResDef(convertDef(def));
-            case org.key_project.rusty.parser.hir.Res.Err e -> new ResErr();
+                convertDefToTerm(def);
             default -> throw new IllegalArgumentException("Unknown hirty type: " + res);
         };
     }
 
-    private Def convertDef(org.key_project.rusty.parser.hir.Def def) {
+    private Term convertDefToTerm(org.key_project.rusty.parser.hir.Def def) {
         final LocalDefId localDefId = new LocalDefId(def.id().index());
         return switch (def.kind()) {
-            case DefKind.Fn f -> {
-                Function lfn =
-                        Objects.requireNonNull(localFns.get(localDefId));
-                ProgramFunction fn = services.getRustInfo().getFunction(lfn);
-                // TODO: We might have to resolve this in a 2nd step to avoid this being done before
-                // the fn is loaded
-                yield fn;
-            }
-            case DefKind.Mod m -> null;
-            case DefKind.Constructor(Ctor(var of, var isFnCtor)) -> {
-                if (of == CtorOf.Variant) {
-                    // TODO: more info
-                    yield new VariantConstructor();
-                } else {
-                    throw new UnsupportedOperationException("Struct ctor: " + def);
+            case DefKind.ConstParam ignored -> {
+                var param = (GenericConstParam) localParams.get(localDefId);
+                // TODO: Fix once RML is reworked
+                if (param == null && localParams.size() == 1) {
+                    param = (GenericConstParam) localParams.values().iterator().next();
                 }
+                yield tb.func(param.fn());
             }
-            case DefKind.Enum e -> {
-                yield null;
-            }
-            case DefKind.Struct e -> {
-                yield null;
-            }
-            case DefKind.ConstParam ignored -> localParams.get(localDefId);
             default -> throw new IllegalArgumentException("Unknown def: " + def);
         };
     }

@@ -1,0 +1,62 @@
+package org.key_project.rusty.ldt;
+
+import org.jspecify.annotations.Nullable;
+import org.key_project.logic.Name;
+import org.key_project.logic.Term;
+import org.key_project.logic.op.Function;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.expr.BinaryExpression;
+import org.key_project.rusty.ast.expr.LiteralExpression;
+import org.key_project.rusty.logic.op.ParametricFunctionDecl;
+
+public class SRefLDT extends LDT {
+    public static final Name NAME = new Name("SRef");
+
+    private final ParametricFunctionDecl refS;
+    private final ParametricFunctionDecl derefS;
+
+    public SRefLDT(Services services) {
+        super(NAME, services);
+
+        refS = addParametricFunction(services, "refS");
+        derefS = addParametricFunction(services, "derefS");
+    }
+
+    public ParametricFunctionDecl getRefS() {
+        return refS;
+    }
+
+    public ParametricFunctionDecl getDerefS() {
+        return derefS;
+    }
+
+    @Override
+    public @Nullable Term translateLiteral(LiteralExpression lit, Services services) {
+        return null;
+    }
+
+    @Override
+    public @Nullable Function getFunctionFor(BinaryExpression.Operator op, Services services) {
+        return null;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term[] subs, Services services) {
+        return false;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term sub, Services services) {
+        return false;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right, Services services) {
+        return false;
+    }
+
+    @Override
+    public Name name() {
+        return NAME;
+    }
+}
