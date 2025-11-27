@@ -6,7 +6,6 @@ package org.key_project.rusty.speclang;
 import java.util.*;
 
 import org.key_project.logic.Term;
-import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.*;
@@ -56,7 +55,7 @@ public abstract class AbstractSpecConverter {
         LogicVariable getLogicVar(HirId id) {
             for (int i = 0; i < boundVars.size(); i++) {
                 if (boundVars.get(i).equals(id)) {
-                    return new LogicVariable(i+1, bvSorts.get(id));
+                    return new LogicVariable(i + 1, bvSorts.get(id));
                 }
             }
             return null;

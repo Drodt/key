@@ -41,14 +41,14 @@ public class FnSpecConverter extends AbstractSpecConverter {
         var pre = mapAndJoinTerms(specCase.pre(), target, result);
         var post = mapAndJoinTerms(specCase.post(), target, result);
         Term variant;
-        if (specCase.variant() == null) variant = null;
+        if (specCase.variant() == null)
+            variant = null;
         else {
             setCtx(new ConversionCtx(params2PVs(specCase.variant().params(), target, result)));
             variant = convert(specCase.variant().value());
         }
         setCtx(new ConversionCtx(params2PVs(specCase.diverges().params(), target, result)));
-        var diverges = convert(specCase.diverges().value()
-            );
+        var diverges = convert(specCase.diverges().value());
         clearCtx();
         var paramVars = ImmutableList.fromList(target.getFunction().params().stream().map(p -> {
             var fp = (FunctionParamPattern) p;
@@ -73,9 +73,9 @@ public class FnSpecConverter extends AbstractSpecConverter {
         return Arrays.stream(terms)
                 .map(wp -> {
                     setCtx(new ConversionCtx(params2PVs(wp.params(), target, resultVar)));
-                     var c = convert(wp.value());
-                     clearCtx();
-                     return c;
+                    var c = convert(wp.value());
+                    clearCtx();
+                    return c;
                 })
                 .reduce(tb.tt(), tb::and);
     }

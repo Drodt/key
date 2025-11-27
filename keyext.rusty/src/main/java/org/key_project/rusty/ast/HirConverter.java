@@ -543,7 +543,8 @@ public class HirConverter {
             case Ne -> BinaryExpression.Operator.Ne;
             case Ge -> BinaryExpression.Operator.Ge;
             case Gt -> BinaryExpression.Operator.Gt;
-            case Implication -> throw new UnsupportedOperationException("Not allowed in normal code");
+            case Implication ->
+                throw new UnsupportedOperationException("Not allowed in normal code");
         };
     }
 
