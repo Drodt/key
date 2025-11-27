@@ -11,6 +11,7 @@ import org.key_project.logic.op.Modality;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.DefaultImmutableSet;
@@ -47,6 +48,8 @@ public class TermImpl implements Term {
 
     /// Cached [#hashCode()] value.
     private int hashcode = -1;
+
+    private int maxDebruijnIndex = -1;
 
     /// A cached value for computing the term's rigidness.
     private ThreeValuedTruth rigid = ThreeValuedTruth.UNKNOWN;
@@ -306,5 +309,26 @@ public class TermImpl implements Term {
         }
         this.hashcode = hash;
         return hash;
+    }
+
+    public int getMaxDebruijnIndex() {
+        if (maxDebruijnIndex == -1) {
+            maxDebruijnIndex = 0;
+            if (op instanceof LogicVariable lv) {
+                maxDebruijnIndex = lv.getIndex();
+            } else {
+                for (int i = 0; i < subs.size(); i++) {
+                    var ti = (TermImpl) sub(i);
+                    int m = ti.getMaxDebruijnIndex();
+                    if (op.bindVarsAt(i)) {
+                        m -= boundVars.size();
+                    }
+                    if (m > maxDebruijnIndex) {
+                        maxDebruijnIndex = m;
+                    }
+                }
+            }
+        }
+        return maxDebruijnIndex;
     }
 }

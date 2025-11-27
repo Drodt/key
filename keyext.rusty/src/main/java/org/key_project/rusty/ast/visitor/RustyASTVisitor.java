@@ -5,9 +5,7 @@ package org.key_project.rusty.ast.visitor;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.Identifier;
-import org.key_project.rusty.ast.PathInExpression;
-import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.*;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.pat.*;
 import org.key_project.rusty.ast.stmt.EmptyStatement;
@@ -374,6 +372,31 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
 
     @Override
     public void performActionOnTupleRustType(TupleRustType x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public <R> void performActionOnPath(Path<R> x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnPathExpr(PathExpr x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnResDef(ResDef x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnVariantConstructor(VariantConstructor x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnPathSegment(PathSegment x) {
         doDefaultAction(x);
     }
 }

@@ -4,8 +4,7 @@
 package org.key_project.rusty.ast.visitor;
 
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.rusty.ast.Identifier;
-import org.key_project.rusty.ast.PathInExpression;
+import org.key_project.rusty.ast.*;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.pat.*;
 import org.key_project.rusty.ast.stmt.EmptyStatement;
@@ -147,4 +146,14 @@ public interface Visitor {
     void performActionOnFieldIdentifier(FieldIdentifier x);
 
     void performActionOnTupleRustType(TupleRustType x);
+
+    void performActionOnPathExpr(PathExpr x);
+
+    <R> void performActionOnPath(Path<R> x);
+
+    void performActionOnVariantConstructor(VariantConstructor x);
+
+    void performActionOnResDef(ResDef x);
+
+    void performActionOnPathSegment(PathSegment x);
 }

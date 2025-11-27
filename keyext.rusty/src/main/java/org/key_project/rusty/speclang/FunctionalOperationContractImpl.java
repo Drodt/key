@@ -14,6 +14,8 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.Path;
 import org.key_project.rusty.ast.PathSegment;
 import org.key_project.rusty.ast.ResDef;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
+import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.logic.RustyBlock;
@@ -173,7 +175,17 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     public @Nullable Term getFreePre(ProgramVariable selfVar,
             ImmutableList<ProgramVariable> paramVars,
             Services services) {
-        return null;
+        if (getTarget().getFunction().getGenericParams().length == 0)
+            return null;
+        var pre = tb.tt();
+        for (var genParam : getTarget().getFunction().getGenericParams()) {
+            if (genParam instanceof GenericConstParam gcp) {
+                // TODO: Get Real type from HIR
+                pre = tb.and(pre, tb.reachableValue(tb.func(gcp.fn()),
+                    services.getRustInfo().getKeYRustyType(PrimitiveType.USIZE)));
+            }
+        }
+        return pre;
     }
 
     @Override

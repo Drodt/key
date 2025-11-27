@@ -5,9 +5,7 @@ package org.key_project.rusty.pp;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.Identifier;
-import org.key_project.rusty.ast.PathInExpression;
-import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.*;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.pat.*;
 import org.key_project.rusty.ast.stmt.EmptyStatement;
@@ -711,5 +709,34 @@ public class PrettyPrinter implements Visitor {
             }
         }
         layouter.print(")");
+    }
+
+    @Override
+    public void performActionOnResDef(ResDef x) {
+
+    }
+
+    @Override
+    public void performActionOnVariantConstructor(VariantConstructor x) {
+
+    }
+
+    @Override
+    public void performActionOnPathExpr(PathExpr x) {
+        x.path().visit(this);
+    }
+
+    @Override
+    public <R> void performActionOnPath(Path<R> x) {
+        for (int i = 0; i < x.segments().size() - 1; i++) {
+            x.segments().get(i).visit(this);
+            layouter.print("::");
+        }
+        x.segments().get(x.segments().size() - 1).visit(this);
+    }
+
+    @Override
+    public void performActionOnPathSegment(PathSegment x) {
+        layouter.print(x.ident());
     }
 }

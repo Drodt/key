@@ -125,8 +125,7 @@ public abstract class AbstractSpecConverter {
             case BinOpKind.Le -> intLDT.getLessOrEquals();
             case BinOpKind.Gt -> intLDT.getGreaterThan();
             case BinOpKind.Ge -> intLDT.getGreaterOrEquals();
-            case BinOpKind.Eq, BinOpKind.LogEq ->
-                left.sort() == RustyDLTheory.FORMULA ? Equality.EQV : Equality.EQUALS;
+            case BinOpKind.Eq, BinOpKind.LogEq -> Equality.EQUALS;
             case BinOpKind.BitXor, BinOpKind.BitAnd, BinOpKind.BitOr, BinOpKind.Shl, BinOpKind.Rem,
                     BinOpKind.Shr ->
                 throw new RuntimeException("TODO");
@@ -135,6 +134,17 @@ public abstract class AbstractSpecConverter {
         };
         if (o == Junctor.NOT) {
             return tb.not(tb.equals(left, right));
+        }
+        if (o == Equality.EQUALS) {
+            if (left.sort() == RustyDLTheory.FORMULA && right.sort() == RustyDLTheory.FORMULA
+                    || left.sort() != RustyDLTheory.FORMULA
+                            && right.sort() != RustyDLTheory.FORMULA) {
+                return tb.equals(left, right);
+            }
+            if (left.sort() == RustyDLTheory.FORMULA) {
+                return tb.equals(left, tb.equals(right, tb.TRUE()));
+            }
+            return tb.equals(tb.equals(left, tb.TRUE()), right);
         }
         return tf.createTerm(o, left, right);
     }

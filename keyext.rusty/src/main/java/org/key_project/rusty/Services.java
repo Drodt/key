@@ -12,11 +12,10 @@ import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.prover.proof.ProofServices;
+import org.key_project.rusty.ast.ResDef;
 import org.key_project.rusty.ast.RustyProgramElement;
-import org.key_project.rusty.ast.expr.BinaryExpression;
-import org.key_project.rusty.ast.expr.FieldIdentifier;
-import org.key_project.rusty.ast.expr.LiteralExpression;
-import org.key_project.rusty.ast.expr.TupleExpression;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
+import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ldt.LDT;
 import org.key_project.rusty.ldt.LDTs;
 import org.key_project.rusty.logic.*;
@@ -202,6 +201,10 @@ public class Services implements LogicServices, ProofServices {
         }
         if (pe instanceof FieldIdentifier fi) {
             return tb.func(fi.field().fieldConst());
+        }
+        if (pe instanceof PathExpr p && p.path().res() instanceof ResDef rd
+                && rd.def() instanceof GenericConstParam gcp) {
+            return tb.func(gcp.fn());
         }
         throw new IllegalArgumentException(
             "Unknown or not convertible ProgramElement " + pe + " of type "

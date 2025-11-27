@@ -6,6 +6,8 @@ package org.key_project.rusty.proof.init;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
+import org.key_project.rusty.ast.abstraction.GenericTyParam;
 import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.op.ProgramFunction;
@@ -15,7 +17,7 @@ import org.key_project.util.collection.ImmutableList;
 
 ///
 /// This abstract implementation of [ProofOblInput] extends the functionality of
-/// [AbstractPO] to execute some code within a try catch block.
+/// [AbstractPO] to execute some code.
 ///
 ///
 /// The generated [Sequent] has the following form:
@@ -58,6 +60,17 @@ public abstract class AbstractOperationPO extends AbstractPO {
         boolean makeNamesUnique = isMakeNamesUnique();
         final ImmutableList<ProgramVariable> paramVars = tb.paramVars(fn, makeNamesUnique);
         final ProgramVariable resultVar = tb.resultVar(fn, makeNamesUnique);
+
+        if (fn.getFunction().getGenericParams().length > 0) {
+            for (int i = 0; i < fn.getFunction().getGenericParams().length; i++) {
+                var p = fn.getFunction().getGenericParams()[i];
+                if (p instanceof GenericTyParam) {
+                    throw new UnsupportedOperationException("TODO: Generic types");
+                } else if (p instanceof GenericConstParam gcp) {
+                    proofServices.getNamespaces().functions().addSafely(gcp.fn());
+                }
+            }
+        }
 
         register(paramVars, new ProgramVariable[] { resultVar }, proofServices);
 

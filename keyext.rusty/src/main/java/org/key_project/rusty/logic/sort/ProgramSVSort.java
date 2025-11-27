@@ -11,7 +11,9 @@ import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ConcreteLabel;
 import org.key_project.rusty.ast.Item;
+import org.key_project.rusty.ast.ResDef;
 import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.expr.*;
@@ -168,6 +170,9 @@ public abstract class ProgramSVSort extends SortImpl {
                 return true;
 
             if (pe instanceof LitPatExpr)
+                return true;
+            if (pe instanceof PathExpr p && p.path().res() instanceof ResDef rd
+                    && rd.def() instanceof GenericConstParam)
                 return true;
 
             return VARIABLE.canStandFor(pe, services);

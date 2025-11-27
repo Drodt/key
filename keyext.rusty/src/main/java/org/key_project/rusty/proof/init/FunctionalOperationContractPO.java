@@ -40,7 +40,6 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
         this.contract = contract;
     }
 
-
     @Override
     protected ProgramFunction getProgramFunction() {
         return getContract().getTarget();
@@ -55,7 +54,7 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
     protected Term getPre(ImmutableList<ProgramVariable> paramVars, Services proofServices) {
         final Term freePre = contract.getFreePre(null, paramVars, proofServices);
         final Term pre = contract.getPre(null, paramVars, proofServices);
-        return freePre != null ? tb.and(pre, freePre) : pre;
+        return freePre != null ? tb.and(freePre, pre) : pre;
     }
 
     @Override

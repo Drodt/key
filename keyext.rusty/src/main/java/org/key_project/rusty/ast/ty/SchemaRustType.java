@@ -43,11 +43,14 @@ public record SchemaRustType(SchemaType type) implements RustType {
     public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions mc) {
         final Services services = source.getServices();
         final RustyProgramElement src = source.getSource();
+        // TODO: move this somewhere more general
+        if (src == null)
+            return null;
         SVInstantiations instantiations = Objects.requireNonNull(mc).getInstantiations();
 
         final Object instant = instantiations.getInstantiation(type.sv());
         if (instant == null) {
-            instantiations = instantiations.add(type.sv(), Objects.requireNonNull(src), services);
+            instantiations = instantiations.add(type.sv(), src, services);
             mc = mc.setInstantiations(instantiations);
             // TODO: is this true?
             assert mc != null;

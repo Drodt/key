@@ -140,7 +140,7 @@ public class ProgramContextAdder {
 
             return new BlockExpression(body, value);
         } else if (wrapper instanceof ExpressionStatement es) {
-            assert putIn.getStatements().isEmpty();
+            assert putIn.getStatements().isEmpty() : putIn.toString();
             return new ExpressionStatement(Objects.requireNonNull(putIn.getValue()), es.hasSemi());
         } else {
             throw new RuntimeException("Unexpected context : " + wrapper);

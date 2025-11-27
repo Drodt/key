@@ -118,12 +118,50 @@ public abstract class TacletApp implements RuleApp {
     /// @return true iff all variable conditions x not free in y are hold
     public static boolean checkVarCondNotFreeIn(Taclet taclet, SVInstantiations instantiations,
             PosInOccurrence pos) {
-        /*
-         * TODO: Now that we work with DeBruijn indices, we only need to ensure that any variable
-         * with index `n` has
-         * at least `n` binding ops above it.
-         */
+        for (var pair : instantiations.getInstantiationMap()) {
+            final var sv = pair.key();
+
+            if (sv instanceof ModalOperatorSV || sv instanceof ProgramSV || sv instanceof VariableSV
+                    || sv instanceof SkolemTermSV) {
+                continue;
+            }
+
+            final var prefix = taclet.getPrefix(sv);
+
+            if (pos == null && prefix.context()) {
+                continue;
+            }
+
+            final int boundVarCount =
+                boundAtOccurrenceCount((TacletPrefix) prefix, instantiations, pos);
+            final Term inst = instantiations.getInstantiation(sv);
+            if (((TermImpl) inst).getMaxDebruijnIndex() > boundVarCount) {
+                return false;
+            }
+        }
         return true;
+    }
+
+    private static int boundAtOccurrenceCount(TacletPrefix prefix, SVInstantiations instantiations,
+            @Nullable PosInOccurrence pos) {
+        int result = prefix.prefixLength();
+
+        if (pos != null && prefix.context()) {
+            result += countBoundVarsAbove(pos);
+        }
+        return result;
+    }
+
+    private static int countBoundVarsAbove(@Nullable PosInOccurrence pos) {
+        int result = 0;
+        PIOPathIterator it = pos.iterator();
+        int i;
+        while ((i = it.next()) != -1) {
+            if (it.getSubTerm().op().bindVarsAt(i)) {
+                result += it.getSubTerm().boundVars().size();
+            }
+        }
+        return result;
     }
 
     protected static boolean checkNoFreeVars(org.key_project.prover.rules.Taclet taclet) {
