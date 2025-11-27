@@ -74,4 +74,9 @@ public class ArrayType implements Type {
 
     record TypeAndLen(Type ty, ArrayLen len) {
     }
+
+    @Override
+    public String toString() {
+        return name.toString();
+    }
 }

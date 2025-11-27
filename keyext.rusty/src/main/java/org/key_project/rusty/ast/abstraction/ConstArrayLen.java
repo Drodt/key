@@ -7,9 +7,16 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
 import org.key_project.rusty.Services;
 
+import org.jspecify.annotations.NonNull;
+
 public record ConstArrayLen(Function fn) implements ArrayLen {
     @Override
     public Term toTerm(Services services) {
         return services.getTermBuilder().func(fn);
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return fn.toString();
     }
 }

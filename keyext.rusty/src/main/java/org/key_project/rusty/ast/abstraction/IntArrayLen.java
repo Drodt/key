@@ -11,4 +11,9 @@ public record IntArrayLen(int len) implements ArrayLen {
     public Term toTerm(Services services) {
         return services.getTermBuilder().zTerm(len);
     }
+
+    @Override
+    public String toString() {
+        return "" + len;
+    }
 }
