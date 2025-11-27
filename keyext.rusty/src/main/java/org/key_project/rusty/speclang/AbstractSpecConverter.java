@@ -8,7 +8,6 @@ import java.util.*;
 import org.key_project.logic.Term;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.*;
 import org.key_project.rusty.ast.abstraction.GenericConstParam;
 import org.key_project.rusty.ast.abstraction.GenericParam;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
@@ -195,7 +194,7 @@ public abstract class AbstractSpecConverter {
                 yield tb.tuple(terms);
             }
             case TermKind.Path(var p) -> convertPath(p);
-            case TermKind.Quantor q -> convertQuantor(q);
+            case TermKind.Quantor q -> convertQuantifier(q);
             case TermKind.Index i -> convertIndex(i);
             default -> throw new IllegalStateException("Unexpected value: " + term);
         };
@@ -221,12 +220,25 @@ public abstract class AbstractSpecConverter {
         throw new IllegalArgumentException("Index undefined for: " + indexed);
     }
 
-    private Term convertQuantor(TermKind.Quantor q) {
+    private Term convertQuantifier(TermKind.Quantor q) {
         var param = convertQuantorParam(q.param());
         ctx.registerBoundVar(q.param().hirId(), param);
         var term = convert(q.term());
+        // TODO: get type from rml
+        var ty = services.getRustInfo().getKeYRustyType(PrimitiveType.USIZE);
+        var inRange = tb.reachableValue(tb.var(new LogicVariable(1, ty.getSort())), ty);
         ctx.popBoundVar();
-        return q.kind() == QuantorKind.Exists ? tb.ex(param, term) : tb.all(param, term);
+        if (q.kind() == QuantorKind.Exists) {
+            return tb.ex(param, tb.and(inRange, term));
+        } else {
+            if (term.op() == Junctor.IMP) {
+                // Optimize a bit
+                term = tb.imp(tb.and(inRange, term.sub(0)), term.sub(1));
+            } else {
+                term = tb.imp(inRange, term);
+            }
+            return tb.all(param, term);
+        }
     }
 
     private BoundVariable convertQuantorParam(QuantorParam p) {
