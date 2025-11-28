@@ -883,7 +883,7 @@ public abstract class TacletApp implements RuleApp {
         }
     }
 
-    /// @return true iff the if-instantiation list is not null or no if sequent is needed
+    /// @return true iff the assumes-instantiation list is not null or no assumes sequent is needed
     public boolean assumesInstantionsComplete() {
         return assumesInstantiations != null || taclet().assumesSequent().isEmpty();
     }

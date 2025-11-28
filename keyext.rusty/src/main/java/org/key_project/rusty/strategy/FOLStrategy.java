@@ -128,6 +128,8 @@ public class FOLStrategy extends AbstractFeatureStrategy {
 
         bindRuleSet(d, "cut", not(isInstantiated("cutFormula")));
 
+        bindRuleSet(d, "apply_auxiliary_eq", inftyConst());
+
         if (quantifierInstantiatedEnabled()) {
             setupFormulaNormalisation(d);
         } else {
@@ -156,6 +158,11 @@ public class FOLStrategy extends AbstractFeatureStrategy {
         // without changing the sequent for a really long time. This is tested by
         // TestSymbolicExecutionTreeBuilder#testInstanceOfNotInEndlessLoop()
         bindRuleSet(d, "apply_equations", EqNonDuplicateAppFeature.INSTANCE);
+
+        bindRuleSet(d, "apply_auxiliary_eq",
+            add(NoSelfApplicationFeature.INSTANCE, isInstantiated("s"),
+                not(ContainsTermFeature.create(instOf("s"), instOf("t1")))));
+
 
         return d;
     }
