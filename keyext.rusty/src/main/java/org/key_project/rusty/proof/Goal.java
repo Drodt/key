@@ -279,7 +279,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     }
 
     public void setBranchLabel(String name) {
-        // TODO @ DD
+        node.getNodeInfo().setBranchLabel(name);
     }
 
     /// puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current

@@ -274,7 +274,7 @@ public class OutputStreamProofSaver {
         while (childrenIt.hasNext()) {
             final Node child = childrenIt.next();
             output.append(prefix);
-            final String branchLabel = null;// child.getNodeInfo().getBranchLabel();
+            final String branchLabel = child.getNodeInfo().getBranchLabel();
 
             // The branchLabel is ignored when reading in the proof,
             // print it if we have it, ignore it otherwise. (MU)
