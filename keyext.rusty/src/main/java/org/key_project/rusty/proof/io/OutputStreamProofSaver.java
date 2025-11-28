@@ -34,6 +34,8 @@ import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.UseOperationContractRule;
 import org.key_project.rusty.rule.inst.TermInstantiation;
 import org.key_project.rusty.settings.ProofSettings;
+import org.key_project.rusty.settings.StrategySettings;
+import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
 
 /// Saves a proof to a given [OutputStream].
@@ -71,7 +73,7 @@ public class OutputStreamProofSaver {
     }
 
     public String writeSettings(ProofSettings ps) {
-        return ""; // String.format("\\settings %s \n", ps.settingsToString());
+        return String.format("\\settings %s \n", ps.settingsToString());
     }
 
     public void save(OutputStream out) throws IOException {
@@ -84,25 +86,8 @@ public class OutputStreamProofSaver {
             ps.println(writeProfile(proof.getServices().getProfile()));
 
             // settings
-            /*
-             * final StrategySettings strategySettings = proof.getSettings().getStrategySettings();
-             * final StrategyProperties strategyProperties =
-             * strategySettings.getActiveStrategyProperties();
-             * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
-             * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
-             * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
-             * StrategyProperties.INF_FLOW_CHECK_TRUE);
-             * strategySettings.setActiveStrategyProperties(strategyProperties);
-             * for (final SequentFormula s : proof.root().sequent().succedent().asList()) {
-             * ((InfFlowProof) proof).addLabeledTotalTerm(s.formula());
-             * }
-             * } else {
-             * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
-             * StrategyProperties.INF_FLOW_CHECK_FALSE);
-             * strategySettings.setActiveStrategyProperties(strategyProperties);
-             * }
-             * ps.println(writeSettings(proof.getSettings()));
-             *
+            ps.println(writeSettings(proof.getSettings()));
+             /*
              * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
              * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
              * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
