@@ -26,6 +26,8 @@ public class SemisequentTacletAppIndex {
     private ImmutableMap<SequentFormula, TermTacletAppIndex> termIndices =
         DefaultImmutableMap.nilMap();
 
+    private TermTacletAppIndexCacheSet indexCaches;
+
     /// Create an index object for the semisequent determined by <code>s</code> and
     /// <code>antec</code> that contains term indices for each formula.
     ///
@@ -33,9 +35,11 @@ public class SemisequentTacletAppIndex {
     /// the
     /// succedent
     SemisequentTacletAppIndex(Sequent s, boolean antec, Services services,
-            TacletIndex tacletIndex, NewRuleListener listener) {
+            TacletIndex tacletIndex, NewRuleListener listener,
+            TermTacletAppIndexCacheSet indexCaches) {
         this.seq = s;
         this.antec = antec;
+        this.indexCaches = indexCaches;
         addTermIndices((antec ? s.antecedent() : s.succedent()).asList(), services, tacletIndex,
             listener);
     }
@@ -44,6 +48,7 @@ public class SemisequentTacletAppIndex {
         this.seq = orig.seq;
         this.antec = orig.antec;
         this.termIndices = orig.termIndices;
+        this.indexCaches = orig.indexCaches;
     }
 
     /// Add indices for the given formulas to the map <code>termIndices</code>. Existing entries are
@@ -66,7 +71,8 @@ public class SemisequentTacletAppIndex {
             TacletIndex tacletIndex, NewRuleListener listener) {
         final PosInOccurrence pos = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
         termIndices =
-            termIndices.put(cfma, TermTacletAppIndex.create(pos, services, tacletIndex, listener));
+            termIndices.put(cfma,
+                TermTacletAppIndex.create(pos, services, tacletIndex, listener, indexCaches));
     }
 
     public SemisequentTacletAppIndex copy() {
@@ -241,8 +247,12 @@ public class SemisequentTacletAppIndex {
                 final PosInOccurrence newPos =
                     oldPos.replaceSequentFormula(newFor);
                 termIndices = termIndices.put(newFor,
-                    oldIndex.update(newPos, services, tacletIndex, listener/* , indexCaches */));
+                    oldIndex.update(newPos, services, tacletIndex, listener, indexCaches));
             }
         }
+    }
+
+    void setIndexCache(TermTacletAppIndexCacheSet indexCaches) {
+        this.indexCaches = indexCaches;
     }
 }
