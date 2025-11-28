@@ -11,6 +11,7 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.ast.abstraction.SchemaType;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
@@ -43,16 +44,17 @@ public record SchemaRustType(SchemaType type) implements RustType {
     public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions mc) {
         final Services services = source.getServices();
         final RustyProgramElement src = source.getSource();
-        // TODO: move this somewhere more general
         if (src == null)
             return null;
+        if (!((ProgramSVSort) type.sv().sort()).canStandFor(src, services)) {
+            return null;
+        }
         SVInstantiations instantiations = Objects.requireNonNull(mc).getInstantiations();
 
         final Object instant = instantiations.getInstantiation(type.sv());
         if (instant == null) {
             instantiations = instantiations.add(type.sv(), src, services);
             mc = mc.setInstantiations(instantiations);
-            // TODO: is this true?
             assert mc != null;
         } else if (!instant.equals(src)) {
             return null;

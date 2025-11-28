@@ -12,6 +12,8 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.sv.OperatorSV;
+import org.key_project.rusty.logic.op.sv.ProgramSV;
+import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
@@ -38,16 +40,35 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
         final RustyProgramElement src = Objects.requireNonNull(source.getSource());
 
         assert mc != null;
-        final SVInstantiations instantiations = mc.getInstantiations();
-        final Object instant = instantiations.getInstantiation(operatorSV);
-        if (instant == null || instant.equals(src)
-                || (instant instanceof Term t && t.op().equals(src))) {
-            mc = addPatternInstantiation(src, mc, instantiations, instant, services);
+
+        ProgramSVSort sort = (ProgramSVSort) operatorSV().sort();
+        // TODO: This is rather ugly, fix!
+        if (!ProgramSVSort.PATTERN.canStandFor(src, services)) {
+            return null;
+        }
+        var bp = (BindingPattern) src;
+        if (bp.mut() != mut() || bp.mutRef() && (!mut() || !reference())
+                || bp.ref() && (mut() || !reference())) {
+            return null;
+        }
+        if (sort == ProgramSVSort.VARIABLE) {
+            mc = ((ProgramSV) operatorSV).match(new SourceData(src, 0, services), mc);
             if (mc == null) {
                 return null;
             }
         } else {
-            return null;
+
+            final SVInstantiations instantiations = mc.getInstantiations();
+            final Object instant = instantiations.getInstantiation(operatorSV);
+            if (instant == null || instant.equals(src)
+                    || (instant instanceof Term t && t.op().equals(src))) {
+                mc = addPatternInstantiation(src, mc, instantiations, instant, services);
+                if (mc == null) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
         }
         source.next();
         return mc;
