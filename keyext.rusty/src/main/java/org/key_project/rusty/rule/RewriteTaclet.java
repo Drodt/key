@@ -13,6 +13,7 @@ import org.key_project.prover.rules.TacletPrefix;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
 import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.rusty.logic.TermImpl;
 import org.key_project.rusty.logic.op.IfThenElse;
 import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.logic.op.RModality;
@@ -86,7 +87,7 @@ public class RewriteTaclet extends FindTaclet {
     /// @param t the Term to check
     /// @return false if vetoing
     private boolean veto(Term t) {
-        return !t.freeVars().isEmpty();
+        return ((TermImpl) t).getMaxDebruijnIndex() > 0;
     }
 
     /// For taclets with <code>getSameUpdatePrefix ()</code>, collect the updates above
