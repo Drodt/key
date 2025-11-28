@@ -54,7 +54,7 @@ public class TacletIndex {
     }
 
 
-    public TacletIndex(ImmutableList<Taclet> taclets) {
+    public TacletIndex(Iterable<Taclet> taclets) {
         rwList = new LinkedHashMap<>();
         antecList = new LinkedHashMap<>();
         succList = new LinkedHashMap<>();

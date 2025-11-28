@@ -99,7 +99,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         this.requiredChoices = Objects.requireNonNullElse(choices, ChoiceExpr.TRUE);
         List<Taclet> seq = mapOf(ctx.taclet());
         topLevelTaclets.addAll(seq);
-        disableJavaSchemaMode();
+        disableRustySchemaMode();
         return null;
     }
 

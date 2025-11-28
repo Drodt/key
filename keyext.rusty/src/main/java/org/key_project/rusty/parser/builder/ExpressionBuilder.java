@@ -965,12 +965,4 @@ public class ExpressionBuilder extends DefaultBuilder {
     private void unbindVars(List<@NonNull BoundVariable> vars) {
         boundVars.removeAll(vars);
     }
-
-    protected void enableJavaSchemaMode() {
-        rustySchemaModeAllowed = true;
-    }
-
-    protected void disableJavaSchemaMode() {
-        rustySchemaModeAllowed = false;
-    }
 }

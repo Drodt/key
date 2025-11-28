@@ -34,8 +34,6 @@ import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.UseOperationContractRule;
 import org.key_project.rusty.rule.inst.TermInstantiation;
 import org.key_project.rusty.settings.ProofSettings;
-import org.key_project.rusty.settings.StrategySettings;
-import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
 
 /// Saves a proof to a given [OutputStream].
@@ -87,7 +85,7 @@ public class OutputStreamProofSaver {
 
             // settings
             ps.println(writeSettings(proof.getSettings()));
-             /*
+            /*
              * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
              * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
              * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,

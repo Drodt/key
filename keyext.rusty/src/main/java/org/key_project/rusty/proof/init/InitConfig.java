@@ -246,7 +246,15 @@ public class InitConfig {
     }
 
     public TacletIndex createTacletIndex() {
-        return new TacletIndex(taclets);
+        return new TacletIndex(activatedTaclets());
+    }
+
+    /// returns the activated taclets of this initial configuration
+    public Collection<Taclet> activatedTaclets() {
+        if (activatedTacletCache == null) {
+            fillActiveTacletCache();
+        }
+        return activatedTacletCache.values();
     }
 
     public Taclet lookupActiveTaclet(Name name) {
