@@ -178,5 +178,4 @@ class Instantiation {
     private Term getMatrix() {
         return matrix;
     }
-
 }

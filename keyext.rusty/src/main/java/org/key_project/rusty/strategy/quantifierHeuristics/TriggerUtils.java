@@ -23,6 +23,21 @@ public class TriggerUtils {
         return t;
     }
 
+    /// remove all the quantifiable variable bounded in the top level of a given formula.
+    /// @return the unquantified formula and the number of bound vars removed.
+    public static TermAndCount discardAndCountQuantifiers(Term qterm) {
+        Term t = qterm;
+        int count = 0;
+        while (t.op() instanceof Quantifier) {
+            count += t.boundVars().size();
+            t = t.sub(0);
+        }
+        return new TermAndCount(t, count);
+    }
+
+    public record TermAndCount(Term term, int count) {
+    }
+
     /// @return set of terms that are that the term split through the operator <code>op</code>
     public static Iterator<Term> iteratorByOperator(Term term, Operator op) {
         return setByOperator(term, op).iterator();

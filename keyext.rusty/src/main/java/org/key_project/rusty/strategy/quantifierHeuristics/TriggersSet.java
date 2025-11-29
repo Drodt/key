@@ -9,6 +9,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.TermImpl;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
@@ -57,7 +58,7 @@ public class TriggersSet {
         return trs;
     }
 
-    /// @return return all univesal variables of <code>allterm</code>
+    /// @return return all universal variables of <code>allterm</code>
     private ImmutableSet<QuantifiableVariable> getAllUQS(Term allterm) {
         final var op = allterm.op();
         if (op == Quantifier.ALL) {
@@ -70,15 +71,16 @@ public class TriggersSet {
         return DefaultImmutableSet.nil();
     }
 
-    /// initial all <code>Trigger</code>s by finding triggers in every clauses
+    /// initial all <code>Trigger</code>s by finding triggers in every clause
     private void initTriggers(Services services) {
-        final QuantifiableVariable var = allTerm.varsBoundHere(0).get(0);
+        var tac = TriggerUtils.discardAndCountQuantifiers(allTerm);
+        var idx = tac.count();
         final var it =
-            TriggerUtils.iteratorByOperator(TriggerUtils.discardQuantifiers(allTerm), Junctor.AND);
+            TriggerUtils.iteratorByOperator(tac.term(), Junctor.AND);
         while (it.hasNext()) {
-            final var clause = it.next();
+            final var clause = (TermImpl) it.next();
             // a trigger should contain the first variable of allTerm
-            if (clause.freeVars().contains(var)) {
+            if (clause.containsLogicVariable(idx)) {
                 ClauseTrigger ct = new ClauseTrigger(clause);
                 ct.createTriggers(services);
             }
