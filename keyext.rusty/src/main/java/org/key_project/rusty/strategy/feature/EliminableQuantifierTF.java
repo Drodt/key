@@ -36,6 +36,7 @@ public class EliminableQuantifierTF extends BinaryTermFeature {
 
         final QuantifiableVariable var = term.varsBoundHere(0).last();
 
-        return quanAnalyser.isEliminableVariableAllPaths(LogicVariable.create(1, var.sort()), matrix, op == Quantifier.EX);
+        return quanAnalyser.isEliminableVariableAllPaths(LogicVariable.create(1, var.sort()),
+            matrix, op == Quantifier.EX);
     }
 }
