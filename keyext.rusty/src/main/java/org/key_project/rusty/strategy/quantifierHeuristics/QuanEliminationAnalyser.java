@@ -8,6 +8,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.op.Junctor;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 
 public class QuanEliminationAnalyser {
@@ -42,9 +43,9 @@ public class QuanEliminationAnalyser {
         int distance = 0;
         while (true) {
             final QuantifiableVariable var = quantTerm.varsBoundHere(0).last();
-
-            if (isDefinition(definition, var, ex)
-                    && isEliminableVariableSomePaths(var, matrix, ex)) {
+            final var lv = LogicVariable.create(1, var.sort());
+            if (isDefinition(definition, lv, ex)
+                    && isEliminableVariableSomePaths(lv, matrix, ex)) {
                 return distance;
             }
 
@@ -82,7 +83,7 @@ public class QuanEliminationAnalyser {
 
     private boolean hasDefinitionShape(Term t, boolean ex) {
         for (QuantifiableVariable quantifiableVariable : t.freeVars()) {
-            if (isDefinition(t, quantifiableVariable, ex)) {
+            if (isDefinition(t, (LogicVariable) quantifiableVariable, ex)) {
                 return true;
             }
         }
@@ -105,7 +106,7 @@ public class QuanEliminationAnalyser {
     /// The variable <code>var</code> is either eliminable or does not occur on all
     /// conjunctive/disjunctive paths through <code>matrix</code> (depending on whether
     /// <code>ex</code> is true/false)
-    public boolean isEliminableVariableSomePaths(QuantifiableVariable var, Term matrix,
+    public boolean isEliminableVariableSomePaths(LogicVariable var, Term matrix,
             boolean ex) {
         if (!matrix.freeVars()
                 .contains(var)) {
@@ -133,7 +134,7 @@ public class QuanEliminationAnalyser {
 
     /// The variable <code>var</code> is eliminable on all conjunctive/disjunctive paths through
     /// <code>matrix</code> (depending on whether <code>ex</code> is true/false)
-    public boolean isEliminableVariableAllPaths(QuantifiableVariable var, Term matrix, boolean ex) {
+    public boolean isEliminableVariableAllPaths(LogicVariable var, Term matrix, boolean ex) {
         final var op = matrix.op();
 
         if (op == (ex ? Junctor.OR : Junctor.AND)) {
@@ -151,7 +152,7 @@ public class QuanEliminationAnalyser {
         }
     }
 
-    private boolean isDefinition(Term t, QuantifiableVariable var, boolean ex) {
+    private boolean isDefinition(Term t, LogicVariable var, boolean ex) {
         if (ex) {
             return isDefinitionEx(t, var);
         } else {
@@ -159,25 +160,25 @@ public class QuanEliminationAnalyser {
         }
     }
 
-    private boolean isDefinitionEx(Term t, QuantifiableVariable var) {
+    private boolean isDefinitionEx(Term t, LogicVariable var) {
         if (t.op() == Junctor.OR) {
             return isDefinitionEx(t.sub(0), var) && isDefinitionEx(t.sub(1), var);
         }
         return isDefiningEquationEx(t, var);
     }
 
-    private boolean isDefiningEquationAll(Term t, QuantifiableVariable var) {
+    private boolean isDefiningEquationAll(Term t, LogicVariable var) {
         if (t.op() != Junctor.NOT) {
             return false;
         }
         return isDefiningEquation(t.sub(0), var);
     }
 
-    private boolean isDefiningEquationEx(Term t, QuantifiableVariable var) {
+    private boolean isDefiningEquationEx(Term t, LogicVariable var) {
         return isDefiningEquation(t, var);
     }
 
-    private boolean isDefiningEquation(Term t, QuantifiableVariable var) {
+    private boolean isDefiningEquation(Term t, LogicVariable var) {
         if (t.op() != Equality.EQUALS) {
             return false;
         }

@@ -9,6 +9,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.termfeature.BinaryTermFeature;
 import org.key_project.prover.strategy.costbased.termfeature.TermFeature;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.rusty.strategy.quantifierHeuristics.QuanEliminationAnalyser;
 
@@ -35,7 +36,6 @@ public class EliminableQuantifierTF extends BinaryTermFeature {
 
         final QuantifiableVariable var = term.varsBoundHere(0).last();
 
-        return quanAnalyser.isEliminableVariableAllPaths(var, matrix, op == Quantifier.EX);
+        return quanAnalyser.isEliminableVariableAllPaths(LogicVariable.create(1, var.sort()), matrix, op == Quantifier.EX);
     }
-
 }
