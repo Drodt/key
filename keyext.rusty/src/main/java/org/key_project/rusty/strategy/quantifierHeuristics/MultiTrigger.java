@@ -6,18 +6,18 @@ package org.key_project.rusty.strategy.quantifierHeuristics;
 import java.util.Iterator;
 
 import org.key_project.logic.Term;
-import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
 
 class MultiTrigger implements Trigger {
     private final ImmutableSet<Trigger> triggers;
-    private final ImmutableSet<QuantifiableVariable> qvs;
+    private final ImmutableSet<LogicVariable> qvs;
     private final Term clause;
 
-    MultiTrigger(ImmutableSet<Trigger> triggers, ImmutableSet<QuantifiableVariable> qvs,
+    MultiTrigger(ImmutableSet<Trigger> triggers, ImmutableSet<LogicVariable> qvs,
             Term clause) {
         this.triggers = triggers;
         this.qvs = qvs;
@@ -69,11 +69,11 @@ class MultiTrigger implements Trigger {
     /// unify two substitution, if same variable are bound with same term return a new substitution
     /// with all universal quantifiable variables in two substitution, otherwise return null
     private Substitution unifySubstitution(Substitution sub0, Substitution sub1) {
-        final ImmutableMap<@NonNull QuantifiableVariable, Term> varMap1 = sub1.getVarMap();
-        ImmutableMap<@NonNull QuantifiableVariable, Term> resMap = varMap1;
+        final ImmutableMap<@NonNull LogicVariable, Term> varMap1 = sub1.getVarMap();
+        ImmutableMap<@NonNull LogicVariable, Term> resMap = varMap1;
 
-        for (final ImmutableMapEntry<@NonNull QuantifiableVariable, Term> en : sub0.getVarMap()) {
-            QuantifiableVariable key = en.key();
+        for (final ImmutableMapEntry<@NonNull LogicVariable, Term> en : sub0.getVarMap()) {
+            LogicVariable key = en.key();
             Term value = en.value();
             if (varMap1.containsKey(key)) {
                 if (!(varMap1.get(key).equals(value))) {

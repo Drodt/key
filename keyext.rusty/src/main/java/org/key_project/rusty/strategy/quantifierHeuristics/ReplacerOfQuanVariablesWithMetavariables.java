@@ -3,12 +3,14 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy.quantifierHeuristics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
-import org.key_project.logic.op.Function;
-import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.rusty.logic.op.RFunction;
 import org.key_project.util.collection.DefaultImmutableMap;
@@ -23,23 +25,31 @@ class ReplacerOfQuanVariablesWithMetavariables {
     private ReplacerOfQuanVariablesWithMetavariables() {}
 
     public static Substitution createSubstitutionForVars(Term allTerm, Services services) {
-        ImmutableMap<@NonNull QuantifiableVariable, Term> res =
-            DefaultImmutableMap.nilMap();
+        List<Term> quants = new ArrayList<>();
         Term t = allTerm;
         var op = t.op();
         while (op instanceof Quantifier) {
-            QuantifiableVariable q = t.varsBoundHere(0).get(0);
-            Term m;
-            if (op == Quantifier.ALL) {
-                Metavariable mv = new Metavariable(ARBITRARY_NAME, q.sort());
-                m = services.getTermBuilder().var(mv);
-            } else {
-                Function f = new RFunction(ARBITRARY_NAME, q.sort(), new Sort[0]);
-                m = services.getTermBuilder().func(f);
-            }
-            res = res.put(q, m);
+            quants.add(t);
             t = t.sub(0);
             op = t.op();
+        }
+
+        ImmutableMap<@NonNull LogicVariable, Term> res =
+            DefaultImmutableMap.nilMap();
+        int size = quants.size();
+        for (int i = 0; i < size; i++) {
+            var quant = quants.get(i);
+            var sort = quant.varsBoundHere(0).get(0).sort();
+            Term m;
+            if (quant.op() == Quantifier.ALL) {
+                var mv = new Metavariable(ARBITRARY_NAME, sort);
+                m = services.getTermBuilder().var(mv);
+            } else {
+                var f = new RFunction(ARBITRARY_NAME, sort, new Sort[0]);
+                m = services.getTermBuilder().func(f);
+            }
+            var lv = LogicVariable.create(size - i, sort);
+            res = res.put(lv, m);
         }
         return new Substitution(res);
     }

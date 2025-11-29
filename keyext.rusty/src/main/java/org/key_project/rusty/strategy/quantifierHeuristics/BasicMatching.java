@@ -4,7 +4,7 @@
 package org.key_project.rusty.strategy.quantifierHeuristics;
 
 import org.key_project.logic.Term;
-import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
@@ -44,7 +44,7 @@ public class BasicMatching {
     /// @return all substitution that a given pattern(ex: a term of a uniTrigger) match in the
     /// instance.
     private static Substitution match(Term pattern, Term instance) {
-        final ImmutableMap<@NonNull QuantifiableVariable, Term> map =
+        final ImmutableMap<@NonNull LogicVariable, Term> map =
             matchRec(DefaultImmutableMap.nilMap(), pattern, instance);
         if (map == null) {
             return null;
@@ -53,12 +53,12 @@ public class BasicMatching {
     }
 
     /// match the pattern to instance recursively.
-    private static ImmutableMap<@NonNull QuantifiableVariable, Term> matchRec(
-            ImmutableMap<@NonNull QuantifiableVariable, Term> varMap, Term pattern, Term instance) {
+    private static ImmutableMap<@NonNull LogicVariable, Term> matchRec(
+            ImmutableMap<@NonNull LogicVariable, Term> varMap, Term pattern, Term instance) {
         final var patternOp = pattern.op();
 
-        if (patternOp instanceof QuantifiableVariable) {
-            return mapVarWithCheck(varMap, (QuantifiableVariable) patternOp, instance);
+        if (patternOp instanceof LogicVariable lv) {
+            return mapVarWithCheck(varMap, lv, instance);
         }
 
         if (patternOp != instance.op()) {
@@ -73,13 +73,13 @@ public class BasicMatching {
         return varMap;
     }
 
-    /// match a variable to a instance.
+    /// match a variable to an instance.
     ///
     /// @return true if it is a new vaiable or the instance it matched is the same as that it
     /// matched
     /// before.
-    private static ImmutableMap<@NonNull QuantifiableVariable, Term> mapVarWithCheck(
-            ImmutableMap<@NonNull QuantifiableVariable, Term> varMap, QuantifiableVariable var,
+    private static ImmutableMap<@NonNull LogicVariable, Term> mapVarWithCheck(
+            ImmutableMap<@NonNull LogicVariable, Term> varMap, LogicVariable var,
             Term instance) {
         final Term oldTerm = varMap.get(var);
         if (oldTerm == null) {

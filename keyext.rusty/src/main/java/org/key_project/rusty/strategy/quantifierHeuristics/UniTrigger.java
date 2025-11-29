@@ -6,13 +6,16 @@ package org.key_project.rusty.strategy.quantifierHeuristics;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.util.LRUCache;
 import org.key_project.util.collection.*;
 
+import org.jspecify.annotations.NonNull;
+
 class UniTrigger implements Trigger {
     private final Term trigger;
-    private final ImmutableSet<QuantifiableVariable> uqvs;
+    private final ImmutableSet<LogicVariable> uqvs;
 
     private final TriggersSet triggerSetThisBelongsTo;
 
@@ -22,7 +25,7 @@ class UniTrigger implements Trigger {
     private final LRUCache<Term, ImmutableSet<Substitution>> matchResults =
         new LRUCache<>(1000);
 
-    UniTrigger(Term trigger, ImmutableSet<QuantifiableVariable> uqvs, boolean isUnify,
+    UniTrigger(Term trigger, ImmutableSet<LogicVariable> uqvs, boolean isUnify,
             boolean isElementOfMultitrigger, TriggersSet triggerSetThisBelongsTo) {
         this.trigger = trigger;
         this.uqvs = uqvs;
@@ -80,7 +83,7 @@ class UniTrigger implements Trigger {
         return String.valueOf(trigger);
     }
 
-    ImmutableSet<QuantifiableVariable> getUniVariables() {
+    ImmutableSet<LogicVariable> getUniVariables() {
         return uqvs;
     }
 
@@ -118,8 +121,8 @@ class UniTrigger implements Trigger {
 
     /// Code copied from logic.EqualityConstraint
     private static boolean containsLoop(
-            ImmutableMap<QuantifiableVariable, Term> varMap,
-            QuantifiableVariable var) {
+            ImmutableMap<@NonNull LogicVariable, Term> varMap,
+            LogicVariable var) {
         ImmutableList<QuantifiableVariable> body = ImmutableSLList.nil();
         ImmutableList<Term> fringe = ImmutableSLList.nil();
         Term checkForCycle = varMap.get(var);
@@ -130,7 +133,7 @@ class UniTrigger implements Trigger {
 
         while (true) {
             for (var quantifiableVariable : checkForCycle.freeVars()) {
-                final QuantifiableVariable termVar = quantifiableVariable;
+                final var termVar = (LogicVariable) quantifiableVariable;
                 if (!body.contains(termVar)) {
                     final var termVarterm = varMap.get(termVar);
                     if (termVarterm != null) {

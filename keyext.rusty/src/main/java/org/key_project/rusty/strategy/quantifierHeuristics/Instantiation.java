@@ -7,19 +7,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.key_project.logic.Term;
-import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.util.collection.*;
 
 class Instantiation {
     /// universally quantifiable variable bound in<code>allTerm</code>
-    private final QuantifiableVariable firstVar;
+    private final LogicVariable firstVar;
 
     private final Term matrix;
 
@@ -33,7 +33,8 @@ class Instantiation {
     private final TriggersSet triggersSet;
 
     private Instantiation(Term allterm, Sequent seq, Services services) {
-        firstVar = allterm.varsBoundHere(0).get(0);
+        // TODO(DD): Is this correct?
+        firstVar = LogicVariable.create(1, allterm.varsBoundHere(0).get(0).sort());
         matrix = TriggerUtils.discardQuantifiers(allterm);
         /* Terms bound in every formula on <code>goal</code> */
         triggersSet = TriggersSet.create(allterm, services);
@@ -84,22 +85,6 @@ class Instantiation {
         // addArbitraryInstance ();
     }
 
-    private void addArbitraryInstance(Services services) {
-        ImmutableMap<QuantifiableVariable, Term> varMap =
-            DefaultImmutableMap.nilMap();
-
-        for (QuantifiableVariable v : triggersSet.getUniQuantifiedVariables()) {
-            final Term inst = createArbitraryInstantiation(v, services);
-            varMap = varMap.put(v, inst);
-        }
-
-        addInstance(new Substitution(varMap), services);
-    }
-
-    private Term createArbitraryInstantiation(QuantifiableVariable var, Services services) {
-        throw new UnsupportedOperationException();
-    }
-
     private void addInstance(Substitution sub, Services services) {
         final long cost =
             PredictCostProver.computerInstanceCost(sub, getMatrix(),
@@ -110,8 +95,8 @@ class Instantiation {
     }
 
     /// add instance of <code>var</code> in <code>sub</code> with <code>cost</code> to
-    /// <code>instancesCostCache</code> if this instance is exist, compare thire cost and store the
-    /// less one.
+    /// <code>instancesCostCache</code> if this instance exists, compare their cost and store the
+    /// lesser one.
     private void addInstance(Substitution sub, long cost) {
         final Term inst =
             sub.getSubstitutedTerm(firstVar);
