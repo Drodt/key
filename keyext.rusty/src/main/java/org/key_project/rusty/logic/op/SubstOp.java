@@ -53,8 +53,7 @@ public class SubstOp extends AbstractOperator {
     }
 
     public Term apply(Term term, TermBuilder tb) {
-        var v = (BoundVariable) term.varsBoundHere(1).get(0);
-        var cfSubst = new Subst(v, term.sub(0), tb);
+        var cfSubst = new Subst(term.sub(0), tb);
         return cfSubst.apply(term.sub(1));
     }
 
