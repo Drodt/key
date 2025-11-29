@@ -120,7 +120,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
             public void visit(Term visited) {
                 Operator visitedOp = visited.op();
                 if (visitedOp instanceof LogicVariable lv) {
-                    pushNew(new LogicVariable(lv.getIndex() + 1, lv.sort()));
+                    pushNew(LogicVariable.create(lv.getIndex() + 1, lv.sort()));
                 }
                 // instantiate sub terms
                 final Term[] neededSubs = neededSubs(visitedOp.arity());

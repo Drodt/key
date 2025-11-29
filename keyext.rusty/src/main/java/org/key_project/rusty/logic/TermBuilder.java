@@ -114,10 +114,6 @@ public class TermBuilder {
         return result;
     }
 
-    public Term allClose(Term t) {
-        return all(t.freeVars(), t);
-    }
-
     public Term ex(QuantifiableVariable qv, Term t) {
         return tf.createTerm(Quantifier.EX, new ImmutableArray<>(t),
             new ImmutableArray<>(qv));

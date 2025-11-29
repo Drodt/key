@@ -464,6 +464,7 @@ public class ExpressionBuilder extends DefaultBuilder {
                 assert op instanceof Function;
                 for (int i = 0; i < args.length; i++) {
                     if (i < op.arity() && !op.bindVarsAt(i)) {
+                        // TODO(DD): Check this
                         for (QuantifiableVariable qv : args[i].freeVars()) {
                             if (boundVars.contains(qv)) {
                                 semanticError(ctx,
@@ -956,7 +957,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         }
         if (idx != -1) {
             var deBruijn = boundVars.size() - idx;
-            return new LogicVariable(deBruijn, boundVars.get(idx).sort());
+            return LogicVariable.create(deBruijn, boundVars.get(idx).sort());
         }
 
         return super.lookupVarfuncId(ctx, varfuncName, genericArgsCtxt);

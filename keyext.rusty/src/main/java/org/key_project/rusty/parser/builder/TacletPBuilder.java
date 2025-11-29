@@ -541,7 +541,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         var ind = new ArrayList<Term>(args.length);
 
         for (int i = 0; i < argSort.size(); i++) {
-            final var lv = new LogicVariable(i, argSort.get(i));
+            final var lv = LogicVariable.create(i, argSort.get(i));
             bvs.add(new BoundVariable(new Name(argNames.get(i)), argSort.get(i)));
             args[i] = services.getTermFactory().createTerm(lv);
 

@@ -577,7 +577,7 @@ public class IntermediateProofReplayer {
     public static TacletApp parseSV1(TacletApp app, VariableSV sv, String value,
             Services services) {
         // TODO
-        LogicVariable lv = new LogicVariable(1, app.getRealSort(sv));
+        LogicVariable lv = LogicVariable.create(1, app.getRealSort(sv));
         Term instance = services.getTermFactory().createTerm(lv);
         return app.addCheckedInstantiation(sv, instance, services, true);
     }
