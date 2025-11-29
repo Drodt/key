@@ -54,7 +54,7 @@ public abstract class AbstractSpecConverter {
         LogicVariable getLogicVar(HirId id) {
             for (int i = 0; i < boundVars.size(); i++) {
                 if (boundVars.get(i).equals(id)) {
-                    return new LogicVariable(i + 1, bvSorts.get(id));
+                    return LogicVariable.create(i + 1, bvSorts.get(id));
                 }
             }
             return null;
@@ -226,7 +226,7 @@ public abstract class AbstractSpecConverter {
         var term = convert(q.term());
         // TODO: get type from rml
         var ty = services.getRustInfo().getKeYRustyType(PrimitiveType.USIZE);
-        var inRange = tb.reachableValue(tb.var(new LogicVariable(1, ty.getSort())), ty);
+        var inRange = tb.reachableValue(tb.var(LogicVariable.create(1, ty.getSort())), ty);
         ctx.popBoundVar();
         if (q.kind() == QuantorKind.Exists) {
             return tb.ex(param, tb.and(inRange, term));
