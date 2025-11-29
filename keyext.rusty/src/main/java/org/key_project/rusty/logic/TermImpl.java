@@ -54,7 +54,7 @@ public class TermImpl implements Term {
     /// A cached value for computing the term's rigidness.
     private ThreeValuedTruth rigid = ThreeValuedTruth.UNKNOWN;
     private ThreeValuedTruth containsCodeBlockRecursive = ThreeValuedTruth.UNKNOWN;
-    private @MonotonicNonNull ImmutableSet<QuantifiableVariable> freeVars = null;
+    private @MonotonicNonNull ImmutableSet<LogicVariable> freeVars = null;
 
     /// Constructs a term for the given operator, with the given sub terms, bounded variables and
     /// (if
@@ -75,20 +75,22 @@ public class TermImpl implements Term {
 
     // TODO Remove
     @Deprecated
-    private ImmutableSet<QuantifiableVariable> determineFreeVars() {
-        ImmutableSet<QuantifiableVariable> localFreeVars =
+    private ImmutableSet<LogicVariable> determineFreeVars() {
+        ImmutableSet<LogicVariable> localFreeVars =
             DefaultImmutableSet.nil();
 
-        if (op instanceof QuantifiableVariable) {
-            localFreeVars = localFreeVars.add((QuantifiableVariable) op);
+        if (op instanceof LogicVariable lv) {
+            localFreeVars = localFreeVars.add(lv);
         }
         for (int i = 0, ar = arity(); i < ar; i++) {
-            ImmutableSet<QuantifiableVariable> subFreeVars =
-                (ImmutableSet<QuantifiableVariable>) sub(i).freeVars();
-            for (int j = 0, sz = varsBoundHere(i).size(); j < sz; j++) {
-                subFreeVars = subFreeVars.remove(varsBoundHere(i).get(j));
+            var subFreeVars =
+                (ImmutableSet<LogicVariable>) sub(i).freeVars();
+            var sz = varsBoundHere(i).size();
+            for (var fv : subFreeVars) {
+                if (fv.getIndex() > sz) {
+                    localFreeVars = localFreeVars.add(fv);
+                }
             }
-            localFreeVars = localFreeVars.union(subFreeVars);
         }
         return localFreeVars;
     }
@@ -187,7 +189,7 @@ public class TermImpl implements Term {
     }
 
     @Override
-    public ImmutableSet<QuantifiableVariable> freeVars() {
+    public ImmutableSet<LogicVariable> freeVars() {
         if (freeVars == null) {
             freeVars = determineFreeVars();
         }
@@ -311,6 +313,7 @@ public class TermImpl implements Term {
         return hash;
     }
 
+    // TODO(DD): Rework this into an interface
     public int getMaxDebruijnIndex() {
         if (maxDebruijnIndex == -1) {
             maxDebruijnIndex = 0;
@@ -330,5 +333,24 @@ public class TermImpl implements Term {
             }
         }
         return maxDebruijnIndex;
+    }
+
+    // TODO(DD): Rework this into an interface
+    /// Whether this term contains a logic variable for the Debruijn index `idx` (it is adjusted for
+    // nested bound vars).
+    public boolean containsLogicVariable(int idx) {
+        if (op instanceof LogicVariable lv && lv.getIndex() == idx) {
+            return true;
+        }
+        for (int i = 0, arity = subs.size(); i < arity; i++) {
+            int subIdx = idx;
+            if (op.bindVarsAt(i)) {
+                subIdx += boundVars.size();
+            }
+            if (((TermImpl) sub(i)).containsLogicVariable(subIdx)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
