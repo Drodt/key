@@ -9,10 +9,7 @@ import java.util.Map;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.ConcreteLabel;
-import org.key_project.rusty.ast.Item;
-import org.key_project.rusty.ast.ResDef;
-import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.*;
 import org.key_project.rusty.ast.abstraction.GenericConstParam;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.abstraction.Type;
@@ -58,6 +55,7 @@ public abstract class ProgramSVSort extends SortImpl {
     public static final ProgramSVSort NON_SIMPLE_EXPRESSION = new NonSimpleExpressionSort();
     public static final ProgramSVSort EXPRESSION = new ExpressionSort();
     public static final ProgramSVSort BLOCK_EXPRESSION = new BlockExpressionSort();
+    public static final ProgramSVSort ELSE_BRANCH_EXPRESSION = new ElseBranchExpressionSort();
     public static final ProgramSVSort BOOL_EXPRESSION = new BoolExpressionSort();
     public static final ProgramSVSort SIMPLE_BOOL_EXPRESSION = new SimpleBoolExpressionSort();
     public static final ProgramSVSort NON_SIMPLE_BOOL_EXPRESSION =
@@ -376,6 +374,17 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof Item;
+        }
+    }
+
+    private static class ElseBranchExpressionSort extends ProgramSVSort {
+        protected ElseBranchExpressionSort() {
+            super(new Name("ElseBranchExpression"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof ElseBranch;
         }
     }
 }

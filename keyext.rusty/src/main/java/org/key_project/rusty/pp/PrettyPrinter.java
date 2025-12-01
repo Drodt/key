@@ -651,7 +651,7 @@ public class PrettyPrinter implements Visitor {
 
     @Override
     public void performActionOnEmptyPanic(EmptyPanic x) {
-        layouter.keyWord("print!");
+        layouter.keyWord("panic!");
         layouter.print("()");
     }
 

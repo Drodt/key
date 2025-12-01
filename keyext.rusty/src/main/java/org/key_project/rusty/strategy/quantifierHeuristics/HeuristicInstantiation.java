@@ -3,12 +3,17 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy.quantifierHeuristics;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import org.key_project.logic.Term;
+import org.key_project.logic.Visitor;
 import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.Services;
@@ -25,11 +30,38 @@ public class HeuristicInstantiation implements TermGenerator<Goal> {
         assert pos != null : "Feature is only applicable to rules with find";
 
         final Term qf = pos.sequentFormula().formula();
-        final Instantiation ia =
-            Instantiation.create(qf, goal.sequent(), goal.proof().getServices());
+
+        // final Instantiation ia =
+        // Instantiation.create(qf, goal.sequent(), goal.proof().getServices());
         final QuantifiableVariable var = qf.varsBoundHere(0).last();
         assert var != null;
-        return new HIIterator(ia.getSubstitution().iterator(), var, goal.proof().getServices());
+        var sttc = new StupidTermCollectorRemoveMePlease(var.sort());
+        return new HIIterator(sttc.getTerms(goal.sequent()).iterator(), var,
+            goal.proof().getServices());
+        // return new HIIterator(ia.getSubstitution().iterator(), var, goal.proof().getServices());
+    }
+
+    private static class StupidTermCollectorRemoveMePlease implements Visitor<Term> {
+        private Set<Term> terms = new HashSet<>();
+        private final Sort sort;
+
+        public StupidTermCollectorRemoveMePlease(Sort sort) {
+            this.sort = sort;
+        }
+
+        @Override
+        public void visit(Term visited) {
+            if (visited.freeVars().isEmpty() && visited.sort().extendsTrans(sort)) {
+                terms.add(visited);
+            }
+        }
+
+        public Set<Term> getTerms(Sequent seq) {
+            for (var t : seq.asList()) {
+                visit(t.formula());
+            }
+            return terms;
+        }
     }
 
 
