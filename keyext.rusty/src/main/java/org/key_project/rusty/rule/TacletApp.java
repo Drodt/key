@@ -70,7 +70,7 @@ public abstract class TacletApp implements RuleApp {
         this.taclet = taclet;
         this.instantiations = (org.key_project.rusty.rule.inst.SVInstantiations) instantiations;
         this.assumesInstantiations = ifInstantiations;
-        this.matchConditions = new MatchConditions(this.instantiations);
+        this.matchConditions = new MatchConditions(this.instantiations, LogicVariableTable.EMPTY);
     }
 
     /// returns the taclet the application information is collected for

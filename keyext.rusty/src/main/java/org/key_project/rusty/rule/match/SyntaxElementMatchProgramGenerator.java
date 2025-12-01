@@ -98,6 +98,8 @@ public class SyntaxElementMatchProgramGenerator {
         for (int i = 0; i < pattern.arity(); i++) {
             createProgram(pattern.sub(i), program);
         }
+        if (!boundVars.isEmpty())
+            program.add(unbindVariables(boundVars.size()));
     }
 
     private static void matchParametricArg(ArrayList<VMInstruction> program, SyntaxElement arg) {

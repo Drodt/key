@@ -93,4 +93,8 @@ public class RustyDLMatchInstructionSet {
             QuantifiableVariable var) {
         return BindVariablesInstruction.create(var);
     }
+
+    public static MatchInstruction unbindVariables(int size) {
+        return new UnbindVariablesInstruction(size);
+    }
 }

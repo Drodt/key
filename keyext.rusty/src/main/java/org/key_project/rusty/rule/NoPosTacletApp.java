@@ -15,6 +15,7 @@ import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.LogicVariableTable;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.strategy.FindTacletAppContainer;
 import org.key_project.rusty.strategy.NoFindTacletAppContainer;
@@ -104,7 +105,7 @@ public class NoPosTacletApp extends TacletApp {
         if (svInst.isEmpty()) {
             mc = org.key_project.rusty.rule.MatchConditions.EMPTY_MATCHCONDITIONS;
         } else {
-            mc = new org.key_project.rusty.rule.MatchConditions(svInst);
+            mc = new org.key_project.rusty.rule.MatchConditions(svInst, LogicVariableTable.EMPTY);
         }
 
         if (taclet() instanceof RewriteTaclet) {
