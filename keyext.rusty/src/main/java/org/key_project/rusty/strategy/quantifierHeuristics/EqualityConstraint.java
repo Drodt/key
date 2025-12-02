@@ -473,9 +473,9 @@ public class EqualityConstraint implements Constraint {
     private Constraint handleQuantifiableVariable(Term t0, Term t1,
             ImmutableList<QuantifiableVariable> ownBoundVars,
             ImmutableList<QuantifiableVariable> cmpBoundVars) {
-        if (!((t1.op() instanceof QuantifiableVariable)
-                && compareBoundVariables((QuantifiableVariable) t0.op(),
-                    (QuantifiableVariable) t1.op(), ownBoundVars, cmpBoundVars))) {
+        if (!(t1.op() instanceof QuantifiableVariable qv1
+                && compareBoundVariables((QuantifiableVariable) t0.op(), qv1, ownBoundVars,
+                    cmpBoundVars))) {
             return TOP;
         }
         return this;

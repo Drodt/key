@@ -62,7 +62,7 @@ public class TriggersSet {
 
     /// @return return all universal variables of <code>allterm</code>
     private ImmutableSet<LogicVariable> getAllUQS(Term allterm) {
-        List<@Nullable BoundVariable> isAll = new LinkedList<>();
+        List<@Nullable BoundVariable> isAll = new ArrayList<>(20);
         var t = allterm;
         while (t.op() == Quantifier.ALL || t.op() == Quantifier.EX) {
             if (t.op() == Quantifier.ALL) {
