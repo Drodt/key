@@ -57,7 +57,6 @@ public class SplittableQuantifiedFormulaFeature extends BinaryFeature {
 
         public boolean analyse(Term formula) {
             final Operator op = formula.op();
-
             if (op == Quantifier.ALL) {
                 boolean result = analyse(formula.sub(0));
                 depth++;

@@ -55,7 +55,7 @@ class UniTrigger implements Trigger {
 
     private ImmutableSet<Substitution> getSubstitutionsFromTermHelp(Term t, Services services) {
         ImmutableSet<Substitution> newSubs = DefaultImmutableSet.nil();
-        if (t.freeVars().size() > 0 || t.op() instanceof Quantifier) {
+        if (!t.freeVars().isEmpty() || t.op() instanceof Quantifier) {
             newSubs = Matching.twoSidedMatching(this, t, services);
         } else if (!onlyUnify) {
             newSubs = Matching.basicMatching(this, t);

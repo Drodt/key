@@ -34,7 +34,8 @@ class Instantiation {
 
     private Instantiation(Term allterm, Sequent seq, Services services) {
         // TODO(DD): Is this correct?
-        firstVar = LogicVariable.create(1, allterm.varsBoundHere(0).get(0).sort());
+        var tac = TriggerUtils.discardAndCountQuantifiers(allterm);
+        firstVar = LogicVariable.create(tac.count(), allterm.varsBoundHere(0).get(0).sort());
         matrix = TriggerUtils.discardQuantifiers(allterm);
         /* Terms bound in every formula on <code>goal</code> */
         triggersSet = TriggersSet.create(allterm, services);

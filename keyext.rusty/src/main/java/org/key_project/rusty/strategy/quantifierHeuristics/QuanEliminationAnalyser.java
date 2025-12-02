@@ -41,9 +41,10 @@ public class QuanEliminationAnalyser {
         }
 
         int distance = 0;
+        final var tac = TriggerUtils.discardAndCountQuantifiers(quantTerm);
         while (true) {
             final QuantifiableVariable var = quantTerm.varsBoundHere(0).last();
-            final var lv = LogicVariable.create(1, var.sort());
+            final var lv = LogicVariable.create(tac.count() - distance, var.sort());
             if (isDefinition(definition, lv, ex)
                     && isEliminableVariableSomePaths(lv, matrix, ex)) {
                 return distance;

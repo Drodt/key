@@ -12,6 +12,7 @@ import org.key_project.prover.strategy.costbased.termfeature.TermFeature;
 import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.rusty.strategy.quantifierHeuristics.QuanEliminationAnalyser;
+import org.key_project.rusty.strategy.quantifierHeuristics.TriggerUtils;
 
 public class EliminableQuantifierTF extends BinaryTermFeature {
     public static final TermFeature INSTANCE = new EliminableQuantifierTF();
@@ -34,9 +35,11 @@ public class EliminableQuantifierTF extends BinaryTermFeature {
             return false;
         }
 
+        var tac = TriggerUtils.discardAndCountQuantifiers(term);
         final QuantifiableVariable var = term.varsBoundHere(0).last();
 
-        return quanAnalyser.isEliminableVariableAllPaths(LogicVariable.create(1, var.sort()),
+        return quanAnalyser.isEliminableVariableAllPaths(
+            LogicVariable.create(tac.count(), var.sort()),
             matrix, op == Quantifier.EX);
     }
 }
