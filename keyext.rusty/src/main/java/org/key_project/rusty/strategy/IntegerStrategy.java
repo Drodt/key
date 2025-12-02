@@ -25,6 +25,7 @@ import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.strategy.feature.*;
 import org.key_project.rusty.strategy.termProjection.*;
 import org.key_project.rusty.strategy.termgenerator.DividePolynomialsProjection;
@@ -34,7 +35,10 @@ import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 
 import org.jspecify.annotations.NonNull;
 
-public class IntegerStrategy extends AbstractFeatureStrategy {
+import java.util.HashSet;
+import java.util.Set;
+
+public class IntegerStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
     public static final Name NAME = new Name("Integer Strategy");
 
     /// Magic constants
@@ -984,7 +988,7 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+    public RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
             MutableState mState) {
         return instantiationDispatcher.computeCost(app, pio, goal, mState);
     }
@@ -1001,7 +1005,23 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleSetDispatchFeature getCostDispatcher() {
-        return costComputationDispatcher;
+    public Set<RuleSet> getResponsibilities(StrategyAspect aspect) {
+        var set = new HashSet<RuleSet>();
+        set.addAll(getDispatcher(aspect).ruleSets());
+        return set;
+    }
+
+    @Override
+    public RuleSetDispatchFeature getDispatcher(StrategyAspect aspect) {
+        return switch (aspect) {
+            case StrategyAspect.Cost -> costComputationDispatcher;
+            case StrategyAspect.Instantiation -> instantiationDispatcher;
+            case StrategyAspect.Approval -> approvalDispatcher;
+        };
+    }
+
+    @Override
+    public boolean isResponsibleFor(BuiltInRule rule) {
+        return false;
     }
 }

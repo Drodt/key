@@ -5,6 +5,7 @@ package org.key_project.rusty.strategy.feature;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
@@ -85,7 +86,7 @@ public class RuleSetDispatchFeature implements Feature {
         return rulesetToFeature.get(ruleSet);
     }
 
-    public Iterable<RuleSet> ruleSets() {
+    public Set<RuleSet> ruleSets() {
         return rulesetToFeature.keySet();
     }
 

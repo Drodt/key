@@ -30,10 +30,13 @@ public class PrintFeature implements Feature {
         this("", f);
     }
 
+
+    private static long COUNT = 0;
     @Override
     public <Goal extends ProofGoal<@NonNull Goal>> RuleAppCost computeCost(RuleApp app,
             PosInOccurrence pos, Goal goal,
             MutableState mState) {
+        COUNT ++;
         RuleAppCost cost = f.computeCost(app, pos, goal, mState);
         LOGGER.debug("{}:{}:{}{}", prefix, cost.toString(), pos != null ? pos.subTerm() + ":" : "",
             app.rule().name());

@@ -16,6 +16,8 @@ import org.key_project.prover.strategy.costbased.feature.ScaleFeature;
 import org.key_project.prover.strategy.costbased.feature.SumFeature;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.BuiltInRule;
+import org.key_project.rusty.rule.UseOperationContractRule;
 import org.key_project.rusty.strategy.feature.DiffFindAndIfFeature;
 import org.key_project.rusty.strategy.feature.MatchedAssumesFeature;
 import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
@@ -25,8 +27,11 @@ import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 
 import org.jspecify.annotations.NonNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /// Strategy for symbolic execution rules
-public class SymExStrategy extends AbstractFeatureStrategy {
+public class SymExStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
     public static final Name NAME = new Name("SymExStrategy");
 
     private final FormulaTermFeatures ff;
@@ -151,7 +156,7 @@ public class SymExStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+    public RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
             MutableState mState) {
         return instantiationF.computeCost(app, pio, goal, mState);
     }
@@ -178,7 +183,27 @@ public class SymExStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleSetDispatchFeature getCostDispatcher() {
-        return costComputationDispatcher;
+    public Set<RuleSet> getResponsibilities(StrategyAspect aspect) {
+        var set = new HashSet<RuleSet>();
+        RuleSetDispatchFeature dispatcher = getDispatcher(aspect);
+        if (dispatcher != null) {
+            set.addAll(dispatcher.ruleSets());
+        }
+        return set;
+    }
+
+    @Override
+    public RuleSetDispatchFeature getDispatcher(StrategyAspect aspect) {
+        return switch (aspect) {
+            case StrategyAspect.Cost -> costComputationDispatcher;
+            case StrategyAspect.Instantiation -> instantiationDispatcher;
+            default -> null;
+        };
+    }
+
+    @Override
+    public boolean isResponsibleFor(BuiltInRule rule) {
+        return  rule instanceof UseOperationContractRule
+                ;
     }
 }

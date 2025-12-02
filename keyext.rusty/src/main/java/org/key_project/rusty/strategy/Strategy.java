@@ -11,6 +11,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.settings.ProofSettings;
 
@@ -68,4 +69,10 @@ public interface Strategy<Goal extends ProofGoal<@NonNull Goal>> extends Named, 
     }
 
     default boolean isResponsibleFor(RuleSet rs) { return false; }
+
+    default RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio,
+                                       org.key_project.rusty.proof.Goal goal,
+                                       MutableState mState) {
+        return null;
+    }
 }

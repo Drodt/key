@@ -20,6 +20,7 @@ import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.strategy.feature.*;
 import org.key_project.rusty.strategy.quantifierHeuristics.HeuristicInstantiation;
 import org.key_project.rusty.strategy.quantifierHeuristics.InstantiationCost;
@@ -36,9 +37,12 @@ import org.key_project.rusty.strategy.termgenerator.TriggeredInstantiations;
 
 import org.jspecify.annotations.NonNull;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.key_project.prover.strategy.costbased.feature.CompareCostsFeature.leq;
 
-public class FOLStrategy extends AbstractFeatureStrategy {
+public class FOLStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
     public static final Name NAME = new Name("FOL Strategy");
 
     protected final StrategyProperties strategyProperties;
@@ -178,14 +182,9 @@ public class FOLStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+    public RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
             MutableState mState) {
         return instantiationF.computeCost(app, pio, goal, mState);
-    }
-
-    @Override
-    protected RuleSetDispatchFeature getCostDispatcher() {
-        return costComputationDispatcher;
     }
 
     @Override
@@ -367,7 +366,7 @@ public class FOLStrategy extends AbstractFeatureStrategy {
         if (quantifierInstantiatedEnabled()) {
             final TermBuffer varInst = new TermBuffer();
 
-            bindRuleSet(d, "gamma", add(isInstantiated("t"),
+            bindRuleSet(d, "gamma", add(new PrintFeature(isInstantiated("t")),
                 not(sum(varInst, HeuristicInstantiation.INSTANCE, not(eq(instOf("t"), varInst)))),
                 InstantiationCostScalerFeature.create(InstantiationCost.create(instOf("t")),
                     longConst(0))));
@@ -573,5 +572,26 @@ public class FOLStrategy extends AbstractFeatureStrategy {
     private boolean normalSplitting() {
         return StrategyProperties.SPLITTING_NORMAL
                 .equals(strategyProperties.getProperty(StrategyProperties.SPLITTING_OPTIONS_KEY));
+    }
+
+    @Override
+    public boolean isResponsibleFor(BuiltInRule rule) {
+        return false;
+    }
+
+    @Override
+    public Set<RuleSet> getResponsibilities(StrategyAspect aspect) {
+        var set = new HashSet<RuleSet>();
+        set.addAll(getDispatcher(aspect).ruleSets());
+        return set;
+    }
+
+    @Override
+    public RuleSetDispatchFeature getDispatcher(StrategyAspect aspect) {
+        return switch (aspect) {
+            case StrategyAspect.Cost -> costComputationDispatcher;
+            case StrategyAspect.Instantiation -> instantiationDispatcher;
+            case StrategyAspect.Approval -> approvalDispatcher;
+        };
     }
 }

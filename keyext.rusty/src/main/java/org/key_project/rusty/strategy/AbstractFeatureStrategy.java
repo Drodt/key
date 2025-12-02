@@ -101,7 +101,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
         } while (btManager.backtrack());
     }
 
-    protected abstract RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+    public abstract RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
             MutableState mState);
 
     protected Feature forEach(TermBuffer x, TermGenerator gen, Feature body) {
@@ -160,6 +160,4 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
         return not(sum(superTerm, SuperTermGenerator.upwards(any(), getServices()),
             not(applyTF(superTerm, t))));
     }
-
-    protected abstract RuleSetDispatchFeature getCostDispatcher();
 }

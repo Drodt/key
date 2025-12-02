@@ -1,0 +1,24 @@
+package org.key_project.rusty.strategy;
+
+import org.key_project.prover.rules.RuleSet;
+import org.key_project.rusty.proof.Goal;
+import org.key_project.rusty.rule.BuiltInRule;
+import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
+
+import java.util.Set;
+
+public interface ComponentStrategy extends Strategy<Goal> {
+    enum StrategyAspect {
+        Cost, Instantiation, Approval;
+    }
+
+    /// The strategy's cost dispatcher.
+    RuleSetDispatchFeature getDispatcher(StrategyAspect aspect);
+
+    /// The rule sets this strategy is designed to handle.
+    Set<RuleSet> getResponsibilities(StrategyAspect aspect);
+
+    /// Whether this strategy is responsible for the given [BuiltInRule]. This is necessary as
+    /// built-in rules have no rule sets.
+    boolean isResponsibleFor(BuiltInRule rule);
+}

@@ -30,6 +30,10 @@ public class FindTacletAppContainer extends TacletAppContainer {
     private final FormulaTag positionTag;
     private final PosInOccurrence applicationPosition;
 
+    public String toString() {
+        return getTacletApp().toString();
+    }
+
     /// Creates a FindTacletAppContainer for applying a find taclet.
     ///
     /// @param app the taclet application
