@@ -216,6 +216,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             }
         }
 
+        fireGoalReplaced(this, parent, goalList);
+
         return goalList;
     }
 
@@ -275,6 +277,12 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         ruleAppIndex.sequentChanged(sci);
         for (GoalListener listener : listeners) {
             listener.sequentChanged(this, sci);
+        }
+    }
+
+    private void fireGoalReplaced(Goal goal, Node parent, ImmutableList<Goal> newGoals) {
+        for (GoalListener listener : listeners) {
+            listener.goalReplaced(goal, parent, newGoals);
         }
     }
 
