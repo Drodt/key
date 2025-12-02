@@ -758,27 +758,26 @@ public abstract class TacletApp implements RuleApp {
     public TacletApp addCheckedInstantiation(SchemaVariable sv, Term term, Services services,
             boolean interesting) {
         // TODO
-        // if (sv instanceof VariableSV && !(term.op() instanceof LogicVariable)) {
-        // throw new IllegalInstantiationException("Could not add " + "the instantiation of " + sv
-        // + " because " + term + " is no variable.");
-        // }
-        //
-        // final MatchConditions newMC =
-        // taclet.getMatcher().matchSV(sv, term, matchConditions(), services);
-        //
-        // if (newMC == null) {
-        // throw new IllegalInstantiationException(
-        // "Instantiation " + term + " of " + sv
-        // + " does not satisfy the variable conditions");
-        // }
-        //
-        // SVInstantiations svInst = newMC.getInstantiations();
-        // if (interesting) {
-        // svInst = svInst.makeInteresting(sv, services);
-        // }
-        //
-        // return addInstantiation(svInst, services);
-        return addInstantiation(sv, term, interesting, services);
+        if (sv instanceof VariableSV && !(term.op() instanceof LogicVariable)) {
+            throw new IllegalInstantiationException("Could not add " + "the instantiation of " + sv
+                + " because " + term + " is no variable.");
+        }
+
+        final MatchConditions newMC =
+            (MatchConditions) taclet.getMatcher().matchSV(sv, term, matchConditions(), services);
+
+        if (newMC == null) {
+            throw new IllegalInstantiationException(
+                "Instantiation " + term + " of " + sv
+                    + " does not satisfy the variable conditions");
+        }
+
+        var svInst = newMC.getInstantiations();
+        if (interesting) {
+            svInst = svInst.makeInteresting(sv, services);
+        }
+
+        return addInstantiation(svInst, services);
     }
 
     /// creates a new variable namespace by adding names of the instantiations of the schema

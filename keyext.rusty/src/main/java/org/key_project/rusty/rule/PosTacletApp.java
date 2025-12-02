@@ -10,6 +10,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
+import org.key_project.prover.rules.instantiation.InstantiationEntry;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -185,14 +186,12 @@ public class PosTacletApp extends TacletApp {
     @Override
     public TacletApp addInstantiation(SchemaVariable sv, Term term, boolean interesting,
             Services services) {
-
-        /*
-         * if (interesting) {
-         * return createPosTacletApp((FindTaclet) taclet(),
-         * instantiations().addInteresting(sv, term, services), ifFormulaInstantiations(),
-         * posInOccurrence(), services);
-         * } else
-         */ {
+        if (interesting) {
+            return createPosTacletApp((FindTaclet) taclet(),
+                instantiations().addInteresting(sv, new InstantiationEntry<>(term), services),
+                assumesFormulaInstantiations(),
+                posInOccurrence(), services);
+        } else {
             return createPosTacletApp((FindTaclet) taclet(),
                 instantiations().add(sv, term, services), assumesFormulaInstantiations(),
                 posInOccurrence(), services);

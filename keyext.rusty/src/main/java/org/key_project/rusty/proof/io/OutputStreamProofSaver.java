@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Modality;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -32,6 +35,7 @@ import org.key_project.rusty.rule.ContractRuleApp;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.UseOperationContractRule;
+import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.inst.TermInstantiation;
 import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.util.collection.ImmutableList;
@@ -185,7 +189,7 @@ public class OutputStreamProofSaver {
         output.append("\"");
         output.append(posInOccurrence2Proof(node.sequent(), appliedRuleApp.posInOccurrence()));
         output.append(newNames2Proof(node));
-        // TODO: output.append(getInteresting(appliedRuleApp.instantiations()));
+        output.append(getInteresting(appliedRuleApp.instantiations()));
         final ImmutableList<AssumesFormulaInstantiation> l =
             appliedRuleApp.assumesFormulaInstantiations();
         if (l != null) {
@@ -365,6 +369,43 @@ public class OutputStreamProofSaver {
             // try to String by chance
             return val.toString();
         }
+    }
+
+    private String getInteresting(SVInstantiations inst) {
+        StringBuilder s = new StringBuilder();
+
+        for (String singleInstantiation : getInterestingInstantiations(inst)) {
+            s.append(" (inst \"").append(escapeCharacters(singleInstantiation)).append("\")");
+        }
+
+        return s.toString();
+    }
+
+    /// Get the "interesting" instantiations of the provided object.
+    ///
+    /// @see SVInstantiations#interesting()
+    /// @param inst instantiations
+    /// @return the "interesting" instantiations (serialized)
+    public Collection<String> getInterestingInstantiations(SVInstantiations inst) {
+        Collection<String> s = new ArrayList<>();
+
+        for (final var pair : inst.interesting()) {
+            final SchemaVariable var = pair.key();
+
+            final Object value = pair.value().getInstantiation();
+
+            if (!(value instanceof Term || value instanceof RustyProgramElement
+                    || value instanceof Name)) {
+                throw new IllegalStateException("Saving failed.\n"
+                    + "FIXME: Unhandled instantiation type: " + value.getClass());
+            }
+
+            String singleInstantiation =
+                var.name() + "=" + printAnything(value, proof.getServices(), false);
+            s.add(singleInstantiation);
+        }
+
+        return s;
     }
 
     private static String printSequent(Sequent val,

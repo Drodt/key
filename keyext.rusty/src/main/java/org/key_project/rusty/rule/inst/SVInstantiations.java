@@ -144,6 +144,45 @@ public class SVInstantiations
                 services);
     }
 
+    public SVInstantiations addInteresting(SchemaVariable sv, InstantiationEntry<?> entry,
+            LogicServices services) {
+        return new SVInstantiations(map.put(sv, entry), interesting().put(sv, entry),
+            getUpdateContext(), getGenericSortInstantiations(), getGenericSortConditions())
+                .checkSorts(sv, entry, false, services);
+    }
+
+    public SVInstantiations addInteresting(SchemaVariable sv, Name name, LogicServices services) {
+        final SchemaVariable existingSV = lookupVar(sv.name());
+        final Name oldValue = existingSV == null ? null : (Name) getInstantiation(existingSV);
+        if (oldValue == null) {
+            // otherwise (nothing here yet) add it
+            return addInteresting(sv, new InstantiationEntry<>(name), services);
+        } else if (name.equals(oldValue)) {
+            return this; // already have it
+        } else {
+            throw new IllegalStateException(
+                "Trying to add a second name proposal for " + sv + ": " + oldValue + "->" + name);
+        }
+    }
+
+    /**
+     * adds the schemvariable to the set of interesting ones
+     *
+     * @throws IllegalInstantiationException, if sv has not yet been instantiated
+     */
+    public SVInstantiations makeInteresting(SchemaVariable sv, LogicServices services) {
+        final InstantiationEntry<?> entry = getInstantiationEntry(sv);
+
+        if (entry == null) {
+            throw new IllegalInstantiationException(
+                sv + " cannot be made interesting. As it is not yet in the map.");
+        }
+
+        return new SVInstantiations(map, interesting().put(sv, entry), getUpdateContext(),
+            getGenericSortConditions()).checkSorts(sv, entry, true, services);
+
+    }
+
     /// returns the update context
     ///
     /// @return the update context

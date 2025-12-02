@@ -10,6 +10,7 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
+import org.key_project.prover.rules.instantiation.InstantiationEntry;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -218,13 +219,12 @@ public class NoPosTacletApp extends TacletApp {
     @Override
     public TacletApp addInstantiation(SchemaVariable sv, Term term, boolean interesting,
             Services services) {
-        /*
-         * if (interesting) {
-         * return createNoPosTacletApp(taclet(),
-         * instantiations().addInteresting(sv, term, services), ifFormulaInstantiations(),
-         * services);
-         * } else
-         */ {
+        if (interesting) {
+            return createNoPosTacletApp(taclet(),
+                instantiations().addInteresting(sv, new InstantiationEntry<>(term), services),
+                assumesFormulaInstantiations(),
+                services);
+        } else {
             return createNoPosTacletApp(taclet(), instantiations().add(sv, term, services),
                 assumesFormulaInstantiations(), services);
         }
