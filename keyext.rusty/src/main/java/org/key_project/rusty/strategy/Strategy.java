@@ -71,8 +71,8 @@ public interface Strategy<Goal extends ProofGoal<@NonNull Goal>> extends Named, 
     default boolean isResponsibleFor(RuleSet rs) { return false; }
 
     default RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio,
-                                       org.key_project.rusty.proof.Goal goal,
-                                       MutableState mState) {
+            org.key_project.rusty.proof.Goal goal,
+            MutableState mState) {
         return null;
     }
 }

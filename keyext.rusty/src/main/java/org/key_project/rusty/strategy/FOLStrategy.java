@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.key_project.logic.Name;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
@@ -36,9 +39,6 @@ import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 import org.key_project.rusty.strategy.termgenerator.TriggeredInstantiations;
 
 import org.jspecify.annotations.NonNull;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.key_project.prover.strategy.costbased.feature.CompareCostsFeature.leq;
 
