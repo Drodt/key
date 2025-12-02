@@ -206,6 +206,17 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
+    public void performActionOnIndexExpression(IndexExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new IndexExpression(changeList, x.ty());
+            }
+        };
+        def.doAction(x);
+    }
+
+    @Override
     public void performActionOnFunctionFrame(FunctionFrame x) {
         DefaultAction def = new DefaultAction(x) {
             @Override
