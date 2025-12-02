@@ -11,9 +11,11 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.*;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
+import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RFunction;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
@@ -202,6 +204,17 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             }
 
             // TODO debug this; why Boolean[]?
+
+            // TODO(DD): REMOVE THIS!!
+            if (funcName.equals("arr_PV")) {
+                var at = ArrayType.getInstance(PrimitiveType.I128,
+                    new ConstArrayLen(functions().lookup("N_contains")), services);
+                var rt = ReferenceType.get(at, false);
+                var pv = new ProgramVariable(new Name(funcName),
+                    services.getRustInfo().getKeYRustyType(rt));
+                nss.programVariables().addSafely(pv);
+                return null;
+            }
 
             if (f == null) {
                 Name name = new Name(funcName);

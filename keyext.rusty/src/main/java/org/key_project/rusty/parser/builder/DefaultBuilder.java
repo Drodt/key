@@ -17,9 +17,7 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.abstraction.KeYRustyType;
-import org.key_project.rusty.ast.abstraction.ReferenceType;
-import org.key_project.rusty.ast.abstraction.Type;
+import org.key_project.rusty.ast.abstraction.*;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
@@ -311,24 +309,51 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     }
 
     public KeYRustyType visitTypemapping(KeYRustyParser.TypemappingContext ctx) {
-        String type = visitSimple_ident(ctx.simple_ident());
-        KeYRustyType krt = services.getRustInfo().getKeYRustyType(type);
+        if (ctx.typemapping() == null) {
+            String type = visitSimple_ident(ctx.simple_ident());
+            KeYRustyType krt = services.getRustInfo().getKeYRustyType(type);
+            if (krt == null) {
+                Sort sort = lookupSort(type);
+                if (sort != null) {
+                    krt = new KeYRustyType(null, sort);
+                }
+            }
+            if (krt == null) {
+                semanticError(ctx, "Unknown type: " + type);
+            }
+
+            return krt;
+        }
+
         if (ctx.AND() != null) {
             boolean mut = ctx.MUT() != null;
+            KeYRustyType krt = accept(ctx.typemapping());
             Type ty = ReferenceType.get(krt.getRustyType(), mut);
-            krt = services.getRustInfo().getKeYRustyType(ty);
-        } else if (krt == null) {
-            Sort sort = lookupSort(type);
-            if (sort != null) {
-                krt = new KeYRustyType(null, sort);
+            return services.getRustInfo().getKeYRustyType(ty);
+        } else {
+            // Array
+            KeYRustyType krt = accept(ctx.typemapping());
+            ArrayLen len;
+            if (ctx.simple_ident() != null) {
+                String l = visitSimple_ident(ctx.simple_ident());
+                Function fn = services.getNamespaces().functions().lookup(l);
+                if (fn == null) {
+                    semanticError(ctx.simple_ident(), "Unknown function: " + l);
+                }
+                if (!fn.argSorts().isEmpty()) {
+                    semanticError(ctx.simple_ident(), "Expected constant, got: " + fn);
+                }
+                if (fn.sort() == services.getLDTs().getIntLDT().targetSort()) {
+                    semanticError(ctx.simple_ident(), "Expected int constant, got: " + fn);
+                }
+                len = new ConstArrayLen(fn);
+            } else {
+                int l = Integer.parseInt(ctx.INT_LITERAL().getText());
+                len = new IntArrayLen(l);
             }
+            Type ty = ArrayType.getInstance(krt.getRustyType(), len, services);
+            return services.getRustInfo().getKeYRustyType(ty);
         }
-
-        if (krt == null) {
-            semanticError(ctx, "Unknown type: " + type);
-        }
-
-        return krt;
     }
 
     public Object visitFuncpred_name(KeYRustyParser.Funcpred_nameContext ctx) {

@@ -27,6 +27,7 @@ import org.key_project.util.collection.Immutables;
 import org.key_project.util.java.CollectionUtil;
 
 import org.antlr.v4.runtime.Token;
+import org.jspecify.annotations.Nullable;
 
 /// This visitor evaluates all basic (level 0) declarations. This includes:
 ///
@@ -84,22 +85,20 @@ public class DeclarationBuilder extends DefaultBuilder {
 
     @Override
     public Object visitProg_var_decls(KeYRustyParser.Prog_var_declsContext ctx) {
-        for (int i = 0; i < ctx.simple_ident_comma_list().size(); i++) {
-            List<String> varNames = accept(ctx.simple_ident_comma_list(i));
+        for (int i = 0; i < ctx.simple_ident().size(); i++) {
+            String varName = accept(ctx.simple_ident(i));
             KeYRustyType krt = accept(ctx.typemapping(i));
-            assert varNames != null;
-            for (String varName : varNames) {
-                Name pvName = new Name(varName);
-                Named name = lookup(pvName);
-                if (name != null) {
-                    // TODO question: throw warning?
-                    if (!(name instanceof ProgramVariable pv)
-                            || !pv.getKeYRustyType().equals(krt)) {
-                        programVariables().add(new ProgramVariable(pvName, krt));
-                    }
-                } else {
+            assert varName != null;
+            Name pvName = new Name(varName);
+            Named name = lookup(pvName);
+            if (name != null) {
+                // TODO question: throw warning?
+                if (!(name instanceof ProgramVariable pv)
+                        || !pv.getKeYRustyType().equals(krt)) {
                     programVariables().add(new ProgramVariable(pvName, krt));
                 }
+            } else {
+                programVariables().add(new ProgramVariable(pvName, krt));
             }
         }
         return null;
@@ -226,6 +225,11 @@ public class DeclarationBuilder extends DefaultBuilder {
                 ruleSets().add(h);
             }
         }
+        return null;
+    }
+
+    @Override
+    public @Nullable Object visitProblem(KeYRustyParser.ProblemContext ctx) {
         return null;
     }
 }
