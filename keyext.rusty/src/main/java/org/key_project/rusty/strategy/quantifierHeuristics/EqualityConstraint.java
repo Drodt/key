@@ -15,7 +15,6 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.BooleanContainer;
 import org.key_project.rusty.logic.NameAbstractionTable;
 import org.key_project.rusty.logic.op.ProgramVariable;
@@ -391,13 +390,12 @@ public class EqualityConstraint implements Constraint {
             }
         }
 
-        if (!(t0.op() instanceof SchemaVariable) && t0.op() instanceof ProgramVariable) {
+        if (!(t0.op() instanceof SchemaVariable) && t0.op() instanceof ProgramVariable pv0) {
             if (!(t1.op() instanceof ProgramVariable pv1)) {
                 return FAILED;
             }
             nat = checkNat(nat);
-            if (!RENAMING_PROGRAM_ELEMENT_PROPERTY.equalsModThisProperty(pv1,
-                (RustyProgramElement) t1.op(), nat)) {
+            if (!RENAMING_PROGRAM_ELEMENT_PROPERTY.equalsModThisProperty(pv1, pv0, nat)) {
                 return FAILED;
             }
         }

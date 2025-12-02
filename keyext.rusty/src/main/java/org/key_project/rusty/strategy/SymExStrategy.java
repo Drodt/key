@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.key_project.logic.Name;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
@@ -26,9 +29,6 @@ import org.key_project.rusty.strategy.termProjection.TermBuffer;
 import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 
 import org.jspecify.annotations.NonNull;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /// Strategy for symbolic execution rules
 public class SymExStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
@@ -203,7 +203,6 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
 
     @Override
     public boolean isResponsibleFor(BuiltInRule rule) {
-        return  rule instanceof UseOperationContractRule
-                ;
+        return rule instanceof UseOperationContractRule;
     }
 }

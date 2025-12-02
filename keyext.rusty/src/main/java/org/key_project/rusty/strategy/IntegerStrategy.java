@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
 import org.key_project.logic.Term;
@@ -34,9 +37,6 @@ import org.key_project.rusty.strategy.termgenerator.RootsGenerator;
 import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 
 import org.jspecify.annotations.NonNull;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class IntegerStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
     public static final Name NAME = new Name("Integer Strategy");
