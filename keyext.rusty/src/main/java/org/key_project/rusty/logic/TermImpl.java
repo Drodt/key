@@ -89,7 +89,7 @@ public class TermImpl implements Term {
                 for (var fv : subFreeVars) {
                     if (fv.getIndex() > sz) {
                         localFreeVars =
-                            localFreeVars.add(LogicVariable.create(fv.getIndex() - 1, fv.sort()));
+                            localFreeVars.add(LogicVariable.create(fv.getIndex() - sz, fv.sort()));
                     }
                 }
             }
