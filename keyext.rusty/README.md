@@ -25,8 +25,14 @@ We depend on a wrapper of the Rust compiler. Before using Rusty KeY, run
 ```shell
 git submodule update --init --recursive
 ```
-
 in the `key` folder.
+
+Then install the `cargo-key` extension with
+```shell
+cd rust-wrapper
+cargo install --path crates/cargo-key
+cd ..
+```
 
 ## Examples & Testing
 
@@ -115,7 +121,7 @@ To run all proofs in the example folder use
     - [ ] named fields
 - Index
   - [ ] Implementation
-    - [x] For arrays
+    - [x] For arrays and references of arrays
   - [ ] Tests
     - [x] For arrays
   - [ ] Soundness proof
@@ -128,7 +134,6 @@ To run all proofs in the example folder use
 - Method call
 - Macro call
   - Handled by rustc
--
 - Path expression
   - [ ] Implementation
     - [x] Simple paths
@@ -140,7 +145,7 @@ To run all proofs in the example folder use
   - [x] Implementation
   - [x] Tests
   - [ ] Soundness proof
-- Struct
+- [ ] Struct
 - Tuple
   - [ ] Implementation
     - [x] Unit
@@ -196,4 +201,5 @@ To run all proofs in the example folder use
 ### Functions
 
 - [ ] Generic functions
+  - [x] Const parameters
 - [ ] Higher order functions
