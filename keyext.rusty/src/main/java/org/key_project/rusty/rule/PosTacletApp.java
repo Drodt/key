@@ -50,7 +50,7 @@ public class PosTacletApp extends TacletApp {
             PosInOccurrence pos, Services services) {
         instantiations = resolveCollisionWithContext(taclet,
             resolveCollisionVarSV(taclet, instantiations, services), pos, services);
-        if (checkVarCondNotFreeIn(taclet, instantiations, pos)) {
+        if (checkNoFreeVars(taclet, instantiations, pos)) {
             return new PosTacletApp(taclet, instantiations, ifInstantiations, pos);
         }
 

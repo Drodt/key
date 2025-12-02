@@ -52,7 +52,7 @@ public class NoPosTacletApp extends TacletApp {
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations,
             Services services) {
         SVInstantiations inst = resolveCollisionVarSV(taclet, instantiations, services);
-        if (checkNoFreeVars(taclet)) {
+        if (checkNoFreeVars(taclet, instantiations, null)) {
             return new NoPosTacletApp(taclet, inst, ifInstantiations);
         }
         return null;
@@ -163,7 +163,7 @@ public class NoPosTacletApp extends TacletApp {
             res = taclet().getMatcher().matchFind(t, mc, services);
             // the following check will partly be repeated within the
             // constructor; this could be optimised
-            if (res == null || !checkVarCondNotFreeIn(taclet(), res.getInstantiations(), pos)) {
+            if (res == null || !checkNoFreeVars(taclet(), res.getInstantiations(), pos)) {
                 return null;
             }
         } else {

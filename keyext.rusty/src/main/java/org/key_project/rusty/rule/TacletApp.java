@@ -107,51 +107,6 @@ public abstract class TacletApp implements RuleApp {
     /// metavariables given by the mc object and forget the old ones
     public abstract TacletApp setMatchConditions(MatchResultInfo mc, Services services);
 
-    /// checks if the variable conditions of type 'x not free in y' are hold by the found
-    /// instantiations. The variable conditions is used implicit in the prefix. (Used to calculate
-    /// the prefix)
-    ///
-    /// @param taclet the Taclet that is tried to be instantiated. A match for the find (or/and if)
-    /// has been found.
-    /// @param instantiations the SVInstantiations so that the find(if) expression matches
-    /// @param pos the PosInOccurrence where the Taclet is applied
-    /// @return true iff all variable conditions x not free in y are hold
-    public static boolean checkVarCondNotFreeIn(Taclet taclet, SVInstantiations instantiations,
-            PosInOccurrence pos) {
-        for (var pair : instantiations.getInstantiationMap()) {
-            final var sv = pair.key();
-
-            if (sv instanceof ModalOperatorSV || sv instanceof ProgramSV || sv instanceof VariableSV
-                    || sv instanceof SkolemTermSV) {
-                continue;
-            }
-
-            final var prefix = taclet.getPrefix(sv);
-
-            if (pos == null && prefix.context()) {
-                continue;
-            }
-
-            final int boundVarCount =
-                boundAtOccurrenceCount((TacletPrefix) prefix, instantiations, pos);
-            final Term inst = instantiations.getInstantiation(sv);
-            if (((TermImpl) inst).getMaxDebruijnIndex() > boundVarCount) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static int boundAtOccurrenceCount(TacletPrefix prefix, SVInstantiations instantiations,
-            @Nullable PosInOccurrence pos) {
-        int result = prefix.prefixLength();
-
-        if (pos != null && prefix.context()) {
-            result += countBoundVarsAbove(pos);
-        }
-        return result;
-    }
-
     private static int countBoundVarsAbove(@Nullable PosInOccurrence pos) {
         int result = 0;
         PIOPathIterator it = pos.iterator();
@@ -164,20 +119,74 @@ public abstract class TacletApp implements RuleApp {
         return result;
     }
 
-    protected static boolean checkNoFreeVars(org.key_project.prover.rules.Taclet taclet) {
-        // TODO
+    /// collects all bound vars that are bound above the subterm described by the given term
+    /// position
+    /// information
+    ///
+    /// @param pos the PosInOccurrence describing a subterm in Term
+    /// @return a set of logic variables that are bound above the specified subterm
+    protected static ImmutableSet<QuantifiableVariable> collectBoundVarsAbove(PosInOccurrence pos) {
+        ImmutableSet<QuantifiableVariable> result = DefaultImmutableSet.nil();
+
+        PIOPathIterator it = pos.iterator();
+        int i;
+        ImmutableArray<? extends QuantifiableVariable> vars;
+
+        while ((i = it.next()) != -1) {
+            vars = it.getSubTerm().varsBoundHere(i);
+            for (i = 0; i < vars.size(); i++) {
+                result = result.add(vars.get(i));
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * collects all bound variables above the occurrence of the schemavariable whose prefix is given
+     *
+     * @param prefix the TacletPrefix of the schemavariable
+     * @param pos the posInOccurrence describing the position of the schemavariable
+     * @return set of the bound variables
+     */
+    protected static boolean boundAtOccurrenceSet(TacletPrefix prefix,
+            @Nullable PosInOccurrence pos,
+            ImmutableSet<? extends QuantifiableVariable> freeVars) {
+
+        int countAbove = pos == null ? 0 : countBoundVarsAbove(pos);
+
+        for (var qv : freeVars) {
+            final int idx = ((LogicVariable) qv).getIndex();
+            if (idx > prefix.prefixLength()) {
+                if (pos != null && prefix.context() && idx > countAbove) {
+                    return false;
+                } else if (pos == null || !prefix.context()) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
     public static boolean checkNoFreeVars(Taclet taclet, SVInstantiations instantiations,
             PosInOccurrence pos) {
-        for (var pair : ((org.key_project.rusty.rule.inst.SVInstantiations) instantiations)
-                .getInstantiationMap()) {
+        for (var pair : instantiations.getInstantiationMap()) {
             final var sv = pair.key();
             if (sv instanceof TermSV || sv instanceof FormulaSV) {
+
+                final var prefix = taclet.getPrefix(sv);
+
+                if (pos == null && prefix.context()) {
+                    continue;
+                }
+
                 // TODO: Is this enough? Do we need, e.g., sort checks?
-                var t = (Term) instantiations.getInstantiation(sv);
-                if (isFreeAtPos(pos, maximalDeBruijnIndex(t))) {
+                // var t = (Term) instantiations.getInstantiation(sv);
+                // if (isFreeAtPos(pos, maximalDeBruijnIndex(t))) {
+                // return false;
+                // }
+                final Term inst = instantiations.getInstantiation(sv);
+                if (!boundAtOccurrenceSet((TacletPrefix) prefix, pos, inst.freeVars())) {
                     return false;
                 }
             }
@@ -334,28 +343,7 @@ public abstract class TacletApp implements RuleApp {
         }
     }
 
-    /// collects all bound vars that are bound above the subterm described by the given term
-    /// position
-    /// information
-    ///
-    /// @param pos the PosInOccurrence describing a subterm in Term
-    /// @return a set of logic variables that are bound above the specified subterm
-    protected static ImmutableSet<QuantifiableVariable> collectBoundVarsAbove(PosInOccurrence pos) {
-        ImmutableSet<QuantifiableVariable> result = DefaultImmutableSet.nil();
 
-        PIOPathIterator it = pos.iterator();
-        int i;
-        ImmutableArray<? extends QuantifiableVariable> vars;
-
-        while ((i = it.next()) != -1) {
-            vars = it.getSubTerm().varsBoundHere(i);
-            for (i = 0; i < vars.size(); i++) {
-                result = result.add(vars.get(i));
-            }
-        }
-
-        return result;
-    }
 
     /// calculate needed SchemaVariables that have not been instantiated yet. This means to ignore
     /// SchemaVariables that appear only in addrule-sections of Taclets
