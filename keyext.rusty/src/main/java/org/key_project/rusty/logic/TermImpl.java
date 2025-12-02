@@ -81,14 +81,16 @@ public class TermImpl implements Term {
 
         if (op instanceof LogicVariable lv) {
             localFreeVars = localFreeVars.add(lv);
-        }
-        for (int i = 0, ar = arity(); i < ar; i++) {
-            var subFreeVars =
-                (ImmutableSet<LogicVariable>) sub(i).freeVars();
-            var sz = varsBoundHere(i).size();
-            for (var fv : subFreeVars) {
-                if (fv.getIndex() > sz) {
-                    localFreeVars = localFreeVars.add(fv);
+        } else {
+            for (int i = 0, ar = arity(); i < ar; i++) {
+                var subFreeVars =
+                    (ImmutableSet<LogicVariable>) sub(i).freeVars();
+                var sz = varsBoundHere(i).size();
+                for (var fv : subFreeVars) {
+                    if (fv.getIndex() > sz) {
+                        localFreeVars =
+                            localFreeVars.add(LogicVariable.create(fv.getIndex() - 1, fv.sort()));
+                    }
                 }
             }
         }
