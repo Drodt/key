@@ -325,7 +325,7 @@ public class EqualityConstraint implements Constraint {
         }
 
 
-        nat = handleJava(t0, t1, nat);
+        nat = handleRust(t0, t1, nat);
         if (nat == FAILED) {
             return TOP;
         }
@@ -377,11 +377,11 @@ public class EqualityConstraint implements Constraint {
     }
 
 
-    /// used to encode that <tt>handleJava</tt> results in an unsatisfiable constraint (faster than
+    /// used to encode that <tt>handleRust</tt> results in an unsatisfiable constraint (faster than
     /// using exceptions)
     private static final NameAbstractionTable FAILED = new NameAbstractionTable();
 
-    private static NameAbstractionTable handleJava(Term t0, Term t1, NameAbstractionTable nat) {
+    private static NameAbstractionTable handleRust(Term t0, Term t1, NameAbstractionTable nat) {
         if (t0.op() instanceof RModality m1 && t1.op() instanceof RModality m2) {
             nat = checkNat(nat);
             if (RENAMING_PROGRAM_ELEMENT_PROPERTY.equalsModThisProperty(m1.programBlock().program(),
@@ -515,9 +515,9 @@ public class EqualityConstraint implements Constraint {
         // MV cycles are impossible if the orders of MV pairs are
         // correct
 
-        if (!t.isRigid()) {
-            return TOP;
-        }
+         if (!t.isRigid()) {
+         return TOP;
+         }
 
         // metavariable instantiations must not contain free variables
         if (!t.freeVars().isEmpty() ||

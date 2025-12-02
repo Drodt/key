@@ -58,7 +58,7 @@ public class HeuristicInstantiation implements TermGenerator<Goal> {
 
         public Set<Term> getTerms(Sequent seq) {
             for (var t : seq.asList()) {
-                visit(t.formula());
+                t.formula().execPreOrder(this);
             }
             return terms;
         }
