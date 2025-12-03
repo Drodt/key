@@ -38,23 +38,25 @@ public class FnSpecConverter extends AbstractSpecConverter {
         final var kind = specCase.kind();
         final var name = specCase.name();
         final var result = new ProgramVariable(new Name("result"), target.getType());
-        var pre = mapAndJoinTerms(specCase.pre(), target, result);
-        var post = mapAndJoinTerms(specCase.post(), target, result);
-        Term variant;
-        if (specCase.variant() == null)
-            variant = null;
-        else {
-            setCtx(new ConversionCtx(params2PVs(specCase.variant().params(), target, result)));
-            variant = convert(specCase.variant().value());
-        }
-        setCtx(new ConversionCtx(params2PVs(specCase.diverges().params(), target, result)));
-        var diverges = convert(specCase.diverges().value());
-        clearCtx();
         var paramVars = ImmutableList.fromList(target.getFunction().params().stream().map(p -> {
             var fp = (FunctionParamPattern) p;
             var bp = (BindingPattern) fp.pattern();
             return bp.pv();
         }).toList());
+        var pre = mapAndJoinTerms(specCase.pre(), target, paramVars, result);
+        var post = mapAndJoinTerms(specCase.post(), target, paramVars, result);
+        Term variant;
+        if (specCase.variant() == null)
+            variant = null;
+        else {
+            setCtx(new ConversionCtx(
+                params2PVs(specCase.variant().params(), target, paramVars, result)));
+            variant = convert(specCase.variant().value());
+        }
+        setCtx(
+            new ConversionCtx(params2PVs(specCase.diverges().params(), target, paramVars, result)));
+        var diverges = convert(specCase.diverges().value());
+        clearCtx();
         if (diverges == tb.ff()) {
             return Stream.of(new FunctionalOperationContractImpl(name, name, target,
                 RModality.RustyModalityKind.DIA, pre, variant, post, null, paramVars, result,
@@ -69,10 +71,12 @@ public class FnSpecConverter extends AbstractSpecConverter {
     }
 
     private Term mapAndJoinTerms(WithParams<org.key_project.rusty.speclang.spec.Term>[] terms,
-            ProgramFunction target, ProgramVariable resultVar) {
+            ProgramFunction target, ImmutableList<ProgramVariable> paramVars,
+            ProgramVariable resultVar) {
         return Arrays.stream(terms)
                 .map(wp -> {
-                    setCtx(new ConversionCtx(params2PVs(wp.params(), target, resultVar)));
+                    setCtx(
+                        new ConversionCtx(params2PVs(wp.params(), target, paramVars, resultVar)));
                     var c = convert(wp.value());
                     clearCtx();
                     return c;
@@ -81,21 +85,19 @@ public class FnSpecConverter extends AbstractSpecConverter {
     }
 
     private Map<HirId, ProgramVariable> params2PVs(Param[] params, ProgramFunction target,
-            ProgramVariable resultVar) {
+            ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar) {
         // TODO: Get same PVs as in target or create new ones? Ask RB!
         var map = new HashMap<HirId, ProgramVariable>();
-        for (int i = 0; i < params.length; i++) {
+        for (int i = 0; i < paramVars.size(); i++) {
             var param = params[i];
             if (param.pat().kind() instanceof PatKind.Binding bp) {
-                if (i == target.getNumParams()) {
-                    map.put(bp.hirId(), resultVar);
-                } else {
-                    map.put(bp.hirId(),
-                        new ProgramVariable(new Name(bp.ident().name()), target.getParamType(i)));
-                }
+                map.put(bp.hirId(), paramVars.get(i));
             }
+        }
+        if (params.length > paramVars.size()) {
+            final PatKind.Binding bp = (PatKind.Binding) params[params.length - 1].pat().kind();
+            map.put(bp.hirId(), resultVar);
         }
         return map;
     }
-
 }
