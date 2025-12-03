@@ -913,14 +913,14 @@ public class IntegerStrategy extends AbstractFeatureStrategy implements Componen
                     applyTF("divDenom", tf.notContainsDivMod),
                     ifZero(isBelow(ff.modalOperator), longConst(200))));
 
-            bindRuleSet(d, "defOps_jdiv",
+            bindRuleSet(d, "defOps_rdiv",
                 SumFeature.createSum(NonDuplicateAppModPositionFeature.INSTANCE,
                     applyTF("divNum", tf.polynomial), applyTF("divDenom", tf.polynomial),
                     applyTF("divNum", tf.notContainsDivMod),
                     applyTF("divDenom", tf.notContainsDivMod),
                     ifZero(isBelow(ff.modalOperator), longConst(200))));
 
-            bindRuleSet(d, "defOps_jdiv_inline", add(applyTF("divNum", tf.literal),
+            bindRuleSet(d, "defOps_rdiv_inline", add(applyTF("divNum", tf.literal),
                 applyTF("divDenom", tf.polynomial), longConst(-5000)));
 
             setupDefOpsExpandMod(d);
