@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.key_project.rusty.ast.visitor.ProgramVariableCollector;
 import org.key_project.rusty.control.DefaultUserInterfaceControl;
 import org.key_project.rusty.control.KeYEnvironment;
 import org.key_project.rusty.proof.io.AbstractProblemLoader.ReplayResult;
@@ -166,6 +167,17 @@ public class TestFile {
                 }
 
                 autoMode(env, loadedProof);
+
+                // TODO: @ DD remove
+                for (var g : loadedProof.openGoals()) {
+                    TermProgramVariableCollector pvc = new TermProgramVariableCollector(loadedProof.getServices());
+                    for (var sf:g.sequent()) {
+                        sf.formula().execPostOrder(pvc);
+                    }
+                    for (var pv : pvc.result()) {
+                        if (pv.name().toString().equals("arr")) System.out.println(pv.name() + ":" + System.identityHashCode(pv));
+                    }
+                }
 
                 if (testProperty == TestProperty.PROVABLE
                         || testProperty == TestProperty.NOT_PROVABLE) {
