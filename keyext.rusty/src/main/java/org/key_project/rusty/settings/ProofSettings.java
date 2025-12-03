@@ -76,7 +76,6 @@ public class ProofSettings {
         if (Boolean.getBoolean(PathConfig.DISREGARD_SETTINGS_PROPERTY)) {
             // LOGGER.warn("The settings in {} are *not* read.", PROVER_CONFIG_FILE);
         } else {
-            var isOldFormat = false;
             try (var in = new BufferedReader(
                 new FileReader(PROVER_CONFIG_FILE_NEW, StandardCharsets.UTF_8))) {
                 // LOGGER.info("Load proof dependent settings from file {}", fileToUse);

@@ -11,7 +11,7 @@ import org.key_project.prover.engine.StopCondition;
 import org.key_project.prover.engine.impl.AppliedRuleStopCondition;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.strategy.RustyDLStrategyFactory;
+import org.key_project.rusty.strategy.ModularRustyDLStrategy;
 import org.key_project.rusty.strategy.StrategyProperties;
 
 import org.jspecify.annotations.NonNull;
@@ -116,7 +116,7 @@ public class StrategySettings extends AbstractSettings {
     public void writeSettings(@NonNull Configuration props) {
         props = props.getOrCreateSection(CATEGORY);
         if (getStrategy() == null) {
-            setStrategy(RustyDLStrategyFactory.NAME);
+            setStrategy(ModularRustyDLStrategy.NAME);
         }
         if (maxSteps < 0) {
             setMaxSteps(10000);

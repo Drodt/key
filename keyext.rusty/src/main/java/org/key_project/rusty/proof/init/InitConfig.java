@@ -229,11 +229,10 @@ public class InitConfig {
         return copyWithServices(services.copyPreservesLDTInformation());
     }
 
-    // TODO fix ProofSettings
     public InitConfig copyWithServices(Services services) {
         InitConfig ic = new InitConfig(services);
         if (settings != null) {
-            ic.setSettings(new ProofSettings(ProofSettings.DEFAULT_SETTINGS));// settings));
+            ic.setSettings(new ProofSettings(settings));// settings));
         }
 
         ic.setTaclet2Builder(

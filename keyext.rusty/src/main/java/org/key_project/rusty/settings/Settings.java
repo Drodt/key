@@ -28,6 +28,4 @@ public interface Settings {
     /// accordingly to the local
     /// internal state.
     void writeSettings(@NonNull Configuration props);
-
-
 }
