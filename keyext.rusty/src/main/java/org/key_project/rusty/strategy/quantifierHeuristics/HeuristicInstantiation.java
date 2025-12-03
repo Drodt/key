@@ -31,14 +31,14 @@ public class HeuristicInstantiation implements TermGenerator<Goal> {
 
         final Term qf = pos.sequentFormula().formula();
 
-        // final Instantiation ia =
-        // Instantiation.create(qf, goal.sequent(), goal.proof().getServices());
+        final Instantiation ia =
+            Instantiation.create(qf, goal.sequent(), goal.proof().getServices());
         final QuantifiableVariable var = qf.varsBoundHere(0).last();
         assert var != null;
-        var sttc = new StupidTermCollectorRemoveMePlease(var.sort());
-        return new HIIterator(sttc.getTerms(goal.sequent()).iterator(), var,
-            goal.proof().getServices());
-        // return new HIIterator(ia.getSubstitution().iterator(), var, goal.proof().getServices());
+        //// var sttc = new StupidTermCollectorRemoveMePlease(var.sort());
+        // return new HIIterator(sttc.getTerms(goal.sequent()).iterator(), var,
+        // goal.proof().getServices());
+        return new HIIterator(ia.getSubstitution().iterator(), var, goal.proof().getServices());
     }
 
     private static class StupidTermCollectorRemoveMePlease implements Visitor<Term> {
