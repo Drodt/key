@@ -4,6 +4,8 @@
 package org.key_project.rusty.pp;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import org.key_project.logic.Term;
@@ -48,6 +50,8 @@ public class LogicPrinter {
 
     private SVInstantiations instantiations = SVInstantiations.EMPTY_SVINSTANTIATIONS;
 
+    private List<BoundVariable> boundVars = new LinkedList<>();
+
     private QuantifiableVariablePrintMode quantifiableVariablePrintMode =
         QuantifiableVariablePrintMode.NORMAL;
 
@@ -91,6 +95,24 @@ public class LogicPrinter {
     /// Resets the printer by creating a new layouter.
     public void reset() {
         layouter = layouter.cloneArgs();
+    }
+
+    public void addBoundVars(ImmutableArray<? extends QuantifiableVariable> boundVars) {
+        for (QuantifiableVariable qv : boundVars) {
+            if (qv instanceof BoundVariable bv) {
+                this.boundVars.add(bv);
+            }
+        }
+    }
+
+    public void removeBoundVars(int size) {
+        for (int i = 0; i < size; i++) {
+            boundVars.removeLast();
+        }
+    }
+
+    public BoundVariable getBoundVar(int idx) {
+        return boundVars.get(idx);
     }
 
     /// sets the line width to the new value but does _not_ reprint the sequent. The actual
@@ -694,10 +716,17 @@ public class LogicPrinter {
                 layouter.print("}").end();
             }
             if (t.arity() > 0) {
+                var bvs = t.boundVars();
                 layouter.print("(").beginC(0);
                 for (int i = 0, n = t.arity(); i < n; i++) {
                     layouter.markStartSub();
+                    if (t.op().bindVarsAt(i)) {
+                        addBoundVars(bvs);
+                    }
                     printTerm(t.sub(i));
+                    if (t.op().bindVarsAt(i)) {
+                        removeBoundVars(bvs.size());
+                    }
                     layouter.markEndSub();
 
                     if (i < n - 1) {
