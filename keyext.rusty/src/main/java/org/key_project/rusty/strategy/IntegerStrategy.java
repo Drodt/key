@@ -253,7 +253,6 @@ public class IntegerStrategy extends AbstractFeatureStrategy implements Componen
     }
 
     private void setupPolySimp(RuleSetDispatchFeature d, IntLDT numbers) {
-
         // category "expansion" (normalising polynomial terms)
 
         bindRuleSet(d, "polySimp_elimSubNeg", longConst(-120));

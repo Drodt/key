@@ -37,7 +37,6 @@ public class PrintFeature implements Feature {
     public <Goal extends ProofGoal<@NonNull Goal>> RuleAppCost computeCost(RuleApp app,
             PosInOccurrence pos, Goal goal,
             MutableState mState) {
-        COUNT++;
         RuleAppCost cost = f.computeCost(app, pos, goal, mState);
         LOGGER.debug("{}:{}:{}{}", prefix, cost.toString(), pos != null ? pos.subTerm() + ":" : "",
             app.rule().name());
