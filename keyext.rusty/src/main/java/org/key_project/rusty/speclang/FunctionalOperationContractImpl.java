@@ -400,7 +400,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     public String proofToString(Services services) {
         assert toBeSaved;
         final StringBuilder sb = new StringBuilder();
-        sb.append(baseName).append(" {\n");
+        sb.append('\"').append(baseName).append('\"').append(" {\n");
 
         // print var decls
         sb.append("  \\programVariables {\n");

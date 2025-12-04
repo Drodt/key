@@ -26,9 +26,12 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.pp.LogicPrinter;
 import org.key_project.rusty.pp.NotationInfo;
 import org.key_project.rusty.pp.PrettyPrinter;
+import org.key_project.rusty.proof.NameRecorder;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.proof.init.IPersistablePO;
 import org.key_project.rusty.proof.init.Profile;
+import org.key_project.rusty.proof.init.ProofOblInput;
 import org.key_project.rusty.proof.mgt.RuleJustification;
 import org.key_project.rusty.proof.mgt.RuleJustificationBySpec;
 import org.key_project.rusty.rule.ContractRuleApp;
@@ -80,8 +83,8 @@ public class OutputStreamProofSaver {
 
     public void save(OutputStream out) throws IOException {
         try (var ps = new PrintWriter(out, true, StandardCharsets.UTF_8)) {
-            // final ProofOblInput po =
-            // proof.getServices().getSpecificationRepository().getProofOblInput(proof);
+            final ProofOblInput po =
+                proof.getServices().getSpecificationRepository().getProofOblInput(proof);
             LogicPrinter printer = createLogicPrinter(proof.getServices(), false);
 
             // profile
@@ -89,14 +92,6 @@ public class OutputStreamProofSaver {
 
             // settings
             ps.println(writeSettings(proof.getSettings()));
-            /*
-             * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
-             * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
-             * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
-             * StrategyProperties.INF_FLOW_CHECK_FALSE);
-             * strategySettings.setActiveStrategyProperties(strategyProperties);
-             * }
-             */
 
             // declarations of symbols, sorts
             String header = proof.header();
@@ -104,32 +99,25 @@ public class OutputStreamProofSaver {
             ps.print(header);
 
             // \problem or \proofObligation
-            /*
-             * if (po instanceof IPersistablePO ppo
-             * && (!(po instanceof AbstractInfFlowPO) || (!(po instanceof InfFlowCompositePO)
-             * && ((InfFlowProof) proof).getIFSymbols().isFreshContract()))) {
-             * var loadingConfig = ppo.createLoaderConfig();
-             * ps.println("\\proofObligation ");
-             * loadingConfig.save(ps, "Proof-Obligation settings");
-             * ps.println("\n");
-             * } else {
-             * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
-             * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
-             * ps.print(((InfFlowProof) proof).printIFSymbols());
-             * }
-             */
-            final Sequent problemSeq = proof.root().sequent();
-            ps.println("\\problem {");
-            if (problemSeq.antecedent().isEmpty() && problemSeq.succedent().size() == 1) {
-                // Problem statement is a single formula ...
-                printer.printSemisequent(problemSeq.succedent());
+
+            if (po instanceof IPersistablePO ppo) {
+                var loadingConfig = ppo.createLoaderConfig();
+                ps.println("\n\\proofObligation ");
+                loadingConfig.save(ps, "Proof-Obligation settings");
+                ps.println("\n");
             } else {
-                // Problem statement is a proper sequent ...
-                printer.printSequent(problemSeq);
+                final Sequent problemSeq = proof.root().sequent();
+                ps.println("\\problem {");
+                if (problemSeq.antecedent().isEmpty() && problemSeq.succedent().size() == 1) {
+                    // Problem statement is a single formula ...
+                    printer.printSemisequent(problemSeq.succedent());
+                } else {
+                    // Problem statement is a proper sequent ...
+                    printer.printSequent(problemSeq);
+                }
+                ps.println(printer.result());
+                ps.println("}\n");
             }
-            ps.println(printer.result());
-            ps.println("}\n");
-            // }
 
             if (saveProofSteps) {
                 // \proof
@@ -156,23 +144,19 @@ public class OutputStreamProofSaver {
     }
 
     private String newNames2Proof(Node n) {
-        // TODO: What is this even used for?!
-        /*
-         * StringBuilder s = new StringBuilder();
-         * final NameRecorder rec = n.getNameRecorder();
-         * if (rec == null) {
-         * return s.toString();
-         * }
-         * final ImmutableList<Name> proposals = rec.getProposals();
-         * if (proposals.isEmpty()) {
-         * return s.toString();
-         * }
-         * for (final Name proposal : proposals) {
-         * s.append(",").append(proposal);
-         * }
-         * return " (newnames \"" + s.substring(1) + "\")";
-         */
-        return "";
+        StringBuilder s = new StringBuilder();
+        final NameRecorder rec = n.getNameRecorder();
+        if (rec == null) {
+            return s.toString();
+        }
+        final ImmutableList<Name> proposals = rec.getProposals();
+        if (proposals.isEmpty()) {
+            return s.toString();
+        }
+        for (final Name proposal : proposals) {
+            s.append(",").append(proposal);
+        }
+        return " (newnames \"" + s.substring(1) + "\")";
     }
 
     /// Print applied taclet rule for a single taclet rule application into the passed writer.

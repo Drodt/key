@@ -91,8 +91,7 @@ public abstract class KeYAst<T extends ParserRuleContext> {
 
         /**
          * Extracts the decls and taclets into a string.
-         * The problem header may contain the bootstrap classpath,
-         * the regular classpath, the Java source file to load,
+         * The problem header may contain the source file to load,
          * include statements to load other files, configuration of options,
          * declarations of sorts, program variables, schema variables, predicates, and more.
          * See the grammar (KeYParser.g4) for more possible elements.

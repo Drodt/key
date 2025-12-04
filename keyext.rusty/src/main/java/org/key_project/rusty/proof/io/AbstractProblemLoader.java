@@ -369,11 +369,9 @@ public abstract class AbstractProblemLoader {
 
         for (Proof p : proofList.getProofs()) {
             // register proof
-            /*
-             * initConfig.getServices().getSpecificationRepository()
-             * .registerProof(poContainer.getProofOblInput(), p);
-             * initConfig.getFileRepo().registerProof(p);
-             */
+            initConfig.getServices().getSpecificationRepository()
+                    .registerProof(poContainer.getProofOblInput(), p);
+            // initConfig.getFileRepo().registerProof(p);
         }
 
         return proofList;
