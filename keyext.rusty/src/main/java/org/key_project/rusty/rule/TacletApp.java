@@ -175,7 +175,7 @@ public abstract class TacletApp implements RuleApp {
             if (sv instanceof TermSV || sv instanceof FormulaSV) {
                 final var prefix = taclet.getPrefix(sv);
 
-                if (pos == null && prefix.context()) {
+                if (prefix == null || pos == null && prefix.context()) {
                     continue;
                 }
 
