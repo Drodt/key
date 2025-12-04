@@ -5,7 +5,6 @@ package org.key_project.rusty.rule.metaconstruct;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
-import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.Shift;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
@@ -20,8 +19,7 @@ public class ShiftTransformer extends AbstractTermTransformer {
 
     @Override
     public Term transform(Term term, SVInstantiations svInst, Services services) {
-        final Term target =
-            svInst.getTermInstantiation((SchemaVariable) term.sub(1).op(), services);
+        final Term target = term.sub(1);
         final Shift shift = new Shift(getDistance(term, services), services.getTermBuilder());
 
         return shift.apply(target);

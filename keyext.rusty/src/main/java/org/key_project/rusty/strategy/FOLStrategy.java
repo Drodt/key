@@ -365,7 +365,7 @@ public class FOLStrategy extends AbstractFeatureStrategy implements ComponentStr
         if (quantifierInstantiatedEnabled()) {
             final TermBuffer varInst = new TermBuffer();
 
-            bindRuleSet(d, "gamma", add(new PrintFeature(isInstantiated("t")),
+            bindRuleSet(d, "gamma", add(isInstantiated("t"),
                 not(sum(varInst, HeuristicInstantiation.INSTANCE, not(eq(instOf("t"), varInst)))),
                 InstantiationCostScalerFeature.create(InstantiationCost.create(instOf("t")),
                     longConst(0))));

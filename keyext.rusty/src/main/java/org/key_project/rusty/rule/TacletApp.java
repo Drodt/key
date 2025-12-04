@@ -158,7 +158,7 @@ public abstract class TacletApp implements RuleApp {
         for (var qv : freeVars) {
             final int idx = ((LogicVariable) qv).getIndex();
             if (idx > prefix.prefixLength()) {
-                if (pos != null && prefix.context() && idx > countAbove) {
+                if (pos != null && prefix.context() && idx > countAbove + prefix.prefixLength()) {
                     return false;
                 } else if (pos == null || !prefix.context()) {
                     return false;
