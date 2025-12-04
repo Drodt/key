@@ -7,6 +7,7 @@ package org.key_project.rusty.rule.tacletbuilder;
 import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.SuccTaclet;
 
 public class SuccTacletBuilder extends FindTacletBuilder<SuccTaclet> {
@@ -40,13 +41,13 @@ public class SuccTacletBuilder extends FindTacletBuilder<SuccTaclet> {
     /// are not set. No specified find part causes an IllegalStateException. Throws an
     /// TacletBuilderException if a bound SchemaVariable occurs more than once in if and find or an
     /// InvalidPrefixException if the building of the Taclet Prefix fails.
-    public SuccTaclet getSuccTaclet() {
+    public SuccTaclet getSuccTaclet(Services services) {
         if (find == null) {
             throw new TacletBuilder.TacletBuilderException(this, "No find part specified");
 
         }
         checkBoundInIfAndFind();
-        final TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this);
+        final TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this, services);
         prefixBuilder.build();
         SuccTaclet t = new SuccTaclet(name,
             new TacletApplPart(ifseq,
@@ -67,7 +68,7 @@ public class SuccTacletBuilder extends FindTacletBuilder<SuccTaclet> {
     /// empty. No specification for the if-sequence is represented as a sequent with two empty
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set. No specified find part causes an IllegalStateException.
-    public SuccTaclet getTaclet() {
-        return getSuccTaclet();
+    public SuccTaclet getTaclet(Services services) {
+        return getSuccTaclet(services);
     }
 }

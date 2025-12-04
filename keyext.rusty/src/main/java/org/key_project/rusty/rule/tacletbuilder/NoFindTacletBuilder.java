@@ -6,6 +6,7 @@ package org.key_project.rusty.rule.tacletbuilder;
 
 import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.BoundUniquenessChecker;
 import org.key_project.rusty.rule.NoFindTaclet;
 
@@ -19,8 +20,8 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
     /// empty. No specification for the if-sequent is represented as a sequent with two empty
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set.
-    public NoFindTaclet getNoFindTaclet() {
-        TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this);
+    public NoFindTaclet getNoFindTaclet(Services services) {
+        TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this, services);
         prefixBuilder.build();
         NoFindTaclet t = new NoFindTaclet(this.name,
             new TacletApplPart(ifseq,
@@ -65,8 +66,8 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set. May throw an TacletBuilderException if a bound SchemaVariable occurs more than
     /// once in if and find.
-    public NoFindTaclet getTaclet() {
+    public NoFindTaclet getTaclet(Services services) {
         checkBoundInIfAndFind();
-        return getNoFindTaclet();
+        return getNoFindTaclet(services);
     }
 }

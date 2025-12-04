@@ -18,6 +18,7 @@ import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.conditions.NewDependingOn;
 import org.key_project.prover.rules.conditions.NotFreeIn;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
@@ -187,7 +188,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set. No specified find part for Taclets that require a find part causes an
     /// IllegalStateException.
-    public abstract T getTaclet();
+    public abstract T getTaclet(Services services);
 
     public ChoiceExpr getChoices() {
         return choices;
@@ -209,9 +210,9 @@ public abstract class TacletBuilder<T extends Taclet> {
         return goal2Choices;
     }
 
-    public T getTacletWithoutInactiveGoalTemplates(Set<Choice> active) {
+    public T getTacletWithoutInactiveGoalTemplates(Set<Choice> active, Services services) {
         if (goal2Choices == null || goals.isEmpty()) {
-            return getTaclet();
+            return getTaclet(services);
         }
         ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> oldGoals =
             goals;
@@ -226,7 +227,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         if (goals.isEmpty()) {
             result = null;
         } else {
-            result = getTaclet();
+            result = getTaclet(services);
         }
         goals = oldGoals;
         return result;

@@ -168,7 +168,7 @@ public class TacletPBuilder extends ExpressionBuilder {
             b.setChoices(choices);
             b.setAnnotations(tacletAnnotations);
             // b.setOrigin(BuilderHelpers.getPosition(ctx));
-            Taclet r = b.getTaclet();
+            Taclet r = b.getTaclet(services);
             registerTaclet(r);
             currentTBuilder.pop();
             return r;
@@ -215,7 +215,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         b.setAnnotations(tacletAnnotations);
         // b.setOrigin(BuilderHelpers.getPosition(ctx));
         try {
-            Taclet r = peekTBuilder().getTaclet();
+            Taclet r = peekTBuilder().getTaclet(services);
             registerTaclet(r);
             setSchemaVariables(schemaVariables().parent());
             currentTBuilder.pop();
@@ -226,7 +226,7 @@ public class TacletPBuilder extends ExpressionBuilder {
     }
 
     private void registerTaclet(TacletBuilder<?> tb) {
-        var taclet = tb.getTaclet();
+        var taclet = tb.getTaclet(services);
         taclet2Builder.put(taclet, peekTBuilder());
         topLevelTaclets.add(taclet);
     }

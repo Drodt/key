@@ -6,6 +6,7 @@ package org.key_project.rusty.rule.tacletbuilder;
 import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.AntecTaclet;
 
 import org.jspecify.annotations.NonNull;
@@ -39,8 +40,8 @@ public class AntecTacletBuilder extends FindTacletBuilder<@NonNull AntecTaclet> 
     /// empty. No specification for the if-sequent is represented as a sequent with two empty
     /// semisequents. No specification for the interactive or recursive flags imply that the flags
     /// are not set. No specified find part causes an IllegalStateException.
-    public AntecTaclet getTaclet() {
-        return getAntecTaclet();
+    public AntecTaclet getTaclet(Services services) {
+        return getAntecTaclet(services);
     }
 
     /// builds and returns the AntecTaclet that is specified by former set... / add... methods. If
@@ -53,14 +54,14 @@ public class AntecTacletBuilder extends FindTacletBuilder<@NonNull AntecTaclet> 
     /// are not set. No specified find part causes an IllegalStateException. Throws an
     /// TacletBuilderException if a bound SchemaVariable occurs more than once in if and find or an
     /// InvalidPrefixException if the building of the Taclet Prefix fails.
-    public AntecTaclet getAntecTaclet() {
+    public AntecTaclet getAntecTaclet(Services services) {
         if (find == null) {
             throw new TacletBuilder.TacletBuilderException(this, "No find part specified");
 
         }
         checkBoundInIfAndFind();
 
-        TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this);
+        TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this, services);
 
         prefixBuilder.build();
 

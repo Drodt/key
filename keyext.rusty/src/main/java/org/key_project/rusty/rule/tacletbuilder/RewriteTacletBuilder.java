@@ -7,6 +7,7 @@ package org.key_project.rusty.rule.tacletbuilder;
 import org.key_project.logic.Term;
 import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.TacletApplPart;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.RewriteTaclet;
 
 public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBuilder<T> {
@@ -45,12 +46,12 @@ public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBui
     /// TacletBuilderException if a bound SchemaVariable occurs more than once in if and find or an
     /// InvalidPrefixException if the building of the Taclet Prefix fails.
     @SuppressWarnings("unchecked")
-    public T getRewriteTaclet() {
+    public T getRewriteTaclet(Services services) {
         if (find == null) {
             throw new TacletBuilder.TacletBuilderException(this, "No find part specified");
         }
         checkBoundInIfAndFind();
-        TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this);
+        TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this, services);
         prefixBuilder.build();
         RewriteTaclet t = new RewriteTaclet(name,
             new TacletApplPart(ifseq, applicationRestriction, varsNew, varsNotFreeIn,
@@ -91,7 +92,7 @@ public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBui
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set. No specified find part causes an IllegalStateException.
     @Override
-    public T getTaclet() {
-        return getRewriteTaclet();
+    public T getTaclet(Services services) {
+        return getRewriteTaclet(services);
     }
 }

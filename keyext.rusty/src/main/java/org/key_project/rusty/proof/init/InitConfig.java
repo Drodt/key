@@ -274,7 +274,7 @@ public class InitConfig {
             TacletBuilder<? extends Taclet> b = taclet2Builder.get(t);
             if (t.getChoices().eval(choices)) {
                 if (b != null && b.getGoal2Choices() != null) {
-                    t = b.getTacletWithoutInactiveGoalTemplates(choices);
+                    t = b.getTacletWithoutInactiveGoalTemplates(choices, services);
                 }
 
                 if (t != null) {

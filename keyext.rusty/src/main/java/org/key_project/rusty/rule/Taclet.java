@@ -82,7 +82,8 @@ import org.jspecify.annotations.NonNull;
 public abstract class Taclet extends org.key_project.prover.rules.Taclet implements Rule {
     /// This map contains (a, b) if there is a substitution {b a} somewhere in this taclet
     private ImmutableMap<@NonNull SchemaVariable, SchemaVariable> svNameCorrespondences = null;
-    protected ImmutableList<@NonNull SchemaVariable> noFreeVarIns;
+
+    protected final ImmutableList<@NonNull SchemaVariable> noFreeVarIns;
 
     /// Integer to cache the hashcode
     private int hashcode = 0;
@@ -305,5 +306,9 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
 
     public boolean getSurviveSymbExec() {
         return surviveSymbExec;
+    }
+
+    public ImmutableList<SchemaVariable> noFreeVarIns() {
+        return noFreeVarIns;
     }
 }
