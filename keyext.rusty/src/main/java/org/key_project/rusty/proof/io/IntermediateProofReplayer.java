@@ -130,8 +130,8 @@ public class IntermediateProofReplayer {
                     // currNode.getNodeInfo().setNotes(currInterm.getNotes());
 
                     // Register name proposals
-                    // proof.getServices().getNameRecorder()
-                    // .setProposals(currInterm.getIntermediateRuleApp().getNewNames());
+                    proof.getServices().getNameRecorder()
+                            .setProposals(currInterm.getIntermediateRuleApp().getNewNames());
 
                     if (currInterm.getIntermediateRuleApp() instanceof TacletAppIntermediate tai) {
                         TacletAppIntermediate appInterm =

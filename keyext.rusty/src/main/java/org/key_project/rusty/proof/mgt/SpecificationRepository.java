@@ -12,6 +12,8 @@ import org.key_project.rusty.ast.expr.LoopExpression;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.RModality;
+import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.proof.init.ProofOblInput;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.rusty.speclang.LoopSpecification;
@@ -28,6 +30,7 @@ public class SpecificationRepository {
     private final Map<String, Contract> contractsByName = new LinkedHashMap<>();
     private final Map<String, Integer> contractCounters = new LinkedHashMap<>();
     private Map<LoopExpression, LoopSpecification> loopInvs = new LinkedHashMap<>();
+    private final Map<ProofOblInput, ImmutableSet<Proof>> proofs = new LinkedHashMap<>();
 
     public SpecificationRepository(Services services) {
         this.services = services;
@@ -111,5 +114,59 @@ public class SpecificationRepository {
             result = result.union(s);
         }
         return result;
+    }
+
+    /// Returns all proofs registered for the passed PO (or stronger POs).
+    public ImmutableSet<Proof> getProofs(ProofOblInput po) {
+        ImmutableSet<Proof> result = DefaultImmutableSet.nil();
+        for (Map.Entry<ProofOblInput, ImmutableSet<Proof>> entry : proofs.entrySet()) {
+            ProofOblInput mapPO = entry.getKey();
+            ImmutableSet<Proof> sop = entry.getValue();
+            if (mapPO.implies(po)) {
+                result = result.union(sop);
+            }
+        }
+        return result;
+    }
+
+    /// Returns the [ProofOblInput] from which the given [Proof] was created.
+    ///
+    /// @param proof The [Proof].
+    /// @return The [ProofOblInput] of the given [Proof] or `null` if not
+    /// available.
+    public ProofOblInput getProofOblInput(Proof proof) {
+        for (Map.Entry<ProofOblInput, ImmutableSet<Proof>> entry : proofs.entrySet()) {
+            ProofOblInput po = entry.getKey();
+            ImmutableSet<Proof> sop = entry.getValue();
+            if (sop.contains(proof)) {
+                return po;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Registers the passed proof.
+     */
+    public void registerProof(ProofOblInput po, Proof proof) {
+        proofs.put(po, getProofs(po).add(proof));
+    }
+
+    /**
+     * Unregisters the passed proof.
+     */
+    public void removeProof(Proof proof) {
+        for (Map.Entry<ProofOblInput, ImmutableSet<Proof>> entry : proofs.entrySet()) {
+            ImmutableSet<Proof> sop = entry.getValue();
+            if (sop.contains(proof)) {
+                sop = sop.remove(proof);
+                if (sop.isEmpty()) {
+                    proofs.remove(entry.getKey());
+                } else {
+                    proofs.put(entry.getKey(), sop);
+                }
+                return;
+            }
+        }
     }
 }

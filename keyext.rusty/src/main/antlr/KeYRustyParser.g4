@@ -168,3 +168,11 @@ funcpred_name
 :
   DOUBLECOLON? simple_ident (DOUBLECOLON simple_ident)*
 ;
+
+one_contract
+:
+   contractName = string_value LBRACE
+   (prog_var_decls)?
+   fma=term MODIFIABLE modifiableClause=term
+   RBRACE SEMI
+;

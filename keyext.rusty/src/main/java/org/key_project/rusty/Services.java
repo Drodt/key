@@ -166,7 +166,7 @@ public class Services implements LogicServices, ProofServices {
     }
 
     public void addNameProposal(Name name) {
-        // TODO @ DD
+        nameRecorder.addProposal(name);
     }
 
     public RustInfo getRustInfo() {
