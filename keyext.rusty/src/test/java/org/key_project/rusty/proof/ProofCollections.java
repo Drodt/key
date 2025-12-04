@@ -72,9 +72,7 @@ public class ProofCollections {
         // option.loadable("option.proof");
 
         var algos = c.group("algorithms");
-        // algos.provable("inst-test.key");
-        // algos.provable("all-test.key");
-        algos.provable("binary-search/binary-search.proof");
+        algos.provable("binary-search/binary-search.key");
 
         return c;
     }
