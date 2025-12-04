@@ -1,8 +1,8 @@
 \profile "Rust Profile";
 
 \programVariables {
-    u32 i;
-    bool b;
+    i: u32;
+    b: bool;
 }
 
 \problem {

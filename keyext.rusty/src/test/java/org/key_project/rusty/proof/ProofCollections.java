@@ -36,40 +36,40 @@ public class ProofCollections {
         settings.setVerboseOutput(true);
 
         var c = new ProofCollection(settings);
-        // var simple = c.group("simple");
-        // simple.loadable("simple.proof");
-        // simple.loadable("if.proof");
-        // simple.loadable("iflet.proof");
-        // simple.provable("auto-if.key");
-        //
-        // var refs = c.group("references");
-        // refs.loadable("shared-ref.proof");
-        // refs.loadable("mutable-ref.proof");
-        // refs.loadable("mutable-ref-wrong.proof");
-        //
-        // var choices = c.group("choices");
-        // choices.loadable("sub-no-check.proof");
-        //
-        // var contracts = c.group("contracts");
-        // contracts.loadable("use-contract.proof");
-        //
-        // var rustSrc = c.group("rustSrc");
-        // rustSrc.loadable("loop-mul.proof");
-        // rustSrc.loadable("add-no-bounds.proof");
-        // rustSrc.loadable("mut-ref-src.proof");
-        // rustSrc.loadable("if-src.proof");
-        //
-        // var array = c.group("array");
-        // array.loadable("array-get-of-repeat.proof");
-        // array.loadable("array-get-of-set.proof");
-        // array.loadable("array-test.proof");
-        // array.loadable("array-enumerate.proof");
-        //
-        // var tuples = c.group("tuples");
-        // tuples.loadable("tuple-test.proof");
-        //
-        // var option = c.group("option");
-        // option.loadable("option.proof");
+         var simple = c.group("simple");
+         simple.loadable("simple.proof");
+         simple.loadable("if.proof");
+         simple.loadable("iflet.proof");
+         simple.provable("auto-if.key");
+
+         var refs = c.group("references");
+         refs.loadable("shared-ref.proof");
+         refs.loadable("mutable-ref.proof");
+         refs.loadable("mutable-ref-wrong.proof");
+
+         var choices = c.group("choices");
+         choices.loadable("sub-no-check.proof");
+
+         var contracts = c.group("contracts");
+         contracts.loadable("use-contract.proof");
+
+         var rustSrc = c.group("rustSrc");
+         rustSrc.loadable("loop-mul.proof");
+         rustSrc.loadable("add-no-bounds.proof");
+         rustSrc.loadable("mut-ref-src.proof");
+         rustSrc.loadable("if-src.proof");
+
+         var array = c.group("array");
+         array.loadable("array-get-of-repeat.proof");
+         array.loadable("array-get-of-set.proof");
+         array.loadable("array-test.proof");
+         array.loadable("array-enumerate.proof");
+
+         var tuples = c.group("tuples");
+         tuples.loadable("tuple-test.proof");
+
+         var option = c.group("option");
+         option.loadable("option.proof");
 
         var algos = c.group("algorithms");
         algos.provable("binary-search/binary-search.key");
