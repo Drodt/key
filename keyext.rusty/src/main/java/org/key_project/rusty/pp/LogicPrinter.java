@@ -112,7 +112,7 @@ public class LogicPrinter {
     }
 
     public BoundVariable getBoundVar(int idx) {
-        return boundVars.get(idx);
+        return boundVars.get(boundVars.size() - idx);
     }
 
     /// sets the line width to the new value but does _not_ reprint the sequent. The actual
