@@ -263,7 +263,7 @@ public abstract class Notation {
             if (t.op() instanceof ProgramVariable) {
                 sp.printConstant(t.op().name().toString());
             } else if (t.op() instanceof LogicVariable lv) {
-                sp.printConstant(sp.getBoundVar(lv.getIndex()).name().toString());
+                sp.printConstant(sp.getBoundVar(lv.getIndex() - 1).name().toString());
             } else {
                 sp.printConstant(t.op().name().toString());
             }
