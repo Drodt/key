@@ -79,7 +79,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     @Override
     public void performActionOnBlockExpression(BlockExpression x) {
         ExtList changeList = getTop();
-        if (changeList.getFirst() == CHANGED) {
+        if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             if (!preservesPositionInfo) {
                 // TODO changeList.removeFirstOccurrence(PositionInfo.class);
