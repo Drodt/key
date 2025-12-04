@@ -11,11 +11,13 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.FormulaSV;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.TermSV;
 import org.key_project.rusty.logic.op.sv.UpdateSV;
+import org.key_project.rusty.logic.sort.TermArg;
 import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.metaconstruct.ShiftTransformer;
 import org.key_project.util.collection.DefaultImmutableMap;
@@ -69,7 +71,7 @@ public class TacletPrefixBuilder {
     private void visit(Term t) {
         if (t.op() instanceof RModality mod && mod.kind() instanceof ModalOperatorSV msv) {
             // TODO: Is false correct?
-            prefixMap.put(msv, new TacletPrefix(0, false));
+            prefixMap = prefixMap.put(msv, new TacletPrefix(0, false));
         }
         if (t.op() instanceof SchemaVariable sv && t.arity() == 0) {
             if (sv instanceof TermSV || sv instanceof FormulaSV || sv instanceof UpdateSV) {
@@ -81,6 +83,15 @@ public class TacletPrefixBuilder {
                     throw new TacletPrefixBuilder.InvalidPrefixException(
                         tacletBuilder.getName().toString(), sv, prefix,
                         numberOfBoundVars);
+                }
+            }
+        }
+        if (t.op() instanceof ParametricFunctionInstance pfi) {
+            // We also generate a prefix for SVs in generic arguments, but bound variables should
+            // never appear there
+            for (var a : pfi.getArgs()) {
+                if (a instanceof TermArg(Term term)) {
+                    visit(term);
                 }
             }
         }

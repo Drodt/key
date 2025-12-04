@@ -173,7 +173,6 @@ public abstract class TacletApp implements RuleApp {
         for (var pair : instantiations.getInstantiationMap()) {
             final var sv = pair.key();
             if (sv instanceof TermSV || sv instanceof FormulaSV) {
-
                 final var prefix = taclet.getPrefix(sv);
 
                 if (pos == null && prefix.context()) {
