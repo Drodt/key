@@ -54,16 +54,22 @@ public class ProofCollections {
         refs.loadable("man-mutable-ref-wrong.proof");
 
         var choices = c.group("choices");
-        choices.loadable("sub-no-check.proof");
+        choices.provable("sub-no-check.key");
+        choices.loadable("man-sub-no-check.proof");
 
         var contracts = c.group("contracts");
-        contracts.loadable("use-contract.proof");
+        contracts.provable("use-contract.key");
+        contracts.loadable("man-use-contract.proof");
 
         var rustSrc = c.group("rustSrc");
-        rustSrc.loadable("loop-mul.proof");
-        rustSrc.loadable("add-no-bounds.proof");
-        rustSrc.loadable("mut-ref-src.proof");
-        rustSrc.loadable("if-src.proof");
+        rustSrc.provable("loop-mul.key");
+        //rustSrc.loadable("man-loop-mul.proof");
+        rustSrc.provable("add-no-bounds.key");
+        rustSrc.loadable("man-add-no-bounds.proof");
+        rustSrc.provable("mut-ref-src.key");
+        rustSrc.loadable("man-mut-ref-src.proof");
+        rustSrc.provable("if-src.key");
+        rustSrc.loadable("man-if-src.proof");
 
         var array = c.group("array");
         array.loadable("array-get-of-repeat.proof");
