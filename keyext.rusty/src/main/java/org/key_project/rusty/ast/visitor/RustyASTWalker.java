@@ -44,14 +44,22 @@ public abstract class RustyASTWalker {
     /// @param node the RustyProgramElement the walker is at
     protected void walk(RustyProgramElement node) {
         if (node.getChildCount() > 0) {
-            depth++;
+            enter(node);
             for (int i = 0; i < node.getChildCount(); i++) {
                 walk((RustyProgramElement) node.getChild(i));
             }
-            depth--;
+            leave(node);
         }
         // Otherwise, the node is left, so perform the action
         doAction(node);
+    }
+
+    protected void enter(RustyProgramElement parent) {
+        depth++;
+    }
+
+    protected void leave(RustyProgramElement parent) {
+        depth--;
     }
 
     /// the action that is performed just before leaving the node the last time

@@ -21,7 +21,7 @@ public class Never implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return services.getLDTs().getNeverLDT().targetSort();
     }
 
     @Override
