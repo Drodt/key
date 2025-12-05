@@ -46,9 +46,12 @@ public class ProofCollections {
         simple.provable("auto-if.key");
 
         var refs = c.group("references");
-        refs.loadable("shared-ref.proof");
-        refs.loadable("mutable-ref.proof");
-        refs.loadable("mutable-ref-wrong.proof");
+        refs.provable("shared-ref.key");
+        refs.loadable("man-shared-ref.proof");
+        refs.provable("mutable-ref.key");
+        refs.loadable("man-mutable-ref.proof");
+        refs.notprovable("mutable-ref-wrong.key");
+        refs.loadable("man-mutable-ref-wrong.proof");
 
         var choices = c.group("choices");
         choices.loadable("sub-no-check.proof");

@@ -530,8 +530,12 @@ public class PrettyPrinter implements Visitor {
 
     @Override
     public void performActionOnBindingPattern(BindingPattern x) {
-        if (x.ref()) {
+        if (x.ref() || x.mutRef()) {
             layouter.keyWord("ref");
+            layouter.print(" ");
+        }
+        if (x.mut() || x.mutRef()) {
+            layouter.keyWord("mut");
             layouter.print(" ");
         }
         x.pv().visit(this);

@@ -7,9 +7,11 @@ import java.util.Objects;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.ast.abstraction.ReferenceType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
@@ -80,5 +82,13 @@ public class BorrowExpression implements Expr {
     @Override
     public int hashCode() {
         return Objects.hash(mut, expr);
+    }
+
+    @Override
+    public @Nullable MatchConditions match(SourceData sourceData, @Nullable MatchConditions mc) {
+        if (sourceData.getSource() instanceof BorrowExpression be && be.mut != mut) {
+            return null;
+        }
+        return Expr.super.match(sourceData, mc);
     }
 }
