@@ -44,7 +44,6 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
         public void visit(Visitor v) {
             // Bounds should stay invisible to the visitors and therefore no visit is needed
         }
-
     }
 
     @Override

@@ -37,9 +37,12 @@ public class ProofCollections {
 
         var c = new ProofCollection(settings);
         var simple = c.group("simple");
-        simple.loadable("simple.proof");
-        simple.loadable("if.proof");
-        simple.loadable("iflet.proof");
+        simple.provable("simple.key");
+        simple.loadable("man-simple.proof");
+        simple.provable("if.key");
+        simple.loadable("man-if.proof");
+        simple.provable("iflet.key");
+        simple.loadable("man-iflet.proof");
         simple.provable("auto-if.key");
 
         var refs = c.group("references");

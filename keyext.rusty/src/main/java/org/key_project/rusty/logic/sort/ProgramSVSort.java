@@ -193,6 +193,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement check, Services services) {
             if (!(check instanceof Expr))
                 return false;
+            // Rust encodes an `if let p = e` as an if expression with expression `let p = e` as
+            // guard.
+            // We have special rules for if let; don't unfold it like a "normal" expression
+            if (check instanceof LetExpression)
+                return false;
             return !SIMPLE_EXPRESSION.canStandFor(check, services);
         }
     }
