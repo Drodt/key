@@ -571,22 +571,39 @@ public class SchemaConverter {
 
         var stmts = stmtsCtx.stmt().stream().map(this::convertStmt)
                 .collect(ImmutableList.collector());
-        if (!stmts.isEmpty() && stmts.get(stmts.size() - 1) instanceof ProgramSV psv
-                && (psv.sort() == ProgramSVSort.EXPRESSION
-                        || psv.sort() == ProgramSVSort.SIMPLE_EXPRESSION
-                        || psv.sort() == ProgramSVSort.NON_SIMPLE_EXPRESSION
-                        || psv.sort() == ProgramSVSort.BOOL_EXPRESSION
-                        || psv.sort() == ProgramSVSort.SIMPLE_BOOL_EXPRESSION
-                        || psv.sort() == ProgramSVSort.NON_SIMPLE_BOOL_EXPRESSION)) {
+        if (!stmts.isEmpty()) {
+            var last = stmts.get(stmts.size() - 1);
             ImmutableList<Statement> firstStmts = ImmutableSLList.nil();
             for (int i = 0; i < stmts.size() - 1; i++) {
                 firstStmts = firstStmts.append(stmts.get(i));
             }
-            return new BlockExpression(firstStmts, psv);
+            if (stmts.get(stmts.size() - 1) instanceof ProgramSV psv && isExpressionSV(psv)) {
+                return new BlockExpression(firstStmts, psv);
+            } else if (last instanceof ExpressionStatement es && !es.hasSemi()) {
+                return new BlockExpression(firstStmts, es.getExpression());
+            }
         }
         var value = stmtsCtx.expr() == null ? null : convertExpr(stmtsCtx.expr());
+        if (value instanceof ProgramSV psv && !isExpressionSV(psv)) {
+            assert psv.sort() == ProgramSVSort.STATEMENT : psv.toString() + psv.sort();
+            stmts = stmts.append(psv);
+            value = null;
+        }
 
         return new BlockExpression(stmts, value);
+    }
+
+    // TODO(DD): Move this to a method in ProgramSVSort
+    private static boolean isExpressionSV(ProgramSV psv) {
+        return psv.sort() == ProgramSVSort.EXPRESSION
+                || psv.sort() == ProgramSVSort.SIMPLE_EXPRESSION
+                || psv.sort() == ProgramSVSort.NON_SIMPLE_EXPRESSION
+                || psv.sort() == ProgramSVSort.BOOL_EXPRESSION
+                || psv.sort() == ProgramSVSort.SIMPLE_BOOL_EXPRESSION
+                || psv.sort() == ProgramSVSort.NON_SIMPLE_BOOL_EXPRESSION
+                || psv.sort() == ProgramSVSort.BLOCK_EXPRESSION
+                || psv.sort() == ProgramSVSort.ELSE_BRANCH_EXPRESSION
+                || psv.sort() == ProgramSVSort.VARIABLE;
     }
 
     private ContextBlockExpression convertContextBlockExpr(
@@ -605,18 +622,18 @@ public class SchemaConverter {
                 firstStmts = firstStmts.append(stmts.get(i));
             }
             if (last instanceof ProgramSV psv
-                    && (psv.sort() == ProgramSVSort.EXPRESSION
-                            || psv.sort() == ProgramSVSort.SIMPLE_EXPRESSION
-                            || psv.sort() == ProgramSVSort.NON_SIMPLE_EXPRESSION
-                            || psv.sort() == ProgramSVSort.BOOL_EXPRESSION
-                            || psv.sort() == ProgramSVSort.SIMPLE_BOOL_EXPRESSION
-                            || psv.sort() == ProgramSVSort.NON_SIMPLE_BOOL_EXPRESSION)) {
+                    && isExpressionSV(psv)) {
                 return new ContextBlockExpression(firstStmts, psv);
             } else if (last instanceof ExpressionStatement es && !es.hasSemi()) {
                 return new ContextBlockExpression(firstStmts, es.getExpression());
             }
         }
         var value = stmtsCtx.expr() == null ? null : convertExpr(stmtsCtx.expr());
+        if (value instanceof ProgramSV psv && !isExpressionSV(psv)) {
+            assert psv.sort() == ProgramSVSort.STATEMENT;
+            stmts = stmts.append(psv);
+            value = null;
+        }
 
         return new ContextBlockExpression(stmts, value);
     }

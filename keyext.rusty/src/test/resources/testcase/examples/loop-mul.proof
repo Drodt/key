@@ -162,7 +162,6 @@
             (branch "_b_0 true"
                 (rule "blockBreakValue" (formula "8") (term "1"))
                 (rule "blockBreakValue" (formula "8") (term "1"))
-                (rule "blockBreakValue" (formula "8") (term "1"))
                 (rule "lsBreakValue" (formula "8") (term "1"))
                 (rule "assignment" (formula "8") (term "1"))
                 (rule "sequentialToParallel2" (formula "8"))
@@ -210,8 +209,6 @@
                 (rule "closeTrue" (formula "11"))
             )
             (branch "_b_0 false"
-                (rule "simple_expr_stmt" (formula "8") (term "1"))
-                (rule "empty_block" (formula "8") (term "1"))
                 (rule "simple_expr_stmt" (formula "8") (term "1"))
                 (rule "compound_assign_addition" (formula "8") (term "1"))
                 (rule "assignmentAdditionU64" (formula "8") (term "1"))

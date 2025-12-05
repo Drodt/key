@@ -11,6 +11,7 @@ import org.key_project.prover.rules.VariableCondition;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.BlockExpression;
+import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
@@ -54,12 +55,21 @@ public class StoreExprInCondition implements VariableCondition {
         final Term instantiatedTerm = replVisitor.getTerm();
 
         // We assume that the term has a RustyBlock and that consists of a BlockExpression
-        // containing exactly one statement; see JavaDoc.
+        // containing exactly one expression statement or one expression; see JavaDoc.
 
         var mod = (RModality) instantiatedTerm.op();
         var be = (BlockExpression) mod.programBlock().program();
-        var es = (ExpressionStatement) be.getChild(0);
+        Expr expr;
+        if (be.getStatements().isEmpty() && be.getValue() != null) {
+            expr = be.getValue();
+        } else if (be.getStatements().size() == 1 && be.getValue() == null
+                && be.getStatements().get(0) instanceof ExpressionStatement es) {
+            expr = es.getExpression();
+        } else {
+            throw new IllegalStateException(
+                "Expected a block with one expression or one expression statement, got: " + be);
+        }
 
-        return matchCond.setInstantiations(svInst.add(storeInSV, es.getExpression(), services));
+        return matchCond.setInstantiations(svInst.add(storeInSV, expr, services));
     }
 }

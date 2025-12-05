@@ -93,8 +93,6 @@
         (rule "simple_expr_stmt" (formula "1") (term "1"))
         (rule "empty_block" (formula "1") (term "1"))
         (rule "simple_expr_stmt" (formula "1") (term "1"))
-        (rule "empty_block" (formula "1") (term "1"))
-        (rule "simple_expr_stmt" (formula "1") (term "1"))
         (rule "empty_modality" (formula "1") (term "1"))
         (rule "simplifyUpdate2" (formula "1"))
         (rule "closeTrue" (formula "1"))
