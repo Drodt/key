@@ -635,6 +635,8 @@ public class PrettyPrinter implements Visitor {
             x.getIndex().visit(this);
             layouter.print(", ");
         }
+        x.getReturnVar().visit(this);
+        layouter.print(", ");
 
         x.getBlock().visit(this);
         endMultilineParen();

@@ -655,8 +655,10 @@ public class SchemaConverter {
     }
 
     private LoopScope convertLoopScope(RustySchemaParser.LoopScopeContext ctx) {
-        var sv = (ProgramSV) lookupSchemaVariable(ctx.schemaVariable().getText().substring(2));
-        return new LoopScope(sv, convertBlockExpr(ctx.blockExpr()));
+        var idx = (ProgramSV) lookupSchemaVariable(ctx.idx.getText().substring(2));
+        var ret = (ProgramSV) lookupSchemaVariable(ctx.ret.getText().substring(2));
+
+        return new LoopScope(idx, ret, convertBlockExpr(ctx.blockExpr()));
     }
 
     private InfiniteLoopExpression convertInfiniteLoopExpr(

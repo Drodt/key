@@ -61,7 +61,7 @@ public class HirRustyReader {
             var fn = context.buildFunction(block, true);
             {
                 // TODO: remove (it's only for tests)
-                fn += "pub fn my_add(a: u32, b: u32) -> u32 {a + b}";
+                fn += "pub fn dd_add(a: u32, b: u32) -> u32 {a + b}";
             }
             Path tmpDir = Files.createTempDirectory("KeYTempFileMod_" + block.hashCode());
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -101,7 +101,7 @@ public class HirRustyReader {
                     var myAdd = (Function) converted.getTopMod().getItems().stream()
                             .filter(
                                 i -> i instanceof Function f
-                                        && f.name().toString().equals("my_add"))
+                                        && f.name().toString().equals("dd_add"))
                             .findFirst().orElse(null);
                     assert myAdd != null;
                     var target = services.getRustInfo().getFunction(myAdd);
