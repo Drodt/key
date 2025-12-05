@@ -91,4 +91,9 @@ public class KeYRustyType implements Type {
     public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String toString() {
+        return "sort=" + sort + ", rustyType=" + rustyType;
+    }
 }
