@@ -170,6 +170,6 @@ public class ProgramContextAdder {
     }
 
     private LoopScope createLoopScopeWrapper(LoopScope old, BlockExpression body) {
-        return new LoopScope(old.getIndex(), body);
+        return new LoopScope(old.getIndex(), old.getReturnVar(), body);
     }
 }
