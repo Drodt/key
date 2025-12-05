@@ -205,17 +205,6 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
 
             // TODO debug this; why Boolean[]?
 
-            // TODO(DD): REMOVE THIS!!
-            if (funcName.equals("arr_PV")) {
-                var at = ArrayType.getInstance(PrimitiveType.I128,
-                    new ConstArrayLen(functions().lookup("N_contains")), services);
-                var rt = ReferenceType.get(at, false);
-                var pv = new ProgramVariable(new Name(funcName),
-                    services.getRustInfo().getKeYRustyType(rt));
-                nss.programVariables().addSafely(pv);
-                return null;
-            }
-
             if (f == null) {
                 Name name = new Name(funcName);
                 Sort[] sortsArray = argSorts.toArray(new Sort[0]);
