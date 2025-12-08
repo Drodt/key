@@ -15,7 +15,6 @@ import org.key_project.rusty.ast.abstraction.*;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
-import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RFunction;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
