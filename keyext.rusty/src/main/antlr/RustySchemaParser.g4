@@ -118,7 +118,7 @@ infiniteLoopExpr
    ;
 
 loopScope
-    : 'loop_scope!' '(' idx=schemaVariable ',' blockExpr ')';
+    : 'loop_scope!' '(' idx=schemaVariable ',' ret=schemaVariable ',' blockExpr ')';
 
 loopLabel
    : label COLON

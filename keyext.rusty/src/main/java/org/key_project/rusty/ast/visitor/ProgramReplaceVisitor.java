@@ -99,7 +99,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
             changeList.removeFirst();
             Pattern pat = changeList.get(Pattern.class);
             if (pat == null) {
-                // We probably put an expression first and have to convert it to a patter
+                // We probably put an expression first and have to convert it to a pattern
                 var pv =
                     Objects.requireNonNull(changeList.removeFirstOccurrence(ProgramVariable.class));
                 var el = new ExtList();

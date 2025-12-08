@@ -10,11 +10,13 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
+import org.key_project.prover.rules.instantiation.InstantiationEntry;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.instantiation.SVInstantiations;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.LogicVariableTable;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.strategy.FindTacletAppContainer;
 import org.key_project.rusty.strategy.NoFindTacletAppContainer;
@@ -50,7 +52,7 @@ public class NoPosTacletApp extends TacletApp {
             ImmutableList<AssumesFormulaInstantiation> ifInstantiations,
             Services services) {
         SVInstantiations inst = resolveCollisionVarSV(taclet, instantiations, services);
-        if (checkNoFreeVars(taclet)) {
+        if (checkNoFreeVars(taclet, instantiations, null)) {
             return new NoPosTacletApp(taclet, inst, ifInstantiations);
         }
         return null;
@@ -104,7 +106,7 @@ public class NoPosTacletApp extends TacletApp {
         if (svInst.isEmpty()) {
             mc = org.key_project.rusty.rule.MatchConditions.EMPTY_MATCHCONDITIONS;
         } else {
-            mc = new org.key_project.rusty.rule.MatchConditions(svInst);
+            mc = new org.key_project.rusty.rule.MatchConditions(svInst, LogicVariableTable.EMPTY);
         }
 
         if (taclet() instanceof RewriteTaclet) {
@@ -161,7 +163,7 @@ public class NoPosTacletApp extends TacletApp {
             res = taclet().getMatcher().matchFind(t, mc, services);
             // the following check will partly be repeated within the
             // constructor; this could be optimised
-            if (res == null || !checkVarCondNotFreeIn(taclet(), res.getInstantiations(), pos)) {
+            if (res == null || !checkNoFreeVars(taclet(), res.getInstantiations(), pos)) {
                 return null;
             }
         } else {
@@ -217,13 +219,12 @@ public class NoPosTacletApp extends TacletApp {
     @Override
     public TacletApp addInstantiation(SchemaVariable sv, Term term, boolean interesting,
             Services services) {
-        /*
-         * if (interesting) {
-         * return createNoPosTacletApp(taclet(),
-         * instantiations().addInteresting(sv, term, services), ifFormulaInstantiations(),
-         * services);
-         * } else
-         */ {
+        if (interesting) {
+            return createNoPosTacletApp(taclet(),
+                instantiations().addInteresting(sv, new InstantiationEntry<>(term), services),
+                assumesFormulaInstantiations(),
+                services);
+        } else {
             return createNoPosTacletApp(taclet(), instantiations().add(sv, term, services),
                 assumesFormulaInstantiations(), services);
         }

@@ -26,6 +26,6 @@ public record PathSegment(String ident, Res res) implements RustyProgramElement 
 
     @Override
     public void visit(Visitor v) {
-
+        v.performActionOnPathSegment(this);
     }
 }

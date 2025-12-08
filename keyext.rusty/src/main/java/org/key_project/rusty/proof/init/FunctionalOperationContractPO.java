@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof.init;
 
+import java.io.IOException;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
@@ -14,6 +16,7 @@ import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RModality;
+import org.key_project.rusty.settings.Configuration;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
@@ -40,7 +43,6 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
         this.contract = contract;
     }
 
-
     @Override
     protected ProgramFunction getProgramFunction() {
         return getContract().getTarget();
@@ -55,7 +57,7 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
     protected Term getPre(ImmutableList<ProgramVariable> paramVars, Services proofServices) {
         final Term freePre = contract.getFreePre(null, paramVars, proofServices);
         final Term pre = contract.getPre(null, paramVars, proofServices);
-        return freePre != null ? tb.and(pre, freePre) : pre;
+        return freePre != null ? tb.and(freePre, pre) : pre;
     }
 
     @Override
@@ -97,6 +99,13 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
     @Override
     public FunctionalOperationContract getContract() {
         return contract;
+    }
+
+    @Override
+    public Configuration createLoaderConfig() throws IOException {
+        var c = super.createLoaderConfig();
+        c.set("contract", contract.getName());
+        return c;
     }
 
     /// {@inheritDoc}

@@ -76,7 +76,6 @@ public class ProofSettings {
         if (Boolean.getBoolean(PathConfig.DISREGARD_SETTINGS_PROPERTY)) {
             // LOGGER.warn("The settings in {} are *not* read.", PROVER_CONFIG_FILE);
         } else {
-            var isOldFormat = false;
             try (var in = new BufferedReader(
                 new FileReader(PROVER_CONFIG_FILE_NEW, StandardCharsets.UTF_8))) {
                 // LOGGER.info("Load proof dependent settings from file {}", fileToUse);
@@ -122,5 +121,26 @@ public class ProofSettings {
 
     public StrategySettings getStrategySettings() {
         return strategySettings;
+    }
+
+    public Configuration getConfiguration() {
+        var config = new Configuration();
+        for (Settings s : settings) {
+            s.writeSettings(config);
+        }
+        return config;
+    }
+
+    /**
+     * Used by saveSettings() and settingsToString()
+     */
+    public void settingsToStream(Writer out) {
+        getConfiguration().save(out, "Proof-Settings-Config-File");
+    }
+
+    public String settingsToString() {
+        StringWriter out = new StringWriter();
+        settingsToStream(out);
+        return out.getBuffer().toString();
     }
 }

@@ -12,6 +12,8 @@ import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
 import org.key_project.rusty.proof.Node;
+import org.key_project.rusty.proof.PrefixTermTacletAppIndexCacheImpl.CacheKey;
+import org.key_project.rusty.proof.TermTacletAppIndex;
 import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
 import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
 import org.key_project.rusty.strategy.feature.AbstractBetaFeature.TermInfo;
@@ -65,9 +67,16 @@ public class ServiceCaches implements SessionCaches {
     private final AppliedRuleAppsNameCache appliedRuleAppsNameCache =
         new AppliedRuleAppsNameCache();
 
-    /// Cache used IfFormulaInstSeq
+    /// Cache used AssumesFormulaInstSeq
     private final AssumesFormulaInstantiationCache assumesFormulaInstantiationCache =
         new AssumesFormulaInstantiationCache();
+
+    /// The maximal number of index entries in [#getTermTacletAppIndexCache()].
+    public static final int MAX_TERM_TACLET_APP_INDEX_ENTRIES = 5000;
+
+    /// The cache used by [TermTacletAppIndexCacheSet] instances.
+    private final Map<CacheKey, TermTacletAppIndex> termTacletAppIndexCache =
+        new LRUCache<>(MAX_TERM_TACLET_APP_INDEX_ENTRIES);
 
     /// Caches used by HandleArith to cache proof results
     private final LRUCache<@NonNull Term, @NonNull Term> provedByArithFstCache =
@@ -143,5 +152,12 @@ public class ServiceCaches implements SessionCaches {
 
     public AssumesInstantiationCachePool<Node> getAssumesInstantiationCache() {
         return assumesInstantiationCache;
+    }
+
+    /// Returns the cache used by [TermTacletAppIndexCacheSet] instances.
+    ///
+    /// @return The cache used by [TermTacletAppIndexCacheSet] instances.
+    public Map<CacheKey, TermTacletAppIndex> getTermTacletAppIndexCache() {
+        return termTacletAppIndexCache;
     }
 }

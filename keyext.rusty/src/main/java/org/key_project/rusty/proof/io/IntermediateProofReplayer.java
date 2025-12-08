@@ -130,8 +130,8 @@ public class IntermediateProofReplayer {
                     // currNode.getNodeInfo().setNotes(currInterm.getNotes());
 
                     // Register name proposals
-                    // proof.getServices().getNameRecorder()
-                    // .setProposals(currInterm.getIntermediateRuleApp().getNewNames());
+                    proof.getServices().getNameRecorder()
+                            .setProposals(currInterm.getIntermediateRuleApp().getNewNames());
 
                     if (currInterm.getIntermediateRuleApp() instanceof TacletAppIntermediate tai) {
                         TacletAppIntermediate appInterm =
@@ -562,7 +562,11 @@ public class IntermediateProofReplayer {
     public static Term parseTerm(String value, Proof proof,
             Namespace<@NonNull QuantifiableVariable> varNS,
             Namespace<@NonNull ProgramVariable> progVarNS, Namespace<@NonNull Function> functNS) {
-        var io = new KeYIO(proof.getServices());
+        var io = new KeYIO(proof.getServices(),
+            new NamespaceSet(varNS, progVarNS, functNS, new Namespace<>(),
+                proof.getNamespaces().sorts(),
+                new Namespace<>(), proof.getNamespaces().parametricSorts(),
+                proof.getNamespaces().parametricFunctions()));
         return io.parseExpression(value);
     }
 
@@ -577,7 +581,7 @@ public class IntermediateProofReplayer {
     public static TacletApp parseSV1(TacletApp app, VariableSV sv, String value,
             Services services) {
         // TODO
-        LogicVariable lv = new LogicVariable(1, app.getRealSort(sv));
+        LogicVariable lv = LogicVariable.create(1, app.getRealSort(sv));
         Term instance = services.getTermFactory().createTerm(lv);
         return app.addCheckedInstantiation(sv, instance, services, true);
     }

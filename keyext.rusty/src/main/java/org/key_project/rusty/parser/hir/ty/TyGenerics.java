@@ -9,4 +9,7 @@ import org.jspecify.annotations.Nullable;
 
 public record TyGenerics(@Nullable DefId parent, int parentCount, TyGenericParamDef[] params,
         boolean hasSelf) {
+    public boolean isEmpty() {
+        return parentCount == 0 && params.length == 0;
+    }
 }

@@ -212,7 +212,7 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
     }
 
     private void collectTerms(Term instanceCandidate, Set<Term> terms, IntLDT intLDT) {
-        if (instanceCandidate.freeVars().isEmpty()
+        if (((TermImpl) instanceCandidate).getMaxDebruijnIndex() == 0
                 && !((TermImpl) instanceCandidate).containsCodeBlockRecursive()) {
             terms.add(instanceCandidate);
         }

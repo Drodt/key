@@ -3,11 +3,14 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import java.util.Map;
+
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.proof.PrefixTermTacletAppIndexCacheImpl.CacheKey;
 import org.key_project.rusty.rule.*;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -21,6 +24,8 @@ public class TacletAppIndex {
     private SemisequentTacletAppIndex antecIndex;
     private SemisequentTacletAppIndex succIndex;
 
+    private TermTacletAppIndexCacheSet indexCaches;
+
     private final Goal goal;
 
     /// The sequent with the formulas for which taclet indices are hold by this object. Invariant:
@@ -31,18 +36,25 @@ public class TacletAppIndex {
     /// Object to which the appearance of new taclet apps is reported
     private NewRuleListener newRuleListener = NullNewRuleListener.INSTANCE;
 
+    private final Map<CacheKey, TermTacletAppIndex> cache;
+
     public TacletAppIndex(TacletIndex tacletIndex, Goal goal, Services services) {
-        this(tacletIndex, null, null, goal, null);
+        this(tacletIndex, null, null, goal, null,
+            new TermTacletAppIndexCacheSet(services.getCaches().getTermTacletAppIndexCache()),
+            services.getCaches().getTermTacletAppIndexCache());
     }
 
     private TacletAppIndex(TacletIndex tacletIndex, SemisequentTacletAppIndex antecIndex,
             SemisequentTacletAppIndex succIndex, @NonNull Goal goal,
-            Sequent seq) {
+            Sequent seq, TermTacletAppIndexCacheSet indexCaches,
+            Map<CacheKey, TermTacletAppIndex> cache) {
         this.tacletIndex = tacletIndex;
         this.antecIndex = antecIndex;
         this.succIndex = succIndex;
         this.goal = goal;
         this.seq = seq;
+        this.indexCaches = indexCaches;
+        this.cache = cache;
     }
 
     static TacletApp createTacletApp(NoPosTacletApp tacletApp, PosInOccurrence pos,
@@ -98,10 +110,10 @@ public class TacletAppIndex {
 
         antecIndex =
             new SemisequentTacletAppIndex(getSequent(), true, getServices(), tacletIndex(),
-                newRuleListener);
+                newRuleListener, indexCaches);
         succIndex =
             new SemisequentTacletAppIndex(getSequent(), false, getServices(), tacletIndex(),
-                newRuleListener);
+                newRuleListener, indexCaches);
     }
 
     private Services getServices() {
@@ -172,7 +184,8 @@ public class TacletAppIndex {
 
     /// returns a new TacletAppIndex with a given TacletIndex
     TacletAppIndex copyWith(TacletIndex p_tacletIndex, Goal goal) {
-        return new TacletAppIndex(p_tacletIndex, antecIndex, succIndex, goal, getSequent());
+        return new TacletAppIndex(p_tacletIndex, antecIndex, succIndex, goal, getSequent(),
+            indexCaches, cache);
     }
 
     /**
@@ -205,12 +218,12 @@ public class TacletAppIndex {
     ///
     /// @param tacletApp the partially instantiated Taclet to add
     public void addedNoPosTacletApp(NoPosTacletApp tacletApp) {
-        // if (indexCaches.isRelevantTaclet(tacletApp.taclet())) {
-        // // we must flush the index cache, and we must no longer use a cache
-        // // that we share with other instances of <code>TacletAppIndex</code>
-        // // (that maybe live of different goals)
-        // createNewIndexCache();
-        // }
+        if (indexCaches.isRelevantTaclet(tacletApp.taclet())) {
+            // we must flush the index cache, and we must no longer use a cache
+            // that we share with other instances of <code>TacletAppIndex</code>
+            // (that maybe live of different goals)
+            createNewIndexCache();
+        }
 
         if (isOutdated()) {
             // we are not up-to-date and have to rebuild everything (lazy)
@@ -236,6 +249,16 @@ public class TacletAppIndex {
         seq = null; // This leads to a delayed rebuild
         antecIndex = null;
         succIndex = null;
+    }
+
+    private void createNewIndexCache() {
+        indexCaches = new TermTacletAppIndexCacheSet(cache);
+        if (antecIndex != null) {
+            antecIndex.setIndexCache(indexCaches);
+        }
+        if (succIndex != null) {
+            succIndex.setIndexCache(indexCaches);
+        }
     }
 
     /// returns the rule applications at the given PosInOccurrence and at all Positions below this.

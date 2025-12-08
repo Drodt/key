@@ -18,7 +18,7 @@ public record PathExpr(Path<Res> path, Type type) implements Expr {
 
     @Override
     public void visit(Visitor v) {
-
+        v.performActionOnPathExpr(this);
     }
 
     @Override

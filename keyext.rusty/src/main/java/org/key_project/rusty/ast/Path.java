@@ -36,6 +36,6 @@ public record Path<R>(R res, ImmutableArray<PathSegment> segments) implements Ru
 
     @Override
     public void visit(Visitor v) {
-
+        v.performActionOnPath(this);
     }
 }

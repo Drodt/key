@@ -50,10 +50,11 @@ public abstract class FindTaclet extends Taclet {
             TacletAttributes attrs, SyntaxElement find,
             ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
             ChoiceExpr choices, boolean surviveSymbExec,
-            ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
             surviveSymbExec,
-            tacletAnnotations);
+            tacletAnnotations, noFreeVarIns);
     }
 
     /// creates a FindTaclet
@@ -75,9 +76,10 @@ public abstract class FindTaclet extends Taclet {
             ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs, SyntaxElement find,
             ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
-            ChoiceExpr choices, ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ChoiceExpr choices, ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         this(name, applPart, goalTemplates, ruleSets, attrs, find, prefixMap, choices, false,
-            tacletAnnotations);
+            tacletAnnotations, noFreeVarIns);
     }
 
     /// returns the find term of the taclet to be matched

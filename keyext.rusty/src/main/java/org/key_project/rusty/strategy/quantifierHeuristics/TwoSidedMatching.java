@@ -4,14 +4,16 @@
 package org.key_project.rusty.strategy.quantifierHeuristics;
 
 import org.key_project.logic.Term;
-import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
 import org.key_project.util.collection.DefaultImmutableMap;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableSet;
+
+import org.jspecify.annotations.NonNull;
 
 /// Matching triggers within another quantifier expression. Problems with the current
 /// implementation:
@@ -83,15 +85,14 @@ class TwoSidedMatching {
         return allsubs;
     }
 
-    /// find a substitution in a allterm by using unification
+    /// find a substitution in an allterm by using unification
     private Substitution match(Term triggerTerm, Term targetTerm, Services services) {
         final Constraint c = Constraint.BOTTOM.unify(targetTerm,
             triggerTerm, services);
         if (c.isSatisfiable()) {
-            ImmutableMap<QuantifiableVariable, Term> sub =
+            ImmutableMap<@NonNull LogicVariable, Term> sub =
                 DefaultImmutableMap.nilMap();
-            for (QuantifiableVariable quantifiableVariable : trigger.getUniVariables()) {
-                QuantifiableVariable q = quantifiableVariable;
+            for (LogicVariable q : trigger.getUniVariables()) {
                 Term mv = triggerSubstWithMVs.getSubstitutedTerm(q);
                 Term t = c.getInstantiation((Metavariable) (mv.op()), services);
                 if (t == null || t.op() instanceof Metavariable) {

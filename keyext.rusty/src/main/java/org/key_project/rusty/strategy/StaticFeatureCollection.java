@@ -278,11 +278,6 @@ public class StaticFeatureCollection {
                 inftyConst()));
     }
 
-    protected static TermFeature selectSkolemConstantTermFeature() {
-        // TODO (DD): This feature uses term labels. What to do?
-        return longTermConst(0);
-    }
-
     protected static Feature countOccurrences(ProjectionToTerm<Goal> cutFormula) {
         final TermBuffer sf = new TermBuffer();
         final TermBuffer sub = new TermBuffer();

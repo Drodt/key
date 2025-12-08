@@ -54,7 +54,7 @@ public class TacletIndex {
     }
 
 
-    public TacletIndex(ImmutableList<Taclet> taclets) {
+    public TacletIndex(Iterable<Taclet> taclets) {
         rwList = new LinkedHashMap<>();
         antecList = new LinkedHashMap<>();
         succList = new LinkedHashMap<>();
@@ -504,7 +504,7 @@ public class TacletIndex {
 
         /// fields to indicate the position of the next relevant child (the next possible prefix
         /// element or real statement
-        static final int[] nextChild = { 0, 0, 1, 1 };
+        static final int[] nextChild = { 0, 0, 2, 1 };
 
         PrefixOccurrences() {
             reset();

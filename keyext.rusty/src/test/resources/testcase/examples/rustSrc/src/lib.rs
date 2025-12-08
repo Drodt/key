@@ -7,7 +7,7 @@ use rml_contracts::*;
 #[spec { name = "add_no_bounds",
     ensures(result == a + b)
     }]
-pub fn add(a: u32, b: u32) -> u32 {
+pub fn my_add(a: u32, b: u32) -> u32 {
     a + b
 }
 

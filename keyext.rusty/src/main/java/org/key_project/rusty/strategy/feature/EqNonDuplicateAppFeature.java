@@ -12,8 +12,7 @@ import org.key_project.rusty.rule.TacletApp;
 /// Binary feature that returns zero iff a certain Taclet app has not already been performed.
 /// Contrary to <code>NonDuplicateAppFeature</code>, this feature is also able to handle failing
 /// meta-constructs correctly (these constructs return equal, but not identical formulas in case of
-/// a
-/// failure), but is less efficient.
+/// a failure), but is less efficient.
 public class EqNonDuplicateAppFeature extends AbstractNonDuplicateAppFeature {
 
     public static final Feature INSTANCE = new EqNonDuplicateAppFeature();

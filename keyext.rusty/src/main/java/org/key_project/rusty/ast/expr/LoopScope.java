@@ -21,13 +21,15 @@ import org.jspecify.annotations.Nullable;
 
 public class LoopScope implements LoopExpression, PossibleProgramPrefix {
     private final IProgramVariable index;
+    private final IProgramVariable returnVar;
     private final BlockExpression block;
     /// Only null for schema Rust
     private final @Nullable FunctionFrame functionFrame;
     private final int prefixLength;
 
-    public LoopScope(IProgramVariable index, BlockExpression block) {
+    public LoopScope(IProgramVariable index, IProgramVariable returnVar, BlockExpression block) {
         this.index = index;
+        this.returnVar = returnVar;
         this.block = block;
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.length();
@@ -35,8 +37,9 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
     }
 
     public LoopScope(ExtList list) {
-        index = Objects.requireNonNull(list.get(IProgramVariable.class));
-        block = Objects.requireNonNull(list.get(BlockExpression.class));
+        index = Objects.requireNonNull(list.removeFirstOccurrence(IProgramVariable.class));
+        returnVar = Objects.requireNonNull(list.removeFirstOccurrence(IProgramVariable.class));
+        block = Objects.requireNonNull(list.removeFirstOccurrence(BlockExpression.class));
         ProgramPrefixUtil.ProgramPrefixInfo info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.length();
         functionFrame = info.innermostFunctionFrame();
@@ -56,6 +59,10 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
         return index;
     }
 
+    public IProgramVariable getReturnVar() {
+        return returnVar;
+    }
+
     public BlockExpression getBlock() {
         return block;
     }
@@ -66,6 +73,9 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
             return index;
         }
         if (n == 1) {
+            return returnVar;
+        }
+        if (n == 2) {
             return block;
         }
         throw new IndexOutOfBoundsException(n);
@@ -73,7 +83,7 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
 
     @Override
     public int getChildCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -110,7 +120,7 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
 
     @Override
     public PosInProgram getFirstActiveChildPos() {
-        return block.getChildCount() == 0 ? PosInProgram.TOP : PosInProgram.TOP.down(1).down(0);
+        return block.getChildCount() == 0 ? PosInProgram.TOP : PosInProgram.TOP.down(2).down(0);
     }
 
     @Override
@@ -120,6 +130,6 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
 
     @Override
     public String toString() {
-        return "loop_scope!(" + index + ", " + block + ")";
+        return "loop_scope!(" + index + ", " + returnVar + ", " + block + ")";
     }
 }

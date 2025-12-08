@@ -27,7 +27,12 @@ varexpId
  | SAME
  | ISSUBTYPE
  | HASSORT
+ | NO_FREE_VAR_IN
  ;
+
+prog_var_decls
+   : PROGRAMVARIABLES LBRACE (var_names = simple_ident COLON krt = typemapping SEMI)* RBRACE
+   ;
 
 elementary_update_term: a=mutating_update_term (ASSIGN b=mutating_update_term)?;
 mutating_update_term: a=equivalence_term (MUTATE b=equivalence_term)?;
@@ -45,7 +50,9 @@ primitive_term:
 place_term : LBRACKET LBRACKET simple_ident RBRACKET RBRACKET;
 
 typemapping
-    : (AND MUT?)? simple_ident;
+    : simple_ident
+    | AND MUT? typemapping
+    | LBRACKET typemapping SEMI (simple_ident | INT_LITERAL) RBRACKET;
 
 one_sort_decl
 :
@@ -160,4 +167,12 @@ funcpred_name
  simple_colon_dots
 :
   DOUBLECOLON? simple_ident (DOUBLECOLON simple_ident)*
+;
+
+one_contract
+:
+   contractName = string_value LBRACE
+   (prog_var_decls)?
+   fma=term MODIFIABLE modifiableClause=term
+   RBRACE SEMI
 ;

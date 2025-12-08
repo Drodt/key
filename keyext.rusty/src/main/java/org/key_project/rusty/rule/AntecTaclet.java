@@ -42,9 +42,10 @@ public class AntecTaclet extends FindTaclet {
             TacletAttributes attrs, Sequent find,
             ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap,
             ChoiceExpr choices,
-            ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, applPart, goalTemplates, ruleSets, attrs, find, prefixMap, choices,
-            tacletAnnotations);
+            tacletAnnotations, noFreeVarIns);
     }
 
     @Override
@@ -72,6 +73,6 @@ public class AntecTaclet extends FindTaclet {
         final TacletAttributes attrs = new TacletAttributes(displayName(), trigger);
 
         return new AntecTaclet(new Name(s), applPart, goalTemplates(), getRuleSets(), attrs,
-            (Sequent) find, prefixMap, choices, tacletAnnotations);
+            (Sequent) find, prefixMap, choices, tacletAnnotations, noFreeVarIns);
     }
 }

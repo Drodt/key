@@ -79,7 +79,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     @Override
     public void performActionOnBlockExpression(BlockExpression x) {
         ExtList changeList = getTop();
-        if (changeList.getFirst() == CHANGED) {
+        if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             if (!preservesPositionInfo) {
                 // TODO changeList.removeFirstOccurrence(PositionInfo.class);
@@ -224,6 +224,17 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
+    public void performActionOnIndexExpression(IndexExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new IndexExpression(changeList, x.ty());
+            }
+        };
+        def.doAction(x);
+    }
+
+    @Override
     public void performActionOnFunctionFrame(FunctionFrame x) {
         DefaultAction def = new DefaultAction(x) {
             @Override
@@ -344,6 +355,17 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
             @Override
             RustyProgramElement createNewElement(ExtList changeList) {
                 return new ArrayExpression(changeList, services);
+            }
+        };
+        def.doAction(x);
+    }
+
+    @Override
+    public void performActionOnReturnExpression(ReturnExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new ReturnExpression(changeList);
             }
         };
         def.doAction(x);

@@ -93,7 +93,7 @@ public final class ReferenceType implements Type {
     }
 
     @Override
-    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         var it = inner.instantiate(instMap, services);
         if (it == inner)
             return this;

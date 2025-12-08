@@ -12,7 +12,7 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.Subst;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.BoundVariable;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableSet;
 
@@ -25,23 +25,23 @@ import org.slf4j.LoggerFactory;
 public class Substitution {
     private static final Logger LOGGER = LoggerFactory.getLogger(Substitution.class);
 
-    private final ImmutableMap<@NonNull QuantifiableVariable, Term> varMap;
+    private final ImmutableMap<@NonNull LogicVariable, Term> varMap;
 
-    public Substitution(ImmutableMap<@NonNull QuantifiableVariable, Term> map) {
+    public Substitution(ImmutableMap<@NonNull LogicVariable, Term> map) {
         varMap = map;
     }
 
-    public ImmutableMap<@NonNull QuantifiableVariable, Term> getVarMap() {
+    public ImmutableMap<@NonNull LogicVariable, Term> getVarMap() {
         return varMap;
     }
 
-    public Term getSubstitutedTerm(QuantifiableVariable var) {
+    public Term getSubstitutedTerm(LogicVariable var) {
         return varMap.get(var);
     }
 
     public boolean isTotalOn(ImmutableSet<? extends QuantifiableVariable> vars) {
         for (QuantifiableVariable var : vars) {
-            if (!varMap.containsKey(var)) {
+            if (var instanceof LogicVariable lv && !varMap.containsKey(lv)) {
                 return false;
             }
         }
@@ -51,7 +51,7 @@ public class Substitution {
 
     /// @return true if every instance in the varMap does not contain variable.
     public boolean isGround() {
-        final Iterator<QuantifiableVariable> it = varMap.keyIterator();
+        final Iterator<LogicVariable> it = varMap.keyIterator();
         while (it.hasNext()) {
             final Term t = getSubstitutedTerm(it.next());
             if (!t.freeVars().isEmpty()) {
@@ -65,10 +65,10 @@ public class Substitution {
 
     public Term apply(Term t, Services services) {
         assert isGround() : "non-ground substitutions are not yet implemented: " + this;
-        final Iterator<QuantifiableVariable> it = varMap.keyIterator();
+        final Iterator<LogicVariable> it = varMap.keyIterator();
         final TermBuilder tb = services.getTermBuilder();
         while (it.hasNext()) {
-            final QuantifiableVariable var = it.next();
+            final LogicVariable var = it.next();
             // final Sort quantifiedVarSort = var.sort();
             // final Function quantifiedVarSortCast =
             // services.getJavaDLTheory().getCastSymbol(quantifiedVarSort, services);
@@ -76,14 +76,14 @@ public class Substitution {
             // if (!instance.sort().extendsTrans(quantifiedVarSort)) {
             // instance = tb.func(quantifiedVarSortCast, instance);
             // }
-            t = applySubst(var, instance, t, tb);
+            t = applySubst(instance, t, tb);
         }
         return t;
     }
 
-    private Term applySubst(QuantifiableVariable var, Term instance, Term t, TermBuilder tb) {
+    private Term applySubst(Term instance, Term t, TermBuilder tb) {
         final var subst =
-            new Subst((BoundVariable) var,
+            new Subst(
                 instance, tb);
         return subst.apply(t);
     }
@@ -93,12 +93,12 @@ public class Substitution {
     public Term applyWithoutCasts(Term t, Services services) {
         assert isGround() : "non-ground substitutions are not yet implemented: " + this;
         final TermBuilder tb = services.getTermBuilder();
-        final Iterator<QuantifiableVariable> it = varMap.keyIterator();
+        final Iterator<LogicVariable> it = varMap.keyIterator();
         while (it.hasNext()) {
-            final QuantifiableVariable var = it.next();
+            final LogicVariable var = it.next();
             Term instance = getSubstitutedTerm(var);
             try {
-                t = applySubst(var, instance, t, tb);
+                t = applySubst(instance, t, tb);
             } catch (TermCreationException e) {
                 final Sort quantifiedVarSort = var.sort();
                 if (!instance.sort().extendsTrans(quantifiedVarSort)) {

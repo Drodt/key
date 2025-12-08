@@ -7,11 +7,16 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public record ReturnExpression(@Nullable Expr expr) implements Expr {
+    public ReturnExpression(ExtList changeList) {
+        this(changeList.removeFirstOccurrence(Expr.class));
+    }
+
     @Override
     public void visit(Visitor v) {
         v.performActionOnReturnExpression(this);

@@ -12,12 +12,12 @@ import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.BoundVariable;
 import org.key_project.rusty.logic.op.sv.VariableSV;
+import org.key_project.rusty.rule.MatchConditions;
 
 import org.jspecify.annotations.Nullable;
 
 /// This instruction matches the variable below a binder (e.g. a quantifier).
 public class BindVariablesInstruction {
-
     public static MatchInstruction create(QuantifiableVariable var) {
         if (var instanceof BoundVariable bv) {
             return new LogicVariableBinder(bv);
@@ -28,10 +28,8 @@ public class BindVariablesInstruction {
 
     private record LogicVariableBinder(BoundVariable templateVar)
             implements MatchInstruction {
-
         /// a match between two logic variables is possible if they have been assigned they are same
-        /// or
-        /// have been assigned to the same abstract name and the sorts are equal.
+        /// or have been assigned to the same abstract name and the sorts are equal.
         private MatchResultInfo match(
                 BoundVariable instantiationCandidate, MatchResultInfo matchCond,
                 LogicServices ignoredServices) {
@@ -40,7 +38,7 @@ public class BindVariablesInstruction {
                     matchCond = null;
                 }
             }
-            return matchCond;
+            return ((MatchConditions) matchCond).extendLogicVarTable(templateVar);
         }
 
         @Override
@@ -65,9 +63,11 @@ public class BindVariablesInstruction {
                 BoundVariable instantiationCandidate, MatchResultInfo matchCond,
                 Services services) {
             final Object foundMapping = matchCond.getInstantiations().getInstantiation(op);
+            var mc = (MatchConditions) matchCond;
+            mc = mc.extendLogicVarTable(instantiationCandidate);
             if (foundMapping == null) {
                 final Term substTerm = services.getTermBuilder().var(instantiationCandidate);
-                matchCond = addInstantiation(substTerm, matchCond, services);
+                matchCond = addInstantiation(substTerm, mc, services);
             } else if (((Term) foundMapping).op() != instantiationCandidate) {
                 matchCond = null;
             }

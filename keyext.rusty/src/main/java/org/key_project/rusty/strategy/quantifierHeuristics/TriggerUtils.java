@@ -7,8 +7,8 @@ import java.util.Iterator;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
-import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.logic.op.Junctor;
+import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableSet;
@@ -21,6 +21,21 @@ public class TriggerUtils {
             t = t.sub(0);
         }
         return t;
+    }
+
+    /// remove all the quantifiable variable bounded in the top level of a given formula.
+    /// @return the unquantified formula and the number of bound vars removed.
+    public static TermAndCount discardAndCountQuantifiers(Term qterm) {
+        Term t = qterm;
+        int count = 0;
+        while (t.op() instanceof Quantifier) {
+            count += t.boundVars().size();
+            t = t.sub(0);
+        }
+        return new TermAndCount(t, count);
+    }
+
+    public record TermAndCount(Term term, int count) {
     }
 
     /// @return set of terms that are that the term split through the operator <code>op</code>
@@ -37,13 +52,12 @@ public class TriggerUtils {
 
 
     /// @return a set of quantifiableVariable which are belonged to both set0 and set1 have
-    public static ImmutableSet<QuantifiableVariable> intersect(
-            ImmutableSet<? extends QuantifiableVariable> set0,
-            ImmutableSet<? extends QuantifiableVariable> set1) {
-        ImmutableSet<QuantifiableVariable> res = DefaultImmutableSet.nil();
+    public static ImmutableSet<LogicVariable> intersect(
+            ImmutableSet<LogicVariable> set0,
+            ImmutableSet<LogicVariable> set1) {
+        ImmutableSet<LogicVariable> res = DefaultImmutableSet.nil();
         if (!set0.isEmpty() && !set1.isEmpty()) {
-            for (QuantifiableVariable aSet0 : set0) {
-                final QuantifiableVariable el = aSet0;
+            for (LogicVariable el : set0) {
                 if (set1.contains(el)) {
                     res = res.add(el);
                 }
@@ -52,10 +66,10 @@ public class TriggerUtils {
         return res;
     }
 
-    public static ImmutableSet<QuantifiableVariable> intersect(
-            ImmutableSet<? extends QuantifiableVariable> set0,
-            ImmutableSet<? extends QuantifiableVariable> set1,
-            ImmutableSet<? extends QuantifiableVariable> set2) {
+    public static ImmutableSet<LogicVariable> intersect(
+            ImmutableSet<LogicVariable> set0,
+            ImmutableSet<LogicVariable> set1,
+            ImmutableSet<LogicVariable> set2) {
 
         final int size0 = set0.size();
         final int size1 = set0.size();

@@ -11,6 +11,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.*;
 import org.key_project.rusty.ast.abstraction.Enum;
 import org.key_project.rusty.ast.abstraction.GenericEnum;
+import org.key_project.rusty.ast.abstraction.GenericParam;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.fn.Function;
@@ -24,6 +25,7 @@ import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.ty.*;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.RFunction;
 import org.key_project.rusty.logic.sort.GenericParameter;
 import org.key_project.rusty.logic.sort.GenericSort;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
@@ -42,6 +44,7 @@ import org.key_project.rusty.parser.hir.stmt.LetStmt;
 import org.key_project.rusty.parser.hir.stmt.Stmt;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
 import org.key_project.rusty.parser.hir.ty.*;
+import org.key_project.rusty.parser.hir.ty.TyConst;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.util.collection.ImmutableArray;
@@ -56,7 +59,7 @@ public class HirConverter {
     private final Map<DefId, Adt> adts = new HashMap<>();
     private final FnSpecConverter fnSpecConverter;
     private final LoopSpecConverter loopSpecConverter;
-    private @Nullable GenericTyParam[] currentParams = null;
+    private @Nullable GenericParam[] currentParams = null;
 
     public HirConverter(Services services) {
         this.services = services;
@@ -69,14 +72,24 @@ public class HirConverter {
     }
 
     private final Map<HirId, ProgramVariable> pvs = new HashMap<>();
-    private final Map<HirId, Type> types = new HashMap<>();
+    private final Map<HirId, Ty> rawTypes = new HashMap<>();
+    private final Map<HirId, Type> convertedTypes = new HashMap<>();
     private final Map<LocalDefId, Function> localFns = new HashMap<>();
+    private final Map<Function, FnSpec> fn2Spec = new HashMap<>();
+    private final Map<LocalDefId, GenericParam> localParams = new HashMap<>();
 
     private @Nullable Function currentFn = null;
 
     /// We first convert all functions except their bodies. Then we convert those later.
     private final Map<Function, Fn> fnsToComplete =
         new HashMap<>();
+
+    private Type getType(HirId id) {
+        return convertedTypes.computeIfAbsent(id, i -> {
+            var raw = rawTypes.get(i);
+            return convertTy(raw);
+        });
+    }
 
     private ProgramVariable getPV(HirId id) {
         return Objects.requireNonNull(pvs.get(id), "Unknown variable " + id);
@@ -92,15 +105,28 @@ public class HirConverter {
             var def = getAdt(adt.def());
             adts.put(adt.defId(), def);
         }
-        Crate crate1 = new Crate(convertMod(crate.topMod()));
         for (var m : crate.types()) {
-            var ty = convertTy(m.ty());
-            types.put(m.hirId(), ty);
+            rawTypes.put(m.hirId(), m.ty());
         }
+        Crate crate1 = new Crate(convertMod(crate.topMod()));
         for (var fn : fnsToComplete.keySet()) {
             currentFn = fn;
             var hirFn = fnsToComplete.get(fn);
             var specCases = hirFn.specCases();
+            convertGenerics(hirFn.tyGenerics());
+            if (hirFn.generics() != null) {
+                org.key_project.rusty.parser.hir.GenericParam[] params = hirFn.generics().params();
+                int lifetimes = 0;
+                for (int i = 0; i < params.length; i++) {
+                    var p = params[i];
+                    if (p.kind() instanceof GenericParamKind.Lifetime) {
+                        lifetimes++;
+                    } else {
+                        localParams.put(p.defId(), currentParams[i - lifetimes]);
+                    }
+                }
+                fn.setGenericParams(localParams, currentParams);
+            }
             boolean isCtxFn = fn.name().toString().equals(Context.TMP_FN_NAME);
             int paramLength = hirFn.sig().decl().inputs().length;
             int selfCount = 0;
@@ -127,6 +153,7 @@ public class HirConverter {
                 }
             }
             currentFn = null;
+            currentParams = null;
         }
         return crate1;
     }
@@ -189,7 +216,7 @@ public class HirConverter {
 
     private Expr convertExpr(org.key_project.rusty.parser.hir.expr.Expr expr) {
         var id = expr.hirId();
-        var ty = Objects.requireNonNull(types.get(id), "No type for " + expr);
+        var ty = Objects.requireNonNull(getType(id), "No type for " + expr);
         return switch (expr.kind()) {
             case ExprKind.ConstBlock e -> convertConstBlockExpr(e);
             case ExprKind.Array e -> convertArrayExpr(e, ty);
@@ -303,7 +330,8 @@ public class HirConverter {
                 break;
             }
         }
-        var fieldIdent = new FieldIdentifier(ident, Objects.requireNonNull(field));
+        var fieldIdent =
+            new FieldIdentifier(ident, Objects.requireNonNull(field, "Missing field: " + ident));
         return new FieldExpression(base,
             fieldIdent);
     }
@@ -468,8 +496,13 @@ public class HirConverter {
     }
 
     private Expr convertConstArg(ConstArg len) {
-        var ac = ((ConstArgKind.Anon) len.kind()).ac();
-        return convertExpr(ac.body().value());
+        return switch (len.kind()) {
+            case ConstArgKind.Anon(var ac) -> convertExpr(ac.body().value());
+            case ConstArgKind.Path(var p) -> convertPathExpr(p, PrimitiveType.USIZE); // TODO: Get
+                                                                                      // type
+                                                                                      // properly
+            default -> throw new IllegalArgumentException("Unknown ConstArgKind: " + len.kind());
+        };
     }
 
     private IndexExpression convertIndexExpr(ExprKind.Index index, Type type) {
@@ -496,6 +529,8 @@ public class HirConverter {
             case Ne -> BinaryExpression.Operator.Ne;
             case Ge -> BinaryExpression.Operator.Ge;
             case Gt -> BinaryExpression.Operator.Gt;
+            case Implication ->
+                throw new UnsupportedOperationException("Not allowed in normal code");
         };
     }
 
@@ -664,7 +699,8 @@ public class HirConverter {
                 } else {
                     pv = new ProgramVariable(name,
                         services.getRustInfo()
-                                .getKeYRustyType(Objects.requireNonNull(types.get(id))));
+                                .getKeYRustyType(
+                                    Objects.requireNonNull(getType(id), "No type for " + name)));
                 }
                 declarePV(id, pv);
                 Pattern opt =
@@ -691,7 +727,8 @@ public class HirConverter {
             @Nullable Type ty) {
         return switch (pe.kind()) {
             case PatExprKind.Lit(var l, var n) ->
-                new LitPatExpr(convertLitExpr(l, Objects.requireNonNull(ty)), n);
+                new LitPatExpr(
+                    convertLitExpr(l, Objects.requireNonNull(ty, "Missing type for " + pe)), n);
             default -> throw new IllegalArgumentException("Unknown patExpr: " + pe);
         };
     }
@@ -727,10 +764,12 @@ public class HirConverter {
     }
 
     private Def convertDef(org.key_project.rusty.parser.hir.Def def) {
+        final LocalDefId localDefId = new LocalDefId(def.id().index());
         return switch (def.kind()) {
             case DefKind.Fn f -> {
                 Function lfn =
-                    Objects.requireNonNull(localFns.get(new LocalDefId(def.id().index())));
+                    Objects.requireNonNull(localFns.get(localDefId),
+                        "Missing local fn for " + localDefId);
                 ProgramFunction fn = services.getRustInfo().getFunction(lfn);
                 // TODO: We might have to resolve this in a 2nd step to avoid this being done before
                 // the fn is loaded
@@ -751,6 +790,7 @@ public class HirConverter {
             case DefKind.Struct e -> {
                 yield null;
             }
+            case DefKind.ConstParam ignored -> localParams.get(localDefId);
             default -> throw new IllegalArgumentException("Unknown def: " + def);
         };
     }
@@ -778,7 +818,8 @@ public class HirConverter {
             case Ty.Ref(var t, var m) -> ReferenceType.get(convertTy(t), m);
             case Ty.FnDef(var id, var args) -> {
                 if (id.krate() == 0) {
-                    var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())));
+                    var fn = Objects.requireNonNull(localFns.get(new LocalDefId(id.index())),
+                        "Could not find function for " + id);
                     yield new FnDefType(fn);
                 }
                 yield new ForeignFnType(id, convertGenericArgs(args));
@@ -789,11 +830,11 @@ public class HirConverter {
                 TupleType.getInstance(Arrays.stream(ts).map(this::convertTy).toList(), services);
             case Ty.Array(var arrTy, var len) -> {
                 Type elementType = convertTy(arrTy);
-                yield ArrayType.getInstance(elementType, convertTyConst(len), services);
+                yield ArrayType.getInstance(elementType, convertTyConst(len).toLength(), services);
             }
             case Ty.Param(var p) -> {
                 assert currentParams != null;
-                yield currentParams[p.index()];
+                yield (GenericTyParam) currentParams[p.index()];
             }
             default -> throw new IllegalArgumentException("Unknown ty: " + ty);
         };
@@ -802,7 +843,7 @@ public class HirConverter {
     }
 
     private Adt getAdt(AdtDef def) {
-        ImmutableArray<GenericTyParam> generics;
+        ImmutableArray<GenericParam> generics;
         if (def.foreignGenerics() == null)
             throw new UnsupportedOperationException("Local generics");
         else
@@ -864,7 +905,7 @@ public class HirConverter {
     }
 
     private ImmutableList<GenericParameter> getGenericParameters(
-            ImmutableArray<GenericTyParam> params) {
+            ImmutableArray<GenericParam> params) {
         if (params.isEmpty())
             return null;
         ImmutableList<GenericParameter> sortParams = ImmutableSLList.nil();
@@ -927,18 +968,21 @@ public class HirConverter {
         return new ImmutableArray<>(res);
     }
 
-    private ImmutableArray<GenericTyParam> convertGenerics(TyGenerics generics) {
-        var res = new ArrayList<GenericTyParam>();
+    private ImmutableArray<GenericParam> convertGenerics(TyGenerics generics) {
+        var res = new ArrayList<GenericParam>();
         assert currentParams == null;
-        currentParams = new GenericTyParam[generics.params().length];
+        currentParams = new GenericParam[generics.params().length];
         for (var p : generics.params()) {
             Name name = new Name(p.name());
             if (p.kind() instanceof TyGenericParamDefKind.Type) {
-                GenericTyParam tyParam = new GenericTyParam(name, false, new GenericSort(name));
+                GenericParam tyParam = new GenericTyParam(name, new GenericSort(name));
                 currentParams[p.index()] = tyParam;
                 res.add(tyParam);
             } else if (p.kind() instanceof TyGenericParamDefKind.Const) {
-                GenericTyParam tyParam = new GenericTyParam(name, true, null);
+                // TODO: some sort other than int
+                GenericParam tyParam = new GenericConstParam(name,
+                    new RFunction(new Name(name + "_" + currentFn.name()),
+                        services.getLDTs().getIntLDT().targetSort()));
                 currentParams[p.index()] = tyParam;
                 res.add(tyParam);
             }
@@ -947,10 +991,17 @@ public class HirConverter {
     }
 
     // TODO: something other than int
-    private int convertTyConst(TyConst tc) {
-        var vc = (TyConst.ValueConst) tc;
-        return (int) switch (vc.value().valtree()) {
-            case ValTree.Leaf(var si) -> si.data();
+    private org.key_project.rusty.ast.abstraction.TyConst convertTyConst(TyConst tc) {
+        return switch (tc) {
+            case TyConst.ValueConst(var vc) -> new TyConstValue(switch (vc.valtree()) {
+                case ValTree.Leaf(var si) -> (int) si.data();
+                default -> throw new IllegalArgumentException("Unknown ty const: " + tc);
+            });
+            case TyConst.Param(var pc) -> {
+                var genParam = currentParams[pc.index()];
+                var cp = (GenericConstParam) genParam;
+                yield new TyConstParam(cp.fn());
+            }
             default -> throw new IllegalArgumentException("Unknown ty const: " + tc);
         };
     }

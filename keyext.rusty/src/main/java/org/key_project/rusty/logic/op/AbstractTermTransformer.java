@@ -24,6 +24,7 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.CreateFrameCond;
 import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
 import org.key_project.rusty.rule.metaconstruct.IntroAtPreDefs;
+import org.key_project.rusty.rule.metaconstruct.ShiftTransformer;
 import org.key_project.rusty.rule.metaconstruct.arith.*;
 import org.key_project.util.collection.ImmutableList;
 
@@ -71,6 +72,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
 
     public static final AbstractTermTransformer TO_TUPLE = new ToTuple();
     public static final AbstractTermTransformer CREATE_ARRAY = new CreateArray();
+    public static final AbstractTermTransformer LOGIC_SHIFT = new ShiftTransformer();
 
     @SuppressWarnings("argument.type.incompatible")
     protected AbstractTermTransformer(Name name, int arity, Sort sort) {

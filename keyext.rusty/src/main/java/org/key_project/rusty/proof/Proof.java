@@ -310,6 +310,9 @@ public class Proof implements ProofObject<Goal>, Named {
 
     public void dispose() {
         // TODO
+        if (getServices() != null) {
+            getServices().getSpecificationRepository().removeProof(this);
+        }
     }
 
     /// returns a collection of the namespaces valid for this proof

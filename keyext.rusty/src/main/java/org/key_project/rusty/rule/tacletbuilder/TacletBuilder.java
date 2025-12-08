@@ -18,6 +18,7 @@ import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.conditions.NewDependingOn;
 import org.key_project.prover.rules.conditions.NotFreeIn;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
@@ -29,6 +30,8 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
+import org.jspecify.annotations.NonNull;
+
 public abstract class TacletBuilder<T extends Taclet> {
     protected final static Name NONAME = new Name("unnamed");
 
@@ -37,7 +40,8 @@ public abstract class TacletBuilder<T extends Taclet> {
     protected Name name = NONAME;
     protected Sequent ifseq = RustySequentKit.getInstance().getEmptySequent();
     protected ImmutableList<NewVarcond> varsNew = ImmutableSLList.nil();
-    protected ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
+    protected final ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
+    protected ImmutableList<@NonNull SchemaVariable> noFreeVarIns = ImmutableSLList.nil();
     protected ImmutableList<NewDependingOn> varsNewDependingOn =
         ImmutableSLList.nil();
     protected ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> goals =
@@ -143,33 +147,6 @@ public abstract class TacletBuilder<T extends Taclet> {
         varsNew = varsNew.prepend(nv);
     }
 
-    /// adds a new _NotFreeIn_ variable pair to the variable conditions of the Taclet: v0 is not
-    /// free in v1.
-    public void addVarsNotFreeIn(SchemaVariable v0,
-            SchemaVariable v1) {
-        varsNotFreeIn = varsNotFreeIn.prepend(new NotFreeIn(v0, v1));
-    }
-
-
-    public void addVarsNotFreeIn(Iterable<? extends SchemaVariable> v0,
-            Iterable<? extends SchemaVariable> v1) {
-        for (SchemaVariable boundSV : v0) {
-            for (SchemaVariable schemaVar : v1) {
-                addVarsNotFreeIn(boundSV, schemaVar);
-            }
-        }
-    }
-
-
-    public void addVarsNotFreeIn(Iterable<? extends SchemaVariable> v0,
-            SchemaVariable... v1) {
-        for (SchemaVariable boundSV : v0) {
-            for (SchemaVariable schemaVar : v1) {
-                addVarsNotFreeIn(boundSV, schemaVar);
-            }
-        }
-    }
-
     /// Add a "v0 depending on v1"-statement. "v0" may not occur within the `if` sequent or the
     /// `find`
     /// formula/term, however, this is not checked
@@ -211,7 +188,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     /// semisequences. No specification for the interactive or recursive flags imply that the flags
     /// are not set. No specified find part for Taclets that require a find part causes an
     /// IllegalStateException.
-    public abstract T getTaclet();
+    public abstract T getTaclet(Services services);
 
     public ChoiceExpr getChoices() {
         return choices;
@@ -233,9 +210,9 @@ public abstract class TacletBuilder<T extends Taclet> {
         return goal2Choices;
     }
 
-    public T getTacletWithoutInactiveGoalTemplates(Set<Choice> active) {
+    public T getTacletWithoutInactiveGoalTemplates(Set<Choice> active, Services services) {
         if (goal2Choices == null || goals.isEmpty()) {
-            return getTaclet();
+            return getTaclet(services);
         }
         ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> oldGoals =
             goals;
@@ -250,7 +227,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         if (goals.isEmpty()) {
             result = null;
         } else {
-            result = getTaclet();
+            result = getTaclet(services);
         }
         goals = oldGoals;
         return result;
@@ -262,6 +239,14 @@ public abstract class TacletBuilder<T extends Taclet> {
 
     public void setRuleSets(ImmutableList<RuleSet> rs) {
         ruleSets = rs;
+    }
+
+    public void addNoFreeVarIn(SchemaVariable sv) {
+        noFreeVarIns = noFreeVarIns.prepend(sv);
+    }
+
+    public Iterator<@NonNull SchemaVariable> noFreeVarIns() {
+        return noFreeVarIns.iterator();
     }
 
     public static class TacletBuilderException extends IllegalArgumentException {

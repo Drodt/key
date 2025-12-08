@@ -21,7 +21,7 @@ public class Never implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return services.getLDTs().getNeverLDT().targetSort();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class Never implements Type {
     }
 
     @Override
-    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         return this;
     }
 }

@@ -15,7 +15,6 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.BooleanContainer;
 import org.key_project.rusty.logic.NameAbstractionTable;
 import org.key_project.rusty.logic.op.ProgramVariable;
@@ -325,7 +324,7 @@ public class EqualityConstraint implements Constraint {
         }
 
 
-        nat = handleJava(t0, t1, nat);
+        nat = handleRust(t0, t1, nat);
         if (nat == FAILED) {
             return TOP;
         }
@@ -377,11 +376,11 @@ public class EqualityConstraint implements Constraint {
     }
 
 
-    /// used to encode that <tt>handleJava</tt> results in an unsatisfiable constraint (faster than
+    /// used to encode that <tt>handleRust</tt> results in an unsatisfiable constraint (faster than
     /// using exceptions)
     private static final NameAbstractionTable FAILED = new NameAbstractionTable();
 
-    private static NameAbstractionTable handleJava(Term t0, Term t1, NameAbstractionTable nat) {
+    private static NameAbstractionTable handleRust(Term t0, Term t1, NameAbstractionTable nat) {
         if (t0.op() instanceof RModality m1 && t1.op() instanceof RModality m2) {
             nat = checkNat(nat);
             if (RENAMING_PROGRAM_ELEMENT_PROPERTY.equalsModThisProperty(m1.programBlock().program(),
@@ -391,13 +390,12 @@ public class EqualityConstraint implements Constraint {
             }
         }
 
-        if (!(t0.op() instanceof SchemaVariable) && t0.op() instanceof ProgramVariable) {
+        if (!(t0.op() instanceof SchemaVariable) && t0.op() instanceof ProgramVariable pv0) {
             if (!(t1.op() instanceof ProgramVariable pv1)) {
                 return FAILED;
             }
             nat = checkNat(nat);
-            if (!RENAMING_PROGRAM_ELEMENT_PROPERTY.equalsModThisProperty(pv1,
-                (RustyProgramElement) t1.op(), nat)) {
+            if (!RENAMING_PROGRAM_ELEMENT_PROPERTY.equalsModThisProperty(pv1, pv0, nat)) {
                 return FAILED;
             }
         }
@@ -475,9 +473,9 @@ public class EqualityConstraint implements Constraint {
     private Constraint handleQuantifiableVariable(Term t0, Term t1,
             ImmutableList<QuantifiableVariable> ownBoundVars,
             ImmutableList<QuantifiableVariable> cmpBoundVars) {
-        if (!((t1.op() instanceof QuantifiableVariable)
-                && compareBoundVariables((QuantifiableVariable) t0.op(),
-                    (QuantifiableVariable) t1.op(), ownBoundVars, cmpBoundVars))) {
+        if (!(t1.op() instanceof QuantifiableVariable qv1
+                && compareBoundVariables((QuantifiableVariable) t0.op(), qv1, ownBoundVars,
+                    cmpBoundVars))) {
             return TOP;
         }
         return this;

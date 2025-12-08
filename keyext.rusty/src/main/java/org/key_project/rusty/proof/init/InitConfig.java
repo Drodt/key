@@ -229,11 +229,10 @@ public class InitConfig {
         return copyWithServices(services.copyPreservesLDTInformation());
     }
 
-    // TODO fix ProofSettings
     public InitConfig copyWithServices(Services services) {
         InitConfig ic = new InitConfig(services);
         if (settings != null) {
-            ic.setSettings(new ProofSettings(ProofSettings.DEFAULT_SETTINGS));// settings));
+            ic.setSettings(new ProofSettings(settings));// settings));
         }
 
         ic.setTaclet2Builder(
@@ -246,7 +245,15 @@ public class InitConfig {
     }
 
     public TacletIndex createTacletIndex() {
-        return new TacletIndex(taclets);
+        return new TacletIndex(activatedTaclets());
+    }
+
+    /// returns the activated taclets of this initial configuration
+    public Collection<Taclet> activatedTaclets() {
+        if (activatedTacletCache == null) {
+            fillActiveTacletCache();
+        }
+        return activatedTacletCache.values();
     }
 
     public Taclet lookupActiveTaclet(Name name) {
@@ -267,7 +274,7 @@ public class InitConfig {
             TacletBuilder<? extends Taclet> b = taclet2Builder.get(t);
             if (t.getChoices().eval(choices)) {
                 if (b != null && b.getGoal2Choices() != null) {
-                    t = b.getTacletWithoutInactiveGoalTemplates(choices);
+                    t = b.getTacletWithoutInactiveGoalTemplates(choices, services);
                 }
 
                 if (t != null) {
