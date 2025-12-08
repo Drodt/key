@@ -22,7 +22,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 
 public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
-        public static Crate parseJSON(String json) {
+    public static Crate parseJSON(String json) {
         var gson =
             new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                     .registerTypeAdapter(ItemKind.class, new ItemKind.Adapter())

@@ -13,7 +13,6 @@ import org.key_project.rusty.ast.Label;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.abstraction.Never;
 import org.key_project.rusty.ast.abstraction.Type;
-import org.key_project.rusty.ast.ty.NeverRustType;
 import org.key_project.rusty.ast.visitor.RustyASTWalker;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.ExtList;
@@ -129,7 +128,8 @@ public final class InfiniteLoopExpression implements LoopExpression, LabeledExpr
         @Override
         protected void doAction(RustyProgramElement node) {
             if (node instanceof BreakExpression be) {
-                if (loopDepth == 1 && be.label() == null || be.label() != null && be.label().equals(label)) {
+                if (loopDepth == 1 && be.label() == null
+                        || be.label() != null && be.label().equals(label)) {
                     relevantBreaks.add(be);
                 }
             }

@@ -3,17 +3,13 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.item;
 
-import java.lang.reflect.Type;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.Span;
 import org.key_project.rusty.parser.hir.hirty.HirTy;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParseException;
+import org.jspecify.annotations.Nullable;
+
 
 public interface FnRetTy {
     record Return(HirTy ty) implements FnRetTy {

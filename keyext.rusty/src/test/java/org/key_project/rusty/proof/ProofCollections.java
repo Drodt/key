@@ -63,7 +63,7 @@ public class ProofCollections {
 
         var rustSrc = c.group("rustSrc");
         rustSrc.provable("loop-mul.key");
-        //rustSrc.loadable("man-loop-mul.proof");
+        // rustSrc.loadable("man-loop-mul.proof");
         rustSrc.provable("add-no-bounds.key");
         rustSrc.loadable("man-add-no-bounds.proof");
         rustSrc.provable("mut-ref-src.key");
@@ -71,17 +71,17 @@ public class ProofCollections {
         rustSrc.provable("if-src.key");
         rustSrc.loadable("man-if-src.proof");
 
-          var array = c.group("array");
-          array.loadable("array-get-of-repeat.proof");
-          array.loadable("array-get-of-set.proof");
-          array.loadable("array-test.proof");
-          array.loadable("array-enumerate.proof");
+        var array = c.group("array");
+        array.loadable("array-get-of-repeat.proof");
+        array.loadable("array-get-of-set.proof");
+        array.loadable("array-test.proof");
+        array.loadable("array-enumerate.proof");
 
-          var tuples = c.group("tuples");
-          tuples.loadable("tuple-test.proof");
+        var tuples = c.group("tuples");
+        tuples.loadable("tuple-test.proof");
 
-          var option = c.group("option");
-          option.loadable("option.proof");
+        var option = c.group("option");
+        option.loadable("option.proof");
 
         var ghost = c.group("ghost");
         ghost.loadable("first-ghost.proof");

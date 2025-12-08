@@ -182,9 +182,11 @@ public class HirConverter {
             return new ImmutableArray<>(lst);
         });
         var kind = switch (use.useKind()) {
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.Single ignored -> Use.UseKind.Single;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.Single ignored ->
+                Use.UseKind.Single;
             case org.key_project.rusty.parser.hir.item.Use.UseKind.Glob ignored -> Use.UseKind.Glob;
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.ListStem ignored -> Use.UseKind.ListStem;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.ListStem ignored ->
+                Use.UseKind.ListStem;
             default -> throw new IllegalArgumentException("Unknown use kind: " + use);
         };
         return new Use(path, kind);

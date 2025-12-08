@@ -148,7 +148,7 @@ public interface Visitor {
     void performActionOnTupleRustType(TupleRustType x);
 
     void performActionOnGhostBlockExpression(GhostBlockExpression x);
-    
+
     void performActionOnPathExpr(PathExpr x);
 
     <R> void performActionOnPath(Path<R> x);
