@@ -45,6 +45,7 @@ import org.key_project.rusty.parser.hir.stmt.Stmt;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
 import org.key_project.rusty.parser.hir.ty.*;
 import org.key_project.rusty.parser.hir.ty.TyConst;
+import org.key_project.rusty.speclang.spec.FnSpec;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.util.collection.ImmutableArray;
