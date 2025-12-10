@@ -1,0 +1,62 @@
+\profile "Rust Profile";
+
+\programVariables {
+    i: u32;
+    b: bool;
+}
+
+\problem {
+    \<{
+        let x: &u32 = &i;
+        let j: u32 = i;
+        let y: &u32 = &j;
+        b = x == y;
+        b
+    }\> (b = TRUE)
+}
+
+\proof {
+    (branch "dummy ID"
+        (rule "let_ident_pat_assign" (formula "1"))
+        (rule "let_ident_pat" (formula "1"))
+        (rule "assign_shared_borrow" (formula "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "let_ident_pat_assign" (formula "1") (term "1"))
+        (rule "let_ident_pat" (formula "1") (term "1"))
+        (rule "assignment" (formula "1") (term "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1,1"))
+        (rule "let_ident_pat_assign" (formula "1") (term "1,1"))
+        (rule "let_ident_pat" (formula "1") (term "1,1"))
+        (rule "assign_shared_borrow" (formula "1") (term "1,1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1,1,1"))
+        (rule "assign_equality" (formula "1") (term "1,1,1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1,1,1,1"))
+        (rule "empty_modality_value" (formula "1") (term "1,1,1,1"))
+        (rule "sequentialToParallel2" (formula "1"))
+        (rule "simplifyUpdate3" (formula "1") (term "1,0"))
+        (rule "sequentialToParallel2" (formula "1"))
+        (rule "simplifyUpdate3" (formula "1") (term "1,0"))
+        (rule "applyOnElementary" (formula "1") (term "1,0"))
+        (rule "applyOnRigidTerm" (formula "1") (term "0,1,0"))
+        (rule "applyOnPV" (formula "1") (term "0,0,1,0"))
+        (rule "simplifyUpdate2" (formula "1"))
+        (rule "sequentialToParallel2" (formula "1"))
+        (rule "applyOnElementary" (formula "1") (term "1,0"))
+        (rule "applyOnRigidTerm" (formula "1") (term "0,1,0"))
+        (rule "applyOnRigidFormula" (formula "1") (term "0,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,0,0,1,0"))
+        (rule "applyOnPV" (formula "1") (term "0,0,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "1,0,0,1,0"))
+        (rule "applyOnPV" (formula "1") (term "1,0,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "1,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "2,0,1,0"))
+        (rule "eqClose" (formula "1") (term "0,0,1,0"))
+        (rule "ifthenelse_true" (formula "1") (term "0,1,0"))
+        (rule "simplifyUpdate2" (formula "1"))
+        (rule "applyOnRigidFormula" (formula "1"))
+        (rule "applyOnPV" (formula "1") (term "0"))
+        (rule "simplifyUpdate1" (formula "1") (term "1"))
+        (rule "eqClose" (formula "1"))
+        (rule "closeTrue" (formula "1"))
+    )
+}

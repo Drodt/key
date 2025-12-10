@@ -1,0 +1,100 @@
+\profile "Rust Profile";
+
+\programVariables {
+    a: u32;
+}
+
+\problem {
+    \<{
+        let n: u32 = 1u32;
+        if let 1..10 = n {
+            a = n;
+        } else {
+            a = 0;
+        };
+    }\> true
+}
+
+\proof {
+    (branch "dummy ID"
+        (rule "let_ident_pat_assign" (formula "1"))
+        (rule "let_ident_pat" (formula "1"))
+        (rule "assignment" (formula "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "if_let_range_exclusive_else" (formula "1") (term "1"))
+        (rule "let_ident_pat_assign" (formula "1") (term "1"))
+        (rule "let_ident_pat" (formula "1") (term "1"))
+        (rule "assign_lazy_and_unfold_left_and_right" (formula "1") (term "1"))
+        (rule "assign_if_unfold" (formula "1") (term "1"))
+        (rule "let_ident_pat" (formula "1") (term "1"))
+        (rule "assign_bitwise_negation_unfold" (formula "1") (term "1"))
+        (rule "let_ident_pat_assign" (formula "1") (term "1"))
+        (rule "let_ident_pat" (formula "1") (term "1"))
+        (rule "assign_less_equal" (formula "1") (term "1"))
+        (rule "sequentialToParallel2" (formula "1"))
+        (rule "applyOnElementary" (formula "1") (term "1,0"))
+        (rule "applyOnRigidTerm" (formula "1") (term "0,1,0"))
+        (rule "applyOnRigidFormula" (formula "1") (term "0,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,0,0,1,0"))
+        (rule "applyOnPV" (formula "1") (term "1,0,0,1,0"))
+        (rule "leq_literals" (formula "1") (term "0,0,1,0"))
+        (rule "ifthenelse_true" (formula "1") (term "0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,1,0"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "assign_bitwise_negation" (formula "1") (term "1"))
+        (rule "sequentialToParallel2" (formula "1"))
+        (rule "simplifyUpdate3" (formula "1") (term "1,0"))
+        (rule "applyOnElementary" (formula "1") (term "1,0"))
+        (rule "applyOnRigidTerm" (formula "1") (term "0,1,0"))
+        (rule "applyOnRigidFormula" (formula "1") (term "0,0,1,0"))
+        (rule "applyOnPV" (formula "1") (term "0,0,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "1,0,0,1,0"))
+        (rule "eqClose" (formula "1") (term "0,0,1,0"))
+        (rule "ifthenelse_true" (formula "1") (term "0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,1,0"))
+        (rule "simplifyUpdate2" (formula "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "assign_if" (formula "1") (term "1"))
+        (rule "if_else" (formula "1") (term "1"))
+        (rule "applyOnRigidFormula" (formula "1"))
+        (rule "applyOnRigidFormula" (formula "1") (term "0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,0"))
+        (rule "applyOnPV" (formula "1") (term "0,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "1,0"))
+        (rule "bool_not_equal_2" (formula "1") (term "0"))
+        (rule "ifthenelse_false_for" (formula "1"))
+        (rule "assign_block_value" (formula "1") (term "1"))
+        (rule "assign_less" (formula "1") (term "1"))
+        (rule "sequentialToParallel2" (formula "1"))
+        (rule "applyOnElementary" (formula "1") (term "1,0"))
+        (rule "applyOnRigidTerm" (formula "1") (term "0,1,0"))
+        (rule "applyOnRigidFormula" (formula "1") (term "0,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,0,0,1,0"))
+        (rule "applyOnPV" (formula "1") (term "0,0,0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "1,0,0,1,0"))
+        (rule "less_literals" (formula "1") (term "0,0,1,0"))
+        (rule "ifthenelse_true" (formula "1") (term "0,1,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,1,0"))
+        (rule "simplifyUpdate2" (formula "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "if_else" (formula "1") (term "1"))
+        (rule "applyOnRigidFormula" (formula "1"))
+        (rule "applyOnRigidFormula" (formula "1") (term "0"))
+        (rule "simplifyUpdate1" (formula "1") (term "0,0"))
+        (rule "applyOnPV" (formula "1") (term "0,0"))
+        (rule "simplifyUpdate1" (formula "1") (term "1,0"))
+        (rule "eqClose" (formula "1") (term "0"))
+        (rule "ifthenelse_true_for" (formula "1"))
+        (rule "simplifyUpdate2" (formula "1"))
+        (rule "assignment" (formula "1") (term "1"))
+        (rule "sequentialToParallel2" (formula "1"))
+        (rule "applyOnElementary" (formula "1") (term "1,0"))
+        (rule "applyOnPV" (formula "1") (term "0,1,0"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "empty_block" (formula "1") (term "1"))
+        (rule "simple_expr_stmt" (formula "1") (term "1"))
+        (rule "empty_modality" (formula "1") (term "1"))
+        (rule "simplifyUpdate2" (formula "1"))
+        (rule "closeTrue" (formula "1"))
+    )
+}
