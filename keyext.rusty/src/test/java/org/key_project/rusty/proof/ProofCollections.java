@@ -82,7 +82,8 @@ public class ProofCollections {
         array.loadable("man-array-enumerate.proof");
 
         var tuples = c.group("tuples");
-        tuples.loadable("tuple-test.proof");
+        tuples.provable("tuple-test.key");
+        tuples.loadable("man-tuple-test.proof");
 
         var option = c.group("option");
         option.loadable("option.proof");
