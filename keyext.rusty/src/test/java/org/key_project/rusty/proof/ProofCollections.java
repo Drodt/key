@@ -86,7 +86,7 @@ public class ProofCollections {
         tuples.loadable("man-tuple-test.proof");
 
         var option = c.group("option");
-        option.loadable("option.proof");
+        option.loadable("option.key");
 
         var algos = c.group("algorithms");
         algos.provable("binary-search/binary-search.key");
