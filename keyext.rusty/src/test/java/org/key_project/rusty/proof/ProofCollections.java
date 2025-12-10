@@ -63,7 +63,7 @@ public class ProofCollections {
 
         var rustSrc = c.group("rustSrc");
         rustSrc.provable("loop-mul.key");
-        // rustSrc.loadable("man-loop-mul.proof");
+        rustSrc.loadable("man-loop-mul.proof");
         rustSrc.provable("add-no-bounds.key");
         rustSrc.loadable("man-add-no-bounds.proof");
         rustSrc.provable("mut-ref-src.key");
