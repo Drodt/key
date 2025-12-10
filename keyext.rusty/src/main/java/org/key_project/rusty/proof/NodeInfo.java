@@ -21,6 +21,9 @@ import org.slf4j.LoggerFactory;
 public class NodeInfo {
     private static final Logger LOGGER = LoggerFactory.getLogger(NodeInfo.class);
 
+    /// has the rule app of the node been applied interactively?
+    private boolean interactiveApplication = false;
+
     private String branchLabel = null;
     /** the node this info object belongs to */
     private final Node node;
@@ -94,5 +97,19 @@ public class NodeInfo {
         } else {
             branchLabel = s;
         }
+    }
+
+    /// parameter indicated if the rule has been applied interactively or not
+    ///
+    /// @param b a boolean indicating interactive application
+    public void setInteractiveRuleApplication(boolean b) {
+        interactiveApplication = b;
+    }
+
+    /// returns true if the rule applied on this node has been performed manually by the user
+    ///
+    /// @return boolean for interactive rule application as described above
+    public boolean getInteractiveRuleApplication() {
+        return interactiveApplication;
     }
 }

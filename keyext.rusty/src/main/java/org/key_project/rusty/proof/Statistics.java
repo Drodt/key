@@ -35,6 +35,8 @@ public class Statistics {
     public final long timeInMillis;
     public final float timePerStepInMillis;
 
+    private final HashMap<String, Integer> interactiveAppsDetails = new HashMap<>();
+
     private static final Set<Name> symbolicExecNames = new HashSet<>(9);
     static {
         symbolicExecNames.add(new Name("function_expand"));
@@ -105,7 +107,7 @@ public class Statistics {
             Node node;
             while (it.hasNext()) {
                 node = it.next();
-                tmp.changeOnNode(node);
+                tmp.changeOnNode(node, interactiveAppsDetails);
             }
 
             nodes += tmp.nodes;
@@ -156,7 +158,7 @@ public class Statistics {
         Node node;
         while (it.hasNext()) {
             node = it.next();
-            tmp.changeOnNode(node);
+            tmp.changeOnNode(node, interactiveAppsDetails);
         }
 
         this.nodes = tmp.nodes;
@@ -279,13 +281,14 @@ public class Statistics {
         /// interactive rule applications
         ///
         /// @param node the given node
-        /// //@param interactiveAppsDetails already collected interactive rule applications
-        private void changeOnNode(final Node node) {
+        /// @param interactiveAppsDetails already collected interactive rule applications
+        private void changeOnNode(final Node node,
+                final HashMap<String, Integer> interactiveAppsDetails) {
             nodes++;
 
             branches += childBranches(node);
             cachedBranches += cachedBranches(node);
-            interactive += interactiveRuleApps(node);
+            interactive += interactiveRuleApps(node, interactiveAppsDetails);
             symbExApps += isSymbolicExecutionRuleApplied(node) ? 1 : 0;
 
             final RuleApp ruleApp = node.getAppliedRuleApp();
@@ -337,25 +340,23 @@ public class Statistics {
         /// Compute number of interactive rule applications and collect their names.
         ///
         /// @param node the considered node
-        /// //@param intAppsDetails the already collected interactive rule applications
+        /// @param intAppsDetails the already collected interactive rule applications
         /// @return the number of interactive rule apllications
-        private int interactiveRuleApps(final Node node) {
-            /*
-             * final int res;
-             * if (node.getNodeInfo().getInteractiveRuleApplication()) {
-             * res = 1;
-             * final String ruleAppName = node.getAppliedRuleApp().rule().name().toString();
-             * if (!intAppsDetails.containsKey(ruleAppName)) {
-             * intAppsDetails.put(ruleAppName, 1);
-             * } else {
-             * intAppsDetails.put(ruleAppName, intAppsDetails.get(ruleAppName) + 1);
-             * }
-             * } else {
-             * res = 0;
-             * }
-             * return res;
-             */
-            return 1;
+        private int interactiveRuleApps(final Node node,
+                final HashMap<String, Integer> intAppsDetails) {
+            final int res;
+            if (node.getNodeInfo().getInteractiveRuleApplication()) {
+                res = 1;
+                final String ruleAppName = node.getAppliedRuleApp().rule().name().toString();
+                if (!intAppsDetails.containsKey(ruleAppName)) {
+                    intAppsDetails.put(ruleAppName, 1);
+                } else {
+                    intAppsDetails.put(ruleAppName, intAppsDetails.get(ruleAppName) + 1);
+                }
+            } else {
+                res = 0;
+            }
+            return res;
         }
 
         /// Returns 1 if ruleApp is a loop scope invariant taclet application, and 0 otherwise.

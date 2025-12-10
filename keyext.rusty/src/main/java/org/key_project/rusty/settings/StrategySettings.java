@@ -91,9 +91,9 @@ public class StrategySettings extends AbstractSettings {
                 setMaxSteps(props.getInt(STEPS_KEY));
             } catch (NumberFormatException | NullPointerException e) {
                 LOGGER.debug("StrategySettings: failure while converting the string "
-                        + "with the allowed steps of heuristics applications to int."
-                        + "Use default value 1000 instead."
-                        + "\nThe String that has been tried to convert was {}", props.get(STEPS_KEY));
+                    + "with the allowed steps of heuristics applications to int."
+                    + "Use default value 1000 instead."
+                    + "\nThe String that has been tried to convert was {}", props.get(STEPS_KEY));
             }
         }
 
@@ -102,8 +102,8 @@ public class StrategySettings extends AbstractSettings {
                 setTimeout(props.getInt(TIMEOUT_KEY));
             } catch (NumberFormatException | NullPointerException e) {
                 LOGGER.debug("StrategySettings: failure while converting the string "
-                        + "with rule application timeout. "
-                        + "\nThe String that has been tried to convert was {}", props.get(TIMEOUT_KEY));
+                    + "with rule application timeout. "
+                    + "\nThe String that has been tried to convert was {}", props.get(TIMEOUT_KEY));
             }
         }
 
