@@ -48,6 +48,7 @@ expr
    | closureExpr # ClosureExpression_
    | exprWithBlock # ExpressionWithBlock_
    | PANIC LPAREN RPAREN # EmptyPanic
+   | GHOST blockExpr # GhostBlockExpression
    ;
 
 stmt
