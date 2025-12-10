@@ -72,10 +72,14 @@ public class ProofCollections {
         rustSrc.loadable("man-if-src.proof");
 
         var array = c.group("array");
-        array.loadable("array-get-of-repeat.proof");
-        array.loadable("array-get-of-set.proof");
-        array.loadable("array-test.proof");
-        array.loadable("array-enumerate.proof");
+        array.provable("array-get-of-repeat.key");
+        array.loadable("man-array-get-of-repeat.proof");
+        array.provable("array-get-of-set.key");
+        array.loadable("man-array-get-of-set.proof");
+        array.provable("array-test.key");
+        array.loadable("man-array-test.proof");
+        array.provable("array-enumerate.key");
+        array.loadable("man-array-enumerate.proof");
 
         var tuples = c.group("tuples");
         tuples.loadable("tuple-test.proof");
