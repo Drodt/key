@@ -6,6 +6,8 @@ package org.key_project.rusty.ast;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 
+import org.jspecify.annotations.NonNull;
+
 public record VariantConstructor() implements Def {
     @Override
     public void visit(Visitor v) {
@@ -13,7 +15,7 @@ public record VariantConstructor() implements Def {
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         throw new IndexOutOfBoundsException("Invalid index: " + n);
     }
 
