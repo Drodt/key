@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.gui.utilities;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -12,7 +11,6 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 
 import de.uka.ilkd.key.gui.nodeviews.SequentView;
 import de.uka.ilkd.key.pp.PosInSequent;
@@ -27,14 +25,16 @@ public final class GuiUtilities {
      * paints empty view with white background.
      */
     public static void paintEmptyViewComponent(JComponent pane, String name) {
-        pane.setBorder(new TitledBorder(name));
-        pane.setBackground(Color.white);
-        if (pane instanceof JScrollPane) {
-            ((JScrollPane) pane).getViewport().setBackground(Color.white);
-        }
-        pane.setMinimumSize(new Dimension(150, 0));
+        // pane.setBorder(new TitledBorder(name));
+        // pane.setBackground(Color.white);
+        // if (pane instanceof JScrollPane) {
+        //     ((JScrollPane) pane).getViewport().setBackground(Color.white);
+        // }
+        // pane.setMinimumSize(new Dimension(150, 0));
     }
 
+    /// Copies the content in the bounds of `pos` in the `view` as plain text
+    /// into the system clipboard. It translates the nbsp into breakable spaces.
     public static void copyHighlightToClipboard(SequentView view, PosInSequent pos) {
         // Replace nbsp; from html with normal spaces
         String s = view.getHighlightedText(pos).replace('\u00A0', ' ');
