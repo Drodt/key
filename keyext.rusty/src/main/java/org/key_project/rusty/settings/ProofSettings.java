@@ -17,8 +17,6 @@ import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.Nullable;
 
 public class ProofSettings {
-    public static final ProofSettings DEFAULT_SETTINGS = ProofSettings.loadedSettings();
-
     public static final File PROVER_CONFIG_FILE_NEW =
         new File(PathConfig.getKeyConfigDir(), "proof-settings.json");
 
@@ -33,6 +31,8 @@ public class ProofSettings {
 
     private final StrategySettings strategySettings = new StrategySettings();
     private final ChoiceSettings choiceSettings = new ChoiceSettings();
+
+    public static final ProofSettings DEFAULT_SETTINGS = ProofSettings.loadedSettings();
 
     /// create a proof settings object. When you add a new settings object, PLEASE UPDATE THE LIST
     /// ABOVE AND USE THOSE CONSTANTS INSTEAD OF USING INTEGERS DIRECTLY

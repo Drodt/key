@@ -29,11 +29,11 @@ public class CLI {
     @Option(names = { "--output", "-o" }, description = "where to write the proof to")
     File outputFile;
 
-    @Option(names = "--prove", negatable = true,
+    @Option(names = "--prove", negatable = true, defaultValue = "true", fallbackValue = "true",
         description = "whether to attempt to prove the file")
     boolean prove;
 
-    @Option(names = "--replay", negatable = true,
+    @Option(names = "--replay", negatable = true, defaultValue = "true", fallbackValue = "true",
         description = "whether to replay the loaded proof")
     boolean replay;
 
@@ -57,16 +57,24 @@ public class CLI {
         }
         if (cli.verbose)
             cli.printStats = true;
+        boolean success = run(cli);
+        System.out.flush();
+        System.err.flush();
+        System.exit(success ? 0 : 1);
+    }
+
+    private static boolean run(CLI cli) {
         try {
             if (cli.verbose)
                 System.out.println("Loading...");
-            var env = KeYEnvironment.load(cli.file);
+            File f = cli.file.getAbsoluteFile();
+            var env = KeYEnvironment.load(f);
             var loadedProof = env.getLoadedProof();
             if (loadedProof.closed()) {
                 if (cli.prove) {
                     System.err.println(
                         "Error: The loaded file already contains a proof.\nUse `--no-prove` to only load the proof.");
-                    System.exit(1);
+                    return false;
                 }
                 if (cli.replay) {
                     if (cli.verbose)
@@ -81,13 +89,13 @@ public class CLI {
                                 System.err.println("Error " + (i + 1) + ": " + error);
                             }
                         }
-                        System.exit(1);
+                        return false;
                     }
                     System.out.println("Loading and proof replay successful");
-                    System.exit(0);
+                    return true;
                 }
                 System.out.println("Loading successful");
-                System.exit(0);
+                return true;
             } else {
                 if (cli.prove) {
                     System.out.println("Proving...");
@@ -100,17 +108,20 @@ public class CLI {
                             ProofSaver.saveToFile(cli.outputFile.getAbsoluteFile(), loadedProof);
                         } catch (IOException e) {
                             System.err.println("Error saving proof to file: " + e.getMessage());
-                            System.exit(1);
+                            return false;
                         }
                     }
                     if (!loadedProof.closed()) {
                         System.err.println("Proof not closed. " + loadedProof.openGoals().size()
                             + " goals remaining");
-                        System.exit(1);
+                        return false;
                     } else {
                         System.out.println("Loading and proof successful");
-                        System.exit(0);
+                        return true;
                     }
+                } else {
+                    System.out.println("Loading successful");
+                    return true;
                 }
             }
         } catch (ProblemLoaderException e) {
@@ -119,7 +130,7 @@ public class CLI {
                 System.err.println(e);
                 System.err.println(Arrays.toString(e.getStackTrace()));
             }
-            System.exit(1);
+            return false;
         }
     }
 }
