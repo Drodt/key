@@ -4,15 +4,15 @@
 package org.key_project.rusty.ast;
 
 import org.key_project.logic.SyntaxElement;
-import org.key_project.logic.op.Function;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 
 import org.jspecify.annotations.NonNull;
 
-public record VariantConstructor(Function fn) implements Def {
+public record GenericVariantConstructor(ParametricFunctionDecl pfn) implements Def {
     @Override
     public void visit(Visitor v) {
-        v.performActionOnVariantConstructor(this);
+        v.performActionOnGenericVariantConstructor(this);
     }
 
     @Override
@@ -27,6 +27,6 @@ public record VariantConstructor(Function fn) implements Def {
 
     @Override
     public @NonNull String toString() {
-        return fn.name().toString();
+        return pfn.name().toString();
     }
 }

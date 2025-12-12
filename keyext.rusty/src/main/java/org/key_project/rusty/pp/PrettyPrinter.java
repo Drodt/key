@@ -728,6 +728,11 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
+    public void performActionOnGenericVariantConstructor(GenericVariantConstructor x) {
+
+    }
+
+    @Override
     public void performActionOnPathExpr(PathExpr x) {
         x.path().visit(this);
     }
