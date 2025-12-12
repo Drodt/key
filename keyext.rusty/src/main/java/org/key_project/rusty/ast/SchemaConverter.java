@@ -224,6 +224,11 @@ public class SchemaConverter {
                 new FunctionFrame(resultVar, null, convertBlockExpr(ff.blockExpr()));
             return functionFrame;
         }
+        if (ctx instanceof RustySchemaParser.PanicFrameContext pf) {
+            var resultVar =
+                (ProgramSV) lookupSchemaVariable(pf.schemaVariable().getText().substring(2));
+            return new PanicFrame(resultVar, convertBlockExpr(pf.blockExpr()));
+        }
         if (ctx instanceof RustySchemaParser.ConstBlockSchemaContext cb) {
             var sv =
                 (ProgramSV) lookupSchemaVariable(cb.schemaVariable().getText().substring(2));

@@ -48,6 +48,7 @@ expr
    | closureExpr # ClosureExpression_
    | exprWithBlock # ExpressionWithBlock_
    | PANIC LPAREN RPAREN # EmptyPanic
+   | PANIC_FRAME LPAREN schemaVariable COMMA blockExpr RPAREN # PanicFrame
    ;
 
 stmt
