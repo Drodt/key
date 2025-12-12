@@ -906,7 +906,8 @@ public class HirConverter {
                         variants[e.getKey()] =
                             new Variant(new Name(value.name()),
                                 fields, ctor);
-                        variantConstructors.put(value.defId(), ctor);
+                        assert value.ctor() != null;
+                        variantConstructors.put(value.ctor().id(), ctor);
                     }
                     services.getNamespaces().sorts().addSafely(sort);
                     yield new Enum(name, new ImmutableArray<>(variants), sort);
@@ -934,7 +935,8 @@ public class HirConverter {
                         new ParametricFunctionDecl(new Name(def.pathStr() + "::" + value.name()),
                             genSortParams, new ImmutableArray<>(), sort,
                             null, true, true, false);
-                    parametricVariantConstructors.put(value.defId(), ctor);
+                    assert value.ctor() != null;
+                    parametricVariantConstructors.put(value.ctor().id(), ctor);
                     variants[e.getKey()] =
                         new GenericVariant(name, generics,
                             convertFields(def.pathStr() + value.name(),

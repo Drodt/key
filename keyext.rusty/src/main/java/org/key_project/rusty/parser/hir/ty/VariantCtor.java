@@ -3,12 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.ty;
 
-import java.util.Map;
-
 import org.key_project.rusty.parser.hir.DefId;
 
-import org.jspecify.annotations.Nullable;
-
-public record VariantDef(DefId defId, @Nullable VariantCtor ctor, String name,
-        Map<Integer, TyFieldDef> fields) {
+public record VariantCtor(CtorKind kind, DefId id) {
 }
