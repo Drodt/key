@@ -3,17 +3,20 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof.init;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.GenericConstParam;
 import org.key_project.rusty.ast.abstraction.GenericTyParam;
 import org.key_project.rusty.ast.expr.BlockExpression;
+import org.key_project.rusty.ast.expr.PanicFrame;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 ///
 /// This abstract implementation of [ProofOblInput] extends the functionality of
@@ -60,6 +63,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
         boolean makeNamesUnique = isMakeNamesUnique();
         final ImmutableList<ProgramVariable> paramVars = tb.paramVars(fn, makeNamesUnique);
         final ProgramVariable resultVar = tb.resultVar(fn, makeNamesUnique);
+        final ProgramVariable panicVar = tb.panicVar(makeNamesUnique);
 
         if (fn.getFunction().getGenericParams().length > 0) {
             for (int i = 0; i < fn.getFunction().getGenericParams().length; i++) {
@@ -72,9 +76,9 @@ public abstract class AbstractOperationPO extends AbstractPO {
             }
         }
 
-        register(paramVars, new ProgramVariable[] { resultVar }, proofServices);
+        register(paramVars, new ProgramVariable[] { resultVar, panicVar }, proofServices);
 
-        final Term termPO = createPOTerm(fn, paramVars, resultVar, proofServices);
+        final Term termPO = createPOTerm(fn, paramVars, resultVar, panicVar, proofServices);
 
         assignPOTerm(termPO);
     }
@@ -118,7 +122,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
     }
 
     private Term createPOTerm(ProgramFunction fn, final ImmutableList<ProgramVariable> paramVars,
-            final ProgramVariable resultVar, final Services proofServices) {
+            final ProgramVariable resultVar, final ProgramVariable panicVar, final Services proofServices) {
         final ImmutableList<ProgramVariable> formalParamVars =
             createFormalParamVars(paramVars, proofServices);
 
@@ -130,20 +134,20 @@ public abstract class AbstractOperationPO extends AbstractPO {
         Term pre = tb.and(buildFreePre(paramVars, proofServices),
             getPre(paramVars, proofServices));
         // build program term
-        Term post = createPost(paramVars, formalParamVars, resultVar, proofServices);
+        Term post = createPost(paramVars, formalParamVars, resultVar, panicVar, proofServices);
 
         final Term progPost =
-            buildProgramTerm(paramVars, formalParamVars, resultVar, post, be, proofServices);
+            buildProgramTerm(paramVars, formalParamVars, post, be, panicVar, proofServices);
         final Term preImpliesProgPost = tb.imp(pre, progPost);
 
         return preImpliesProgPost;
     }
 
     protected Term buildProgramTerm(ImmutableList<ProgramVariable> paramVars,
-            ImmutableList<ProgramVariable> formalParamVars, ProgramVariable resultVar, Term post,
-            BlockExpression be, Services proofServices) {
+                                    ImmutableList<ProgramVariable> formalParamVars, Term post,
+                                    BlockExpression be, @Nullable ProgramVariable panicVar, Services proofServices) {
         // create rusty block
-        final RustyBlock rb = buildRustyBlock(be);
+        final RustyBlock rb = buildRustyBlock(be, panicVar);
 
         // create program term
         Term programTerm = tb.prog(getTerminationMarker(), rb, post);
@@ -154,8 +158,10 @@ public abstract class AbstractOperationPO extends AbstractPO {
         return tb.apply(update, programTerm);
     }
 
-    protected RustyBlock buildRustyBlock(BlockExpression be) {
-        return new RustyBlock(be);
+    protected RustyBlock buildRustyBlock(BlockExpression be, @Nullable ProgramVariable panicVar) {
+        if (panicVar == null)
+            return new RustyBlock(be);
+        return new RustyBlock(new BlockExpression(ImmutableList.of(new PanicFrame(panicVar, be)), null));
     }
 
     /// Returns the [RModality.RustyModalityKind] to use as termination
@@ -243,14 +249,14 @@ public abstract class AbstractOperationPO extends AbstractPO {
 
     private Term createPost(final ImmutableList<ProgramVariable> paramVars,
             final ImmutableList<ProgramVariable> formalParamVars,
-            final ProgramVariable resultVar,
+            final ProgramVariable resultVar, final @Nullable ProgramVariable panicVar,
             final Services proofServices) {
-        Term postTerm = getPost(paramVars, resultVar, proofServices);
+        Term postTerm = getPost(paramVars, resultVar,panicVar, proofServices);
         return postTerm;
     }
 
     protected abstract Term getPost(ImmutableList<ProgramVariable> paramVars,
-            ProgramVariable resultVar, Services proofServices);
+            ProgramVariable resultVar, @Nullable ProgramVariable panicVar,Services proofServices);
 
     protected abstract BlockExpression buildOperationBlock(
             ImmutableList<ProgramVariable> formalParamVars, ProgramVariable resultVar,

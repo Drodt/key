@@ -8,6 +8,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ProgramPrefixUtil;
 import org.key_project.rusty.ast.abstraction.TupleType;
 import org.key_project.rusty.ast.abstraction.Type;
+import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
@@ -17,7 +18,7 @@ import org.key_project.util.collection.ImmutableArray;
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
 
-public class PanicFrame implements Expr, PossibleProgramPrefix {
+public class PanicFrame implements Statement, PossibleProgramPrefix {
     private final IProgramVariable panicVar;
     private final BlockExpression body;
 
@@ -34,11 +35,6 @@ public class PanicFrame implements Expr, PossibleProgramPrefix {
                 : PosInProgram.TOP.down(1).down(0);
         var info = ProgramPrefixUtil.computeEssentials(this);
         prefixLength = info.length();
-    }
-
-    @Override
-    public Type type(Services services) {
-        return TupleType.UNIT;
     }
 
     @Override

@@ -10,5 +10,5 @@ import org.jspecify.annotations.Nullable;
 
 public record ProgramVariableCollection(@Nullable ProgramVariable self,
         ImmutableList<ProgramVariable> params,
-        @Nullable ProgramVariable result) {
+        @Nullable ProgramVariable result, @Nullable ProgramVariable panicVar) {
 }

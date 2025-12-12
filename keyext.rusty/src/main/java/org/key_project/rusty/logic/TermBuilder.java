@@ -15,6 +15,7 @@ import org.key_project.logic.op.UpdateableOperator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
+import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.fn.FunctionParamPattern;
 import org.key_project.rusty.ast.pat.BindingPattern;
 import org.key_project.rusty.ldt.IntLDT;
@@ -718,5 +719,9 @@ public class TermBuilder {
         var pfd = services.getLDTs().getArrayLDT().getGet();
         var get = ParametricFunctionInstance.get(pfd, sort.getArgs());
         return func(get, array, idx);
+    }
+
+    public ProgramVariable panicVar(boolean makeNamesUnique) {
+        return progVar("pnc", services.getRustInfo().getKeYRustyType(PrimitiveType.BOOL), makeNamesUnique);
     }
 }

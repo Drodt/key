@@ -124,7 +124,7 @@ public class HirRustyReader {
                         var pre = tb.geq(tb.var(a), tb.zero());
                         var post = tb.equals(tb.var(result), tb.add(tb.var(a), tb.var(b)));
                         var pvs =
-                            new ProgramVariableCollection(null, ImmutableList.of(a, b), result);
+                            new ProgramVariableCollection(null, ImmutableList.of(a, b), result, tb.panicVar(true));
                         FunctionalOperationContract contract = factory.func("my_contract",
                             target, true, pre, null, post, null, pvs, true);
                         services.getSpecificationRepository().addContract(contract);

@@ -45,7 +45,7 @@ public interface FunctionalOperationContract extends OperationContract {
             Services services);
 
     Term getPost(ProgramVariable selfVar,
-            ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar,
+            ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar, @Nullable ProgramVariable panicVar,
             Services services);
 
     String getBaseName();
