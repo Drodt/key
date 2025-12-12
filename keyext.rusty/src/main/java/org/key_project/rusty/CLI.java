@@ -44,6 +44,14 @@ public class CLI {
     @Option(names = { "--print-stats", "-s" })
     boolean printStats;
 
+    @Option(names = { "-t", "--timeout" }, defaultValue = "-1",
+        description = "timeout for the prover (ms)")
+    long timeout;
+
+    @Option(names = { "-m", "--max" }, defaultValue = "10000",
+        description = "maximal number of rule applications")
+    int max;
+
     public static void main(String[] args) {
         CLI cli = new CLI();
         CommandLine cmd = new CommandLine(cli);
@@ -99,6 +107,9 @@ public class CLI {
             } else {
                 if (cli.prove) {
                     System.out.println("Proving...");
+                    var stratSettings = loadedProof.getSettings().getStrategySettings();
+                    stratSettings.setTimeout(cli.timeout);
+                    stratSettings.setMaxSteps(cli.max);
                     env.getProofControl().startAndWaitForAutoMode(loadedProof);
                     if (cli.printStats) {
                         System.out.println(loadedProof.getStatistics());
