@@ -750,4 +750,9 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnPathSegment(PathSegment x) {
         layouter.print(x.ident());
     }
+
+    @Override
+    public void performActionOnPathRustType(PathRustType x) {
+        layouter.print(x.type().toString());
+    }
 }

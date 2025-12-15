@@ -931,16 +931,22 @@ public class HirConverter {
                 var variants = new GenericVariant[def.variants().size()];
                 for (var e : def.variants().entrySet()) {
                     VariantDef value = e.getValue();
+                    ImmutableArray<GenericField> fields =
+                        convertFields(def.pathStr() + value.name(),
+                            value.fields(), genSortParams);
+                    var argSorts = new Sort[value.fields().size()];
+                    for (int i = 0; i < fields.size(); i++) {
+                        argSorts[i] = fields.get(i).type().getSort(services);
+                    }
                     ParametricFunctionDecl ctor =
                         new ParametricFunctionDecl(new Name(def.pathStr() + "::" + value.name()),
-                            genSortParams, new ImmutableArray<>(), sort,
+                            genSortParams, new ImmutableArray<>(argSorts), sort,
                             null, true, true, false);
                     assert value.ctor() != null;
                     parametricVariantConstructors.put(value.ctor().id(), ctor);
                     variants[e.getKey()] =
                         new GenericVariant(name, generics,
-                            convertFields(def.pathStr() + value.name(),
-                                value.fields(), genSortParams),
+                            fields,
                             ctor);
                 }
                 yield new GenericEnum(name, new ImmutableArray<>(variants), generics, sortDecl);
@@ -990,7 +996,8 @@ public class HirConverter {
             var field = e.getValue();
             Type type = convertTy(field.ty());
             Name name = new Name(field.name());
-            var fieldConst = services.getLDTs().getFieldLDT().createField(prefix, name, type);
+            var fieldConst =
+                services.getLDTs().getFieldLDT().createField(prefix, name, type, services);
             res[e.getKey()] = new Field(name, type, fieldConst);
         }
         return new ImmutableArray<>(res);
@@ -1004,7 +1011,8 @@ public class HirConverter {
             Type type = convertTy(field.ty());
             Name name = new Name(field.name());
             var fieldConst =
-                services.getLDTs().getFieldLDT().createGenericField(prefix, name, type, generics);
+                services.getLDTs().getFieldLDT().createGenericField(prefix, name, type, generics,
+                    services);
             res[e.getKey()] = new GenericField(name, type, fieldConst);
         }
         return new ImmutableArray<>(res);

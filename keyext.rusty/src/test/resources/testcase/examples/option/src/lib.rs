@@ -7,5 +7,6 @@ use rml_contracts::*;
 #[spec(ensures(true))]
 fn foo() -> Option<u32> {
     let x = Some(1u32);
-    None
+    let y: Option<bool> = None;
+    x
 }

@@ -158,4 +158,6 @@ public interface Visitor {
     void performActionOnPathSegment(PathSegment x);
 
     void performActionOnGenericVariantConstructor(GenericVariantConstructor x);
+
+    void performActionOnPathRustType(PathRustType x);
 }

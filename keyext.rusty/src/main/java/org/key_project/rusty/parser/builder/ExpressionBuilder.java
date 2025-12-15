@@ -663,12 +663,8 @@ public class ExpressionBuilder extends DefaultBuilder {
 
             if (srb.rustyBlock == null) {
                 var rr = new HirRustyReader(services, nss);
-                try {
-                    srb.rustyBlock =
-                        rr.readBlockWithProgramVariables(programVariables(), cleanRusty);
-                } catch (Exception e1) {
-                    srb.rustyBlock = rr.readBlockWithEmptyContext(cleanRusty);
-                }
+                srb.rustyBlock =
+                    rr.readBlockWithProgramVariables(programVariables(), cleanRusty);
             }
         } catch (Exception e) {
             throw new BuildingException(t, "Could not parse Rust: '" + cleanRusty + "'", e);

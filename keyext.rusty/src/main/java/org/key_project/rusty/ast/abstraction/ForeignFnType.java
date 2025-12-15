@@ -26,6 +26,10 @@ public class ForeignFnType implements Type {
         name = new Name("Foreign(" + defId + ")" + args);
     }
 
+    public ImmutableArray<GenericTyArg> getArgs() {
+        return args;
+    }
+
     @Override
     public @Nullable Sort getSort(Services services) {
         throw new UnsupportedOperationException();
