@@ -46,9 +46,9 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
         if (!ProgramSVSort.PATTERN.canStandFor(src, services)) {
             return null;
         }
-        var bp = (BindingPattern) src;
-        if (bp.mut() != mut() || bp.mutRef() && (!mut() || !reference())
-                || bp.ref() && (mut() || !reference())) {
+        if (src instanceof BindingPattern bp
+                && (bp.mut() != mut() || bp.mutRef() && (!mut() || !reference())
+                        || bp.ref() && (mut() || !reference()))) {
             return null;
         }
         if (sort == ProgramSVSort.VARIABLE) {
@@ -57,7 +57,6 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
                 return null;
             }
         } else {
-
             final SVInstantiations instantiations = mc.getInstantiations();
             final Object instant = instantiations.getInstantiation(operatorSV);
             if (instant == null || instant.equals(src)

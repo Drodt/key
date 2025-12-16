@@ -11,6 +11,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.Path;
 import org.key_project.rusty.ast.PathSegment;
 import org.key_project.rusty.ast.ResDef;
+import org.key_project.rusty.ast.abstraction.FnDefType;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.logic.op.ProgramFunction;
@@ -89,7 +90,7 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
         var callee = new PathExpr(new Path<>(new ResDef(target), new ImmutableArray<>(
             new PathSegment(target.getFunction().name().toString(),
                 new ResDef(target)))),
-            target.getType().getRustyType());
+            new FnDefType(target.getFunction()));
         return new BlockExpression(ImmutableList.of(
             new ExpressionStatement(
                 new FunctionBodyExpression(resultVar, target,

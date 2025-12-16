@@ -18,6 +18,7 @@ import org.key_project.rusty.ast.pat.LitPatExpr;
 import org.key_project.rusty.ast.pat.Pattern;
 import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.ty.RustType;
+import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.util.collection.DefaultImmutableSet;
 
@@ -62,6 +63,8 @@ public abstract class ProgramSVSort extends SortImpl {
         new NonSimpleBoolExpressionSort();
     public static final ProgramSVSort PATTERN = new PatternSort();
     public static final ProgramSVSort CONSTRUCTOR = new ConstructorSort();
+    public static final ProgramSVSort NON_SIMPLE_NON_ASSIGNMENT_EXPR =
+        new NonSimpleNonAssignmentExpression();
 
     // ----------- Types of Statement Program SVs -----------------------------
     public static final ProgramSVSort STATEMENT = new StatementSort();
@@ -90,11 +93,12 @@ public abstract class ProgramSVSort extends SortImpl {
         throw new UnsupportedOperationException();
     }
 
+    public abstract boolean isExpressionSV();
+
     /// TODO: <a href=
     /// "https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions">Follow
     /// this</a>
     private static class LeftHandSideSort extends ProgramSVSort {
-
         public LeftHandSideSort() {
             super(new Name("LeftHandSide"));
         }
@@ -111,6 +115,11 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement pe, Services services) {
             return pe instanceof ProgramVariable;
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
         }
     }
 
@@ -144,7 +153,6 @@ public abstract class ProgramSVSort extends SortImpl {
     /// - (negated) literal expressions
     ///
     private static class SimpleExpressionSort extends ProgramSVSort {
-
         public SimpleExpressionSort() {
             super(new Name("SimpleExpression"));
         }
@@ -176,12 +184,16 @@ public abstract class ProgramSVSort extends SortImpl {
 
             return VARIABLE.canStandFor(pe, services);
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
+        }
     }
 
     /// This sort represents a type of program schema variables that match only on all expressions
     /// which are not matched by simple expression SVs.
     private static class NonSimpleExpressionSort extends ProgramSVSort {
-
         public NonSimpleExpressionSort() {
             super(new Name("NonSimpleExpression"));
         }
@@ -201,6 +213,11 @@ public abstract class ProgramSVSort extends SortImpl {
                 return false;
             return !SIMPLE_EXPRESSION.canStandFor(check, services);
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
+        }
     }
 
     /// This sort represents a type of program schema variables that match on all expressions only.
@@ -217,6 +234,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement pe, Services services) {
             return pe instanceof Expr;
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
+        }
     }
 
     private static class BlockExpressionSort extends ProgramSVSort {
@@ -232,6 +254,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof BlockExpression;
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
+        }
     }
 
     /// This sort represents a type of program schema variables that match only on statements
@@ -243,6 +270,11 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement pe, Services services) {
             return pe instanceof Statement;
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return false;
         }
     }
 
@@ -256,6 +288,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof RustType;
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return false;
+        }
     }
 
     /// This sort represents a type of program schema variables that matches byte,
@@ -268,6 +305,11 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             // TODO
+            return false;
+        }
+
+        @Override
+        public boolean isExpressionSV() {
             return false;
         }
     }
@@ -286,6 +328,11 @@ public abstract class ProgramSVSort extends SortImpl {
             return check instanceof Expr;
             // TODO: check type here
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
+        }
     }
 
     private static final class SimpleBoolExpressionSort extends ProgramSVSort {
@@ -298,6 +345,11 @@ public abstract class ProgramSVSort extends SortImpl {
             return SIMPLE_EXPRESSION.canStandFor(check, services)
                     && BOOL_EXPRESSION.canStandFor(check, services);
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
+        }
     }
 
     private static final class NonSimpleBoolExpressionSort extends ProgramSVSort {
@@ -309,6 +361,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return NON_SIMPLE_EXPRESSION.canStandFor(check, services)
                     && BOOL_EXPRESSION.canStandFor(check, services);
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
         }
     }
 
@@ -337,6 +394,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof Pattern;
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return false;
+        }
     }
 
     private static class LabelSort extends ProgramSVSort {
@@ -347,6 +409,11 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof ConcreteLabel;
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return false;
         }
     }
 
@@ -359,6 +426,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof FieldIdentifier;
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return false;
+        }
     }
 
     private static class NonModelFunctionBodySort extends ProgramSVSort {
@@ -369,6 +441,11 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof FunctionBodyExpression;
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return false;
         }
     }
 
@@ -381,6 +458,11 @@ public abstract class ProgramSVSort extends SortImpl {
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof Item;
         }
+
+        @Override
+        public boolean isExpressionSV() {
+            return false;
+        }
     }
 
     private static class ElseBranchExpressionSort extends ProgramSVSort {
@@ -391,6 +473,11 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof ElseBranch;
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
         }
     }
 
@@ -411,6 +498,31 @@ public abstract class ProgramSVSort extends SortImpl {
             return (check instanceof PathExpr pe && pe.path().res() instanceof ResDef(Def def)
                     && (def instanceof VariantConstructor
                             || def instanceof GenericVariantConstructor));
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
+        }
+    }
+
+    private static class NonSimpleNonAssignmentExpression extends ProgramSVSort {
+        protected NonSimpleNonAssignmentExpression() {
+            super(new Name("NonSimpleNonAssignmentExpression"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return !(check instanceof AssignmentExpression
+                    || check instanceof CompoundAssignmentExpression
+                    || check instanceof FunctionBodyExpression
+                    || check instanceof PossibleProgramPrefix pre && pre.isPrefix())
+                    && NON_SIMPLE_EXPRESSION.canStandFor(check, services);
+        }
+
+        @Override
+        public boolean isExpressionSV() {
+            return true;
         }
     }
 }

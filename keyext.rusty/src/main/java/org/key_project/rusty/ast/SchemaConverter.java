@@ -593,17 +593,8 @@ public class SchemaConverter {
         return new BlockExpression(stmts, value);
     }
 
-    // TODO(DD): Move this to a method in ProgramSVSort
     private static boolean isExpressionSV(ProgramSV psv) {
-        return psv.sort() == ProgramSVSort.EXPRESSION
-                || psv.sort() == ProgramSVSort.SIMPLE_EXPRESSION
-                || psv.sort() == ProgramSVSort.NON_SIMPLE_EXPRESSION
-                || psv.sort() == ProgramSVSort.BOOL_EXPRESSION
-                || psv.sort() == ProgramSVSort.SIMPLE_BOOL_EXPRESSION
-                || psv.sort() == ProgramSVSort.NON_SIMPLE_BOOL_EXPRESSION
-                || psv.sort() == ProgramSVSort.BLOCK_EXPRESSION
-                || psv.sort() == ProgramSVSort.ELSE_BRANCH_EXPRESSION
-                || psv.sort() == ProgramSVSort.VARIABLE;
+        return ((ProgramSVSort) psv.sort()).isExpressionSV();
     }
 
     private ContextBlockExpression convertContextBlockExpr(

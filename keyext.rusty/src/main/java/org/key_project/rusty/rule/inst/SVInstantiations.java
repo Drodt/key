@@ -38,6 +38,11 @@ public class SVInstantiations
             public boolean canStandFor(RustyProgramElement pe, Services services) {
                 return true;
             }
+
+            @Override
+            public boolean isExpressionSV() {
+                return false;
+            }
         }, false); // just a dummy SV for context
 
     /// the map with the instantiations to logic terms

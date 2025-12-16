@@ -167,10 +167,6 @@ public class TestFile {
 
                 autoMode(env, loadedProof);
 
-                System.out.println("Proof took " + loadedProof.getAutoModeTime() + "ms; with "
-                    + loadedProof.countNodes() + " nodes");
-                System.out.println(loadedProof.getStatistics());
-
                 if (testProperty == TestProperty.PROVABLE
                         || testProperty == TestProperty.NOT_PROVABLE) {
                     ProofSaver.saveToFile(new File(keyFile.getAbsolutePath() + ".save.proof"),

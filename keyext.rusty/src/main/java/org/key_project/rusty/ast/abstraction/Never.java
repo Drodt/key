@@ -38,4 +38,9 @@ public class Never implements Type {
     public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         return this;
     }
+
+    @Override
+    public String toString() {
+        return NAME.toString();
+    }
 }

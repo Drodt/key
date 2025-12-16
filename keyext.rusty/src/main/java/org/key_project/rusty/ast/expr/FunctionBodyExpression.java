@@ -10,6 +10,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public record FunctionBodyExpression(@Nullable ProgramVariable resultVar, ProgramFunction fn,
@@ -21,7 +22,7 @@ public record FunctionBodyExpression(@Nullable ProgramVariable resultVar, Progra
     public void visit(Visitor v) { v.performActionOnFunctionBodyExpression(this); }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         if (resultVar != null) {
             if (n == 0)
                 return resultVar;
@@ -36,7 +37,7 @@ public record FunctionBodyExpression(@Nullable ProgramVariable resultVar, Progra
     public int getChildCount() { return 2; }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         var sb = new StringBuilder();
         if (resultVar != null) {
             sb.append(resultVar);

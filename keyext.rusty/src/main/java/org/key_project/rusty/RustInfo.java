@@ -56,7 +56,7 @@ public final class RustInfo {
             type2KRTCache.put(type, krt);
             return krt;
         } else if (type instanceof Never nt) {
-            var krt = new KeYRustyType(nt);
+            var krt = new KeYRustyType(nt, nt.getSort(services));
             type2KRTCache.put(type, krt);
             return krt;
         } else if (type instanceof Closure ct) {

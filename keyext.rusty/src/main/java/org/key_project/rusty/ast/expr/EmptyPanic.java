@@ -5,13 +5,16 @@ package org.key_project.rusty.ast.expr;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.Never;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
+
+import org.jspecify.annotations.NonNull;
 
 public record EmptyPanic() implements Expr {
     @Override
     public Type type(Services services) {
-        throw new UnsupportedOperationException();
+        return Never.INSTANCE;
     }
 
     @Override
@@ -20,7 +23,7 @@ public record EmptyPanic() implements Expr {
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         throw new IndexOutOfBoundsException("No child " + n);
     }
 
@@ -30,7 +33,7 @@ public record EmptyPanic() implements Expr {
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return "panic!()";
     }
 }
