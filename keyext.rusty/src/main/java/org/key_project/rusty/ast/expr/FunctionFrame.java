@@ -19,6 +19,7 @@ import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class FunctionFrame implements Expr, PossibleProgramPrefix {
@@ -80,7 +81,8 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
     }
 
     @Override
-    public PossibleProgramPrefix getNextPrefixElement(@UnknownInitialization FunctionFrame this) {
+    public @NonNull PossibleProgramPrefix getNextPrefixElement(
+            @UnknownInitialization FunctionFrame this) {
         assert body != null;
         if (hasNextPrefixElement())
             return (PossibleProgramPrefix) body.getChild(0);
@@ -88,7 +90,7 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
     }
 
     @Override
-    public PossibleProgramPrefix getLastPrefixElement() {
+    public @NonNull PossibleProgramPrefix getLastPrefixElement() {
         return hasNextPrefixElement() ? getNextPrefixElement().getLastPrefixElement() : this;
     }
 
@@ -102,12 +104,12 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
     }
 
     @Override
-    public ImmutableArray<PossibleProgramPrefix> getPrefixElements() {
+    public @NonNull ImmutableArray<PossibleProgramPrefix> getPrefixElements() {
         return BlockExpression.computePrefixElements(body);
     }
 
     @Override
-    public PosInProgram getFirstActiveChildPos() {
+    public @NonNull PosInProgram getFirstActiveChildPos() {
         return firstActiveChildPos;
     }
 
@@ -122,7 +124,7 @@ public class FunctionFrame implements Expr, PossibleProgramPrefix {
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         if (resultVar != null) {
             if (n == 0)
                 return resultVar;

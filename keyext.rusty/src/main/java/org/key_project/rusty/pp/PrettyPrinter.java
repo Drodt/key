@@ -755,4 +755,14 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnPathRustType(PathRustType x) {
         layouter.print(x.type().toString());
     }
+
+    @Override
+    public void performActionOnPanicFrame(PanicFrame x) {
+        layouter.keyWord("panic_frame!");
+        layouter.print("(");
+        x.getPanicVar().visit(this);
+        layouter.print(", ");
+        x.getBody().visit(this);
+        layouter.print(")");
+    }
 }

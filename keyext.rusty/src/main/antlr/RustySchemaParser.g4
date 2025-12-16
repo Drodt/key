@@ -55,6 +55,7 @@ stmt
    | letStmt
    | exprStmt
    | schemaStmt SEMI
+   | PANIC_FRAME LPAREN schemaVariable COMMA blockExpr RPAREN
    ;
 
 schemaStmt

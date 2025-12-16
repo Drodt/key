@@ -38,6 +38,7 @@ public class FnSpecConverter extends AbstractSpecConverter {
         final var kind = specCase.kind();
         final var name = specCase.name();
         final var result = new ProgramVariable(new Name("result"), target.getType());
+        final var panicVar = tb.panicVar(false);
         var paramVars = ImmutableList.fromList(target.getFunction().params().stream().map(p -> {
             var fp = (FunctionParamPattern) p;
             var bp = (BindingPattern) fp.pattern();
@@ -45,6 +46,10 @@ public class FnSpecConverter extends AbstractSpecConverter {
         }).toList());
         var pre = mapAndJoinTerms(specCase.pre(), target, paramVars, result);
         var post = mapAndJoinTerms(specCase.post(), target, paramVars, result);
+        if (panicVar != null) {
+            var expectedPanic = kind == SpecKind.Panic ? tb.TRUE() : tb.FALSE();
+            post = tb.and(tb.equals(tb.var(panicVar), expectedPanic), post);
+        }
         Term variant;
         if (specCase.variant() == null)
             variant = null;
@@ -59,12 +64,12 @@ public class FnSpecConverter extends AbstractSpecConverter {
         clearCtx();
         if (diverges == tb.ff()) {
             return Stream.of(new FunctionalOperationContractImpl(name, name, target,
-                RModality.RustyModalityKind.DIA, pre, variant, post, null, paramVars, result,
+                RModality.RustyModalityKind.DIA, pre, variant, post, null, paramVars, result,panicVar,
                 null, 0, true, services));
         }
         if (diverges == tb.tt()) {
             return Stream.of(new FunctionalOperationContractImpl(name, name, target,
-                RModality.RustyModalityKind.BOX, pre, variant, post, null, paramVars, result,
+                RModality.RustyModalityKind.BOX, pre, variant, post, null, paramVars, result,panicVar,
                 null, 0, true, services));
         }
         throw new UnsupportedOperationException("TODO: Unsupported diverges: " + diverges);

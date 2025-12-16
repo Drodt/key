@@ -57,7 +57,7 @@ public class ContractFactory {
             modifiable,
             // progVars.selfVar,
             progVars.params(),
-            progVars.result(), null, Contract.INVALID_ID,
+            progVars.result(), progVars.panicVar(), null, Contract.INVALID_ID,
             toBeSaved, services);
     }
 

@@ -160,4 +160,6 @@ public interface Visitor {
     void performActionOnGenericVariantConstructor(GenericVariantConstructor x);
 
     void performActionOnPathRustType(PathRustType x);
+
+    void performActionOnPanicFrame(PanicFrame x);
 }

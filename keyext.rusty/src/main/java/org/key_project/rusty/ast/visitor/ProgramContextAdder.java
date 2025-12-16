@@ -57,6 +57,7 @@ public class ProgramContextAdder {
                 case ExpressionStatement es -> createExpressionStatementWrapper(es, body);
                 case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
                 case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
+                case PanicFrame pf -> createPanicFrameWrapper(pf, (BlockExpression) body);
                 case null, default -> throw new RuntimeException(
                     new UnexpectedException(
                         "Unexpected block type: " + (context != null ? context.getClass() : null)));
@@ -171,5 +172,10 @@ public class ProgramContextAdder {
 
     private LoopScope createLoopScopeWrapper(LoopScope old, BlockExpression body) {
         return new LoopScope(old.getIndex(), old.getReturnVar(), body);
+    }
+
+    private PanicFrame createPanicFrameWrapper(PanicFrame wrapper,
+                                                     BlockExpression replacement) {
+        return new PanicFrame(wrapper.getPanicVar(), replacement);
     }
 }

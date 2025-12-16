@@ -409,4 +409,9 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     public void performActionOnPathRustType(PathRustType x) {
         doDefaultAction(x);
     }
+
+    @Override
+    public void performActionOnPanicFrame(PanicFrame x) {
+        doDefaultAction(x);
+    }
 }

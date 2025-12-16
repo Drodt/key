@@ -50,6 +50,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     final @Nullable Term originalModifiable;
     final ImmutableList<ProgramVariable> originalParamVars;
     final @Nullable ProgramVariable originalResultVar;
+    final @Nullable ProgramVariable originalPanicVar;
     final @Nullable Term globalDefs;
     final int id;
     final boolean toBeSaved;
@@ -66,7 +67,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     FunctionalOperationContractImpl(String baseName, @Nullable String name,
             ProgramFunction fn, RModality.RustyModalityKind modalityKind,
             Term pre, @Nullable Term mby, Term post, @Nullable Term modifiables,
-            ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar,
+            ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar, @Nullable ProgramVariable panicVar,
             @Nullable Term globalDefs,
             int id, boolean toBeSaved,
             Services services) {
@@ -91,6 +92,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
         this.originalModifiable = modifiables;
         this.originalParamVars = paramVars;
         this.originalResultVar = resultVar;
+        this.originalPanicVar = panicVar;
         this.globalDefs = globalDefs;
         this.id = id;
         this.toBeSaved = toBeSaved;
@@ -107,7 +109,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
         return new FunctionalOperationContractImpl(baseName, name, fn,
             modalityKind,
             newPres, newMby, newPost, newModifiable,
-            originalParamVars, originalResultVar, newGlobalDefs,
+            originalParamVars, originalResultVar, originalPanicVar, newGlobalDefs,
             id, toBeSaved, services);
     }
 
@@ -125,7 +127,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
         assert paramVars.size() == originalParamVars.size();
 
         final Map<ProgramVariable, ProgramVariable> replaceMap =
-            getReplaceMap(selfVar, paramVars, null, services);
+            getReplaceMap(selfVar, paramVars, null, null, services);
         final OpReplacer or = new OpReplacer(replaceMap, services.getTermFactory());
         return or.replace(originalPre);
     }
@@ -224,18 +226,18 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
 
     @Override
     public Term getPost(ProgramVariable selfVar, ImmutableList<ProgramVariable> paramVars,
-            ProgramVariable resultVar, Services services) {
+            ProgramVariable resultVar, @Nullable ProgramVariable panicVar, Services services) {
         // assert (selfVar == null) == (originalSelfVar == null);
         assert paramVars != null;
         assert paramVars.size() == originalParamVars.size();
         assert resultVar != null;
-        final var replaceMap = getReplaceMap(selfVar, paramVars, resultVar, services);
+        final var replaceMap = getReplaceMap(selfVar, paramVars, resultVar, panicVar, services);
         final OpReplacer or = new OpReplacer(replaceMap, services.getTermFactory());
         return or.replace(originalPost);
     }
 
     private Map<ProgramVariable, ProgramVariable> getReplaceMap(ProgramVariable selfVar,
-            @Nullable ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar,
+            @Nullable ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar, @Nullable ProgramVariable panicVar,
             Services services) {
         final Map<ProgramVariable, ProgramVariable> result = new HashMap<>();
 
@@ -260,6 +262,13 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
             assert originalResultVar != null;
             assertSubSort(resultVar, originalResultVar);
             result.put(originalResultVar, resultVar);
+        }
+
+        // panic
+        if (panicVar != null) {
+            assert originalPanicVar != null;
+            assertSubSort(panicVar, originalPanicVar);
+            result.put(originalPanicVar, panicVar);
         }
 
         return result;
@@ -392,7 +401,7 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     public Contract setID(int newId) {
         return new FunctionalOperationContractImpl(baseName, null, fn, modalityKind, originalPre,
             originalMby, originalPost,
-            originalModifiable, originalParamVars, originalResultVar, globalDefs, newId, toBeSaved,
+            originalModifiable, originalParamVars, originalResultVar, originalPanicVar, globalDefs, newId, toBeSaved,
             services);
     }
 

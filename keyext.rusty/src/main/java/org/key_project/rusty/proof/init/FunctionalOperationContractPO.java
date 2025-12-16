@@ -5,6 +5,7 @@ package org.key_project.rusty.proof.init;
 
 import java.io.IOException;
 
+import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
@@ -74,9 +75,9 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
     }
 
     @Override
-    protected Term getPost(ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar,
+    protected Term getPost(ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar, @Nullable ProgramVariable panicVar,
             Services proofServices) {
-        return contract.getPost(null, paramVars, resultVar, proofServices);
+        return contract.getPost(null, paramVars, resultVar, panicVar, proofServices);
     }
 
     @Override
