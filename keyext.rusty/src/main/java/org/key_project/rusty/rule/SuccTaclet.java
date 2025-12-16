@@ -75,5 +75,4 @@ public class SuccTaclet extends FindTaclet {
             (Sequent) find,
             prefixMap, choices, tacletAnnotations, noFreeVarIns);
     }
-
 }
