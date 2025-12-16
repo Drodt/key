@@ -175,7 +175,7 @@ public class ProgramContextAdder {
     }
 
     private PanicFrame createPanicFrameWrapper(PanicFrame wrapper,
-                                                     BlockExpression replacement) {
+            BlockExpression replacement) {
         return new PanicFrame(wrapper.getPanicVar(), replacement);
     }
 }

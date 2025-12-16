@@ -67,7 +67,8 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     FunctionalOperationContractImpl(String baseName, @Nullable String name,
             ProgramFunction fn, RModality.RustyModalityKind modalityKind,
             Term pre, @Nullable Term mby, Term post, @Nullable Term modifiables,
-            ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar, @Nullable ProgramVariable panicVar,
+            ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar,
+            @Nullable ProgramVariable panicVar,
             @Nullable Term globalDefs,
             int id, boolean toBeSaved,
             Services services) {
@@ -237,7 +238,8 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     }
 
     private Map<ProgramVariable, ProgramVariable> getReplaceMap(ProgramVariable selfVar,
-            @Nullable ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar, @Nullable ProgramVariable panicVar,
+            @Nullable ImmutableList<ProgramVariable> paramVars, @Nullable ProgramVariable resultVar,
+            @Nullable ProgramVariable panicVar,
             Services services) {
         final Map<ProgramVariable, ProgramVariable> result = new HashMap<>();
 
@@ -401,7 +403,8 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
     public Contract setID(int newId) {
         return new FunctionalOperationContractImpl(baseName, null, fn, modalityKind, originalPre,
             originalMby, originalPost,
-            originalModifiable, originalParamVars, originalResultVar, originalPanicVar, globalDefs, newId, toBeSaved,
+            originalModifiable, originalParamVars, originalResultVar, originalPanicVar, globalDefs,
+            newId, toBeSaved,
             services);
     }
 

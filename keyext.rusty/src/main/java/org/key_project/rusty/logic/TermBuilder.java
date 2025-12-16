@@ -722,6 +722,7 @@ public class TermBuilder {
     }
 
     public ProgramVariable panicVar(boolean makeNamesUnique) {
-        return progVar("pnc", services.getRustInfo().getKeYRustyType(PrimitiveType.BOOL), makeNamesUnique);
+        return progVar("pnc", services.getRustInfo().getKeYRustyType(PrimitiveType.BOOL),
+            makeNamesUnique);
     }
 }

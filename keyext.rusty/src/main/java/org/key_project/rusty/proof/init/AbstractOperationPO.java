@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof.init;
 
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
@@ -16,7 +15,8 @@ import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
+
+import org.jspecify.annotations.Nullable;
 
 ///
 /// This abstract implementation of [ProofOblInput] extends the functionality of
@@ -122,7 +122,8 @@ public abstract class AbstractOperationPO extends AbstractPO {
     }
 
     private Term createPOTerm(ProgramFunction fn, final ImmutableList<ProgramVariable> paramVars,
-            final ProgramVariable resultVar, final ProgramVariable panicVar, final Services proofServices) {
+            final ProgramVariable resultVar, final ProgramVariable panicVar,
+            final Services proofServices) {
         final ImmutableList<ProgramVariable> formalParamVars =
             createFormalParamVars(paramVars, proofServices);
 
@@ -144,8 +145,8 @@ public abstract class AbstractOperationPO extends AbstractPO {
     }
 
     protected Term buildProgramTerm(ImmutableList<ProgramVariable> paramVars,
-                                    ImmutableList<ProgramVariable> formalParamVars, Term post,
-                                    BlockExpression be, @Nullable ProgramVariable panicVar, Services proofServices) {
+            ImmutableList<ProgramVariable> formalParamVars, Term post,
+            BlockExpression be, @Nullable ProgramVariable panicVar, Services proofServices) {
         // create rusty block
         final RustyBlock rb = buildRustyBlock(be, panicVar);
 
@@ -161,7 +162,8 @@ public abstract class AbstractOperationPO extends AbstractPO {
     protected RustyBlock buildRustyBlock(BlockExpression be, @Nullable ProgramVariable panicVar) {
         if (panicVar == null)
             return new RustyBlock(be);
-        return new RustyBlock(new BlockExpression(ImmutableList.of(new PanicFrame(panicVar, be)), null));
+        return new RustyBlock(
+            new BlockExpression(ImmutableList.of(new PanicFrame(panicVar, be)), null));
     }
 
     /// Returns the [RModality.RustyModalityKind] to use as termination
@@ -251,12 +253,12 @@ public abstract class AbstractOperationPO extends AbstractPO {
             final ImmutableList<ProgramVariable> formalParamVars,
             final ProgramVariable resultVar, final @Nullable ProgramVariable panicVar,
             final Services proofServices) {
-        Term postTerm = getPost(paramVars, resultVar,panicVar, proofServices);
+        Term postTerm = getPost(paramVars, resultVar, panicVar, proofServices);
         return postTerm;
     }
 
     protected abstract Term getPost(ImmutableList<ProgramVariable> paramVars,
-            ProgramVariable resultVar, @Nullable ProgramVariable panicVar,Services proofServices);
+            ProgramVariable resultVar, @Nullable ProgramVariable panicVar, Services proofServices);
 
     protected abstract BlockExpression buildOperationBlock(
             ImmutableList<ProgramVariable> formalParamVars, ProgramVariable resultVar,

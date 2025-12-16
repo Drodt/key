@@ -64,12 +64,14 @@ public class FnSpecConverter extends AbstractSpecConverter {
         clearCtx();
         if (diverges == tb.ff()) {
             return Stream.of(new FunctionalOperationContractImpl(name, name, target,
-                RModality.RustyModalityKind.DIA, pre, variant, post, null, paramVars, result,panicVar,
+                RModality.RustyModalityKind.DIA, pre, variant, post, null, paramVars, result,
+                panicVar,
                 null, 0, true, services));
         }
         if (diverges == tb.tt()) {
             return Stream.of(new FunctionalOperationContractImpl(name, name, target,
-                RModality.RustyModalityKind.BOX, pre, variant, post, null, paramVars, result,panicVar,
+                RModality.RustyModalityKind.BOX, pre, variant, post, null, paramVars, result,
+                panicVar,
                 null, 0, true, services));
         }
         throw new UnsupportedOperationException("TODO: Unsupported diverges: " + diverges);
