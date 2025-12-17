@@ -270,7 +270,6 @@ public class TacletIndex {
     /// instantiations to get the rule fit.
     public ImmutableList<NoPosTacletApp> getSuccedentTaclet(PosInOccurrence pos,
             Services services) {
-
         return getTopLevelTaclets(succList, pos, services);
     }
 
