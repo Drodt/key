@@ -34,7 +34,7 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
         }
 
         @Override
-        public SyntaxElement getChild(int n) {
+        public @NonNull SyntaxElement getChild(int n) {
             throw new IndexOutOfBoundsException();
         }
 
@@ -63,7 +63,7 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         if (n == 0 && left != null)
             return left;
         if (left != null)
