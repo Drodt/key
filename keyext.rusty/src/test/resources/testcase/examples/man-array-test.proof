@@ -86,7 +86,7 @@
                     (rule "simplifyUpdate1" (formula "5") (term "2,0,1,0"))
                     (rule "applyOnPV" (formula "5") (term "2,0,1,0"))
                     (rule "simplifyUpdate2" (formula "5"))
-                    (rule "implicit_return_unfold" (formula "5") (term "1"))
+                    (rule "unfold_complex_expr" (formula "5") (term "1"))
                     (rule "let_ident_pat_assign_no_type" (formula "5") (term "1"))
                     (rule "let_ident_pat_no_type" (formula "5") (term "1"))
                     (rule "assign_array_index" (formula "5") (term "1"))
