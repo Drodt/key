@@ -123,18 +123,20 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
 
     private static class ToTuple extends AbstractTermTransformer {
         public ToTuple() {
-            super(new Name("toTuple"), 1);
+            super(new Name("toTuple"), 2);
         }
 
         @Override
         public Term transform(Term term, SVInstantiations svInst, Services services) {
-            var sv = term.sub(0);
+            var first = term.sub(0);
+            var sv = term.sub(1);
             var pes =
                 (ProgramListInstantiation) svInst.getInstantiationEntry((SchemaVariable) sv.op());
 
-            var terms = new Term[pes.getInstantiation().size()];
-            for (int i = 0; i < terms.length; i++) {
-                terms[i] = services.convertToLogicElement(pes.getInstantiation().get(i));
+            var terms = new Term[pes.getInstantiation().size() + 1];
+            terms[0] = first;
+            for (int i = 1; i < terms.length; i++) {
+                terms[i] = services.convertToLogicElement(pes.getInstantiation().get(i - 1));
             }
             return services.getTermBuilder().tuple(terms);
         }

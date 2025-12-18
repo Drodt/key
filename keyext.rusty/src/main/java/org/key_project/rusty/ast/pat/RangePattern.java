@@ -5,8 +5,11 @@ package org.key_project.rusty.ast.pat;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.rule.MatchConditions;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /// This class represents range patterns.
@@ -44,6 +47,14 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
         public void visit(Visitor v) {
             // Bounds should stay invisible to the visitors and therefore no visit is needed
         }
+
+        @Override
+        public @Nullable MatchConditions match(SourceData sourceData,
+                @Nullable MatchConditions mc) {
+            mc = equals(sourceData.getSource()) ? mc : null;
+            sourceData.next();
+            return mc;
+        }
     }
 
     @Override
@@ -77,7 +88,7 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         StringBuilder sb = new StringBuilder();
         if (left != null)
             sb.append(left);

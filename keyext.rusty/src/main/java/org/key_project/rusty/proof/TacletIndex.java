@@ -29,6 +29,9 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class TacletIndex {
     private static final Object DEFAULT_SV_KEY = new Object();
     private static final Object DEFAULT_PROGSV_KEY = new Object();
@@ -46,6 +49,9 @@ public class TacletIndex {
 
     /// keeps track of no pos taclet apps with partial instantiations
     protected HashSet<NoPosTacletApp> partialInstantiatedRuleApps = new LinkedHashSet<>();
+
+    private static final boolean DEBUG = false;
+    private static final Logger LOG = LoggerFactory.getLogger(TacletIndex.class);
 
     /// constructs empty rule index
     public TacletIndex() {
@@ -237,10 +243,20 @@ public class TacletIndex {
             return result;
         }
 
+        Taclet symExMatched = null;
         for (final NoPosTacletApp tacletApp : tacletApps) {
             final NoPosTacletApp newTacletApp = tacletApp.matchFind(pos, services);
             if (newTacletApp != null) {
                 result = result.prepend(newTacletApp);
+                if (DEBUG && newTacletApp.taclet().assumesSequent().isEmpty()
+                        && newTacletApp.taclet().getRuleSets().stream()
+                                .anyMatch(rs -> rs.name().toString().equals("simplify_prog"))) {
+                    if (symExMatched != null) {
+                        LOG.warn("Multiple symex rules applicable at {}: {} and {}", pos,
+                            symExMatched.name(), newTacletApp.taclet().name());
+                    }
+                    symExMatched = newTacletApp.taclet();
+                }
             }
         }
 
