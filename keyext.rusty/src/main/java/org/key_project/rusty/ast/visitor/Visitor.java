@@ -158,4 +158,6 @@ public interface Visitor {
     void performActionOnResDef(ResDef x);
 
     void performActionOnPathSegment(PathSegment x);
+
+    void performActionOnGhostRustType(GhostRustType x);
 }

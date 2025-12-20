@@ -6,6 +6,7 @@ package org.key_project.rusty.ast;
 import java.math.BigInteger;
 import java.util.*;
 
+import com.sun.jdi.PrimitiveValue;
 import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.*;
@@ -857,6 +858,9 @@ public class HirConverter {
         Adt adt = switch (def.kind()) {
             case Struct -> {
                 assert def.variants().size() == 1;
+                if (def.pathStr().equals("rml_contracts::Ghost")) {
+                    yield new GenericGhostType(generics, services);
+                }
                 if (generics.isEmpty()) {
                     var fields = convertFields(def.pathStr(), def.variants().get(0).fields());
                     yield new Struct(name, fields, null, null);
@@ -925,6 +929,7 @@ public class HirConverter {
             case Enum e -> e;
             case GenericStruct g -> g.instantiate(convertGenericArgs(args), services);
             case Struct s -> s;
+            case GenericGhostType g -> g.instantiate(convertGenericArgs(args), services);
             default -> throw new IllegalArgumentException("Unknown adt: " + adt);
         };
 

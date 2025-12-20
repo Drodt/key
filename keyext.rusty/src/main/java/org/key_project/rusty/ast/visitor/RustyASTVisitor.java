@@ -405,4 +405,9 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     public void performActionOnPathSegment(PathSegment x) {
         doDefaultAction(x);
     }
+
+    @Override
+    public void performActionOnGhostRustType(GhostRustType x) {
+        doDefaultAction(x);
+    }
 }

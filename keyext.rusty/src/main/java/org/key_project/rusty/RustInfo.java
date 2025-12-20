@@ -79,7 +79,11 @@ public final class RustInfo {
             var krt = new KeYRustyType(f);
             type2KRTCache.put(type, krt);
             return krt;
-        } else {
+        } else if (type instanceof GhostType g) {
+            var krt = new KeYRustyType(g, g.getSort(services));
+            type2KRTCache.put(type, krt);
+            return krt;
+        }else {
             throw new IllegalArgumentException("Unsupported type: " + type);
         }
     }
