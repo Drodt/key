@@ -64,6 +64,10 @@ public interface ExprKind {
 
     }
 
+    record SnapshotBlockExpr(Block block) implements ExprKind{
+
+    }
+
     record Assign(Expr left, Expr right, Span span) implements ExprKind {
     }
 
