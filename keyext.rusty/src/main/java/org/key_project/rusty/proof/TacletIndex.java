@@ -495,7 +495,7 @@ public class TacletIndex {
         /// the classes that represent prefix elements of a Rust block
         static final Class<?>[] prefixClasses =
             new Class<?>[] { BlockExpression.class, ExpressionStatement.class, LoopScope.class,
-                FunctionFrame.class, GhostBlockExpression.class};
+                FunctionFrame.class, GhostBlockExpression.class };
 
         /// number of prefix types
         static final int PREFIXTYPES = prefixClasses.length;

@@ -142,6 +142,10 @@ public class ProgramContextAdder {
         } else if (wrapper instanceof ExpressionStatement es) {
             assert putIn.getStatements().isEmpty() : putIn.toString();
             return new ExpressionStatement(Objects.requireNonNull(putIn.getValue()), es.hasSemi());
+        } else if (wrapper instanceof GhostBlockExpression gb) {
+            var be = new BlockExpression(gb.getStatements(), gb.getValue());
+            be = (BlockExpression) createWrapperBody(be, putIn, suffix);
+            return new GhostBlockExpression(be.getStatements(), be.getValue());
         } else {
             throw new RuntimeException("Unexpected context : " + wrapper);
         }

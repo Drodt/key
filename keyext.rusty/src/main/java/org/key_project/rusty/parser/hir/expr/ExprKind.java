@@ -64,7 +64,7 @@ public interface ExprKind {
 
     }
 
-    record SnapshotBlockExpr(Block block) implements ExprKind{
+    record SnapshotBlockExpr(Block block) implements ExprKind {
 
     }
 

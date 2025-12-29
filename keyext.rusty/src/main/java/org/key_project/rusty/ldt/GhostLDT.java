@@ -1,7 +1,8 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ldt;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
@@ -10,14 +11,17 @@ import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 
-public class GhostLDT extends LDT{
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+public class GhostLDT extends LDT {
     public static final Name NAME = new Name("Ghost");
 
     private final ParametricFunctionDecl ghost;
     private final ParametricFunctionDecl unwrap;
 
-    public GhostLDT(Services services){
-        super (NAME, services);
+    public GhostLDT(Services services) {
+        super(NAME, services);
 
         ghost = addParametricFunction(services, "ghost");
         unwrap = addParametricFunction(services, "unwrap_ghost");
@@ -52,7 +56,8 @@ public class GhostLDT extends LDT{
     }
 
     @Override
-    public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right, Services services) {
+    public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
+            Services services) {
         return false;
     }
 

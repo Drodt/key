@@ -230,7 +230,7 @@ public class SchemaConverter {
             return new ConstBlockExpression(sv);
         }
 
-        if (ctx instanceof RustySchemaParser.GhostBlockExpressionContext gh){
+        if (ctx instanceof RustySchemaParser.GhostBlockExpressionContext gh) {
             var block = convertBlockExpr(gh.blockExpr());
             return new GhostBlockExpression(block.getStatements(), block.getValue());
         }

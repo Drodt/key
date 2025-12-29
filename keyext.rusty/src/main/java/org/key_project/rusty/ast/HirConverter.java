@@ -6,7 +6,6 @@ package org.key_project.rusty.ast;
 import java.math.BigInteger;
 import java.util.*;
 
-import com.sun.jdi.PrimitiveValue;
 import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.*;

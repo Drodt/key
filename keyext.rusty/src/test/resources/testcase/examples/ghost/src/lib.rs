@@ -6,6 +6,7 @@ use rml_contracts::*;
 
 #[spec(ensures(true))]
 fn foo() {
-    
-
+    ghost!{
+        let x = 1;
+    };
 }
