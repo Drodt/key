@@ -157,8 +157,6 @@ public class SchemaConverter {
             return convertCallExpression(x);
         if (ctx instanceof RustySchemaParser.IndexExpressionContext x)
             return convertIndexExpression(x);
-        if (ctx instanceof RustySchemaParser.ErrorPropagationExpressionContext x)
-            return convertErrorPropagationExpression(x);
         if (ctx instanceof RustySchemaParser.BorrowExpressionContext x)
             return convertBorrowExpression(x);
         if (ctx instanceof RustySchemaParser.DereferenceExpressionContext x)
@@ -173,8 +171,6 @@ public class SchemaConverter {
             return convertComparisonExpression(x);
         if (ctx instanceof RustySchemaParser.LazyBooleanExpressionContext x)
             return convertLazyBooleanExpression(x);
-        if (ctx instanceof RustySchemaParser.RangeExpressionContext x)
-            return convertRangeExpression(x);
         if (ctx instanceof RustySchemaParser.AssignmentExpressionContext ae)
             return convertAssignmentExpression(ae);
         if (ctx instanceof RustySchemaParser.CompoundAssignmentExpressionContext x)
@@ -192,17 +188,16 @@ public class SchemaConverter {
                 return convertEnumeratedArrayExpression(x);
             else
                 return convertRepeatedArrayExpression(x);
-        if (ctx instanceof RustySchemaParser.TupleExpressionContext x)
+        else if (ctx instanceof RustySchemaParser.TupleExpressionContext x)
             return convertTupleExpression(x);
-        if (ctx instanceof RustySchemaParser.StructExpression_Context x) {
+        else if (ctx instanceof RustySchemaParser.StructExpression_Context x) {
             if (x.structExpr().structExprUnit() != null)
                 return convertUnitStructExpression(x.structExpr().structExprUnit());
             if (x.structExpr().structExprTuple() != null)
                 return convertTupleStructExpression(x.structExpr().structExprTuple());
             if (x.structExpr().structExprStruct() != null)
                 return convertStructStructExpression(x.structExpr().structExprStruct());
-        }
-        if (ctx instanceof RustySchemaParser.EnumerationVariantExpression_Context x) {
+        } else if (ctx instanceof RustySchemaParser.EnumerationVariantExpression_Context x) {
             if (x.enumerationVariantExpr().enumExprStruct() != null)
                 return convertEnumVariantStruct(x.enumerationVariantExpr().enumExprStruct());
             if (x.enumerationVariantExpr().enumExprTuple() != null)
@@ -228,6 +223,11 @@ public class SchemaConverter {
             FunctionFrame functionFrame =
                 new FunctionFrame(resultVar, null, convertBlockExpr(ff.blockExpr()));
             return functionFrame;
+        }
+        if (ctx instanceof RustySchemaParser.ConstBlockSchemaContext cb) {
+            var sv =
+                (ProgramSV) lookupSchemaVariable(cb.schemaVariable().getText().substring(2));
+            return new ConstBlockExpression(sv);
         }
         throw new UnsupportedOperationException(
             "Unknown expr: " + ctx.getText() + " class: " + ctx.getClass());
@@ -295,21 +295,27 @@ public class SchemaConverter {
         ImmutableArray<Expr> params = ctx.callParams() == null ? new ImmutableArray<>()
                 : new ImmutableArray<>(
                     ctx.callParams().expr().stream().map(this::convertExpr).toList());
-        return new MethodCallExpression(callee, seg, params);
+        return new MethodCallExpression(callee,
+            new PathSegment(seg.segment().ident().toString(), null), params);
     }
 
     private FieldExpression convertFieldExpression(
             RustySchemaParser.FieldExpressionContext ctx) {
         var base = convertExpr(ctx.expr());
-        var ident = convertIdentifier(ctx.identifier());
-        return new FieldExpression(base, ident);
+        if (ctx.identifier() != null) {
+            throw new UnsupportedOperationException();
+        } else {
+            var sv = ctx.schemaVariable();
+            return new FieldExpression(base,
+                (ProgramSV) lookupSchemaVariable(sv.SCHEMA_IDENTIFIER().getText().substring(2)));
+        }
     }
 
-    private TupleIndexingExpression convertTupleIndexingExpression(
+    private FieldExpression convertTupleIndexingExpression(
             RustySchemaParser.TupleIndexingExpressionContext ctx) {
         var base = convertExpr(ctx.expr());
-        int idx = Integer.parseInt(ctx.tupleIndex().INTEGER_LITERAL().getText());
-        return new TupleIndexingExpression(base, idx);
+        var idx = new Identifier(new Name(ctx.tupleIndex().INTEGER_LITERAL().getText()));
+        return new FieldExpression(base, new FieldIdentifier(idx, null));
     }
 
     private CallExpression convertCallExpression(
@@ -326,12 +332,6 @@ public class SchemaConverter {
         var base = convertExpr(ctx.expr(0));
         var idx = convertExpr(ctx.expr(1));
         return new IndexExpression(base, idx, null);
-    }
-
-    private ErrorPropagationExpression convertErrorPropagationExpression(
-            RustySchemaParser.ErrorPropagationExpressionContext ctx) {
-        var base = convertExpr(ctx.expr());
-        return new ErrorPropagationExpression(base);
     }
 
     private BorrowExpression convertBorrowExpression(
@@ -420,18 +420,6 @@ public class SchemaConverter {
         return new BinaryExpression(op, left, right);
     }
 
-    private RangeExpression convertRangeExpression(
-            RustySchemaParser.RangeExpressionContext ctx) {
-        var left =
-            ctx.getChild(
-                0) instanceof RustySchemaParser.ExprContext e
-                        ? convertExpr(e)
-                        : null;
-        var right = left == null ? convertExpr(ctx.expr(0)) : convertExpr(ctx.expr(1));
-        var inclusive = ctx.DOTDOTEQ() != null;
-        return new RangeExpression(left, right, inclusive);
-    }
-
     public AssignmentExpression convertAssignmentExpression(
             RustySchemaParser.AssignmentExpressionContext ctx) {
         var lhs = convertExpr(ctx.expr(0));
@@ -464,16 +452,15 @@ public class SchemaConverter {
     private ContinueExpression convertContinueExpression(
             RustySchemaParser.ContinueExpressionContext ctx) {
         var label = ctx.label() != null ? convertLabel(ctx.label()) : null;
-        var expr = ctx.expr() != null ? convertExpr(ctx.expr()) : null;
-        return new ContinueExpression(label, expr);
+        return new ContinueExpression(label);
     }
 
     private BreakExpression convertBreakExpression(
             RustySchemaParser.BreakExpressionContext ctx) {
         var label = ctx.label() != null ? convertLabel(ctx.label()) : null;
-        if (label != null && label instanceof SchemaLabel sl
-                && sl.sv().sort() != ProgramSVSort.LABEL) {
-            return new BreakExpression(null, sl.sv());
+        if (label instanceof SchemaLabel(ProgramSV sv)
+                && sv.sort() != ProgramSVSort.LABEL) {
+            return new BreakExpression(null, sv);
         }
         var expr = ctx.expr() != null ? convertExpr(ctx.expr()) : null;
         return new BreakExpression(label, expr);
@@ -485,23 +472,23 @@ public class SchemaConverter {
         return new ReturnExpression(expr);
     }
 
-    private GroupedExpression convertGroupedExpression(
+    private Expr convertGroupedExpression(
             RustySchemaParser.GroupedExpressionContext ctx) {
-        return new GroupedExpression(convertExpr(ctx.expr()));
+        return convertExpr(ctx.expr());
     }
 
-    private EnumeratedArrayExpression convertEnumeratedArrayExpression(
+    private ArrayExpression convertEnumeratedArrayExpression(
             RustySchemaParser.ArrayExpressionContext ctx) {
         if (ctx.arrayElements() == null)
-            return new EnumeratedArrayExpression(new ImmutableArray<>());
+            return new ArrayExpression(new ImmutableArray<>(), null);
         assert ctx.arrayElements().SEMI() == null;
-        return new EnumeratedArrayExpression(new ImmutableArray<>(
-            ctx.arrayElements().expr().stream().map(this::convertExpr).toList()));
+        return new ArrayExpression(new ImmutableArray<>(
+            ctx.arrayElements().expr().stream().map(this::convertExpr).toList()), null);
     }
 
-    private RepeatedArrayExpression convertRepeatedArrayExpression(
+    private RepeatExpression convertRepeatedArrayExpression(
             RustySchemaParser.ArrayExpressionContext ctx) {
-        return new RepeatedArrayExpression(convertExpr(ctx.arrayElements().expr(0)),
+        return new RepeatExpression(convertExpr(ctx.arrayElements().expr(0)),
             convertExpr(ctx.arrayElements().expr(1)), null);
     }
 
@@ -510,35 +497,35 @@ public class SchemaConverter {
         if (ctx.tupleElements() == null)
             return TupleExpression.UNIT;
         return new TupleExpression(new ImmutableArray<>(
-            ctx.tupleElements().expr().stream().map(this::convertExpr).toList()));
+            ctx.tupleElements().expr().stream().map(this::convertExpr).toList()), null);
     }
 
-    private UnitStructExpression convertUnitStructExpression(
+    private PathExpr convertUnitStructExpression(
             RustySchemaParser.StructExprUnitContext ctx) {
         throw new UnsupportedOperationException("TODO @ DD: Unit struct expr");
     }
 
-    private TupleStructExpression convertTupleStructExpression(
+    private CallExpression convertTupleStructExpression(
             RustySchemaParser.StructExprTupleContext ctx) {
         throw new UnsupportedOperationException("TODO @ DD: Tuple struct expr");
     }
 
-    private StructStructExpression convertStructStructExpression(
+    private StructExpression convertStructStructExpression(
             RustySchemaParser.StructExprStructContext ctx) {
         throw new UnsupportedOperationException("TODO @ DD: Field struct expr");
     }
 
-    private EnumVariantFieldless convertEnumVariantFieldless(
+    private PathExpr convertEnumVariantFieldless(
             RustySchemaParser.EnumExprFieldlessContext ctx) {
         throw new UnsupportedOperationException("TODO @ DD: Fieldless enum variant expr");
     }
 
-    private EnumVariantTuple convertEnumVariantTuple(
+    private Expr convertEnumVariantTuple(
             RustySchemaParser.EnumExprTupleContext ctx) {
         throw new UnsupportedOperationException("TODO @ DD: Tuple enum variant expr");
     }
 
-    private EnumVariantStruct convertEnumVariantStruct(
+    private Expr convertEnumVariantStruct(
             RustySchemaParser.EnumExprStructContext ctx) {
         throw new UnsupportedOperationException("TODO @ DD: Struct enum variant expr");
     }
@@ -811,7 +798,7 @@ public class SchemaConverter {
             RustySchemaParser.PatternContext ctx) {
         var alts = ctx.patternNoTopAlt();
         if (alts.size() == 1) {
-            return convertPatternNoTopAlt(alts.get(0));
+            return convertPatternNoTopAlt(alts.getFirst());
         }
         return new AltPattern(
             new ImmutableArray<>(alts.stream().map(this::convertPatternNoTopAlt).toList()));

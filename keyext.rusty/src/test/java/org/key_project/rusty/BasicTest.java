@@ -82,7 +82,7 @@ public class BasicTest {
         var antec = parseTermForSemisequent("");
         var succ = parseTermForSemisequent("\\<{ i = 2u32; i}\\>(i = 2)");
         Sequent s = RustySequentKit.createSequent(antec, succ);
-        var proof = new Proof(new Name("Simple"), s, TacletForTests.initConfig());
+        var proof = new Proof(new Name("Simple"), s, "", TacletForTests.initConfig());
         applyRule("assignment",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel(), false),
@@ -155,7 +155,7 @@ public class BasicTest {
         var succ =
             parseTermForSemisequent("\\<{ b = false; if b {i = 3u32} else {i = 2u32} i}\\>(i = 2)");
         Sequent s = RustySequentKit.createSequent(antec, succ);
-        var proof = new Proof(new Name("Simple"), s, TacletForTests.initConfig());
+        var proof = new Proof(new Name("Simple"), s, "", TacletForTests.initConfig());
         applyRule("assignment",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel(), false),
@@ -279,13 +279,13 @@ public class BasicTest {
         var succ =
             parseTermForSemisequent("\\<{ let n: u32 = 2u32; n }\\>(i = 2)");
         Sequent s = RustySequentKit.createSequent(antec, succ);
-        var proof = new Proof(new Name("Let"), s, TacletForTests.initConfig());
-        applyRule("letIdentPatAssign",
+        var proof = new Proof(new Name("Let"), s, "", TacletForTests.initConfig());
+        applyRule("let_ident_pat_assign",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel(), false),
             proof);
         assertEquals(1, proof.openGoals().size());
-        System.out.println("After letIdentPatAssign:\n" + proof.openGoals().head().sequent());
+        System.out.println("After let_ident_pat_assign:\n" + proof.openGoals().head().sequent());
     }
 
     @Test

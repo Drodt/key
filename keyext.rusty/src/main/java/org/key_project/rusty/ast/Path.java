@@ -11,7 +11,6 @@ import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public record Path<R>(R res, ImmutableArray<PathSegment> segments) implements RustyProgramElement {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
@@ -40,4 +39,3 @@ public record Path<R>(R res, ImmutableArray<PathSegment> segments) implements Ru
 
     }
 }
-//spotless:on

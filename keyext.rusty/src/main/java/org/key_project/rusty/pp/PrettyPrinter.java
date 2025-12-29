@@ -5,6 +5,7 @@ package org.key_project.rusty.pp;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.Identifier;
 import org.key_project.rusty.ast.PathInExpression;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.*;
@@ -124,16 +125,24 @@ public class PrettyPrinter implements Visitor {
         return buf.toString();
     }
 
+    /// Write separated list.
+    ///
+    /// @param list a program element list.
+    protected void writeSeparatedList(ImmutableArray<? extends RustyProgramElement> list,
+            String sep) {
+        for (int i = 0; i < list.size(); i++) {
+            if (i != 0) {
+                layouter.print(sep).brk();
+            }
+            list.get(i).visit(this);
+        }
+    }
+
     /// Write comma list.
     ///
     /// @param list a program element list.
     protected void writeCommaList(ImmutableArray<? extends RustyProgramElement> list) {
-        for (int i = 0; i < list.size(); i++) {
-            if (i != 0) {
-                layouter.print(",").brk();
-            }
-            list.get(i).visit(this);
-        }
+        writeSeparatedList(list, ",");
     }
 
     @Override
@@ -289,12 +298,6 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
-    public void performActionOnTupleIndexingExpression(TupleIndexingExpression x) {
-        x.base().visit(this);
-        layouter.print("." + x.index());
-    }
-
-    @Override
     public void performActionOnCallExpression(CallExpression x) {
         x.callee().visit(this);
         printArguments(x.params());
@@ -306,11 +309,6 @@ public class PrettyPrinter implements Visitor {
         layouter.print("[");
         x.index().visit(this);
         layouter.print("]");
-    }
-
-    @Override
-    public void performActionOnErrorPropagationExpression(ErrorPropagationExpression x) {
-        printUnaryOperator("?", false, x.expr());
     }
 
     @Override
@@ -338,17 +336,6 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
-    public void performActionOnRangeExpression(RangeExpression x) {
-        if (x.left() != null) {
-            x.left().visit(this);
-        }
-        layouter.print(x.inclusive() ? "..=" : "..");
-        if (x.right() != null) {
-            x.right().visit(this);
-        }
-    }
-
-    @Override
     public void performActionOnCompoundAssignmentExpression(CompoundAssignmentExpression x) {
         x.left().visit(this);
         layouter.print(" ");
@@ -360,10 +347,9 @@ public class PrettyPrinter implements Visitor {
     @Override
     public void performActionOnContinueExpression(ContinueExpression x) {
         layouter.keyWord("continue");
-        if (x.expr() != null) {
-            layouter.brk();
-            x.expr().visit(this);
-        }
+        layouter.print(" ");
+        if (x.label() != null)
+            x.label().visit(this);
     }
 
     @Override
@@ -385,19 +371,14 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
-    public void performActionOnGroupedExpression(GroupedExpression x) {
-        layouter.print("(");
-        x.expr().visit(this);
-        layouter.print(")");
+    public void performActionOnEnumeratedArrayExpression(ArrayExpression x) {
+        layouter.print("[");
+        writeCommaList(x.elements());
+        layouter.print("]");
     }
 
     @Override
-    public void performActionOnEnumeratedArrayExpression(EnumeratedArrayExpression x) {
-
-    }
-
-    @Override
-    public void performActionOnRepeatedArrayExpression(RepeatedArrayExpression x) {
+    public void performActionOnRepeatedArrayExpression(RepeatExpression x) {
         layouter.print("[");
         x.expr().visit(this);
         layouter.print("; ");
@@ -424,27 +405,7 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
-    public void performActionOnTupleStructExpression(TupleStructExpression x) {
-
-    }
-
-    @Override
-    public void performActionOnUnitStructExpression(UnitStructExpression x) {
-
-    }
-
-    @Override
-    public void performActionOnFieldStructExpression(StructStructExpression x) {
-
-    }
-
-    @Override
-    public void performActionOnEnumVariantFieldless(EnumVariantFieldless x) {
-
-    }
-
-    @Override
-    public void performActionOnEnumVariantTuple(EnumVariantTuple x) {
+    public void performActionOnStructExpression(StructExpression x) {
 
     }
 
@@ -454,33 +415,8 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
-    public void performActionOnEnumVariantStruct(EnumVariantStruct x) {
-
-    }
-
-    @Override
     public void performActionOnInfiniteLoop(InfiniteLoopExpression x) {
         layouter.keyWord("loop").print(" ");
-        x.body().visit(this);
-    }
-
-    @Override
-    public void performActionOnPredicatePatternLoopExpression(PredicatePatternLoopExpression x) {
-        layouter.print("while").print(" ");
-        x.expr().visit(this);
-        layouter.print(" ");
-        x.body().visit(this);
-    }
-
-    @Override
-    public void performActionOnIteratorLoopExpression(IteratorLoopExpression x) {
-        layouter.keyWord("for").print(" ");
-        x.pattern().visit(this);
-        layouter.print(" ");
-        layouter.keyWord("in");
-        layouter.print(" ");
-        x.expr().visit(this);
-        layouter.print(" ");
         x.body().visit(this);
     }
 
@@ -527,11 +463,15 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnLetStatement(LetStatement x) {
         layouter.keyWord("let").print(" ");
         x.getPattern().visit(this);
-        layouter.print(": ");
-        x.type().visit(this);
-        if (x.hasInit()) {
+        RustType type = x.type();
+        if (type != null) {
+            layouter.print(": ");
+            type.visit(this);
+        }
+        Expr init = x.getInit();
+        if (init != null) {
             layouter.print(" = ");
-            x.getInit().visit(this);
+            init.visit(this);
         }
         layouter.print(";");
     }
@@ -561,12 +501,12 @@ public class PrettyPrinter implements Visitor {
 
     @Override
     public void performActionOnAltPattern(AltPattern x) {
-
+        writeSeparatedList(x.alternatives(), "|");
     }
 
     @Override
     public void performActionOnWildCardPattern(WildCardPattern x) {
-
+        layouter.print("_");
     }
 
     @Override
@@ -734,5 +674,67 @@ public class PrettyPrinter implements Visitor {
             layouter.print("-");
         }
         x.getLit().visit(this);
+    }
+
+    @Override
+    public void performActionOnEmptyPanic(EmptyPanic x) {
+        layouter.keyWord("print!");
+        layouter.print("()");
+    }
+
+    @Override
+    public void performActionOnPtrRustType(PtrRustType x) {
+        layouter.print("*");
+        x.getInner().visit(this);
+    }
+
+    @Override
+    public void performActionOnNeverRustType(NeverRustType x) {
+        layouter.keyWord("!");
+    }
+
+    @Override
+    public void performActionOnArrayRustType(ArrayRustType x) {
+        layouter.print("[");
+        x.getElemTy().visit(this);
+        layouter.print("; ");
+        x.getLen().visit(this);
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnSliceRustType(SliceRustType x) {
+        layouter.print("[");
+        x.getInner().visit(this);
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnIdentifier(Identifier x) {
+        layouter.print(x.name().toString());
+    }
+
+    @Override
+    public void performActionOnInferHirTy(InferHirTy x) {
+        layouter.print("_");
+    }
+
+    @Override
+    public void performActionOnFieldIdentifier(FieldIdentifier x) {
+        x.identifier().visit(this);
+    }
+
+    @Override
+    public void performActionOnTupleRustType(TupleRustType x) {
+        layouter.print("(");
+        var tys = x.getTypes();
+        for (int i = 0; i < tys.size(); i++) {
+            var ty = tys.get(i);
+            ty.visit(this);
+            if (i < tys.size() - 1) {
+                layouter.print(", ");
+            }
+        }
+        layouter.print(")");
     }
 }

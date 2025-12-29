@@ -7,7 +7,6 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-// spotless:off
 public record QPathTypeRelative(RustType ty, PathSegment segment) implements QPath {
     @Override
     public void visit(Visitor v) {
@@ -24,4 +23,3 @@ public record QPathTypeRelative(RustType ty, PathSegment segment) implements QPa
         return 0;
     }
 }
-//spotless:on

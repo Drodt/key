@@ -110,7 +110,6 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
 
 
 
-
     @Override
     public void performActionOnContextBlockExpression(ContextBlockExpression x) {
         ExtList changeList = getTop();
@@ -318,11 +317,33 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
-    public void performActionOnRepeatedArrayExpression(RepeatedArrayExpression x) {
+    public void performActionOnRepeatedArrayExpression(RepeatExpression x) {
         DefaultAction def = new DefaultAction(x) {
             @Override
             RustyProgramElement createNewElement(ExtList changeList) {
-                return new RepeatedArrayExpression(changeList, services);
+                return new RepeatExpression(changeList, services);
+            }
+        };
+        def.doAction(x);
+    }
+
+    @Override
+    public void performActionOnTupleExpression(TupleExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new TupleExpression(changeList, services);
+            }
+        };
+        def.doAction(x);
+    }
+
+    @Override
+    public void performActionOnEnumeratedArrayExpression(ArrayExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new ArrayExpression(changeList, services);
             }
         };
         def.doAction(x);

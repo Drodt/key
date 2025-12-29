@@ -8,6 +8,7 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /// The instantiations of a schema variable can be restricted on rule scope by attaching conditions
@@ -26,6 +27,6 @@ public interface VariableCondition {
     /// @return modified match results if the condition can be satisfied, or `null`
     /// otherwise
     @Nullable
-    MatchResultInfo check(SchemaVariable var, SyntaxElement instCandidate,
-            MatchResultInfo matchCond, LogicServices services);
+    MatchResultInfo check(@Nullable SchemaVariable var, @Nullable SyntaxElement instCandidate,
+            @NonNull MatchResultInfo matchCond, @NonNull LogicServices services);
 }

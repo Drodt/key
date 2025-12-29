@@ -104,6 +104,17 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
             SVInstantiations.EMPTY_SVINSTANTIATIONS, goal, rule, ruleApp, services);
     }
 
+    public SyntacticalReplaceVisitor(PosInOccurrence applicationPosInOccurrence, Services services,
+            Rule rule, RuleApp ruleApp) {
+        this(applicationPosInOccurrence, ruleApp instanceof TacletApp ta ? ta.instantiations()
+                : SVInstantiations.EMPTY_SVINSTANTIATIONS,
+            null, rule, ruleApp, services);
+    }
+
+    public SyntacticalReplaceVisitor(SVInstantiations svInst, Services services) {
+        this(null, services, null, null);
+    }
+
     /// performs the syntactic replacement of schemavariables with their instantiations
     @Override
     public void visit(final Term visited) {

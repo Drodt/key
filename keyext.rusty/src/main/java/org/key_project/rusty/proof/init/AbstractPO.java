@@ -13,9 +13,11 @@ import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.ProofAggregate;
+import org.key_project.rusty.proof.RustModel;
 import org.key_project.rusty.proof.mgt.SpecificationRepository;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.settings.Configuration;
+import org.key_project.rusty.speclang.Contract;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
@@ -58,16 +60,18 @@ public abstract class AbstractPO implements IPersistablePO {
         if (proofConfig == null) {
             proofConfig = environmentConfig.deepCopy();
         }
-        final var rustInfo = proofConfig.getServices().getRustInfo();
+        final var rustModel = proofConfig.getServices().getRustModel();
+        createProofHeader(rustModel, proofConfig.getServices());
 
-        final var proof = createProofObject(proofName, poTerm, proofConfig);
+        final var proof = createProofObject(proofName, header, poTerm, proofConfig);
 
         assert proof.openGoals().size() == 1 : "expected one first open goal";
         return proof;
     }
 
-    protected Proof createProofObject(String proofName, Term poTerm, InitConfig proofConfig) {
-        return new Proof(proofName, poTerm, proofConfig);
+    protected Proof createProofObject(String proofName, String proofHeader, Term poTerm,
+            InitConfig proofConfig) {
+        return new Proof(proofName, poTerm, proofHeader, proofConfig);
     }
 
     protected abstract InitConfig getCreatedInitConfigForSingleProof();
@@ -130,5 +134,34 @@ public abstract class AbstractPO implements IPersistablePO {
         if (pv != null && progVarNames.lookup(pv.name()) == null) {
             progVarNames.addSafely(pv);
         }
+    }
+
+    /// Creates declarations necessary to save/load proof in textual form (helper for
+    /// createProof()).
+    private void createProofHeader(
+            RustModel model, Services services) {
+
+        if (header != null) {
+            return;
+        }
+
+        final StringBuilder sb = new StringBuilder(model.asKeYString());
+
+        // contracts
+        ImmutableSet<Contract> contractsToSave = specRepos.getAllContracts();
+        for (Contract c : contractsToSave) {
+            if (!c.toBeSaved()) {
+                contractsToSave = contractsToSave.remove(c);
+            }
+        }
+        if (!contractsToSave.isEmpty()) {
+            sb.append("\\contracts {\n");
+            for (Contract c : contractsToSave) {
+                sb.append(c.proofToString(services));
+            }
+            sb.append("}\n\n");
+        }
+
+        header = sb.toString();
     }
 }

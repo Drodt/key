@@ -61,10 +61,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         Name name = new Name(id);
         RuleSet h = ruleSets().lookup(name);
         if (h == null) {
-            h = new RuleSet(name);
-            ruleSets().add(h);
-            // addWarning(ctx, String.format("Rule set %s was not previous defined.",
-            // ctx.getText()));
+            semanticError(ctx, String.format("Rule set %s was not defined.", name));
         }
         return h;
     }

@@ -10,7 +10,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-// spotless:off
 public record DereferenceExpression(Expr expr) implements Expr {
     @Override
     public void visit(Visitor v) {
@@ -19,7 +18,8 @@ public record DereferenceExpression(Expr expr) implements Expr {
 
     @Override
     public @NonNull SyntaxElement getChild(int n) {
-        if (n == 0) return expr;
+        if (n == 0)
+            return expr;
         throw new IndexOutOfBoundsException("DereferenceExpression has only one child");
     }
 
@@ -38,4 +38,3 @@ public record DereferenceExpression(Expr expr) implements Expr {
         throw new UnsupportedOperationException();
     }
 }
-//spotless:on

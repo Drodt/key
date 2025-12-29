@@ -13,8 +13,8 @@ import org.jspecify.annotations.Nullable;
 ///
 /// <a href="https://doc.rust-lang.org/reference/patterns.html#range-patterns">RangePattern
 /// Grammar</a>
-// spotless:off
-public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatExpr right) implements Pattern {
+public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatExpr right)
+        implements Pattern {
     public enum Bounds
             implements RustyProgramElement {
         Inclusive("..="), Exclusive(".."), Obsolete("...");
@@ -32,7 +32,7 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
 
         @Override
         public SyntaxElement getChild(int n) {
-           throw  new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException();
         }
 
         @Override
@@ -64,7 +64,7 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
         if (n == 0 && right != null)
             return right;
         throw new IndexOutOfBoundsException(
-                "RangePattern has only " + getChildCount() + " children");
+            "RangePattern has only " + getChildCount() + " children");
     }
 
     @Override
@@ -88,4 +88,3 @@ public record RangePattern(@Nullable PatExpr left, Bounds bounds, @Nullable PatE
         return sb.toString();
     }
 }
-//spotless:on

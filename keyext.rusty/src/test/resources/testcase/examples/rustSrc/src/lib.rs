@@ -58,3 +58,16 @@ pub fn test_array() -> i32 {
     a[1] = a[0] + 1;
     a[1]
 }
+
+#[spec(name = "array", ensures(result == 0))]
+pub fn test_array_enumerate() -> i32 {
+    let a = [1 + 2 - 3, 1, 1 + 1];
+    a[0]
+}
+
+#[spec(name = "tuple", ensures(result === (1, 4)))]
+pub fn test_tuple() -> (i32, i32) {
+    let mut a = (1 + 1, 2 * 2);
+    a.0 = a.1 - 3;
+    a
+}

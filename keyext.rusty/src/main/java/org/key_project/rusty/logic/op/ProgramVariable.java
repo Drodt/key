@@ -33,7 +33,7 @@ public class ProgramVariable extends AbstractSortedOperator
     }
 
     public ProgramVariable(Name name, KeYRustyType type) {
-        this(name, Objects.requireNonNull(type.getSort()), type);
+        this(name, Objects.requireNonNull(type.getSort(), name.toString()), type);
     }
 
     @Override
@@ -70,5 +70,16 @@ public class ProgramVariable extends AbstractSortedOperator
     @Override
     public Type type(Services services) {
         return type.getRustyType();
+    }
+
+    public String proofToString() {
+        final Type rt = type.getRustyType();
+        final String typeName;
+        if (rt != null) {
+            typeName = rt.toString();
+        } else {
+            typeName = type.getSort().name().toString();
+        }
+        return typeName + " " + name() + ";\n";
     }
 }

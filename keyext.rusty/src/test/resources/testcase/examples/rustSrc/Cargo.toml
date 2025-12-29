@@ -5,7 +5,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-rml-contracts = { path = "../../../../../../../rust-wrapper/rml/crates/rml-contracts" }
+rml-contracts = { path = "../../../../../../../rml/crates/rml-contracts" }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(rml)', 'cfg(doc_cfg)'] }

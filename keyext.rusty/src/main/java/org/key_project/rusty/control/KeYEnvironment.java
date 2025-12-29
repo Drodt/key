@@ -15,7 +15,6 @@ import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.io.AbstractProblemLoader;
 import org.key_project.rusty.proof.io.AbstractProblemLoader.ReplayResult;
 import org.key_project.rusty.proof.io.ProblemLoaderException;
-import org.key_project.rusty.proof.io.SingleThreadProblemLoader;
 
 import org.jspecify.annotations.Nullable;
 
@@ -23,7 +22,9 @@ import org.jspecify.annotations.Nullable;
 /// with KeY.
 ///
 /// @author Martin Hentschel
-public class KeYEnvironment {
+public class KeYEnvironment<U extends UserInterfaceControl> {
+    /// The [UserInterfaceControl] in which the [Proof] is loaded.
+    private final U ui;
     /// The loaded project.
     private final InitConfig initConfig;
 
@@ -39,7 +40,9 @@ public class KeYEnvironment {
     /// Constructor
     ///
     /// @param initConfig The loaded project.
-    public KeYEnvironment(InitConfig initConfig, Proof loadedProof, ReplayResult replayResult) {
+    public KeYEnvironment(U ui, InitConfig initConfig, Proof loadedProof,
+            ReplayResult replayResult) {
+        this.ui = ui;
         this.initConfig = initConfig;
         this.loadedProof = loadedProof;
         this.replayResult = replayResult;
@@ -77,6 +80,20 @@ public class KeYEnvironment {
         return replayResult;
     }
 
+    /// Returns the [UserInterfaceControl] in which the [Proof] is loaded.
+    ///
+    /// @return The [UserInterfaceControl] in which the [Proof] is loaded.
+    public U getUi() {
+        return ui;
+    }
+
+    /// Returns the [ProofControl] of [#getUi()].
+    ///
+    /// @return The [ProofControl] of [#getUi()].
+    public ProofControl getProofControl() {
+        return ui != null ? ui.getProofControl() : null;
+    }
+
     /// Loads the given location and returns all required references as [KeYEnvironment]. The
     /// `MainWindow` is not involved in the whole process.
     ///
@@ -92,35 +109,18 @@ public class KeYEnvironment {
     /// new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
-    public static KeYEnvironment load(@Nullable Profile profile, File location,
+    public static KeYEnvironment<DefaultUserInterfaceControl> load(@Nullable Profile profile,
+            File location,
             @Nullable List<File> includes,
             @Nullable Properties poPropertiesToForce,
             @Nullable Consumer<Proof> callbackProofLoaded,
             boolean forceNewProfileOfNewProofs) throws ProblemLoaderException {
-        AbstractProblemLoader loader = null;
-        try {
-            loader = new SingleThreadProblemLoader(location, includes,
-                profile, null);
-            if (callbackProofLoaded != null) {
-                loader.load(callbackProofLoaded);
-            } else {
-                loader.load();
-            }
-        } catch (ProblemLoaderException e) {
-            if (loader.getProof() != null) {
-                loader.getProof().dispose();
-            }
-            // rethrow that exception
-            throw e;
-        } catch (Throwable e) {
-            if (loader != null && loader.getProof() != null) {
-                loader.getProof().dispose();
-            }
-            throw new ProblemLoaderException(loader, e);
-        }
+        DefaultUserInterfaceControl ui = new DefaultUserInterfaceControl();
+        AbstractProblemLoader loader = ui.load(profile, location, includes, poPropertiesToForce,
+            forceNewProfileOfNewProofs, callbackProofLoaded);
         InitConfig initConfig = loader.getInitConfig();
 
-        return new KeYEnvironment(initConfig, loader.getProof(),
+        return new KeYEnvironment<>(ui, initConfig, loader.getProof(),
             loader.getResult());
     }
 
@@ -137,7 +137,8 @@ public class KeYEnvironment {
     /// new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
-    public static KeYEnvironment load(@Nullable Profile profile, File location,
+    public static KeYEnvironment<DefaultUserInterfaceControl> load(@Nullable Profile profile,
+            File location,
             @Nullable List<File> includes,
             @Nullable Properties poPropertiesToForce,
             boolean forceNewProfileOfNewProofs) throws ProblemLoaderException {
@@ -157,7 +158,8 @@ public class KeYEnvironment {
     /// will be used for new proofs.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
-    public static KeYEnvironment load(@Nullable Profile profile, File location,
+    public static KeYEnvironment<DefaultUserInterfaceControl> load(@Nullable Profile profile,
+            File location,
             @Nullable List<File> includes,
             boolean forceNewProfileOfNewProofs) throws ProblemLoaderException {
         return load(profile, location, includes, null,
@@ -171,13 +173,13 @@ public class KeYEnvironment {
     /// @param includes Optional includes to consider.
     /// @return The [KeYEnvironment] which contains all references to the loaded location.
     /// @throws ProblemLoaderException Occurred Exception
-    public static KeYEnvironment load(File location,
+    public static KeYEnvironment<DefaultUserInterfaceControl> load(File location,
             @Nullable List<File> includes)
             throws ProblemLoaderException {
         return load(null, location, includes, false);
     }
 
-    public static KeYEnvironment load(File keyFile)
+    public static KeYEnvironment<DefaultUserInterfaceControl> load(File keyFile)
             throws ProblemLoaderException {
         return load(keyFile, null);
     }

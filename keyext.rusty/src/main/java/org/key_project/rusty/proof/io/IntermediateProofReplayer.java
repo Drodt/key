@@ -34,17 +34,22 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.io.intermediate.*;
+import org.key_project.rusty.prover.impl.PerfScope;
 import org.key_project.rusty.rule.*;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.rusty.speclang.OperationContract;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class IntermediateProofReplayer {
     private static final String ERROR_LOADING_PROOF_LINE = "Error loading proof.\n";
     private static final String NOT_APPLICABLE =
         " not available or not applicable in this context.";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(IntermediateProofReplayer.class);
 
     /// The problem loader, for reporting errors
     private final AbstractProblemLoader loader;
@@ -189,6 +194,8 @@ public class IntermediateProofReplayer {
                 reportError(ERROR_LOADING_PROOF_LINE, throwable);
             }
         }
+        LOGGER.debug("Proof replay of {} took {}", proof.name(),
+            PerfScope.formatTime(System.nanoTime() - time));
         return new Result(status, errors, currGoal);
     }
 
@@ -334,8 +341,18 @@ public class IntermediateProofReplayer {
         // in a proof of the TimSort method binarySort with several joins.
         ourApp = ourApp.setIfFormulaInstantiations(assumesFormulaList, services);
 
+        if (ourApp == null) {
+            throw new TacletAppConstructionException(
+                "Could not set assumes instantiations for " + tacletName);
+        }
+
         if (!ourApp.complete()) {
             ourApp = ourApp.tryToInstantiate(currGoal.getOverlayServices());
+        }
+
+        if (ourApp == null) {
+            throw new TacletAppConstructionException(
+                "Failed to try to instantiate for " + tacletName);
         }
 
         return ourApp;

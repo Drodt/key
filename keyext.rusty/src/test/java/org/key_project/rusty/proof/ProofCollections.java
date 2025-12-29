@@ -36,35 +36,75 @@ public class ProofCollections {
         settings.setVerboseOutput(true);
 
         var c = new ProofCollection(settings);
+<<<<<<< HEAD
         /*
-        var simple = c.group("simple");
-        simple.loadable("simple.proof");
-        simple.loadable("if.proof");
-        simple.loadable("iflet.proof");
+         * var simple = c.group("simple");
+         * simple.loadable("simple.proof");
+         * simple.loadable("if.proof");
+         * simple.loadable("iflet.proof");
+         *
+         * var refs = c.group("references");
+         * refs.loadable("shared-ref.proof");
+         * refs.loadable("mutable-ref.proof");
+         * refs.loadable("mutable-ref-wrong.proof");
+         *
+         * var choices = c.group("choices");
+         * choices.loadable("sub-no-check.proof");
+         *
+         * var contracts = c.group("contracts");
+         * contracts.loadable("use-contract.proof");
+         *
+         * var rustSrc = c.group("rustSrc");
+         * rustSrc.loadable("loop-mul.proof");
+         * rustSrc.loadable("add-no-bounds.proof");
+         * rustSrc.loadable("mut-ref-src.proof");
+         * rustSrc.loadable("if-src.proof");
+         *
+         * var array = c.group("array");
+         * array.loadable("array-get-of-repeat.proof");
+         * array.loadable("array-get-of-set.proof");
+         * array.loadable("array-test.proof");
+         */
+=======
 
-        var refs = c.group("references");
-        refs.loadable("shared-ref.proof");
-        refs.loadable("mutable-ref.proof");
-        refs.loadable("mutable-ref-wrong.proof");
+          var simple = c.group("simple");
+          simple.loadable("simple.proof");
+          simple.loadable("if.proof");
+          simple.loadable("iflet.proof");
+          simple.provable("auto-if.key");
 
-        var choices = c.group("choices");
-        choices.loadable("sub-no-check.proof");
+          var refs = c.group("references");
+          refs.loadable("shared-ref.proof");
+          refs.loadable("mutable-ref.proof");
+          refs.loadable("mutable-ref-wrong.proof");
 
-        var contracts = c.group("contracts");
-        contracts.loadable("use-contract.proof");
+          var choices = c.group("choices");
+          choices.loadable("sub-no-check.proof");
 
-        var rustSrc = c.group("rustSrc");
-        rustSrc.loadable("loop-mul.proof");
-        rustSrc.loadable("add-no-bounds.proof");
-        rustSrc.loadable("mut-ref-src.proof");
-        rustSrc.loadable("if-src.proof");
+          var contracts = c.group("contracts");
+          contracts.loadable("use-contract.proof");
 
-        var array = c.group("array");
-        array.loadable("array-get-of-repeat.proof");
-        array.loadable("array-get-of-set.proof");
-        array.loadable("array-test.proof");
-        */
-        var ghost = c.group("ghost"); 
+          var rustSrc = c.group("rustSrc");
+          rustSrc.loadable("loop-mul.proof");
+          rustSrc.loadable("add-no-bounds.proof");
+          rustSrc.loadable("mut-ref-src.proof");
+          rustSrc.loadable("if-src.proof");
+
+          var array = c.group("array");
+          array.loadable("array-get-of-repeat.proof");
+          array.loadable("array-get-of-set.proof");
+          array.loadable("array-test.proof");
+          array.loadable("array-enumerate.proof");
+
+          var tuples = c.group("tuples");
+          tuples.loadable("tuple-test.proof");
+
+          var option = c.group("option");
+          option.loadable("option.proof");
+
+
+>>>>>>> origin/ghosty_rusty_drodt
+        var ghost = c.group("ghost");
         ghost.loadable("first-ghost.proof");
         // var algos = c.group("algorithms");
         // algos.loadable("binary-search/binary-search.proof"); TODO: fix rml transl err:

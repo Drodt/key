@@ -183,7 +183,6 @@ public class VMTacletMatcher implements TacletMatcher {
     /// (Which have been added to the update context in the match conditions)
     private Pair<Term, MatchResultInfo> matchAndIgnoreUpdatePrefix(final Term term,
             MatchResultInfo matchCond) {
-
         final Operator sourceOp = term.op();
 
         if (sourceOp instanceof UpdateApplication) {

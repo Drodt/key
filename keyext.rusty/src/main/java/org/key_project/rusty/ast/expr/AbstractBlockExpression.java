@@ -6,10 +6,6 @@ package org.key_project.rusty.ast.expr;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import org.checkerframework.checker.initialization.qual.UnknownInitialization;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ElseBranch;
@@ -22,6 +18,10 @@ import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
+
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public abstract class AbstractBlockExpression
         implements Expr, PossibleProgramPrefix, ThenBranch, ElseBranch {
@@ -47,13 +47,15 @@ public abstract class AbstractBlockExpression
     }
 
     @Override
-    public @NonNull SyntaxElement getChild(@UnknownInitialization AbstractBlockExpression this, int n) {
+    public @NonNull SyntaxElement getChild(@UnknownInitialization AbstractBlockExpression this,
+            int n) {
         assert statements != null;
         if (0 <= n && n < statements.size())
             return Objects.requireNonNull(statements.get(n));
         if (n == statements.size() && value != null)
             return value;
-        throw new IndexOutOfBoundsException(getClass().getSimpleName() + " has less than " + n + " children");
+        throw new IndexOutOfBoundsException(
+            getClass().getSimpleName() + " has less than " + n + " children");
     }
 
     @Override
@@ -84,7 +86,8 @@ public abstract class AbstractBlockExpression
     }
 
     @Override
-    public PossibleProgramPrefix getNextPrefixElement(@UnknownInitialization AbstractBlockExpression this) {
+    public PossibleProgramPrefix getNextPrefixElement(
+            @UnknownInitialization AbstractBlockExpression this) {
         if (hasNextPrefixElement()) {
             return (PossibleProgramPrefix) getChild(0);
         }
@@ -145,8 +148,10 @@ public abstract class AbstractBlockExpression
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (o == this) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == this)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AbstractBlockExpression that = (AbstractBlockExpression) o;
         return this.prefixLength == that.prefixLength
                 && Objects.equals(this.statements, that.statements)

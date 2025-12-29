@@ -7,8 +7,8 @@ import java.util.Objects;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.FnDefType;
 import org.key_project.rusty.ast.abstraction.Type;
-import org.key_project.rusty.ast.ty.FnDefType;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.util.collection.ImmutableArray;

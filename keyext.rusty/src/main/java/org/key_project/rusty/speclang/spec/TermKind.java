@@ -21,6 +21,9 @@ public interface TermKind {
     record Lit(org.key_project.rusty.parser.hir.expr.Lit lit) implements TermKind {
     }
 
+    record Tup(Term[] terms) implements TermKind {
+    }
+
     record Path(QPath path) implements TermKind {
     }
 
@@ -31,6 +34,7 @@ public interface TermKind {
                 case "Binary" -> Binary.class;
                 case "Unary" -> Unary.class;
                 case "Lit" -> Lit.class;
+                case "Tup" -> Tup.class;
                 case "Path" -> Path.class;
                 default -> null;
             };
