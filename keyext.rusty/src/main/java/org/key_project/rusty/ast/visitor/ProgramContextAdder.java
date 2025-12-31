@@ -9,6 +9,7 @@ import java.util.Objects;
 import org.key_project.logic.IntIterator;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.abstraction.GhostType;
 import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.ast.stmt.Statement;
@@ -57,6 +58,7 @@ public class ProgramContextAdder {
                 case ExpressionStatement es -> createExpressionStatementWrapper(es, body);
                 case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
                 case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
+                case GhostBlockExpression ge -> createGhostBlockExprWrapper (ge, body);
                 case null, default -> throw new RuntimeException(
                     new UnexpectedException(
                         "Unexpected block type: " + (context != null ? context.getClass() : null)));
@@ -175,5 +177,18 @@ public class ProgramContextAdder {
 
     private LoopScope createLoopScopeWrapper(LoopScope old, BlockExpression body) {
         return new LoopScope(old.getIndex(), old.getReturnVar(), body);
+    }
+    private RustyProgramElement createGhostBlockExprWrapper(GhostBlockExpression wrapper,
+                                                            RustyProgramElement replacement) {
+        int childCount = wrapper.getChildCount();
+        if (childCount <= 1) {
+            if (replacement instanceof GhostBlockExpression ge)
+                return ge;
+            if (replacement instanceof Expr e)
+                return new GhostBlockExpression(ImmutableSLList.nil(), e);
+        }
+        var body = wrapper.getStatements().tail();
+        body = body.prepend(wrapExprIfNecessary(replacement));
+        return new GhostBlockExpression(body, wrapper.getValue());
     }
 }
