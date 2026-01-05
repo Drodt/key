@@ -410,4 +410,6 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     public void performActionOnGhostRustType(GhostRustType x) {
         doDefaultAction(x);
     }
+
+    public void performActionOnSnapshotExpression(SnapshotExpression x){ doDefaultAction(x);}
 }

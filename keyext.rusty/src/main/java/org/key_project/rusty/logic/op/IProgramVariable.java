@@ -5,6 +5,7 @@ package org.key_project.rusty.logic.op;
 
 import org.key_project.logic.op.SortedOperator;
 import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.expr.Expr;
 
-public interface IProgramVariable extends RustyProgramElement, SortedOperator {
+public interface IProgramVariable extends RustyProgramElement, SortedOperator, Expr {
 }

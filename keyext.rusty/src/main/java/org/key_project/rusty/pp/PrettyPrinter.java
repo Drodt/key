@@ -778,4 +778,11 @@ public class PrettyPrinter implements Visitor {
         x.inner().visit(this);
         layouter.print(">");
     }
+
+    public void performActionOnSnapshotExpression(SnapshotExpression x){
+        layouter.keyWord("snapshot!");
+        layouter.print("(");
+        x.getPv().visit(this);
+        layouter.print(")");
+    }
 }

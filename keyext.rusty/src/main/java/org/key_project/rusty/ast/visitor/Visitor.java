@@ -149,7 +149,7 @@ public interface Visitor {
 
     void performActionOnGhostBlockExpression(GhostBlockExpression x);
 
-    // void performActionOnSnapshotBlockExpression(SnapshotBlockExpression x);
+     void performActionOnSnapshotExpression(SnapshotExpression x);
 
     void performActionOnPathExpr(PathExpr x);
 
