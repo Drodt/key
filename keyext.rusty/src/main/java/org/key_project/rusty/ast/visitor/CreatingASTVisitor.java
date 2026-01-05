@@ -108,8 +108,6 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
         }
     }
 
-
-
     @Override
     public void performActionOnContextBlockExpression(ContextBlockExpression x) {
         ExtList changeList = getTop();
@@ -141,9 +139,14 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
+    public void performActionOnSnapshotExpression(SnapshotExpression x) {doDefaultAction(x);}
+
+
+    @Override
     public void performActionOnProgramVariable(ProgramVariable x) {
         throw new RuntimeException("TODO @ DD");
     }
+
 
     @Override
     public void performActionOnSchemaVariable(SchemaVariable x) {

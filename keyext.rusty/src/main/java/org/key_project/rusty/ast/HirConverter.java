@@ -23,6 +23,7 @@ import org.key_project.rusty.ast.stmt.ItemStatement;
 import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.ty.*;
+import org.key_project.rusty.logic.op.IProgramVariable;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RFunction;
@@ -254,8 +255,15 @@ public class HirConverter {
             case ExprKind.Repeat e -> convertRepeat(e, ty);
             // case ExprKind.Yield e -> convertYieldExpr(e);
             case ExprKind.GhostBlockExpr e -> convertGhostBlockExpr(e);
+            case ExprKind.SnapshotExpr e -> convertSnapshotExpr(e);
             default -> throw new IllegalArgumentException("Unknown expression: " + expr);
         };
+    }
+
+    private SnapshotExpression convertSnapshotExpr(ExprKind.SnapshotExpr e) {
+        var body = e.expr();
+        IProgramVariable pv = (IProgramVariable) convertExpr(body);
+        return new SnapshotExpression(pv);
     }
 
     private ConstBlockExpression convertConstBlockExpr(ExprKind.ConstBlock e) {

@@ -64,7 +64,7 @@ public interface ExprKind {
 
     }
 
-    record SnapshotBlockExpr(Block block) implements ExprKind {
+    record SnapshotExpr(Expr expr) implements ExprKind {
 
     }
 
@@ -125,6 +125,7 @@ public interface ExprKind {
                 case "Closure" -> Closure.class;
                 case "Block" -> BlockExpr.class;
                 case "GhostBlock" -> GhostBlockExpr.class;
+                case "SnapshotExpr" -> SnapshotExpr.class;
                 case "Assign" -> Assign.class;
                 case "AssignOp" -> AssignOp.class;
                 case "Field" -> Field.class;
