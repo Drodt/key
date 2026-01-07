@@ -779,7 +779,7 @@ public class PrettyPrinter implements Visitor {
         layouter.print(">");
     }
 
-    public void performActionOnSnapshotExpression(SnapshotExpression x){
+    public void performActionOnSnapshotExpression(SnapshotExpression x) {
         layouter.keyWord("snapshot!");
         layouter.print("(");
         x.getPv().visit(this);

@@ -11,32 +11,32 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.IProgramVariable;
 import org.key_project.util.ExtList;
 
-public class SnapshotExpression implements Expr{
+public class SnapshotExpression implements Expr {
 
     private final IProgramVariable pv;
 
-  public SnapshotExpression(IProgramVariable pv) {
-     this.pv = pv;
-  }
+    public SnapshotExpression(IProgramVariable pv) {
+        this.pv = pv;
+    }
 
-  public SnapshotExpression(ExtList children) {
-      pv = children.get(IProgramVariable.class);
-  }
+    public SnapshotExpression(ExtList children) {
+        pv = children.get(IProgramVariable.class);
+    }
 
 
-  @Override
-  public void visit(Visitor v) {
-    v.performActionOnSnapshotExpression(this);
-  }
+    @Override
+    public void visit(Visitor v) {
+        v.performActionOnSnapshotExpression(this);
+    }
 
-  @Override
-  public String toString() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("snapshot! (");
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("snapshot! (");
         sb.append(pv);
-      sb.append(")");
-      return sb.toString();
-     }
+        sb.append(")");
+        return sb.toString();
+    }
 
     @Override
     public Type type(Services services) {
@@ -45,7 +45,8 @@ public class SnapshotExpression implements Expr{
 
     @Override
     public SyntaxElement getChild(int n) {
-        if (n == 0) return pv;
+        if (n == 0)
+            return pv;
         throw new IndexOutOfBoundsException();
     }
 
@@ -59,4 +60,3 @@ public class SnapshotExpression implements Expr{
         return pv;
     }
 }
-

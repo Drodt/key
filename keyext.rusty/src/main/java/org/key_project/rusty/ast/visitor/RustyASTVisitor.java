@@ -411,5 +411,5 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
         doDefaultAction(x);
     }
 
-    public void performActionOnSnapshotExpression(SnapshotExpression x){ doDefaultAction(x);}
+    public void performActionOnSnapshotExpression(SnapshotExpression x) { doDefaultAction(x); }
 }

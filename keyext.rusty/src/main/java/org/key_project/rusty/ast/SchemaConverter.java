@@ -233,9 +233,9 @@ public class SchemaConverter {
             var block = convertBlockExpr(gh.blockExpr());
             return new GhostBlockExpression(block.getStatements(), block.getValue());
         }
-        if (ctx instanceof RustySchemaParser.SnapshotExpressionContext se){
+        if (ctx instanceof RustySchemaParser.SnapshotExpressionContext se) {
             var sv =
-                    (ProgramSV) lookupSchemaVariable(se.schemaVariable().getText().substring(2));
+                (ProgramSV) lookupSchemaVariable(se.schemaVariable().getText().substring(2));
             return new SnapshotExpression(sv);
         }
         throw new UnsupportedOperationException(

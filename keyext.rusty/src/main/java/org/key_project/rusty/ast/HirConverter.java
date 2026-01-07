@@ -255,12 +255,12 @@ public class HirConverter {
             case ExprKind.Repeat e -> convertRepeat(e, ty);
             // case ExprKind.Yield e -> convertYieldExpr(e);
             case ExprKind.GhostBlockExpr e -> convertGhostBlockExpr(e);
-            case ExprKind.SnapshotExpr e -> convertSnapshotExpr(e);
+            case ExprKind.Snapshot e -> convertSnapshotExpr(e);
             default -> throw new IllegalArgumentException("Unknown expression: " + expr);
         };
     }
 
-    private SnapshotExpression convertSnapshotExpr(ExprKind.SnapshotExpr e) {
+    private SnapshotExpression convertSnapshotExpr(ExprKind.Snapshot e) {
         var body = e.expr();
         IProgramVariable pv = (IProgramVariable) convertExpr(body);
         return new SnapshotExpression(pv);

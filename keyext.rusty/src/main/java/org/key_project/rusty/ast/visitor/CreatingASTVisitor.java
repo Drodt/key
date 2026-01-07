@@ -139,7 +139,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
-    public void performActionOnSnapshotExpression(SnapshotExpression x) {doDefaultAction(x);}
+    public void performActionOnSnapshotExpression(SnapshotExpression x) { doDefaultAction(x); }
 
 
     @Override

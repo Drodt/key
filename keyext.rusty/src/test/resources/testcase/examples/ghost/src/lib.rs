@@ -10,3 +10,9 @@ fn foo() {
         let x = 1;
     };
 }
+
+#[spec(ensures(true))]
+fn foo1() {
+    let x = 0;
+    ghost!{snapshot!(x)};
+}
