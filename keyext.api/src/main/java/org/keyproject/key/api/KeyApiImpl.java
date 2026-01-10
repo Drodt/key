@@ -14,6 +14,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import java.util.Stack;
+import java.util.ArrayList;
 
 import de.uka.ilkd.key.control.AbstractUserInterfaceControl;
 import de.uka.ilkd.key.control.DefaultUserInterfaceControl;
@@ -284,7 +286,36 @@ public final class KeyApiImpl implements KeyApi {
 
     @Override
     public CompletableFuture<List<TreeNodeDesc>> treeChildren(ProofId proof, TreeNodeId nodeId) {
-        return null;
+        return CompletableFuture.supplyAsync(() -> {
+            var serial = Integer.parseInt(nodeId.id());
+
+            Node root = data.find(proof).root();
+            var stack = new Stack<Node>();
+            stack.push(root);
+
+            while (!stack.empty()) {
+                var node = stack.pop();
+                if (node.serialNr() == serial) {
+                    var children = new ArrayList<TreeNodeDesc>();
+
+                    var iter = node.childrenIterator();
+                    while (iter.hasNext()) {
+                        var child_node = iter.next();
+                        children.add(TreeNodeDesc.from(proof, child_node));
+                    }
+
+                    return children;
+                }
+
+                var iter = node.childrenIterator();
+                while (iter.hasNext()) {
+                    var child_node = iter.next();
+                    stack.push(child_node);
+                }
+            }
+
+            return null;
+        });
     }
 
     @Override
