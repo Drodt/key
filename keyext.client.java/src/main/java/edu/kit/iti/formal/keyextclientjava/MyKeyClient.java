@@ -23,18 +23,16 @@ import edu.kit.iti.formal.keyextclientjava.rpc.KeyRemote;
 import edu.kit.iti.formal.keyextclientjava.rpc.RPCLayer;
 import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.jsonrpc.json.StreamMessageProducer;
+import org.jspecify.annotations.NullMarked;
 import org.keyproject.key.api.KeyApiImpl;
 import org.keyproject.key.api.StartServer;
-import org.keyproject.key.api.data.KeyIdentifications;
-import org.keyproject.key.api.data.LoadParams;
-import org.keyproject.key.api.data.TaskFinishedInfo;
-import org.keyproject.key.api.data.TaskStartedInfo;
+import org.keyproject.key.api.data.*;
 import org.keyproject.key.api.remoteapi.KeyApi;
-import org.keyproject.key.api.remoteapi.PrintOptions;
 import org.keyproject.key.api.remoteclient.*;
 import org.kordamp.ikonli.fontawesome5.FontAwesomeRegular;
 import org.kordamp.ikonli.javafx.FontIcon;
 
+@NullMarked
 public class MyKeyClient {
     public static final String JAR_FILE = "";
     private final ToolBar toolbar = new ToolBar();
@@ -102,7 +100,7 @@ public class MyKeyClient {
         if (sel != null) {
             try {
                 loadedProof = keyApi.load(
-                    new LoadParams(sel.toPath(), null, null, null))
+                    new LoadParams(Uri.from(sel), null, null, null))
                         .get().getRight();
                 var root = keyApi.root(loadedProof).get();
                 var sequent =
@@ -115,12 +113,8 @@ public class MyKeyClient {
         }
     }
 
+    @NullMarked
     private static class SimpleClient implements ClientApi {
-        @Override
-        public void sayHello(String e) {
-
-        }
-
         @Override
         public void logTrace(LogTraceParams params) {
 
@@ -132,7 +126,8 @@ public class MyKeyClient {
         }
 
         @Override
-        public CompletableFuture<MessageActionItem> userResponse(ShowMessageRequestParams params) {
+        public CompletableFuture<MessageActionItem> showMessageWithActions(
+                ShowMessageRequestParams params) {
             return null;
         }
 

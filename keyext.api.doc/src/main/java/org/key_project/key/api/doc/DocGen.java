@@ -1,26 +1,31 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package org.key_project.key.api.doc;/*
-                                     * This file is part of KeY - https://key-project.org
-                                     * KeY is licensed under the GNU General Public License Version
-                                     * 2
-                                     * SPDX-License-Identifier: GPL-2.0-only
-                                     */
+package org.key_project.key.api.doc;
 
-import java.io.PrintWriter;
+import de.uka.ilkd.key.util.KeYConstants;
+import de.uka.ilkd.key.util.KeYResourceManager;
+import freemarker.core.HTMLOutputFormat;
+import freemarker.ext.beans.ZeroArgumentNonVoidMethodPolicy;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
+
+import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Comparator;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
+ * Generation of Markdown documentation.
+ *
  * @author Alexander Weigl
  * @version 1 (29.10.23)
  */
 public class DocGen implements Supplier<String> {
     private final Metamodel.KeyApi metamodel;
-    private PrintWriter out;
 
     public DocGen(Metamodel.KeyApi metamodel) {
         this.metamodel = metamodel;
@@ -29,89 +34,62 @@ public class DocGen implements Supplier<String> {
     @Override
     public String get() {
         final StringWriter target = new StringWriter();
-        try (var out = new PrintWriter(target)) {
-            this.out = out;
-            printHeader();
+        try {
+            // 1) Configure FreeMarker
+            var cfg = new Configuration(Configuration.VERSION_2_3_32);
+            cfg.setClassForTemplateLoading(DocGen.class, "/templates"); // classpath
+            cfg.setDefaultEncoding("UTF-8");
+            cfg.setAutoEscapingPolicy(Configuration.DISABLE_AUTO_ESCAPING_POLICY);
+            cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
+            cfg.setLogTemplateExceptions(false);
+            cfg.setWrapUncheckedExceptions(true);
+            cfg.setFallbackOnNullLoopVariable(false);
+            cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
 
-            out.format("## Types%n");
-            metamodel.types()
-                    .stream().sorted(Comparator.comparing(Metamodel.Type::name))
-                    .forEach(this::printType);
+            // Use DefaultObjectWrapper to expose fields of objects in the data model
+            DefaultObjectWrapper wrapper = new DefaultObjectWrapper(Configuration.VERSION_2_3_32);
+            wrapper.setExposeFields(true);
+            wrapper.setMethodsShadowItems(true);
+            wrapper.setRecordZeroArgumentNonVoidMethodPolicy(
+                    ZeroArgumentNonVoidMethodPolicy.BOTH_METHOD_AND_PROPERTY_UNLESS_BEAN_PROPERTY_READ_METHOD);
+            wrapper.setForceLegacyNonListCollections(false);
+            wrapper.setDefaultDateType(freemarker.template.TemplateDateModel.DATETIME);
+            cfg.setObjectWrapper(wrapper);
 
-            out.format("## Endpoints%n");
-            metamodel.endpoints()
+            // 2) Build the data-model
+            Map<String, Object> model = new TreeMap<>();
+
+            model.put("segmentDocumentation", metamodel.segmentDocumentation());
+
+            model.put("endpoints",
+                    metamodel.endpoints()
+                            .stream().sorted(Comparator.comparing(Metamodel.Endpoint::name))
+                            .toList());
+
+            final Map<String, List<Metamodel.Endpoint>> collect = metamodel.endpoints()
                     .stream().sorted(Comparator.comparing(Metamodel.Endpoint::name))
-                    .forEach(this::endpoints);
-            printFooter();
+                    .collect(Collectors.groupingBy(Metamodel.Endpoint::segment, TreeMap::new, Collectors.toList()));
+
+            model.put("endpointsBySegment", collect);
+
+            model.put("types",
+                    metamodel.types().values()
+                            .stream().sorted(Comparator.comparing(Metamodel.Type::name))
+                            .toList());
+
+            model.put("version",
+                    KeYResourceManager.getManager().getVersion() +
+                            " (" + KeYConstants.INTERNAL_VERSION.substring(0, 8) + ")");
+            model.put("date", new Date());
+
+            // 3) Get template
+            var tpl = cfg.getTemplate("docs.ftl");
+
+            // 4) Merge and output
+            tpl.process(model, target);
+            return target.toString();
+        } catch (IOException | TemplateException e) {
+            throw new RuntimeException(e);
         }
-        return target.toString();
-    }
-
-    private void printFooter() {
-
-    }
-
-    private void printHeader() {
-
-
-    }
-
-    private void endpoints(Metamodel.Endpoint endpoint) {
-        var direction = switch (endpoint) {
-            case Metamodel.ServerRequest sr -> "client -> server";
-            case Metamodel.ClientRequest sr -> "server -> client";
-            case Metamodel.ServerNotification sr -> "client ~~> server";
-            case Metamodel.ClientNotification sr -> "server ~~> client";
-        };
-
-        out.format("### %s (`%s`) %n%n", endpoint.name(), direction);
-        out.format("```%n");
-        var args = endpoint.args();
-        final var a = args.stream()
-                .map(it -> "%s : %s".formatted(it.name(), it.type()))
-                .collect(Collectors.joining(", "));
-        switch (endpoint) {
-            case Metamodel.ServerRequest sr ->
-                out.format("Server.%s( %s ) -> %s%n", endpoint.name(), a, sr.returnType().name());
-            case Metamodel.ClientRequest sr ->
-                out.format("Client.%s( %s ) -> %s%n", endpoint.name(), a, sr.returnType().name());
-            case Metamodel.ServerNotification ignored ->
-                out.format("Server.%s( %s ) **async**%n", endpoint.name(), a);
-            case Metamodel.ClientNotification ignored ->
-                out.format("Client.%s( %s ) **async**%n", endpoint.name(), a);
-            default -> {
-            }
-        }
-        out.format("```%n");
-
-        out.println(endpoint.documentation());
-        out.println();
-    }
-
-    private void printType(Metamodel.Type type) {
-        out.format("### Type: %s%n", type.name());
-        if (type instanceof Metamodel.ObjectType ot) {
-            out.format("""
-                    ```
-                    type %s {
-                     %s
-                    }
-                    ```
-                    """.formatted(type.name(),
-                ot.fields().stream().sorted(Comparator.comparing(Metamodel.Field::name))
-                        .map(it -> "\t%s : %s".formatted(it.name(), it.type()))
-                        .collect(Collectors.joining("\n"))));
-        }
-
-        if (type instanceof Metamodel.EnumType et) {
-            out.format("""
-                    ```
-                    enum %s { %s }
-                    ```
-                    """.formatted(type.name(), String.join(", ", et.values())));
-            out.format(type.documentation());
-        }
-        out.format(type.documentation());
-        out.println();
     }
 }

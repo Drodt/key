@@ -10,20 +10,16 @@ package org.key_project.key.api.doc;/*
 
 import java.io.File;
 import java.lang.reflect.*;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
 
 import de.uka.ilkd.key.proof.Proof;
 
-import com.github.javaparser.ParseProblemException;
-import com.github.javaparser.ParserConfiguration;
-import com.github.javaparser.ast.body.TypeDeclaration;
-import com.github.javaparser.ast.comments.Comment;
-import com.github.javaparser.ast.nodeTypes.NodeWithJavadoc;
-import com.github.javaparser.javadoc.Javadoc;
-import com.github.javaparser.javadoc.description.JavadocDescription;
-import com.github.javaparser.utils.SourceRoot;
+import org.key_project.key.api.doc.Metamodel.HelpText;
+import org.key_project.key.api.doc.Metamodel.HelpTextEntry;
+
+import com.github.therapi.runtimejavadoc.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.jsonrpc.services.JsonNotification;
 import org.eclipse.lsp4j.jsonrpc.services.JsonRequest;
@@ -39,19 +35,12 @@ import org.keyproject.key.api.remoteclient.ClientApi;
 
 public class ExtractMetaData implements Runnable {
     private final List<Metamodel.Endpoint> endpoints = new LinkedList<>();
-    private final List<Metamodel.Type> types = new LinkedList<>();
-    private final Metamodel.KeyApi keyApi = new Metamodel.KeyApi(endpoints, types);
-    private final SourceRoot sourceRoot;
+    private final Map<Class<?>, Metamodel.Type> types = new HashMap<>();
+    private final Map<String, HelpText> segDocumentation = new TreeMap<>();
+    private final Metamodel.KeyApi keyApi =
+        new Metamodel.KeyApi(endpoints, types, segDocumentation);
 
-    public ExtractMetaData(Path source) {
-        ParserConfiguration config = new ParserConfiguration();
-        config.setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21);
-        config.setAttributeComments(true);
-        config.setLexicalPreservationEnabled(false);
-        config.setStoreTokens(false);
-        config.setIgnoreAnnotationsWhenAttributingComments(true);
-        config.setDoNotAssignCommentsPrecedingEmptyLines(true);
-        sourceRoot = new SourceRoot(source, config);
+    public ExtractMetaData() {
     }
 
     @Override
@@ -62,6 +51,15 @@ public class ExtractMetaData implements Runnable {
 
         for (Method method : ClientApi.class.getMethods()) {
             addClientEndpoint(method);
+        }
+
+        for (var anInterface : KeyApi.class.getInterfaces()) {
+            var js = anInterface.getAnnotation(JsonSegment.class);
+            if (js != null) {
+                var key = js.value();
+                var doc = findDocumentation(anInterface);
+                segDocumentation.put(key, doc);
+            }
         }
     }
 
@@ -104,14 +102,24 @@ public class ExtractMetaData implements Runnable {
             "Method " + method + " is neither a request nor a notification");
     }
 
-    private String findDocumentation(Method method) {
-        return findCompilationUnit(method.getDeclaringClass())
-                .map(it -> it.getMethodsByName(method.getName()))
-                .map(List::getFirst)
-                .flatMap(NodeWithJavadoc::getJavadoc)
-                .map(Javadoc::getDescription)
-                .map(JavadocDescription::toText)
-                .orElse("");
+    private @Nullable HelpText findDocumentation(Method method) {
+        MethodJavadoc javadoc = RuntimeJavadoc.getJavadoc(method);
+        if (javadoc.isEmpty())
+            return null;
+
+        final var visitor = new ToHtmlStringCommentVisitor();
+        javadoc.getComment().visit(visitor);
+
+        var t = javadoc.getThrows().stream()
+                .map(it -> new HelpTextEntry(it.getName(), it.getComment().toString()));
+
+        var p = javadoc.getParams().stream()
+                .map(it -> new HelpTextEntry(it.getName(), it.getComment().toString()));
+
+        var r = Stream.of(new HelpTextEntry("returns", javadoc.getReturns().toString()));
+
+        return new HelpText(visitor.build(),
+            Stream.concat(r, Stream.concat(p, t)).toList());
     }
 
     private List<Metamodel.Argument> translate(Parameter[] parameters) {
@@ -124,21 +132,6 @@ public class ExtractMetaData implements Runnable {
     }
 
     private Metamodel.Type getOrFindType(Class<?> type) {
-        System.out.println(type);
-        if (type == CompletableFuture.class) {
-            return getOrFindType(type.getTypeParameters()[0].getClass());
-        }
-
-        if (type == List.class) {
-            // TODO try to get the type below.
-            var subType = getOrFindType(type.getTypeParameters()[0].getClass());
-            return new Metamodel.ListType(subType, "");
-        }
-
-        if (type == Class.class || type == Constructor.class || type == Proof.class) {
-            throw new IllegalStateException("Forbidden class reached!");
-        }
-
         if (type == String.class)
             return Metamodel.BuiltinType.STRING;
         if (type == Integer.class)
@@ -165,47 +158,114 @@ public class ExtractMetaData implements Runnable {
         if (type == Character.TYPE)
             return Metamodel.BuiltinType.LONG;
 
-        var t = types.stream().filter(it -> it.name().equals(type.getSimpleName())).findFirst();
-        if (t.isPresent())
-            return t.get();
+        if (type == CompletableFuture.class) {
+            return getOrFindType(type.getTypeParameters()[0].getClass());
+        }
+
+
+        if (type == List.class) {
+            // TODO try to get the type below.
+            var subType = getOrFindType(type.getTypeParameters()[0]);
+            return new Metamodel.ListType(subType);
+        }
+
+        if (type == Class.class || type == Constructor.class || type == Proof.class) {
+            throw new IllegalStateException("Forbidden class reached!");
+        }
+
+
+        var t = types.get(type);
+        if (t != null)
+            return t;
         var a = createType(type);
-        types.add(a);
+        types.put(type, a);
         return a;
     }
 
     private Metamodel.Type createType(Class<?> type) {
         final var documentation = findDocumentation(type);
-        if (type.isEnum())
+        if (type.isEnum()) {
             return new Metamodel.EnumType(type.getSimpleName(), type.getName(),
-                Arrays.stream(type.getEnumConstants()).map(Object::toString).toList(),
+                Arrays.stream(type.getEnumConstants())
+                        .map(
+                            it -> new Metamodel.EnumConstant(it.toString(),
+                                findDocumentationEnum(type, it)))
+                        .toList(),
                 documentation);
-
+        }
 
         var obj = new Metamodel.ObjectType(type.getSimpleName(), type.getName(), new ArrayList<>(),
             documentation);
         final var list = Arrays.stream(type.getDeclaredFields())
-                .map(it -> new Metamodel.Field(it.getName(), getOrFindType(it.getType()).name()))
+                .map(it -> new Metamodel.Field(it.getName(), getOrFindTypeName(it.getGenericType()),
+                    type.isRecord()
+                            ? findDocumentationRecord(type, it.getName())
+                            : findDocumentation(it)))
                 .toList();
         obj.fields().addAll(list);
         return obj;
     }
 
-    private String findDocumentation(Class<?> type) {
-        return findCompilationUnit(type)
-                .flatMap(NodeWithJavadoc::getJavadocComment)
-                .map(Comment::getContent)
-                .orElse("");
+    private @Nullable HelpText findDocumentation(Field it) {
+        var javadoc = RuntimeJavadoc.getJavadoc(it);
+        if (javadoc.isEmpty())
+            return null;
+        return printFieldDocumentation(javadoc);
     }
 
-    private Optional<TypeDeclaration<?>> findCompilationUnit(Class<?> type) {
-        try {
-            return sourceRoot.parse(type.getPackageName(), type.getSimpleName() + ".java")
-                    .getPrimaryType();
-        } catch (ParseProblemException e) {
-            return Optional.empty();
+    private @Nullable HelpText findDocumentationEnum(Class<?> type, Object enumConstant) {
+        ClassJavadoc javadoc = RuntimeJavadoc.getJavadoc(type);
+        if (javadoc.isEmpty())
+            return null;
+        for (var cdoc : javadoc.getEnumConstants()) {
+            if (cdoc.getName().equalsIgnoreCase(enumConstant.toString())) {
+                return printFieldDocumentation(cdoc);
+            }
         }
+        return null;
     }
 
+    private @Nullable HelpText findDocumentationRecord(Class<?> type, String name) {
+        ClassJavadoc javadoc = RuntimeJavadoc.getJavadoc(type);
+        if (javadoc.isEmpty())
+            return null;
+        for (var cdoc : javadoc.getRecordComponents()) {
+            if (cdoc.getName().equalsIgnoreCase(name)) {
+                return new HelpText(cdoc.getComment().toString(), List.of());
+            }
+        }
+        return null;
+    }
+
+    private static HelpText printFieldDocumentation(FieldJavadoc javadoc) {
+        final var visitor = new ToHtmlStringCommentVisitor();
+        javadoc.getComment().visit(visitor);
+
+        var t = javadoc.getOther().stream()
+                .map(it -> new HelpTextEntry(it.getName(), it.getComment().toString()));
+
+        var p = javadoc.getSeeAlso().stream().map(
+            it -> new HelpTextEntry(it.getSeeAlsoType().toString(), it.getStringLiteral()));
+
+        return new HelpText(visitor.build(), Stream.concat(p, t).toList());
+    }
+
+    private @Nullable HelpText findDocumentation(Class<?> type) {
+        ClassJavadoc classDoc = RuntimeJavadoc.getJavadoc(type);
+        if (!classDoc.isEmpty()) { // optionally skip absent documentation
+            var other = classDoc.getOther()
+                    .stream().map(it -> new HelpTextEntry(it.getName(),
+                        it.getComment().toString()));
+            var also = classDoc.getSeeAlso()
+                    .stream().map(it -> new HelpTextEntry(it.getSeeAlsoType().toString(),
+                        it.getStringLiteral()));
+
+            return new HelpText(
+                classDoc.getComment().toString(),
+                Stream.concat(other, also).toList());
+        }
+        return null;
+    }
 
     private void addClientEndpoint(Method method) {
         var jsonSegment = method.getDeclaringClass().getAnnotation(JsonSegment.class);
@@ -234,7 +294,8 @@ public class ExtractMetaData implements Runnable {
         }
     }
 
-    private static String callMethodName(String method, String segment, @Nullable String userValue,
+    private static String callMethodName(String method, String segment,
+            @Nullable String userValue,
             boolean useSegment) {
         if (!useSegment) {
             if (userValue == null || userValue.isBlank()) {
@@ -251,25 +312,106 @@ public class ExtractMetaData implements Runnable {
         }
     }
 
-    private Metamodel.@Nullable Type getOrFindType(Type genericReturnType) {
-        if (genericReturnType instanceof Class<?> c)
-            return getOrFindType(c);
-        if (genericReturnType instanceof ParameterizedType pt) {
-            if (Objects.equals(pt.getRawType().getTypeName(),
-                CompletableFuture.class.getTypeName())) {
-                return getOrFindType(pt.getActualTypeArguments()[0]);
-            }
-            if (Objects.equals(pt.getRawType().getTypeName(), List.class.getTypeName())) {
-                var base = getOrFindType(pt.getActualTypeArguments()[0]);
-                return new Metamodel.ListType(base, "");
-            }
 
-            if (Objects.equals(pt.getRawType().getTypeName(), Either.class.getTypeName())) {
-                var base1 = getOrFindType(pt.getActualTypeArguments()[0]);
-                var base2 = getOrFindType(pt.getActualTypeArguments()[1]);
-                return new Metamodel.EitherType(base1, base2, "");
+    private String getOrFindTypeName(Type type) {
+        switch (type) {
+            case GenericArrayType a -> throw new RuntimeException("Unwanted type found: " + type);
+            case Class<?> c -> {
+                return getOrFindTypeName(c);
+            }
+            case ParameterizedType pt -> {
+                if (Objects.equals(pt.getRawType().getTypeName(),
+                    CompletableFuture.class.getTypeName())) {
+                    return getOrFindTypeName(pt.getActualTypeArguments()[0]);
+                }
+                if (Objects.equals(pt.getRawType().getTypeName(), List.class.getTypeName())) {
+                    String base = getOrFindTypeName(pt.getActualTypeArguments()[0]);
+                    return base + "[]";
+                }
+
+                if (Objects.equals(pt.getRawType().getTypeName(), Either.class.getTypeName())) {
+                    var base1 = getOrFindType(pt.getActualTypeArguments()[0]);
+                    var base2 = getOrFindType(pt.getActualTypeArguments()[1]);
+                    return "either<" + base1 + ", " + base2 + ">";
+                }
+            }
+            default -> {
             }
         }
+
+        return "<error>!!!";
+    }
+
+    private String getOrFindTypeName(Class<?> type) {
+        var t = types.get(type);
+
+        if (t != null)
+            return t.name();
+        else if (type == String.class)
+            return Metamodel.BuiltinType.STRING.name();
+        else if (type == Integer.class)
+            return Metamodel.BuiltinType.INT.name();
+        else if (type == Double.class)
+            return Metamodel.BuiltinType.DOUBLE.name();
+        else if (type == Long.class)
+            return Metamodel.BuiltinType.LONG.name();
+        else if (type == Character.class)
+            return Metamodel.BuiltinType.LONG.name();
+        else if (type == File.class)
+            return Metamodel.BuiltinType.STRING.name();
+        else if (type == Boolean.class)
+            return Metamodel.BuiltinType.BOOL.name();
+        else if (type == Boolean.TYPE)
+            return Metamodel.BuiltinType.BOOL.name();
+        else if (type == Integer.TYPE)
+            return Metamodel.BuiltinType.INT.name();
+        else if (type == Double.TYPE)
+            return Metamodel.BuiltinType.DOUBLE.name();
+        else if (type == Long.TYPE)
+            return Metamodel.BuiltinType.LONG.name();
+        else if (type == Character.TYPE)
+            return Metamodel.BuiltinType.LONG.name();
+        else if (type == CompletableFuture.class) {
+            return getOrFindTypeName(type.getTypeParameters()[0].getClass());
+        } else if (type == List.class) {
+            var subType = getOrFindTypeName(type.getTypeParameters()[0]);
+            return subType + "[]";
+        } else if (type == Class.class || type == Constructor.class || type == Proof.class) {
+            throw new IllegalStateException("Forbidden class reached!");
+        } else if (type instanceof Class<?>) {
+            return type.getSimpleName();
+        }
+        return "<error>!!!??!?!?";
+    }
+
+
+    private Metamodel.@Nullable Type getOrFindType(Type genericReturnType) {
+        switch (genericReturnType) {
+            case GenericArrayType a ->
+                throw new RuntimeException("Unwanted type found: " + genericReturnType);
+            case Class<?> c -> {
+                return getOrFindType(c);
+            }
+            case ParameterizedType pt -> {
+                if (Objects.equals(pt.getRawType().getTypeName(),
+                    CompletableFuture.class.getTypeName())) {
+                    return getOrFindType(pt.getActualTypeArguments()[0]);
+                }
+                if (Objects.equals(pt.getRawType().getTypeName(), List.class.getTypeName())) {
+                    var base = getOrFindType(pt.getActualTypeArguments()[0]);
+                    return new Metamodel.ListType(base);
+                }
+
+                if (Objects.equals(pt.getRawType().getTypeName(), Either.class.getTypeName())) {
+                    var base1 = getOrFindType(pt.getActualTypeArguments()[0]);
+                    var base2 = getOrFindType(pt.getActualTypeArguments()[1]);
+                    return new Metamodel.EitherType(base1, base2);
+                }
+            }
+            default -> {
+            }
+        }
+
         return null;
     }
 

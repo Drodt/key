@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,7 +32,7 @@ import picocli.CommandLine;
 public class Main implements Callable<Integer> {
     @CommandLine.Option(names = { "-s", "--source" },
         description = "Source folder for getting JavaDoc")
-    private @Nullable Path source = Paths.get("..", "keyext.api", "src", "main", "java");
+    private @Nullable Path source = Paths.get("keyext.api", "src", "main", "java");
 
     @CommandLine.Option(names = { "-o", "--output" }, description = "Output folder")
     private Path output = Paths.get("out");
@@ -45,12 +44,12 @@ public class Main implements Callable<Integer> {
 
     @Override
     public Integer call() throws IOException {
-        var metadata = new ExtractMetaData(Objects.requireNonNull(source));
+        var metadata = new ExtractMetaData();
         metadata.run();
         Files.createDirectories(output);
 
         runGenerator(metadata.getApi(), "api.meta.json", (a) -> () -> getGson().toJson(a));
-        runGenerator(metadata.getApi(), "api.meta.md", DocGen::new);
+        runGenerator(metadata.getApi(), "api.meta.html", DocGen::new);
         runGenerator(metadata.getApi(), "keydata.py", PythonGenerator.PyDataGen::new);
         runGenerator(metadata.getApi(), "server.py", PythonGenerator.PyApiGen::new);
         return 0;

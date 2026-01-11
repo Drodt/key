@@ -11,7 +11,6 @@ import de.uka.ilkd.key.proof.Proof;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.keyproject.key.api.internal.NodeText;
 
 /**
  * @author Alexander Weigl
@@ -64,7 +63,8 @@ public class KeyIdentifications {
 
     public Node find(NodeId nodeId) {
         Proof p = find(nodeId.proofId);
-        var opt = p.findAny(it -> it.serialNr() == nodeId.nodeId());
+        var id = Integer.parseInt(nodeId.nodeId());
+        var opt = p.findAny(it -> it.serialNr() == id);
         return Objects.requireNonNull(opt, "Could not find node with serialNr  " + nodeId.nodeId);
     }
 
@@ -110,7 +110,7 @@ public class KeyIdentifications {
      * @author Alexander Weigl
      * @version 1 (29.10.23)
      */
-    public record NodeId(ProofId proofId, int nodeId) implements KeYDataTransferObject {
+    public record NodeId(ProofId proofId, String nodeId) implements KeYDataTransferObject {
     }
 
     public record ProofId(EnvironmentId env, String proofId) implements KeYDataTransferObject {
