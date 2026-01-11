@@ -4,15 +4,9 @@
 extern crate rml_contracts;
 use rml_contracts::*;
 
-#[spec(ensures(true))]
-fn foo() {
-    ghost!{
-        let x = 1;
-    };
-}
-
-#[spec(ensures(true))]
-fn foo1() {
-    let x = 0;
-    ghost!{snapshot!(x)};
+#[spec {ensures(result == 2)}]
+fn foo(a: [i32; 48]) -> i32  {
+    let old_a = ghost!{snapshot!(a)};
+    let x: i32 = 2;
+    x
 }
