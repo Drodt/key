@@ -17,12 +17,10 @@ import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.expr.FunctionFrame;
 import org.key_project.rusty.ast.expr.GhostBlockExpression;
 import org.key_project.rusty.ast.expr.LoopScope;
+import org.key_project.rusty.ast.expr.PanicFrame;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
-import org.key_project.rusty.logic.op.ElementaryUpdate;
-import org.key_project.rusty.logic.op.ProgramVariable;
-import org.key_project.rusty.logic.op.RModality;
-import org.key_project.rusty.logic.op.UpdateApplication;
+import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.*;
 import org.key_project.rusty.logic.sort.GenericSort;
 import org.key_project.rusty.rule.*;
@@ -192,10 +190,12 @@ public class TacletIndex {
             }
         } else {
             indexObj = indexTerm.op();
-            if (indexObj instanceof ElementaryUpdate) {
-                indexObj = ElementaryUpdate.class;
-            } else if (indexObj instanceof RModality) {
-                indexObj = RModality.class;
+            switch (indexObj) {
+                case ElementaryUpdate ignored -> indexObj = ElementaryUpdate.class;
+                case RModality ignored -> indexObj = RModality.class;
+                case ParametricFunctionInstance pfi -> indexObj = pfi.getBase();
+                default -> {
+                }
             }
         }
 
@@ -372,19 +372,12 @@ public class TacletIndex {
             res = merge(res, map.get(DEFAULT_PROGSV_KEY));
         }
 
-        final ImmutableList<NoPosTacletApp> inMap;
-
-        /*
-         * if (op instanceof SortDependingFunction) {
-         * inMap = map.get(((SortDependingFunction) op).getKind());
-         * } else
-         */ if (op instanceof ElementaryUpdate) {
-            inMap = map.get(ElementaryUpdate.class);
-        } else if (op instanceof RModality) {
-            inMap = map.get(RModality.class);
-        } else {
-            inMap = map.get(op);
-        }
+        final ImmutableList<NoPosTacletApp> inMap = switch (op) {
+            case ElementaryUpdate ignored -> map.get(ElementaryUpdate.class);
+            case RModality ignored -> map.get(RModality.class);
+            case ParametricFunctionInstance pfi -> map.get(pfi.getBase());
+            default -> map.get(op);
+        };
 
         res = merge(res, inMap);
 
@@ -495,7 +488,7 @@ public class TacletIndex {
         /// the classes that represent prefix elements of a Rust block
         static final Class<?>[] prefixClasses =
             new Class<?>[] { BlockExpression.class, ExpressionStatement.class, LoopScope.class,
-                FunctionFrame.class, GhostBlockExpression.class };
+                FunctionFrame.class, PanicFrame.class, GhostBlockExpression.class };
 
         /// number of prefix types
         static final int PREFIXTYPES = prefixClasses.length;
@@ -505,7 +498,7 @@ public class TacletIndex {
 
         /// fields to indicate the position of the next relevant child (the next possible prefix
         /// element or real statement
-        static final int[] nextChild = { 0, 0, 2, 1, 0 };
+        static final int[] nextChild = { 0, 0, 2, 1, 1, 0 };
 
         PrefixOccurrences() {
             reset();

@@ -147,8 +147,8 @@ public class IntermediateProofReplayer {
                             addChildren(children, intermChildren);
 
                             // set information about SUCCESSFUL rule application
-                            // currNode.getNodeInfo().setInteractiveRuleApplication(
-                            // currInterm.isInteractiveRuleApplication());
+                            currNode.getNodeInfo().setInteractiveRuleApplication(
+                                currInterm.isInteractiveRuleApplication());
                             // currNode.getNodeInfo()
                             // .setScriptRuleApplication(currInterm.isScriptRuleApplication());
 

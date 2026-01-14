@@ -30,3 +30,5 @@ PANIC
  GHOST: 'ghost!';
 
  SNAPSHOT: 'snapshot!';
+
+ PANIC_FRAME: 'panic_frame!';

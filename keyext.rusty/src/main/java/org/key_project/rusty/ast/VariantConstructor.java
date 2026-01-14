@@ -4,21 +4,29 @@
 package org.key_project.rusty.ast;
 
 import org.key_project.logic.SyntaxElement;
+import org.key_project.logic.op.Function;
 import org.key_project.rusty.ast.visitor.Visitor;
 
-public record VariantConstructor() implements Def {
+import org.jspecify.annotations.NonNull;
+
+public record VariantConstructor(Function fn) implements Def {
     @Override
     public void visit(Visitor v) {
         v.performActionOnVariantConstructor(this);
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         throw new IndexOutOfBoundsException("Invalid index: " + n);
     }
 
     @Override
     public int getChildCount() {
         return 0;
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return fn.name().toString();
     }
 }

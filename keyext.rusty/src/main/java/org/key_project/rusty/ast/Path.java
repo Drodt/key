@@ -23,7 +23,7 @@ public record Path<R>(R res, ImmutableArray<PathSegment> segments) implements Ru
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         var sb = new StringBuilder();
         for (int i = 0; i < segments.size(); i++) {
             if (i > 0) {

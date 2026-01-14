@@ -57,6 +57,7 @@ public class ProgramContextAdder {
                 case ExpressionStatement es -> createExpressionStatementWrapper(es, body);
                 case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
                 case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
+                case PanicFrame pf -> createPanicFrameWrapper(pf, (BlockExpression) body);
                 case GhostBlockExpression ge -> createGhostBlockExprWrapper(ge, body);
                 case null, default -> throw new RuntimeException(
                     new UnexpectedException(
@@ -190,5 +191,10 @@ public class ProgramContextAdder {
         var body = wrapper.getStatements().tail();
         body = body.prepend(wrapExprIfNecessary(replacement));
         return new GhostBlockExpression(body, wrapper.getValue());
+    }
+
+    private PanicFrame createPanicFrameWrapper(PanicFrame wrapper,
+            BlockExpression replacement) {
+        return new PanicFrame(wrapper.getPanicVar(), replacement);
     }
 }

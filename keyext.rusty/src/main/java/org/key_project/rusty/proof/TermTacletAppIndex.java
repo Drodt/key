@@ -112,7 +112,6 @@ public class TermTacletAppIndex {
     /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> getRewriteTaclet(PosInOccurrence pos,
             Services services, TacletIndex tacletIndex) {
-
         return tacletIndex.getRewriteTaclet(pos, services);
     }
 

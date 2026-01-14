@@ -1,5 +1,8 @@
 plugins {
     id 'java'
+    id 'application'
+
+    id 'com.gradleup.shadow' version "9.2.2"
 }
 
 group = 'org.key_project'
@@ -20,6 +23,18 @@ dependencies {
     api(project(':key.ncore'))
     api(project(':key.ncore.calculus'))
     api(project(':key.util'))
+
+    implementation('info.picocli:picocli:4.7.7')
+    annotationProcessor('info.picocli:picocli-codegen:4.7.7')
+}
+
+shadowJar {
+    archiveClassifier.set("exe")
+    archiveBaseName.set("key")
+    filesMatching("META-INF/services/**") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE // needed for mergeServices
+    }
+    mergeServiceFiles()
 }
 
 test {
@@ -57,6 +72,14 @@ tasks.register('runAntlr4Key', JavaExec) {
     }
 }
 compileJava.dependsOn runAntlr4Key
+
+compileJava {
+    options.compilerArgs += ["-Aproject=${project.group}/${project.name}"]
+}
+
+application {
+    mainClass.set('org.key_project.rusty.CLI')
+}
 
 tasks.register('testRunAllProofs', Test) {
     description = 'Prove/reload all .key/.proof files tagged for regression testing'

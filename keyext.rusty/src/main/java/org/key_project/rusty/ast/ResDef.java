@@ -6,6 +6,8 @@ package org.key_project.rusty.ast;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
 
+import org.jspecify.annotations.NonNull;
+
 public record ResDef(Def def) implements Res {
     @Override
     public void visit(Visitor v) {
@@ -13,7 +15,7 @@ public record ResDef(Def def) implements Res {
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         if (n == 0) {
             return def;
         }

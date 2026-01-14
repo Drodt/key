@@ -21,6 +21,8 @@ import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
+import org.jspecify.annotations.Nullable;
+
 ///
 /// The proof obligation for operation contracts.
 ///
@@ -75,8 +77,9 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
 
     @Override
     protected Term getPost(ImmutableList<ProgramVariable> paramVars, ProgramVariable resultVar,
+            @Nullable ProgramVariable panicVar,
             Services proofServices) {
-        return contract.getPost(null, paramVars, resultVar, proofServices);
+        return contract.getPost(null, paramVars, resultVar, panicVar, proofServices);
     }
 
     @Override

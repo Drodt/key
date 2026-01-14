@@ -208,7 +208,7 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    public Name name() {
+    public @NonNull Name name() {
         return NAME;
     }
 

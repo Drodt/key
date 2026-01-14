@@ -593,7 +593,7 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
 
     @Override
     public void reportWarnings(ImmutableSet<PositionedString> warnings) {
-        IssueDialog.showWarningsIfNecessary(mainWindow, warnings);
+        SwingUtilities.invokeLater(() -> IssueDialog.showWarningsIfNecessary(mainWindow, warnings));
     }
 
     /**

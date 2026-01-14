@@ -61,6 +61,7 @@ public abstract class ProgramSVSort extends SortImpl {
     public static final ProgramSVSort NON_SIMPLE_BOOL_EXPRESSION =
         new NonSimpleBoolExpressionSort();
     public static final ProgramSVSort PATTERN = new PatternSort();
+    public static final ProgramSVSort CONSTRUCTOR = new ConstructorSort();
 
     // ----------- Types of Statement Program SVs -----------------------------
     public static final ProgramSVSort STATEMENT = new StatementSort();
@@ -390,6 +391,26 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof ElseBranch;
+        }
+    }
+
+    private static class ConstructorSort extends ProgramSVSort {
+        protected ConstructorSort() {
+            super(new Name("Constructor"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            if (check instanceof CallExpression ce && ce.callee() instanceof PathExpr pe
+                    && pe.path().res() instanceof ResDef(Def def)
+                    && (def instanceof VariantConstructor
+                            || def instanceof GenericVariantConstructor)
+                    && ce.params().stream()
+                            .allMatch(e -> SIMPLE_EXPRESSION.canStandFor(e, services)))
+                return true;
+            return (check instanceof PathExpr pe && pe.path().res() instanceof ResDef(Def def)
+                    && (def instanceof VariantConstructor
+                            || def instanceof GenericVariantConstructor));
         }
     }
 }

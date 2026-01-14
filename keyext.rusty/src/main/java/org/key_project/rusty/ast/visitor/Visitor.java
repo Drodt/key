@@ -161,5 +161,11 @@ public interface Visitor {
 
     void performActionOnPathSegment(PathSegment x);
 
+    void performActionOnGenericVariantConstructor(GenericVariantConstructor x);
+
+    void performActionOnPathRustType(PathRustType x);
+
+    void performActionOnPanicFrame(PanicFrame x);
+
     void performActionOnGhostRustType(GhostRustType x);
 }

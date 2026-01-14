@@ -810,6 +810,10 @@ public class SchemaConverter {
             return convertExprStmt(ctx.exprStmt());
         if (ctx.schemaStmt() != null)
             return convertSchemaStmt(ctx.schemaStmt());
+        if (ctx.PANIC_FRAME() != null) {
+            var sv = (ProgramSV) lookupSchemaVariable(ctx.schemaVariable().getText().substring(2));
+            return new PanicFrame(sv, convertBlockExpr(ctx.blockExpr()));
+        }
         throw new IllegalArgumentException("Expected statement, got: " + ctx.getText());
     }
 
