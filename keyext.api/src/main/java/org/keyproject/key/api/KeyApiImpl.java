@@ -28,6 +28,7 @@ import de.uka.ilkd.key.pp.IdentitySequentPrintFilter;
 import de.uka.ilkd.key.pp.LogicPrinter;
 import de.uka.ilkd.key.pp.NotationInfo;
 import de.uka.ilkd.key.pp.PosTableLayouter;
+import de.uka.ilkd.key.pp.PositionTable;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
@@ -393,8 +394,34 @@ public final class KeyApiImpl implements KeyApi {
             var id = new NodeTextId(nodeId, uniqueCounter.getAndIncrement());
             var t = new NodeText(lp.result(), layouter.getInitialPositionTable());
             data.register(id, t);
-            return new NodeTextDesc(id, lp.result());
+
+            var terms = expandTermsForTable(layouter.getInitialPositionTable());
+            return new NodeTextDesc(id, lp.result(), terms);
         });
+    }
+
+    private NodeTextSpan[] expandTermsForTable(PositionTable table) {
+        int nonEmptyRanges = 0;
+        for (int i = 0; i < table.getRows(); i++) {
+            if (table.getRange(i).length() != 0) {
+                nonEmptyRanges++;
+            }
+        }
+
+        var terms = new NodeTextSpan[nonEmptyRanges];
+        int j = 0;
+        for (int i = 0; i < table.getRows(); i++) {
+            var range = table.getRange(i);
+            if (range.length() == 0) {
+                continue;
+            }
+
+            var children = expandTermsForTable(table.getChild(i));
+            terms[j] = new NodeTextSpan(range.start(), range.end(), children);
+            j++;
+        }
+
+        return terms;
     }
 
     private final IdentitySequentPrintFilter filter = new IdentitySequentPrintFilter();
