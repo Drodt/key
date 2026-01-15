@@ -181,7 +181,7 @@ public final class KeyApiImpl implements KeyApi {
             var env = data.find(proofId.env());
             options.configure(proof);
             try {
-                System.out.println("Starting proof with setting "
+                System.err.println("Starting proof with setting "
                     + proof.getSettings().getStrategySettings().getActiveStrategyProperties()
                             .getProperty(StrategyProperties.STOPMODE_OPTIONS_KEY));
                 env.getProofControl().startAndWaitForAutoMode(proof);
