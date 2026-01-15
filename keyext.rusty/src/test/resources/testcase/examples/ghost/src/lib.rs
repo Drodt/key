@@ -31,15 +31,15 @@ fn foo(a: &mut i32) -> i32  {
         };
 
 2
-}
+}*/
 
 #[spec {ensures(result == 2)}]
 pub fn foo(a: &mut [i32; 10])-> i32{
     //let tmp: i32 = *a;
 
-    let old_a = ghost!{snapshot!(*&*a)};
+    let old_a = ghost!{snapshot!(a)};
     let mut i: usize = 0;
-    let len = a.len();
+    let len = 10;
     let b = a;
 
     loop{
@@ -57,7 +57,7 @@ pub fn foo(a: &mut [i32; 10])-> i32{
     2
 
 }
-//geht wieder 
+/*//geht wieder
 #[spec {
     requires(a <= 1000 && b <= 1000),
     ensures(result == a * b)
@@ -74,8 +74,8 @@ pub fn foo(a: u64, mut b: u64) -> u64 {
     }
 }*/
 //Das Beispiel "test_array_enumerate" aus rustSrc/src/lib.rs
-#[spec( ensures(result == 0))]
+/*#[spec( ensures(result == 0))]
 pub fn foo() -> i32 {
     let a = [1 + 2 - 3, 1, 1 + 1];
     a[0]
-}
+}*/
