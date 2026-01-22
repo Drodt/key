@@ -805,4 +805,18 @@ public class PrettyPrinter implements Visitor {
         x.getPv().visit(this);
         layouter.print(")");
     }
+
+    @Override
+    public void performActionOnStructDef(StructDef x) {
+        layouter.keyWord("struct");
+        layouter.print(" ");
+        // TODO
+    }
+
+    @Override
+    public void performActionOnEnumDef(EnumDef x) {
+        layouter.keyWord("enum");
+        layouter.print(" ");
+        // TODO
+    }
 }

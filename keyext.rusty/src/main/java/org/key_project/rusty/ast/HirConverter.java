@@ -177,8 +177,18 @@ public class HirConverter {
             case org.key_project.rusty.parser.hir.item.Use use -> convertUse(use);
             case Fn fn -> convertFn(fn, item.ownerId().defId());
             case org.key_project.rusty.parser.hir.item.ExternCrate ec -> convertExternCrate(ec);
+            case org.key_project.rusty.parser.hir.item.Struct s -> convertStructDef(s);
+            case org.key_project.rusty.parser.hir.item.Enum e -> convertEnumDef(e);
             default -> throw new IllegalArgumentException("Unknown item: " + item);
         };
+    }
+
+    private Item convertStructDef(org.key_project.rusty.parser.hir.item.Struct s) {
+        return new StructDef();
+    }
+
+    private Item convertEnumDef(org.key_project.rusty.parser.hir.item.Enum e) {
+        return new EnumDef();
     }
 
     private Item convertUse(org.key_project.rusty.parser.hir.item.Use use) {

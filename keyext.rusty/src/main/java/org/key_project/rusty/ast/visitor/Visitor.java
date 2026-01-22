@@ -168,4 +168,8 @@ public interface Visitor {
     void performActionOnPanicFrame(PanicFrame x);
 
     void performActionOnGhostRustType(GhostRustType x);
+
+    void performActionOnStructDef(StructDef x);
+
+    void performActionOnEnumDef(EnumDef x);
 }

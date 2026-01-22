@@ -16,6 +16,8 @@ public interface ItemKind {
                 case "ExternCrate" -> ExternCrate.class;
                 case "Fn" -> Fn.class;
                 case "Const" -> Const.class;
+                case "Struct" -> Struct.class;
+                case "Enum" -> Enum.class;
                 default -> null;
             };
         }
