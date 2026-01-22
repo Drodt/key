@@ -59,5 +59,5 @@ pub struct GhostHouse {
 }
 #[spec {ensures(result == 2)}]
 pub fn foo()-> i32{
-
-    2}
+    2
+}

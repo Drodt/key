@@ -819,4 +819,16 @@ public class PrettyPrinter implements Visitor {
         layouter.print(" ");
         // TODO
     }
+
+    public void performActionOnConstDef(ConstDef x) {
+        layouter.keyWord("const");
+        layouter.print(" ");
+        layouter.print(x.name());
+        layouter.print(": ");
+        x.rustType().visit(this);
+        layouter.print(" = ");
+        x.expr().visit(this);
+        layouter.print(";");
+        layouter.brk();
+    }
 }

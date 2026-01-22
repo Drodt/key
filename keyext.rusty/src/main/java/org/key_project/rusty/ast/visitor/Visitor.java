@@ -172,4 +172,6 @@ public interface Visitor {
     void performActionOnStructDef(StructDef x);
 
     void performActionOnEnumDef(EnumDef x);
+
+    void performActionOnConstDef(ConstDef x);
 }

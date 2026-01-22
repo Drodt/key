@@ -437,4 +437,9 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     public void performActionOnEnumDef(EnumDef x) {
         doDefaultAction(x);
     }
+
+    @Override
+    public void performActionOnConstDef(ConstDef x) {
+        doDefaultAction(x);
+    }
 }

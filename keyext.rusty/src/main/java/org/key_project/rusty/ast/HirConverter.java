@@ -179,6 +179,7 @@ public class HirConverter {
             case org.key_project.rusty.parser.hir.item.ExternCrate ec -> convertExternCrate(ec);
             case org.key_project.rusty.parser.hir.item.Struct s -> convertStructDef(s);
             case org.key_project.rusty.parser.hir.item.Enum e -> convertEnumDef(e);
+            case org.key_project.rusty.parser.hir.item.Const c -> convertConstDef(c);
             default -> throw new IllegalArgumentException("Unknown item: " + item);
         };
     }
@@ -189,6 +190,18 @@ public class HirConverter {
 
     private Item convertEnumDef(org.key_project.rusty.parser.hir.item.Enum e) {
         return new EnumDef();
+    }
+
+    private Item convertConstDef(org.key_project.rusty.parser.hir.item.Const c) {
+        var rustTy = convertHirTy(c.ty());
+        assert c.body().params().length == 0;
+        org.key_project.rusty.parser.hir.expr.Expr value = c.body().value();
+        var expr = convertExpr(value);
+        // TODO: Get type in second step
+        var ty = convertTy(rawTypes.get(value.hirId()));
+        String name = c.ident().name();
+        var fn = new RFunction(new Name(name), ty.getSort(services));
+        return new ConstDef(name, rustTy, expr, fn);
     }
 
     private Item convertUse(org.key_project.rusty.parser.hir.item.Use use) {
