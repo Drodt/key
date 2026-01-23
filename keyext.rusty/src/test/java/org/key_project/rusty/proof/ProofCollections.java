@@ -86,8 +86,9 @@ public class ProofCollections {
          */
 
         var ghost = c.group("ghost");
-        ghost.provable("first-ghost.key");
-        // ghost.provable("ghost-snap.key");
+        ghost.provable("double_array_with_ghost.key");
+        ghost.provable("double_array_without_ghost.key");
+        //ghost.provable("first-ghost.key");
 
         // var algos = c.group("algorithms");
         // algos.provable("binary-search/binary-search.key");
