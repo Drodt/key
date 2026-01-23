@@ -3,32 +3,37 @@
 
 extern crate rml_contracts;
 use rml_contracts::*;
-/*
+
 #[spec {ensures(result == 2)}]
-pub fn foo(a: &mut [i32; 10])-> i32{
+pub fn foo(a:[i32; 10])-> i32{
 
     let old_a = ghost!{snapshot!(a)};
     let mut i: usize = 0;
-    let len = 10;
-    let b = a;
+    let len: usize = 10;
+    let mut b = a;
+    let mut v:usize = len;
 
-    #[invariant(0 <= i && i <= len)]
-    #[variant(len-i)]
-    loop{
-        if i >= len {
+    #[invariant(0 <= v && v <= len)]
+    #[invariant(v == len - i)]
+    #[variant(v)]
+    loop {
+        if i < len {
+            b[i] = b[i] * 2;
+
+            ghost! {
+                let all_doubled = b[i] == old_a[i] * 2;
+            };
+
+            i += 1;
+            v -= 1;
+            continue;
+        } else {
             break;
         }
-        b[i] = b[i] * 2;
-
-        ghost!{
-            let all_doubled = b[i] == (*old_a)[i]*2;
-        };
-
-        i +=1
     }
     2
-}*/
-
+}
+/*
 pub struct Person {
     pub id: usize,
     pub close_to_panic: u8, // 0..=100
@@ -61,3 +66,4 @@ pub struct GhostHouse {
 pub fn foo()-> i32{
     2
 }
+*/
