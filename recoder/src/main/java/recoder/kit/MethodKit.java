@@ -474,7 +474,7 @@ public class MethodKit {
      *
      * @param md the method declaration to clone the header from.
      * @return a new method declaration sharing the header with the given one.
-     * @see recoder.java.SourceElement#deepClone()
+     * @see SourceElement#deepClone()
      */
     public static MethodDeclaration cloneHeader(MethodDeclaration md) {
         StatementBlock body = md.getBody();
@@ -658,7 +658,7 @@ public class MethodKit {
         if (candidate instanceof Constructor) {
             return null;
         }
-        List<Method> redefined = MethodKit.getRedefinedMethods(ni, context, name, signature);
+        List<Method> redefined = getRedefinedMethods(ni, context, name, signature);
         for (Method method : redefined) {
             Problem problem = checkMethodRedefinition(si, method, candidate);
             if (problem != null) {

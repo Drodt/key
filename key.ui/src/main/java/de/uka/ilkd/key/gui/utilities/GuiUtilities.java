@@ -21,6 +21,18 @@ public final class GuiUtilities {
         throw new Error("Do not instantiate");
     }
 
+    /**
+     * paints empty view with white background.
+     */
+    public static void paintEmptyViewComponent(JComponent pane, String name) {
+        // pane.setBorder(new TitledBorder(name));
+        // pane.setBackground(Color.white);
+        // if (pane instanceof JScrollPane) {
+        //     ((JScrollPane) pane).getViewport().setBackground(Color.white);
+        // }
+        // pane.setMinimumSize(new Dimension(150, 0));
+    }
+
     /// Copies the content in the bounds of `pos` in the `view` as plain text
     /// into the system clipboard. It translates the nbsp into breakable spaces.
     public static void copyHighlightToClipboard(SequentView view, PosInSequent pos) {

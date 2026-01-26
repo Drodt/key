@@ -38,7 +38,7 @@ public abstract class TacletExecutor<Goal extends @NonNull ProofGoal<Goal>, App 
     /// @param p_goal the [Goal] on which the taclet is applied
     /// @param p_list the list of [AssumesFormulaInstantiation] containing the instantiations
     /// for the assumes formulas
-    /// @param p_matchCond the [MatchConditions] with the instantiations of the schema
+    /// @param p_matchCond the [MatchResultInfo] with the instantiations of the schema
     /// variables
     /// @param p_numberOfNewGoals the number of new goals the [Taclet] creates in any case
     /// because of existing [TacletGoalTemplate]s

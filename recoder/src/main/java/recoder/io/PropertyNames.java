@@ -15,7 +15,7 @@ public interface PropertyNames {
      * Property <TT>output.path</TT>.
      * <p>
      * <p>
-     * Defines the output path used by the {@link recoder.io.SourceFileRepository}to write back
+     * Defines the output path used by the {@link SourceFileRepository}to write back
      * changed or new compilation units. Defaults to the corresponding environment variable or if
      * there is none, the current user directory.
      */
@@ -25,8 +25,8 @@ public interface PropertyNames {
      * Property <TT>input.path</TT>.
      * <p>
      * <p>
-     * Defines the search path list used by the {@link recoder.io.ClassFileRepository}and
-     * {@link recoder.io.SourceFileRepository}to load new classes. Defaults to the corresponding
+     * Defines the search path list used by the {@link ClassFileRepository}and
+     * {@link SourceFileRepository}to load new classes. Defaults to the corresponding
      * environment variable or if there is none, the current class path, or if there is none, ".".
      * The system should at least define the java.lang-classes.
      */
@@ -129,7 +129,12 @@ public interface PropertyNames {
      *
      * <PRE>
      * {@code
-     * while (i < n) { if (a[i] == x) { return i; } i += 1; }
+     * while (i < n) {
+     *     if (a[i] == x) {
+     *         return i;
+     *     }
+     *     i += 1;
+     * }
      * }
      * </PRE>
      *
@@ -138,7 +143,12 @@ public interface PropertyNames {
      *
      * <PRE>
      * {@code
-     * while (i < n) { if (a[i] == x) { return i; } i += 1; }
+     * while (i < n) {
+     *     if (a[i] == x) {
+     *         return i;
+     *     }
+     *     i += 1;
+     * }
      * }
      * </PRE>
      *
@@ -147,7 +157,12 @@ public interface PropertyNames {
      *
      * <PRE>
      * {@code
-     * while (i < n) { if (a[i] == x) { return i; } i += 1; }
+     * while (i < n) {
+     *     if (a[i] == x) {
+     *         return i;
+     *     }
+     *     i += 1;
+     * }
      * }
      * </PRE>
      *

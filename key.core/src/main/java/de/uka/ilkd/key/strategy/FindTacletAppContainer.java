@@ -45,7 +45,7 @@ public class FindTacletAppContainer extends TacletAppContainer {
      * @param goal the goal to apply the taclet on
      * @param age the age
      */
-    FindTacletAppContainer(NoPosTacletApp app, PosInOccurrence pio,
+    public FindTacletAppContainer(NoPosTacletApp app, PosInOccurrence pio,
             RuleAppCost cost, Goal goal,
             long age) {
         super(app, cost, age);

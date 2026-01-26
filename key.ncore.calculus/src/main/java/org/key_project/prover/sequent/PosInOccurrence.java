@@ -142,6 +142,10 @@ public class PosInOccurrence {
         return new PosInOccurrence(sequentFormula, PosInTerm.getTopLevel(), inAntec);
     }
 
+    public String toString() {
+        return "Term " + posInTerm() + " of " + sequentFormula();
+    }
+
     /// Retrieves the subterm pointed to by this position.
     ///
     /// @return The [Term] at this position.

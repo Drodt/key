@@ -20,7 +20,7 @@ public abstract class JavaNonTerminalProgramElement extends JavaProgramElement
      * Java program element.
      */
 
-    public JavaNonTerminalProgramElement() {
+    protected JavaNonTerminalProgramElement() {
         // nothing to do here
     }
 
@@ -43,7 +43,7 @@ public abstract class JavaNonTerminalProgramElement extends JavaProgramElement
     }
 
     /**
-     * Defaults to attempt a depth-first traversal using a {@link recoder.convenience.TreeWalker}.
+     * Defaults to attempt a depth-first traversal using a {@link TreeWalker}.
      */
 
     public void makeAllParentRolesValid() {

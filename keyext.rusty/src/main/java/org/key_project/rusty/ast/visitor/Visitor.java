@@ -1,0 +1,159 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.ast.visitor;
+
+import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.rusty.ast.*;
+import org.key_project.rusty.ast.expr.*;
+import org.key_project.rusty.ast.pat.*;
+import org.key_project.rusty.ast.stmt.EmptyStatement;
+import org.key_project.rusty.ast.stmt.ExpressionStatement;
+import org.key_project.rusty.ast.stmt.LetStatement;
+import org.key_project.rusty.ast.ty.*;
+import org.key_project.rusty.logic.op.ProgramFunction;
+import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
+import org.key_project.rusty.speclang.LoopSpecification;
+
+/// This class is implemented by visitors/walkers. Each AST node implements a visit(Visitor) method
+/// that calls the doActionAt<NodeType> method. Similar to the pretty print mechanism.
+public interface Visitor {
+    void performActionOnAssignmentExpression(AssignmentExpression x);
+
+    void performActionOnBlockExpression(BlockExpression x);
+
+    void performActionOnBooleanLiteralExpression(BooleanLiteralExpression x);
+
+    void performActionOnContextBlockExpression(ContextBlockExpression x);
+
+    void performActionOnIntegerLiteralExpression(IntegerLiteralExpression x);
+
+    void performActionOnSchemaVariable(SchemaVariable x);
+
+    void performActionOnProgramVariable(ProgramVariable x);
+
+    void performActionOnEmptyStatement(EmptyStatement x);
+
+    void performActionOnMethodCall(MethodCallExpression x);
+
+    void performActionOnFieldExpression(FieldExpression x);
+
+    void performActionOnCallExpression(CallExpression x);
+
+    void performActionOnIndexExpression(IndexExpression x);
+
+    void performActionOnBorrowExpression(BorrowExpression x);
+
+    void performActionOnDereferenceExpression(DereferenceExpression x);
+
+    void performActionOnTypeCastExpression(TypeCastExpression x);
+
+    void performActionOnCompoundAssignmentExpression(CompoundAssignmentExpression x);
+
+    void performActionOnContinueExpression(ContinueExpression x);
+
+    void performActionOnBreakExpression(BreakExpression x);
+
+    void performActionOnReturnExpression(ReturnExpression x);
+
+    void performActionOnEnumeratedArrayExpression(ArrayExpression x);
+
+    void performActionOnRepeatedArrayExpression(RepeatExpression x);
+
+    void performActionOnTupleExpression(TupleExpression x);
+
+    void performActionOnPathInExpression(PathInExpression x);
+
+    void performActionOnStructExpression(StructExpression x);
+
+    void performActionOnClosureExpression(ClosureExpression x);
+
+    void performActionOnInfiniteLoop(InfiniteLoopExpression x);
+
+    void performActionOnIfExpression(IfExpression x);
+
+    void performActionOnMatchExpression(MatchExpression x);
+
+    void performActionOnMatchArm(MatchArm x);
+
+    void performActionOnExpressionStatement(ExpressionStatement x);
+
+    void performActionOnPrimitiveRustType(PrimitiveRustType x);
+
+    void performActionOnSchemaRustType(SchemaRustType x);
+
+    void performActionOnLetStatement(LetStatement x);
+
+    void performActionOnIdentPattern(IdentPattern x);
+
+    void performActionOnSchemaVarPattern(SchemaVarPattern x);
+
+    void performActionOnLiteralPattern(LiteralPattern x);
+
+    void performActionOnAltPattern(AltPattern x);
+
+    void performActionOnWildCardPattern(WildCardPattern x);
+
+    void performActionOnRangepattern(RangePattern x);
+
+    void performActionOnReferenceRustType(ReferenceRustType x);
+
+    void performActionOnBinaryExpression(BinaryExpression x);
+
+    void performActionOnBinaryOperator(BinaryExpression.Operator x);
+
+    void performActionOnUnaryExpression(UnaryExpression x);
+
+    void performActionOnUnaryOperator(UnaryExpression.Operator x);
+
+    void performActionOnBindingPattern(BindingPattern x);
+
+    void performActionOnLetExpression(LetExpression x);
+
+    void performActionOnTypeOf(TypeOf x);
+
+    void performActionOnProgramFunction(ProgramFunction x);
+
+    void performActionOnFunctionBodyExpression(FunctionBodyExpression x);
+
+    void performActionOnFunctionFrame(FunctionFrame x);
+
+    void performActionOnLoopInvariant(LoopSpecification x);
+
+    void performActionOnProgramMetaConstruct(ProgramTransformer x);
+
+    void performActionOnLoopScope(LoopScope x);
+
+    void performActionOnSortRustType(SortRustType x);
+
+    void performActionOnLitPatExpr(LitPatExpr x);
+
+    void performActionOnEmptyPanic(EmptyPanic x);
+
+    void performActionOnNeverRustType(NeverRustType x);
+
+    void performActionOnPtrRustType(PtrRustType x);
+
+    void performActionOnSliceRustType(SliceRustType x);
+
+    void performActionOnArrayRustType(ArrayRustType x);
+
+    void performActionOnIdentifier(Identifier x);
+
+    void performActionOnInferHirTy(InferHirTy x);
+
+    void performActionOnFieldIdentifier(FieldIdentifier x);
+
+    void performActionOnTupleRustType(TupleRustType x);
+
+    void performActionOnPathExpr(PathExpr x);
+
+    <R> void performActionOnPath(Path<R> x);
+
+    void performActionOnVariantConstructor(VariantConstructor x);
+
+    void performActionOnResDef(ResDef x);
+
+    void performActionOnPathSegment(PathSegment x);
+}

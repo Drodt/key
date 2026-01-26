@@ -152,7 +152,7 @@ public class RewriteTaclet extends FindTaclet {
 
     /**
      * Compute polarity
-     *
+     * <br>
      * (the {@code AntecSuccPrefixChecker} seems to reimplement this.
      */
     private int polarity(final Operator op, final PIOPathIterator it, int polarity) {
@@ -167,7 +167,7 @@ public class RewriteTaclet extends FindTaclet {
                 (op == Junctor.OR) || // or
                 (op == Junctor.IMP && it.getChild() != 0) || // right hand side of implication
                 (op == IfThenElse.IF_THEN_ELSE && it.getChild() != 0)) { // then or else part of
-                                                                         // if-then-else
+            // if-then-else
             // do nothing
         } else { // find term has no polarity in any
                  // other case

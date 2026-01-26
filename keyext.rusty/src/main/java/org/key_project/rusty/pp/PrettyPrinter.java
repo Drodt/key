@@ -1,0 +1,748 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.pp;
+
+import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.*;
+import org.key_project.rusty.ast.expr.*;
+import org.key_project.rusty.ast.pat.*;
+import org.key_project.rusty.ast.stmt.EmptyStatement;
+import org.key_project.rusty.ast.stmt.ExpressionStatement;
+import org.key_project.rusty.ast.stmt.LetStatement;
+import org.key_project.rusty.ast.stmt.Statement;
+import org.key_project.rusty.ast.ty.*;
+import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.logic.op.IProgramVariable;
+import org.key_project.rusty.logic.op.ProgramFunction;
+import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.op.sv.ProgramSV;
+import org.key_project.rusty.rule.inst.SVInstantiations;
+import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
+import org.key_project.rusty.speclang.LoopSpecification;
+import org.key_project.util.collection.ImmutableArray;
+
+import org.jspecify.annotations.Nullable;
+
+public class PrettyPrinter implements Visitor {
+    private final PosTableLayouter layouter;
+
+    private boolean startAlreadyMarked;
+    private @Nullable Object firstStatement;
+    private boolean endAlreadyMarked;
+
+    private final SVInstantiations instantiations;
+    private final @Nullable Services services;
+    private boolean usePrettyPrinting;
+    private boolean useUnicodeSymbols;
+
+    /// creates a new PrettyPrinter
+    public PrettyPrinter(PosTableLayouter out) {
+        this(out, SVInstantiations.EMPTY_SVINSTANTIATIONS, null, true, true);
+    }
+
+    public PrettyPrinter(PosTableLayouter o, SVInstantiations svi, @Nullable Services services,
+            boolean usePrettyPrinting, boolean useUnicodeSymbols) {
+        this.layouter = o;
+        this.instantiations = svi;
+        this.services = services;
+        this.usePrettyPrinting = usePrettyPrinting;
+        this.useUnicodeSymbols = useUnicodeSymbols;
+    }
+
+    /// Creates a PrettyPrinter that does not create a position table.
+    public static PrettyPrinter purePrinter() {
+        return new PrettyPrinter(PosTableLayouter.pure());
+    }
+
+    /// @return the result
+    public String result() {
+        return layouter.result();
+    }
+
+    /// Alternative entry method for this class. Omits the trailing semicolon in the output.
+    ///
+    /// @param s source element to print
+    public void printFragment(RustyProgramElement s) {
+        layouter.beginRelativeC(0);
+        markStart(s);
+        s.visit(this);
+        markEnd(s);
+        layouter.end();
+    }
+
+    protected void printUnaryOperator(String symbol, boolean prefix, RustyProgramElement child) {
+        if (prefix) {
+            layouter.print(symbol);
+            child.visit(this);
+        } else {
+            child.visit(this);
+            layouter.print(symbol);
+        }
+    }
+
+    /// Marks the start of the first executable statement ...
+    ///
+    /// @param stmt current statement;
+    protected void markStart(Object stmt) {
+        if (!startAlreadyMarked) {
+            layouter.markStartFirstStatement();
+            firstStatement = stmt;
+            startAlreadyMarked = true;
+        }
+    }
+
+    /// Marks the end of the first executable statement ...
+    protected void markEnd(Object stmt) {
+        if (!endAlreadyMarked && (firstStatement == stmt)) {
+            layouter.markEndFirstStatement();
+            endAlreadyMarked = true;
+        }
+    }
+
+    /// Replace all unicode characters above ? by their explicit representation.
+    ///
+    /// @param str the input string.
+    /// @return the encoded string.
+    protected static String encodeUnicodeChars(String str) {
+        int len = str.length();
+        StringBuilder buf = new StringBuilder(len + 4);
+        for (int i = 0; i < len; i += 1) {
+            char c = str.charAt(i);
+            if (c >= 0x0100) {
+                if (c < 0x1000) {
+                    buf.append("\\u0").append(Integer.toString(c, 16));
+                } else {
+                    buf.append("\\u").append(Integer.toString(c, 16));
+                }
+            } else {
+                buf.append(c);
+            }
+        }
+        return buf.toString();
+    }
+
+    /// Write separated list.
+    ///
+    /// @param list a program element list.
+    protected void writeSeparatedList(ImmutableArray<? extends RustyProgramElement> list,
+            String sep) {
+        for (int i = 0; i < list.size(); i++) {
+            if (i != 0) {
+                layouter.print(sep).brk();
+            }
+            list.get(i).visit(this);
+        }
+    }
+
+    /// Write comma list.
+    ///
+    /// @param list a program element list.
+    protected void writeCommaList(ImmutableArray<? extends RustyProgramElement> list) {
+        writeSeparatedList(list, ",");
+    }
+
+    @Override
+    public void performActionOnAssignmentExpression(AssignmentExpression x) {
+        x.lhs().visit(this);
+        layouter.print(" = ");
+        x.rhs().visit(this);
+    }
+
+    private void beginBlock() {
+        layouter.print("{");
+        layouter.beginRelativeC();
+    }
+
+    private void endBlock() {
+        layouter.end().nl().print("}");
+    }
+
+    @Override
+    public void performActionOnBlockExpression(BlockExpression x) {
+        if (x.getChildCount() == 0) {
+            markStart(x);
+            layouter.print("{}");
+            markEnd(x);
+        } else {
+            beginBlock();
+            for (Statement stmt : x.getStatements()) {
+                layouter.nl();
+                stmt.visit(this);
+            }
+            if (x.getValue() != null) {
+                layouter.nl();
+                x.getValue().visit(this);
+            }
+            endBlock();
+        }
+    }
+
+    @Override
+    public void performActionOnBooleanLiteralExpression(BooleanLiteralExpression x) {
+        layouter.keyWord(x.getValue() ? "true" : "false");
+    }
+
+    @Override
+    public void performActionOnContextBlockExpression(ContextBlockExpression x) {
+        if (x.getStatements().isEmpty()) {
+            layouter.print("{c# #c}");
+        } else {
+            layouter.beginRelativeC();
+            layouter.print("{ c#");
+            for (Statement stmt : x.getStatements()) {
+                layouter.nl();
+                stmt.visit(this);
+            }
+            layouter.end().nl();
+            layouter.print("#c }");
+        }
+    }
+
+    @Override
+    public void performActionOnIntegerLiteralExpression(IntegerLiteralExpression x) {
+        layouter.print(x.toString());
+    }
+
+    @Override
+    public void performActionOnSchemaVariable(SchemaVariable x) {
+        if (!(x instanceof ProgramSV)) {
+            throw new UnsupportedOperationException(
+                "Don't know how to pretty print non program SV in programs.");
+        }
+
+        Object o = instantiations.getInstantiation(x);
+        if (o == null) {
+            layouter.print(x.name().toString());
+        } else {
+            if (o instanceof RustyProgramElement pe) {
+                pe.visit(this);
+            } else if (o instanceof ImmutableArray) {
+                for (RustyProgramElement e : ((ImmutableArray<RustyProgramElement>) o)) {
+                    e.visit(this);
+                }
+            } else {
+                // LOGGER.warn("No PrettyPrinting available for {}", o.getClass().getName());
+            }
+        }
+    }
+
+    @Override
+    public void performActionOnProgramVariable(ProgramVariable x) {
+        layouter.print(x.name().toString());
+    }
+
+    @Override
+    public void performActionOnEmptyStatement(EmptyStatement x) {
+        layouter.print(";");
+    }
+
+    private void beginMultilineParen() {
+        layouter.print("(").beginRelativeC(0).beginRelativeC().brk(0);
+    }
+
+    private void endMultilineParen() {
+        layouter.end().brk(0).end();
+        layouter.print(")");
+    }
+
+    private void printArguments(ImmutableArray<? extends Expr> args) {
+        beginMultilineParen();
+        if (args != null) {
+            writeCommaList(args);
+        }
+        endMultilineParen();
+    }
+
+    @Override
+    public void performActionOnMethodCall(MethodCallExpression x) {
+        x.callee().visit(this);
+        layouter.print(".");
+        layouter.print(x.method().toString());
+        printArguments(x.params());
+    }
+
+    @Override
+    public void performActionOnFieldExpression(FieldExpression x) {
+        x.base().visit(this);
+        layouter.print(".");
+        x.field().visit(this);
+    }
+
+    @Override
+    public void performActionOnCallExpression(CallExpression x) {
+        x.callee().visit(this);
+        printArguments(x.params());
+    }
+
+    @Override
+    public void performActionOnIndexExpression(IndexExpression x) {
+        x.base().visit(this);
+        layouter.print("[");
+        x.index().visit(this);
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnBorrowExpression(BorrowExpression x) {
+        layouter.print("&");
+        if (x.isMut()) {
+            layouter.keyWord("mut");
+            layouter.print(" ");
+        }
+        x.getExpr().visit(this);
+    }
+
+    @Override
+    public void performActionOnDereferenceExpression(DereferenceExpression x) {
+        printUnaryOperator("*", true, x.expr());
+    }
+
+    @Override
+    public void performActionOnTypeCastExpression(TypeCastExpression x) {
+        x.expr().visit(this);
+        layouter.print(" ");
+        layouter.keyWord("as");
+        layouter.brk();
+        // TODO: type
+    }
+
+    @Override
+    public void performActionOnCompoundAssignmentExpression(CompoundAssignmentExpression x) {
+        x.left().visit(this);
+        layouter.print(" ");
+        x.op().visit(this);
+        layouter.print("= ");
+        x.right().visit(this);
+    }
+
+    @Override
+    public void performActionOnContinueExpression(ContinueExpression x) {
+        layouter.keyWord("continue");
+        layouter.print(" ");
+        if (x.label() != null)
+            x.label().visit(this);
+    }
+
+    @Override
+    public void performActionOnBreakExpression(BreakExpression x) {
+        layouter.keyWord("break");
+        if (x.expr() != null) {
+            layouter.brk();
+            x.expr().visit(this);
+        }
+    }
+
+    @Override
+    public void performActionOnReturnExpression(ReturnExpression x) {
+        layouter.keyWord("return");
+        if (x.expr() != null) {
+            layouter.brk();
+            x.expr().visit(this);
+        }
+    }
+
+    @Override
+    public void performActionOnEnumeratedArrayExpression(ArrayExpression x) {
+        layouter.print("[");
+        writeCommaList(x.elements());
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnRepeatedArrayExpression(RepeatExpression x) {
+        layouter.print("[");
+        x.expr().visit(this);
+        layouter.print("; ");
+        x.size().visit(this);
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnTupleExpression(TupleExpression x) {
+        layouter.print("(");
+        writeCommaList(x.elements());
+        layouter.print(")");
+    }
+
+    @Override
+    public void performActionOnPathInExpression(PathInExpression x) {
+        var segments = x.segments();
+        for (int i = 0; i < segments.size(); i++) {
+            if (i != 0) {
+                layouter.print("::");
+            }
+            layouter.print(segments.get(i).toString());
+        }
+    }
+
+    @Override
+    public void performActionOnStructExpression(StructExpression x) {
+
+    }
+
+    @Override
+    public void performActionOnClosureExpression(ClosureExpression x) {
+
+    }
+
+    @Override
+    public void performActionOnInfiniteLoop(InfiniteLoopExpression x) {
+        layouter.keyWord("loop").print(" ");
+        x.body().visit(this);
+    }
+
+    @Override
+    public void performActionOnIfExpression(IfExpression x) {
+        layouter.keyWord("if").print(" ");
+        x.condition().visit(this);
+        layouter.print(" ");
+        x.thenExpr().visit(this);
+        if (x.elseExpr() != null) {
+            layouter.print(" ");
+            layouter.keyWord("else").print(" ");
+            x.elseExpr().visit(this);
+        }
+    }
+
+    @Override
+    public void performActionOnMatchExpression(MatchExpression x) {
+
+    }
+
+    @Override
+    public void performActionOnMatchArm(MatchArm x) {
+
+    }
+
+    @Override
+    public void performActionOnExpressionStatement(ExpressionStatement x) {
+        x.getExpression().visit(this);
+        layouter.print(";");
+    }
+
+    @Override
+    public void performActionOnPrimitiveRustType(PrimitiveRustType x) {
+        layouter.print(x.type().toString());
+    }
+
+    @Override
+    public void performActionOnSchemaRustType(SchemaRustType x) {
+        layouter.print("s#" + x.type().toString());
+    }
+
+    @Override
+    public void performActionOnLetStatement(LetStatement x) {
+        layouter.keyWord("let").print(" ");
+        x.getPattern().visit(this);
+        RustType type = x.type();
+        if (type != null) {
+            layouter.print(": ");
+            type.visit(this);
+        }
+        Expr init = x.getInit();
+        if (init != null) {
+            layouter.print(" = ");
+            init.visit(this);
+        }
+        layouter.print(";");
+    }
+
+    @Override
+    public void performActionOnIdentPattern(IdentPattern x) {
+        if (x.isReference()) {
+            layouter.keyWord("ref");
+            layouter.print(" ");
+        }
+        if (x.isMutable()) {
+            layouter.keyWord("mut");
+            layouter.print(" ");
+        }
+        layouter.print(x.name().toString());
+    }
+
+    @Override
+    public void performActionOnSchemaVarPattern(SchemaVarPattern x) {
+
+    }
+
+    @Override
+    public void performActionOnLiteralPattern(LiteralPattern x) {
+
+    }
+
+    @Override
+    public void performActionOnAltPattern(AltPattern x) {
+        writeSeparatedList(x.alternatives(), "|");
+    }
+
+    @Override
+    public void performActionOnWildCardPattern(WildCardPattern x) {
+        layouter.print("_");
+    }
+
+    @Override
+    public void performActionOnRangepattern(RangePattern x) {
+        if (x.left() != null) {
+            x.left().visit(this);
+        }
+        layouter.print(x.bounds().toString());
+        if (x.right() != null) {
+            x.right().visit(this);
+        }
+    }
+
+    @Override
+    public void performActionOnReferenceRustType(ReferenceRustType x) {
+        layouter.print("&");
+        if (x.isMut()) {
+            layouter.keyWord("mut");
+            layouter.print(" ");
+        }
+        x.inner().visit(this);
+    }
+
+    @Override
+    public void performActionOnBinaryExpression(BinaryExpression x) {
+        x.left().visit(this);
+        layouter.print(" ");
+        x.op().visit(this);
+        layouter.print(" ");
+        x.right().visit(this);
+    }
+
+    @Override
+    public void performActionOnBinaryOperator(BinaryExpression.Operator x) {
+        layouter.print(x.toString());
+    }
+
+    @Override
+    public void performActionOnUnaryExpression(UnaryExpression x) {
+        x.op().visit(this);
+        x.expr().visit(this);
+    }
+
+    @Override
+    public void performActionOnUnaryOperator(UnaryExpression.Operator x) {
+        layouter.print(x.toString());
+    }
+
+    @Override
+    public void performActionOnBindingPattern(BindingPattern x) {
+        if (x.ref() || x.mutRef()) {
+            layouter.keyWord("ref");
+            layouter.print(" ");
+        }
+        if (x.mut() || x.mutRef()) {
+            layouter.keyWord("mut");
+            layouter.print(" ");
+        }
+        x.pv().visit(this);
+        if (x.opt() != null) {
+            layouter.print(" @ ");
+            x.opt().visit(this);
+        }
+    }
+
+    @Override
+    public void performActionOnLetExpression(LetExpression x) {
+        layouter.keyWord("let");
+        layouter.print(" ");
+        x.pat().visit(this);
+        if (x.ty() != null) {
+            layouter.print(": ");
+            x.ty().visit(this);
+        }
+        layouter.print(" = ");
+        x.init().visit(this);
+    }
+
+    @Override
+    public void performActionOnTypeOf(TypeOf x) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void performActionOnProgramFunction(ProgramFunction x) {
+
+    }
+
+    @Override
+    public void performActionOnFunctionBodyExpression(FunctionBodyExpression x) {
+        var result = x.resultVar();
+        if (result != null) {
+            result.visit(this);
+            layouter.brk(1, 0);
+            layouter.print("=");
+            layouter.brk(1, 0);
+        }
+        x.call().visit(this);
+        layouter.print("@");
+    }
+
+    @Override
+    public void performActionOnFunctionFrame(FunctionFrame x) {
+        layouter.keyWord("fn-frame");
+        layouter.print(" ");
+        beginMultilineParen();
+
+        IProgramVariable var = x.getResultVar();
+        var fn = x.getFunction();
+        if (var != null) {
+            layouter.beginRelativeC().print("result->");
+            var.visit(this);
+            if (fn != null) {
+                layouter.print(",");
+            }
+            layouter.end();
+            if (fn != null) {
+                layouter.brk();
+            }
+        }
+
+        if (fn != null) {
+            layouter.print(fn.getFunction().name().toString());
+        }
+
+        endMultilineParen();
+        layouter.print(" ");
+
+        if (x.getBody() != null) {
+            x.getBody().visit(this);
+        }
+    }
+
+    @Override
+    public void performActionOnLoopInvariant(LoopSpecification x) {
+
+    }
+
+    @Override
+    public void performActionOnProgramMetaConstruct(ProgramTransformer x) {
+        layouter.print(x.name().toString());
+        layouter.print("(");
+        if (x.getChildCount() > 0)
+            ((RustyProgramElement) x.getChild(0)).visit(this);
+        layouter.print(")");
+    }
+
+    @Override
+    public void performActionOnLoopScope(LoopScope x) {
+        layouter.keyWord("loop_scope!");
+        beginMultilineParen();
+        if (x.getIndex() != null) {
+            x.getIndex().visit(this);
+            layouter.print(", ");
+        }
+        x.getReturnVar().visit(this);
+        layouter.print(", ");
+
+        x.getBlock().visit(this);
+        endMultilineParen();
+    }
+
+    @Override
+    public void performActionOnSortRustType(SortRustType x) {
+        layouter.print(x.getSort(services).name().toString());
+    }
+
+    @Override
+    public void performActionOnLitPatExpr(LitPatExpr x) {
+        if (x.isNegated()) {
+            layouter.print("-");
+        }
+        x.getLit().visit(this);
+    }
+
+    @Override
+    public void performActionOnEmptyPanic(EmptyPanic x) {
+        layouter.keyWord("panic!");
+        layouter.print("()");
+    }
+
+    @Override
+    public void performActionOnPtrRustType(PtrRustType x) {
+        layouter.print("*");
+        x.getInner().visit(this);
+    }
+
+    @Override
+    public void performActionOnNeverRustType(NeverRustType x) {
+        layouter.keyWord("!");
+    }
+
+    @Override
+    public void performActionOnArrayRustType(ArrayRustType x) {
+        layouter.print("[");
+        x.getElemTy().visit(this);
+        layouter.print("; ");
+        x.getLen().visit(this);
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnSliceRustType(SliceRustType x) {
+        layouter.print("[");
+        x.getInner().visit(this);
+        layouter.print("]");
+    }
+
+    @Override
+    public void performActionOnIdentifier(Identifier x) {
+        layouter.print(x.name().toString());
+    }
+
+    @Override
+    public void performActionOnInferHirTy(InferHirTy x) {
+        layouter.print("_");
+    }
+
+    @Override
+    public void performActionOnFieldIdentifier(FieldIdentifier x) {
+        x.identifier().visit(this);
+    }
+
+    @Override
+    public void performActionOnTupleRustType(TupleRustType x) {
+        layouter.print("(");
+        var tys = x.getTypes();
+        for (int i = 0; i < tys.size(); i++) {
+            var ty = tys.get(i);
+            ty.visit(this);
+            if (i < tys.size() - 1) {
+                layouter.print(", ");
+            }
+        }
+        layouter.print(")");
+    }
+
+    @Override
+    public void performActionOnResDef(ResDef x) {
+
+    }
+
+    @Override
+    public void performActionOnVariantConstructor(VariantConstructor x) {
+
+    }
+
+    @Override
+    public void performActionOnPathExpr(PathExpr x) {
+        x.path().visit(this);
+    }
+
+    @Override
+    public <R> void performActionOnPath(Path<R> x) {
+        for (int i = 0; i < x.segments().size() - 1; i++) {
+            x.segments().get(i).visit(this);
+            layouter.print("::");
+        }
+        x.segments().get(x.segments().size() - 1).visit(this);
+    }
+
+    @Override
+    public void performActionOnPathSegment(PathSegment x) {
+        layouter.print(x.ident());
+    }
+}

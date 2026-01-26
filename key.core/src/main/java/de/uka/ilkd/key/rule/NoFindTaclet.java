@@ -23,7 +23,6 @@ import org.jspecify.annotations.NonNull;
  * term or formula, but to a complete sequent. A typical representant is the <code>cut</code> rule.
  */
 public class NoFindTaclet extends Taclet {
-
     /**
      * creates a {@link Taclet} (previously Schematic Theory Specific Rule) with the given
      * parameters.
@@ -54,7 +53,7 @@ public class NoFindTaclet extends Taclet {
     }
 
     /**
-     * @return Set of schemavariables of the if and the (optional) find part
+     * @return Set of schemavariables of {@code assumes} and the (optional) find part
      */
     @Override
     public ImmutableSet<SchemaVariable> getAssumesAndFindVariables() {
@@ -83,5 +82,4 @@ public class NoFindTaclet extends Taclet {
         return new NoFindTaclet(new Name(s), applPart, goalTemplates(), getRuleSets(), attrs,
             prefixMap, choices, tacletAnnotations);
     }
-
 }

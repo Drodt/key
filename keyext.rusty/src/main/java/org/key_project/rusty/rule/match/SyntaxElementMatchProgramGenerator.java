@@ -1,0 +1,134 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.rule.match;
+
+import java.util.ArrayList;
+
+import org.key_project.logic.SyntaxElement;
+import org.key_project.logic.Term;
+import org.key_project.logic.op.Operator;
+import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.prover.rules.matcher.vm.instruction.VMInstruction;
+import org.key_project.rusty.logic.op.*;
+import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
+import org.key_project.rusty.logic.sort.*;
+
+import static org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet.*;
+
+/// This class generates a matching program for a given syntax element that can be
+/// interpreted by the virtual machine's interpreter
+///
+/// @see VMProgramInterpreter
+public class SyntaxElementMatchProgramGenerator {
+    /// creates a matcher for the given pattern
+    ///
+    /// @param pattern the [Term] specifying the pattern
+    /// @return the specialized matcher for the given pattern
+    public static VMInstruction[] createProgram(Term pattern) {
+        ArrayList<VMInstruction> program = new ArrayList<>();
+        createProgram(pattern, program);
+        return program.toArray(new VMInstruction[0]);
+    }
+
+    /// creates a matching program for the given pattern. It appends the necessary match instruction
+    /// to the given list of instructions
+    ///
+    /// @param pattern the [Term] used as pattern for which to create a matcher
+    /// @param program the list of [MatchInstruction] to which the instructions for matching
+    /// `pattern` are added.
+    private static void createProgram(Term pattern, ArrayList<VMInstruction> program) {
+        final Operator op = pattern.op();
+
+        final var boundVars = pattern.boundVars();
+
+        if (op instanceof SchemaVariable sv) {
+            program.add(getMatchInstructionForSV(sv));
+            program.add(gotoNextSiblingInstruction());
+        } else {
+            program.add(getCheckNodeKindInstruction(Term.class));
+            program.add(gotoNextInstruction());
+            switch (op) {
+                case ParametricFunctionInstance pfi -> {
+                    program.add(getCheckNodeKindInstruction(ParametricFunctionInstance.class));
+                    program.add(getSimilarParametricFunctionInstruction(pfi));
+                    program.add(gotoNextInstruction());
+                    for (int i = 0; i < pfi.getChildCount(); i++) {
+                        var arg = pfi.getChild(i);
+                        matchParametricArg(program, arg);
+                    }
+                }
+                case ElementaryUpdate elUp -> {
+                    program.add(getCheckNodeKindInstruction(ElementaryUpdate.class));
+                    program.add(gotoNextInstruction());
+                    if (elUp.lhs() instanceof SchemaVariable sv) {
+                        program.add(getMatchInstructionForSV(sv));
+                        program.add(gotoNextSiblingInstruction());
+                    } else if (elUp.lhs() instanceof ProgramVariable pv) {
+                        program.add(getMatchIdentityInstruction(pv));
+                        program.add(gotoNextInstruction());
+                    }
+                }
+                case RModality mod -> {
+                    program.add(getCheckNodeKindInstruction(RModality.class));
+                    program.add(gotoNextInstruction());
+                    if (mod.kind() instanceof ModalOperatorSV modKindSV) {
+                        program.add(matchModalOperatorSV(modKindSV));
+                    } else {
+                        program.add(getMatchIdentityInstruction(mod.kind()));
+                    }
+                    program.add(gotoNextInstruction());
+                    program.add(matchProgram(mod.programBlock().program()));
+                    program.add(gotoNextSiblingInstruction());
+                }
+                default -> {
+                    program.add(getMatchIdentityInstruction(op));
+                    program.add(gotoNextInstruction());
+                }
+            }
+        }
+
+        if (!boundVars.isEmpty()) {
+            for (int i = 0; i < boundVars.size(); i++) {
+                program.add(matchAndBindVariable(boundVars.get(i)));
+                program.add(gotoNextSiblingInstruction());
+            }
+        }
+
+        for (int i = 0; i < pattern.arity(); i++) {
+            createProgram(pattern.sub(i), program);
+        }
+        if (!boundVars.isEmpty())
+            program.add(unbindVariables(boundVars.size()));
+    }
+
+    private static void matchParametricArg(ArrayList<VMInstruction> program, SyntaxElement arg) {
+        if (arg instanceof SortArg sa) {
+            if (sa.sort() instanceof GenericSort gs) {
+                program.add(getMatchGenericSortInstruction(gs));
+                program.add(gotoNextInstruction());
+            } else if (sa.sort() instanceof ParametricSortInstance psi) {
+                matchParametricSortInstance(program, psi);
+            } else {
+                program.add(getMatchIdentityInstruction(sa));
+                program.add(gotoNextInstruction());
+            }
+
+        } else {
+            var t = ((TermArg) arg).term();
+            program.add(gotoNextInstruction());
+            createProgram(t, program);
+        }
+    }
+
+    private static void matchParametricSortInstance(ArrayList<VMInstruction> program,
+            ParametricSortInstance psi) {
+        program.add(getSimilarParametricSortInstruction(psi));
+        program.add(gotoNextInstruction());
+        program.add(gotoNextInstruction());
+        for (int i = 0; i < psi.getChildCount(); i++) {
+            var arg = psi.getChild(i);
+            matchParametricArg(program, arg);
+        }
+    }
+}

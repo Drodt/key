@@ -438,7 +438,9 @@ PROOFSCRIPT
    : '\\proofScript'
    ;
    // Taclet annotations (see TacletAnnotations.java for more details)
-   
+
+CONTRACTS : '\\contracts';
+INVARIANTS : '\\invariants';
 LEMMA
    : '\\lemma'
    ;

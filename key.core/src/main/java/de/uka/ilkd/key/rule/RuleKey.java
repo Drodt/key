@@ -55,5 +55,4 @@ public class RuleKey {
     public String toString() {
         return "(" + name + ", " + choices + ")";
     }
-
 }

@@ -191,7 +191,7 @@ public class IOUtilTest {
     }
 
     /**
-     * Tests {@link IOUtil#visit(File, org.key_project.util.java.IOUtil.IFileVisitor)}.
+     * Tests {@link IOUtil#visit(File, IOUtil.IFileVisitor)}.
      */
     @Test
     public void testVisit() throws IOException {
@@ -495,7 +495,7 @@ public class IOUtilTest {
     }
 
     /**
-     * Tests {@link IOUtil#computeLineInformation(java.io.InputStream)}
+     * Tests {@link IOUtil#computeLineInformation(InputStream)}
      */
     @Test
     public void testComputeLineInformation_InputStream() throws IOException {
@@ -604,7 +604,7 @@ public class IOUtilTest {
     }
 
     /**
-     * Tests {@link IOUtil#writeTo(java.io.OutputStream, String)}
+     * Tests {@link IOUtil#writeTo(OutputStream, String)}
      */
     @Test
     public void testWriteTo() throws IOException {
@@ -628,7 +628,7 @@ public class IOUtilTest {
     }
 
     /**
-     * Tests {@link IOUtil#writeTo(java.io.OutputStream, String, java.nio.charset.Charset)}
+     * Tests {@link IOUtil#writeTo(OutputStream, String, Charset)}
      */
     @Test
     public void testWriteTo_Charstet() throws Exception {
@@ -726,7 +726,7 @@ public class IOUtilTest {
     }
 
     /**
-     * Tests {@link IOUtil#readFrom(java.io.InputStream)}
+     * Tests {@link IOUtil#readFrom(InputStream)}
      */
     @Test
     public void testReadFrom_InputStream() {
@@ -784,7 +784,7 @@ public class IOUtilTest {
     }
 
     /**
-     * Tests {@link IOUtil#copy(InputStream, java.io.OutputStream)}.
+     * Tests {@link IOUtil#copy(InputStream, OutputStream)}.
      */
     @Test
     public void testCopy() throws IOException {
@@ -832,10 +832,10 @@ public class IOUtilTest {
     }
 
     /**
-     * Tests {@link IOUtil#toURI(java.net.URL)}
+     * Tests {@link IOUtil#toURI(URL)}
      *
      * @throws MalformedURLException Occurred Exception
-     * @see IOUtil#toURI(java.net.URL)
+     * @see IOUtil#toURI(URL)
      */
     @Test
     public void testToURI() throws Exception {

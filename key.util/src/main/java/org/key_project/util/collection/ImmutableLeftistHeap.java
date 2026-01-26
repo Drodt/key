@@ -196,7 +196,6 @@ public abstract class ImmutableLeftistHeap<T extends Comparable<T>> implements I
         public int size() {
             return size;
         }
-
     }
 
     /**

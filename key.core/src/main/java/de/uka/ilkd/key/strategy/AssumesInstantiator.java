@@ -10,10 +10,10 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.MatchConditions;
 import de.uka.ilkd.key.rule.NoPosTacletApp;
 import de.uka.ilkd.key.rule.Taclet;
-import de.uka.ilkd.key.strategy.IfInstantiationCachePool.AssumesInstantiationCache;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.PosInTerm;
+import org.key_project.prover.caches.AssumesInstantiationCachePool.AssumesInstantiationCache;
 import org.key_project.prover.indexing.FormulaTagManager;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -31,7 +31,7 @@ import org.key_project.util.collection.ImmutableSLList;
  */
 public class AssumesInstantiator {
     private final Goal goal;
-    private final AssumesInstantiationCache ifInstCache;
+    private final AssumesInstantiationCache assumesInstCache;
 
     private ImmutableArray<AssumesFormulaInstantiation> allAntecFormulas;
     private ImmutableArray<AssumesFormulaInstantiation> allSuccFormulas;
@@ -43,7 +43,7 @@ public class AssumesInstantiator {
     AssumesInstantiator(TacletAppContainer tacletAppContainer, final Goal goal) {
         this.goal = goal;
         this.tacletAppContainer = tacletAppContainer;
-        this.ifInstCache =
+        this.assumesInstCache =
             goal.proof().getServices().getCaches().getIfInstantiationCache().getCache(goal.node());
     }
 
@@ -178,12 +178,12 @@ public class AssumesInstantiator {
 
     private ImmutableArray<AssumesFormulaInstantiation> getNewSequentFormulasFromCache(
             boolean p_antec) {
-        return ifInstCache.get(p_antec, tacletAppContainer.getAge());
+        return assumesInstCache.get(p_antec, tacletAppContainer.getAge());
     }
 
     private void addNewSequentFormulasToCache(ImmutableArray<AssumesFormulaInstantiation> p_list,
             boolean p_antec) {
-        ifInstCache.put(p_antec, tacletAppContainer.getAge(), p_list);
+        assumesInstCache.put(p_antec, tacletAppContainer.getAge(), p_list);
     }
 
 

@@ -1,0 +1,21 @@
+\profile "Rust Profile";
+
+\problem {
+\<{
+  let n: u32 = 1u32;
+  if let 1u32..10u32 = n {
+    n
+  } else {
+    1
+  };
+}\> true
+}
+
+\proof {
+(branch "dummy ID"
+(rule "let_ident_pat_assign" (formula "1"))
+(rule "let_ident_pat" (formula "1"))
+(rule "assignment" (formula "1"))
+ (opengoal "==>  {n:=Z(1(#))}    \\<{      if let 1u32..10u32 = n {        n      } else {        1      };    }\\> true")
+)
+}

@@ -67,6 +67,10 @@ subprojects {
     java {
         sourceCompatibility = 21
         targetCompatibility = 21
+
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
     }
 
     repositories {

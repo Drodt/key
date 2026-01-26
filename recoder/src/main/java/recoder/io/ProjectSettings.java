@@ -270,7 +270,7 @@ public class ProjectSettings extends AbstractService implements PropertyNames {
 
         // add all the jars from extDir in the path
         StringBuilder additions = null;
-        File[] jars = extDir.listFiles(ProjectSettings.jarFilter);
+        File[] jars = extDir.listFiles(jarFilter);
         if (jars.length > 0) {
             additions = new StringBuilder();
             for (File jar : jars) {
@@ -309,7 +309,7 @@ public class ProjectSettings extends AbstractService implements PropertyNames {
 
     /**
      * Returns the current error handler. If no error handler is set, a
-     * {@link recoder.service.DefaultErrorHandler}will be constructed.
+     * {@link DefaultErrorHandler}will be constructed.
      *
      * @return the current error handler.
      */

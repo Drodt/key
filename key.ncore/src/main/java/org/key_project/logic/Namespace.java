@@ -142,6 +142,7 @@ public class Namespace<E extends Named> {
     /// @param name a Name representing the name of the symbol to look for
     /// @return Object with name "name" or null if no such an object has been found
     public @Nullable E lookup(Name name) {
+        @Nullable
         E symbol = lookupLocally(name);
         if (symbol != null) {
             return symbol;

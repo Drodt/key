@@ -1,0 +1,294 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.ldt;
+
+import org.key_project.logic.Name;
+import org.key_project.logic.Term;
+import org.key_project.logic.op.Function;
+import org.key_project.logic.op.Operator;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.PrimitiveType;
+import org.key_project.rusty.ast.abstraction.Type;
+import org.key_project.rusty.ast.expr.BinaryExpression;
+import org.key_project.rusty.ast.expr.IntegerLiteralExpression;
+import org.key_project.rusty.ast.expr.LiteralExpression;
+import org.key_project.rusty.logic.TermBuilder;
+
+import org.checkerframework.checker.initialization.qual.UnknownInitialization;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+public class IntLDT extends LDT {
+    public static final Name NAME = new Name("int");
+
+    public static final Name NUMBERS_NAME = new Name("Z");
+    public static final String NEGATIVE_LITERAL_STRING = "neglit";
+
+    private final Function sharp;
+    private final Function[] numberSymbol = new Function[10];
+    private final Function neglit;
+    private final Function numbers;
+    private final Function add;
+    private final Function neg;
+    private final Function sub;
+    private final Function mul;
+    private final Function div;
+    private final Function mod;
+    private final Function pow;
+
+    private final Function lessThan;
+    private final Function greaterThan;
+    private final Function greaterOrEquals;
+    private final Function lessOrEquals;
+
+    private final Function inU8;
+    private final Function inU16;
+    private final Function inU32;
+    private final Function inU64;
+    private final Function inU128;
+    private final Function inUSize;
+    private final Function inI8;
+    private final Function inI16;
+    private final Function inI32;
+    private final Function inI64;
+    private final Function inI128;
+    private final Function inISize;
+
+    private final Term one;
+    private final Term zero;
+
+    public IntLDT(Services services) {
+        super(NAME, services);
+
+        // initialise caches for function symbols from integerHeader.key
+        sharp = addFunction(services, "#");
+        for (int i = 0; i < 10; i++) {
+            numberSymbol[i] = addFunction(services, String.valueOf(i));
+        }
+        neglit = addFunction(services, NEGATIVE_LITERAL_STRING);
+        numbers = addFunction(services, NUMBERS_NAME.toString());
+        assert sharp.sort() == numbers.argSort(0);
+        add = addFunction(services, "add");
+        neg = addFunction(services, "neg");
+        sub = addFunction(services, "sub");
+        mul = addFunction(services, "mul");
+        div = addFunction(services, "div");
+        mod = addFunction(services, "mod");
+        pow = addFunction(services, "pow");
+
+        lessThan = addFunction(services, "lt");
+        greaterThan = addFunction(services, "gt");
+        greaterOrEquals = addFunction(services, "geq");
+        lessOrEquals = addFunction(services, "leq");
+
+        inU8 = addFunction(services, "in_u8");
+        inU16 = addFunction(services, "in_u16");
+        inU32 = addFunction(services, "in_u32");
+        inU64 = addFunction(services, "in_u64");
+        inU128 = addFunction(services, "in_u128");
+        inUSize = addFunction(services, "in_usize");
+        inI8 = addFunction(services, "in_i8");
+        inI16 = addFunction(services, "in_i16");
+        inI32 = addFunction(services, "in_i32");
+        inI64 = addFunction(services, "in_i64");
+        inI128 = addFunction(services, "in_i128");
+        inISize = addFunction(services, "in_isize");
+
+        // cache often used constants
+        zero = makeDigit(0, services.getTermBuilder());
+        one = makeDigit(1, services.getTermBuilder());
+    }
+
+    // -------------------------------------------------------------------------
+    // internal methods
+    // -------------------------------------------------------------------------
+
+    private boolean isNumberLiteral(Operator f) {
+        String n = f.name().toString();
+        if (n.length() == 1) {
+            char c = n.charAt(0);
+            return '0' <= c && c <= '9';
+        }
+        return false;
+    }
+
+    private Term makeDigit(@UnknownInitialization IntLDT this, int digit, TermBuilder tb) {
+        return tb.func(getNumberSymbol(),
+            tb.func(getNumberLiteralFor(digit), tb.func(getNumberTerminator())));
+    }
+
+    @Override
+    public @NonNull Name name() {
+        return NAME;
+    }
+
+    // -------------------------------------------------------------------------
+    // public interface
+    // -------------------------------------------------------------------------
+
+    public Function getNumberSymbol(@UnknownInitialization IntLDT this) {
+        assert numbers != null;
+        return numbers;
+    }
+
+    public Function getNumberTerminator(@UnknownInitialization IntLDT this) {
+        assert sharp != null;
+        return sharp;
+    }
+
+
+    public Function getNumberLiteralFor(@UnknownInitialization IntLDT this, int number) {
+        if (number < 0 || number > 9) {
+            throw new IllegalArgumentException(
+                "Number literal symbols range from 0 to 9. Requested was:" + number);
+        }
+
+        return numberSymbol[number];
+    }
+
+    public Function getNegativeNumberSign() {
+        return neglit;
+    }
+
+    public Function getAdd() {
+        return add;
+    }
+
+    public Function getNeg() {
+        return neg;
+    }
+
+    public Function getSub() {
+        return sub;
+    }
+
+    public Function getMul() {
+        return mul;
+    }
+
+    public Function getDiv() {
+        return div;
+    }
+
+    public Function getMod() {
+        return mod;
+    }
+
+    public Function getPow() {
+        return pow;
+    }
+
+    public Function getLessThan() {
+        return lessThan;
+    }
+
+    public Function getGreaterThan() {
+        return greaterThan;
+    }
+
+    public Function getGreaterOrEquals() {
+        return greaterOrEquals;
+    }
+
+    public Function getLessOrEquals() {
+        return lessOrEquals;
+    }
+
+    public Term zero() {
+        return zero;
+    }
+
+    public Term one() {
+        return one;
+    }
+
+
+    @Override
+    public @Nullable Term translateLiteral(LiteralExpression lit, Services services) {
+        if (lit instanceof IntegerLiteralExpression i) {
+            return services.getTermBuilder().zTerm(i.getValue().toString());
+        }
+        return null;
+    }
+
+    @Override
+    public @Nullable Function getFunctionFor(BinaryExpression.Operator op, Services services) {
+        return null;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term[] subs,
+            Services services) {
+        return false;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term sub, Services services) {
+        return false;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
+            Services services) {
+        return false;
+    }
+
+    @Override
+    public @Nullable Function getFunctionFor(String operationName, Services services) {
+        return switch (operationName) {
+            case "gt" -> getGreaterThan();
+            case "geq" -> getGreaterOrEquals();
+            case "lt" -> getLessThan();
+            case "leq" -> getLessOrEquals();
+            case "div" -> getDiv();
+            case "mul" -> getMul();
+            case "add" -> getAdd();
+            case "sub" -> getSub();
+            case "mod" -> getMod();
+            case "neg" -> getNeg();
+            default -> null;
+        };
+    }
+
+    public Function getInBounds(Type ty) {
+        if (ty == PrimitiveType.U8) {
+            return inU8;
+        }
+        if (ty == PrimitiveType.U16) {
+            return inU16;
+        }
+        if (ty == PrimitiveType.U32) {
+            return inU32;
+        }
+        if (ty == PrimitiveType.U64) {
+            return inU64;
+        }
+        if (ty == PrimitiveType.U128) {
+            return inU128;
+        }
+        if (ty == PrimitiveType.USIZE) {
+            return inUSize;
+        }
+        if (ty == PrimitiveType.I8) {
+            return inI8;
+        }
+        if (ty == PrimitiveType.I16) {
+            return inI16;
+        }
+        if (ty == PrimitiveType.I32) {
+            return inI32;
+        }
+        if (ty == PrimitiveType.I64) {
+            return inI64;
+        }
+        if (ty == PrimitiveType.I128) {
+            return inI128;
+        }
+        if (ty == PrimitiveType.ISIZE) {
+            return inISize;
+        }
+
+        throw new IllegalArgumentException("inBounds for type " + ty + " missing");
+    }
+}

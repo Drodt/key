@@ -45,7 +45,7 @@ public class PackageKit {
         int i, j = -1;
         do {
             i = j + 1;
-            j = name.indexOf(".", i);
+            j = name.indexOf('.', i);
             String token = (j > i) ? name.substring(i, j) : name.substring(i);
             result = f.createPackageReference(result, f.createIdentifier(token));
         } while (j > i);
@@ -57,7 +57,7 @@ public class PackageKit {
      *
      * @param pkg the package to check for non-source types.
      * @return a list of class types of the given package that are no
-     *         {@link recoder.java.declaration.TypeDeclaration}s.
+     *         {@link TypeDeclaration}s.
      */
     public static List<ClassType> getNonSourcePackageTypes(Package pkg) {
         List<ClassType> result = new ArrayList<>();

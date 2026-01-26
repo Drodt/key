@@ -4,19 +4,21 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package recoder.java.declaration.modifier;
 
+import recoder.java.declaration.Modifier;
+
 /**
  * Visibility modifier.
  *
  * @author <TT>AutoDoc</TT>
  */
 
-public abstract class VisibilityModifier extends recoder.java.declaration.Modifier {
+public abstract class VisibilityModifier extends Modifier {
 
     /**
      * Visibility modifier.
      */
 
-    public VisibilityModifier() {
+    protected VisibilityModifier() {
         // default constructor
     }
 

@@ -1,0 +1,107 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.ast.expr;
+
+import java.util.Objects;
+
+import org.key_project.logic.SyntaxElement;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.PathSegment;
+import org.key_project.rusty.ast.abstraction.Type;
+import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.logic.op.ProgramFunction;
+import org.key_project.util.collection.ImmutableArray;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+public final class MethodCallExpression implements Call {
+    private final Expr callee;
+    private final PathSegment method;
+    private final ImmutableArray<Expr> params;
+
+    public MethodCallExpression(Expr callee, PathSegment method,
+            ImmutableArray<Expr> args) {
+        this.callee = callee;
+        this.method = method;
+        this.params = args;
+    }
+
+    @Override
+    public void visit(Visitor v) {
+        v.performActionOnMethodCall(this);
+    }
+
+    @Override
+    public @NonNull SyntaxElement getChild(int n) {
+        if (n == 0) {
+            return callee;
+        }
+        --n;
+        if (n == 0) {
+            return method;
+        }
+        --n;
+        return Objects.requireNonNull(params.get(n));
+    }
+
+    @Override
+    public int getChildCount() {
+        return 2 + params.size();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(callee).append(".").append(method).append("(");
+        for (int i = 0; i < params.size(); i++) {
+            if (i > 0) {
+                sb.append(", ");
+            }
+            sb.append(params.get(i));
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
+    @Override
+    public Type type(Services services) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProgramFunction function(Services services) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Expr callee() {
+        return callee;
+    }
+
+    public PathSegment method() {
+        return method;
+    }
+
+    public ImmutableArray<Expr> params() {
+        return params;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null || obj.getClass() != this.getClass())
+            return false;
+        var that = (MethodCallExpression) obj;
+        return Objects.equals(this.callee, that.callee) &&
+                Objects.equals(this.method, that.method) &&
+                Objects.equals(this.params, that.params);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(callee, method, params);
+    }
+
+}

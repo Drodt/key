@@ -1,0 +1,235 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.parser.builder;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.key_project.logic.Choice;
+import org.key_project.logic.Name;
+import org.key_project.logic.Named;
+import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.RuleSet;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.KeYRustyType;
+import org.key_project.rusty.logic.NamespaceSet;
+import org.key_project.rusty.logic.RustyDLTheory;
+import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.sort.*;
+import org.key_project.rusty.parser.KeYRustyParser;
+import org.key_project.rusty.parser.ParsingFacade;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSet;
+import org.key_project.util.collection.Immutables;
+import org.key_project.util.java.CollectionUtil;
+
+import org.antlr.v4.runtime.Token;
+import org.jspecify.annotations.Nullable;
+
+/// This visitor evaluates all basic (level 0) declarations. This includes:
+///
+/// - Option Declarations
+/// - Sorts
+/// - Program variables
+/// - Schema variables
+/// - Rulesets
+///
+///
+/// This information is registered into the given [NamespaceSet].
+///
+/// @author Alexander Weigl
+/// @version 1 (12/4/19)
+/// @see FunctionPredicateBuilder for level-1 declarations
+public class DeclarationBuilder extends DefaultBuilder {
+    private final Map<String, String> category2Default = new HashMap<>();
+
+    public DeclarationBuilder(Services services, NamespaceSet nss) {
+        super(services, nss);
+    }
+
+    @Override
+    public Object visitDecls(KeYRustyParser.DeclsContext ctx) {
+        mapMapOf(ctx.option_decls(), ctx.options_choice(), ctx.ruleset_decls(),
+            ctx.sort_decls(), ctx.datatype_decls(),
+            ctx.prog_var_decls(), ctx.schema_var_decls());
+        return null;
+    }
+
+    @Override
+    public Object visitDatatype_decl(KeYRustyParser.Datatype_declContext ctx) {
+        // boolean freeAdt = ctx.FREE() != null;
+        var name = ctx.name.getText();
+        var doc = ctx.DOC_COMMENT() != null
+                ? ctx.DOC_COMMENT().getText()
+                : null;
+        List<GenericParameter> typeParameters = accept(ctx.formal_sort_param_decls());
+        if (typeParameters == null) {
+            var s = new SortImpl(new Name(name), false);
+            sorts().addSafely(s);
+        } else {
+            var doubled = CollectionUtil.findDuplicates(typeParameters);
+            if (!doubled.isEmpty()) {
+                semanticError(ctx.formal_sort_param_decls(),
+                    "Type parameters must be unique within a declaration. Found duplicate: %s",
+                    doubled.getFirst());
+            }
+            var s = new ParametricSortDecl(new Name(name), false,
+                ImmutableList.fromList(typeParameters), doc);
+            namespaces().parametricSorts().addSafely(s);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitProg_var_decls(KeYRustyParser.Prog_var_declsContext ctx) {
+        for (int i = 0; i < ctx.simple_ident().size(); i++) {
+            String varName = accept(ctx.simple_ident(i));
+            KeYRustyType krt = accept(ctx.typemapping(i));
+            assert varName != null;
+            Name pvName = new Name(varName);
+            Named name = lookup(pvName);
+            if (name != null) {
+                // TODO question: throw warning?
+                if (!(name instanceof ProgramVariable pv)
+                        || !pv.getKeYRustyType().equals(krt)) {
+                    programVariables().add(new ProgramVariable(pvName, krt));
+                }
+            } else {
+                programVariables().add(new ProgramVariable(pvName, krt));
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitChoice(KeYRustyParser.ChoiceContext ctx) {
+        String cat = ctx.category.getText();
+        for (KeYRustyParser.OptionDeclContext optdecl : ctx.optionDecl()) {
+            Token catctx = optdecl.IDENT;
+            String name = cat + ":" + catctx.getText();
+            Choice c = choices().lookup(new Name(name));
+            if (c == null) {
+                c = new Choice(catctx.getText(), cat);
+                choices().add(c);
+            }
+            category2Default.putIfAbsent(cat, name);
+        }
+        category2Default.computeIfAbsent(cat, it -> {
+            choices().add(new Choice("On", cat));
+            choices().add(new Choice("Off", cat));
+            return cat + ":On";
+        });
+        return null;
+    }
+
+    @Override
+    public Object visitOption_decls(KeYRustyParser.Option_declsContext ctx) {
+        return mapOf(ctx.choice());
+    }
+
+    @Override
+    public Object visitOptions_choice(KeYRustyParser.Options_choiceContext ctx) {
+        return null;
+    }
+
+    @Override
+    public Object visitSort_decls(KeYRustyParser.Sort_declsContext ctx) {
+        for (KeYRustyParser.One_sort_declContext c : ctx.one_sort_decl()) {
+            c.accept(this);
+        }
+        return null;
+    }
+
+    @Override
+    public Object visitOne_sort_decl(KeYRustyParser.One_sort_declContext ctx) {
+        List<Sort> sortOneOf = accept(ctx.sortOneOf);
+        List<Sort> sortExt = accept(ctx.sortExt);
+        boolean isGenericSort = ctx.GENERIC() != null;
+        boolean isAbstractSort = ctx.ABSTRACT() != null;
+        List<Sort> createdSorts = new LinkedList<>();
+        var doc = ParsingFacade.getValueDocumentation(ctx.DOC_COMMENT());
+
+        if (ctx.sortIds != null) {
+            for (var idCtx : ctx.sortIds.simple_ident_dots()) {
+                String sortId = accept(idCtx);
+                Name sortName = new Name(sortId);
+
+                ImmutableSet<Sort> ext = sortExt == null ? ImmutableSet.empty()
+                        : Immutables.createSetFrom(sortExt);
+                ImmutableSet<Sort> oneOf = sortOneOf == null ? ImmutableSet.empty()
+                        : Immutables.createSetFrom(sortOneOf);
+
+                Sort existingSort = sorts().lookup(sortName);
+                if (existingSort == null) {
+                    Sort s;
+                    if (isGenericSort) {
+                        s = new GenericSort(sortName, ext, oneOf);
+                    } else if (new Name("any").equals(sortName)) {
+                        s = RustyDLTheory.ANY;
+                    } else {
+                        s = new SortImpl(sortName, isAbstractSort, ext);
+                    }
+                    sorts().add(s);
+                    createdSorts.add(s);
+                } else {
+                    // weigl: agreement on KaKeY meeting: this should be ignored until we finally
+                    // have
+                    // local namespaces for generic sorts
+                    // addWarning(ctx, "Sort declaration is ignored, due to collision.");
+                    // LOGGER.info("Sort declaration of {} in {} is ignored due to collision
+                    // (already "
+                    // + "present in {}).", sortName, BuilderHelpers.getPosition(ctx),
+                    // existingSort.getOrigin());
+                }
+            }
+        } else {
+            // parametric sort
+            var declCtx = ctx.parametric_sort_decl();
+            assert declCtx != null : "One of the two must be present";
+            List<GenericParameter> typeParams =
+                visitFormal_sort_param_decls(declCtx.formal_sort_param_decls());
+            ImmutableList<GenericParameter> params = ImmutableList.fromList(typeParams);
+            var doubled = CollectionUtil.findDuplicates(params);
+            if (!doubled.isEmpty()) {
+                semanticError(declCtx,
+                    "Type parameters must be unique within a declaration. Found duplicate: %s",
+                    doubled.getFirst());
+            }
+            String name = declCtx.simple_ident_dots().getText();
+            Name sortName = new Name(name);
+            var sortDecl = new ParametricSortDecl(sortName, isAbstractSort, params, doc);
+            namespaces().parametricSorts().add(sortDecl);
+        }
+        return createdSorts;
+    }
+
+    @Override
+    public List<Sort> visitExtends_sorts(KeYRustyParser.Extends_sortsContext ctx) {
+        return mapOf(ctx.sortId());
+    }
+
+    @Override
+    public List<Sort> visitOneof_sorts(KeYRustyParser.Oneof_sortsContext ctx) {
+        return mapOf(ctx.sortId());
+    }
+
+    @Override
+    public Object visitRuleset_decls(KeYRustyParser.Ruleset_declsContext ctx) {
+        for (String id : this.<String>mapOf(ctx.simple_ident())) {
+            Name name = new Name(id);
+            var h = new RuleSet(name);
+            if (ruleSets().lookup(name) == null) {
+                ruleSets().add(h);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public @Nullable Object visitProblem(KeYRustyParser.ProblemContext ctx) {
+        return null;
+    }
+}

@@ -1,0 +1,395 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.logic.sort;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.key_project.logic.Name;
+import org.key_project.logic.Term;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.*;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
+import org.key_project.rusty.ast.abstraction.PrimitiveType;
+import org.key_project.rusty.ast.abstraction.Type;
+import org.key_project.rusty.ast.expr.*;
+import org.key_project.rusty.ast.pat.LitPatExpr;
+import org.key_project.rusty.ast.pat.Pattern;
+import org.key_project.rusty.ast.stmt.Statement;
+import org.key_project.rusty.ast.ty.RustType;
+import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.util.collection.DefaultImmutableSet;
+
+public abstract class ProgramSVSort extends SortImpl {
+    private static final Map<Name, ProgramSVSort> NAME2SORT = new LinkedHashMap<>(60);
+
+    // ----------- Types of Expression Program SVs ----------------------------
+    public static final ProgramSVSort LEFT_HAND_SIDE = new LeftHandSideSort();
+    public static final ProgramSVSort VARIABLE = new ProgramVariableSort();
+    public static final ProgramSVSort SIMPLE_EXPRESSION = new SimpleExpressionSort();
+    public static final ProgramSVSort SIMPLE_EXPRESSION_U8 =
+        new TypedSimpleExpressionSort(PrimitiveType.U8);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_U16 =
+        new TypedSimpleExpressionSort(PrimitiveType.U16);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_U32 =
+        new TypedSimpleExpressionSort(PrimitiveType.U32);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_U64 =
+        new TypedSimpleExpressionSort(PrimitiveType.U64);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_U128 =
+        new TypedSimpleExpressionSort(PrimitiveType.U128);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_USIZE =
+        new TypedSimpleExpressionSort(PrimitiveType.USIZE);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I8 =
+        new TypedSimpleExpressionSort(PrimitiveType.I8);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I16 =
+        new TypedSimpleExpressionSort(PrimitiveType.I16);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I32 =
+        new TypedSimpleExpressionSort(PrimitiveType.I32);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I64 =
+        new TypedSimpleExpressionSort(PrimitiveType.I64);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_I128 =
+        new TypedSimpleExpressionSort(PrimitiveType.I128);
+    public static final ProgramSVSort SIMPLE_EXPRESSION_ISIZE =
+        new TypedSimpleExpressionSort(PrimitiveType.ISIZE);
+    public static final ProgramSVSort NON_SIMPLE_EXPRESSION = new NonSimpleExpressionSort();
+    public static final ProgramSVSort EXPRESSION = new ExpressionSort();
+    public static final ProgramSVSort BLOCK_EXPRESSION = new BlockExpressionSort();
+    public static final ProgramSVSort ELSE_BRANCH_EXPRESSION = new ElseBranchExpressionSort();
+    public static final ProgramSVSort BOOL_EXPRESSION = new BoolExpressionSort();
+    public static final ProgramSVSort SIMPLE_BOOL_EXPRESSION = new SimpleBoolExpressionSort();
+    public static final ProgramSVSort NON_SIMPLE_BOOL_EXPRESSION =
+        new NonSimpleBoolExpressionSort();
+    public static final ProgramSVSort PATTERN = new PatternSort();
+
+    // ----------- Types of Statement Program SVs -----------------------------
+    public static final ProgramSVSort STATEMENT = new StatementSort();
+    public static final ProgramSVSort TYPE = new TypeReferenceSort();
+    public static final ProgramSVSort TYPE_PRIMITIVE = new TypeReferencePrimitiveSort();
+
+    public static final ProgramSVSort LABEL = new LabelSort();
+    public static final ProgramSVSort Ident = new FieldIdentSort();
+    public static final ProgramSVSort Item = new ItemSort();
+
+    public static final ProgramSVSort NON_MODEL_FUNCTION_BODY = new NonModelFunctionBodySort();
+
+    @SuppressWarnings("argument.type.incompatible")
+    protected ProgramSVSort(Name name) {
+        super(name, false, DefaultImmutableSet.nil());
+        NAME2SORT.put(name, this);
+    }
+
+    public boolean canStandFor(Term t) {
+        return true;
+    }
+
+    public abstract boolean canStandFor(RustyProgramElement check, Services services);
+
+    public ProgramSVSort createInstance(String parameter) {
+        throw new UnsupportedOperationException();
+    }
+
+    /// TODO: <a href=
+    /// "https://doc.rust-lang.org/reference/expressions.html#place-expressions-and-value-expressions">Follow
+    /// this</a>
+    private static class LeftHandSideSort extends ProgramSVSort {
+
+        public LeftHandSideSort() {
+            super(new Name("LeftHandSide"));
+        }
+
+        public LeftHandSideSort(Name name) {
+            super(name);
+        }
+
+        @Override
+        public boolean canStandFor(Term t) {
+            return t.op() instanceof ProgramVariable;
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement pe, Services services) {
+            return pe instanceof ProgramVariable;
+        }
+    }
+
+    /// This sort represents a type of program schema variables that match only on
+    /// program variables
+    private static class ProgramVariableSort extends LeftHandSideSort {
+        public ProgramVariableSort() {
+            super(new Name("Variable"));
+        }
+    }
+
+    /// This sort represents a type of program schema variables that match only on
+    /// program variables
+    private static class SortedVariableSort extends LeftHandSideSort {
+        private final String sortName;
+
+        public SortedVariableSort(String sort) {
+            super(new Name("Variable_" + sort));
+            sortName = sort;
+        }
+
+        @Override
+        public boolean canStandFor(Term t) {
+            return t instanceof ProgramVariable pv && pv.sort().name().toString().equals(sortName);
+        }
+    }
+
+    /// This sort represents a type of program schema variables that match only on
+    ///
+    /// - program variables or
+    /// - (negated) literal expressions
+    ///
+    private static class SimpleExpressionSort extends ProgramSVSort {
+
+        public SimpleExpressionSort() {
+            super(new Name("SimpleExpression"));
+        }
+
+        protected SimpleExpressionSort(Name n) {
+            super(n);
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement pe, Services services) {
+            if (pe instanceof UnaryExpression ue
+                    && (ue.op() == UnaryExpression.Operator.Neg
+                            || ue.op() == UnaryExpression.Operator.Not)
+                    && ue.getChild(0) instanceof IntegerLiteralExpression) {
+                return true;
+            }
+
+            if (pe instanceof LiteralExpression)
+                return true;
+
+            if (pe instanceof TupleExpression te && te.isUnit())
+                return true;
+
+            if (pe instanceof LitPatExpr)
+                return true;
+            if (pe instanceof PathExpr p && p.path().res() instanceof ResDef rd
+                    && rd.def() instanceof GenericConstParam)
+                return true;
+
+            return VARIABLE.canStandFor(pe, services);
+        }
+    }
+
+    /// This sort represents a type of program schema variables that match only on all expressions
+    /// which are not matched by simple expression SVs.
+    private static class NonSimpleExpressionSort extends ProgramSVSort {
+
+        public NonSimpleExpressionSort() {
+            super(new Name("NonSimpleExpression"));
+        }
+
+        protected NonSimpleExpressionSort(Name n) {
+            super(n);
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            if (!(check instanceof Expr))
+                return false;
+            // Rust encodes an `if let p = e` as an if expression with expression `let p = e` as
+            // guard.
+            // We have special rules for if let; don't unfold it like a "normal" expression
+            if (check instanceof LetExpression)
+                return false;
+            return !SIMPLE_EXPRESSION.canStandFor(check, services);
+        }
+    }
+
+    /// This sort represents a type of program schema variables that match on all expressions only.
+    private static class ExpressionSort extends ProgramSVSort {
+        public ExpressionSort() {
+            super(new Name("Expression"));
+        }
+
+        protected ExpressionSort(Name n) {
+            super(n);
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement pe, Services services) {
+            return pe instanceof Expr;
+        }
+    }
+
+    private static class BlockExpressionSort extends ProgramSVSort {
+        public BlockExpressionSort() {
+            super(new Name("BlockExpression"));
+        }
+
+        protected BlockExpressionSort(Name n) {
+            super(n);
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof BlockExpression;
+        }
+    }
+
+    /// This sort represents a type of program schema variables that match only on statements
+    private static class StatementSort extends ProgramSVSort {
+        public StatementSort() {
+            super(new Name("Statement"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement pe, Services services) {
+            return pe instanceof Statement;
+        }
+    }
+
+    /// This sort represents a type of program schema variables that match only on type references.
+    private static final class TypeReferenceSort extends ProgramSVSort {
+        public TypeReferenceSort() {
+            super(new Name("Type"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof RustType;
+        }
+    }
+
+    /// This sort represents a type of program schema variables that matches byte,
+    /// char, short, int, and long.
+    private static final class TypeReferencePrimitiveSort extends ProgramSVSort {
+        public TypeReferencePrimitiveSort() {
+            super(new Name("PrimitiveType"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            // TODO
+            return false;
+        }
+    }
+
+    public static Map<Name, ProgramSVSort> name2sort() {
+        return NAME2SORT;
+    }
+
+    private static final class BoolExpressionSort extends ProgramSVSort {
+        public BoolExpressionSort() {
+            super(new Name("BoolExpression"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof Expr;
+            // TODO: check type here
+        }
+    }
+
+    private static final class SimpleBoolExpressionSort extends ProgramSVSort {
+        public SimpleBoolExpressionSort() {
+            super(new Name("SimpleBoolExpression"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return SIMPLE_EXPRESSION.canStandFor(check, services)
+                    && BOOL_EXPRESSION.canStandFor(check, services);
+        }
+    }
+
+    private static final class NonSimpleBoolExpressionSort extends ProgramSVSort {
+        public NonSimpleBoolExpressionSort() {
+            super(new Name("NonSimpleBoolExpression"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return NON_SIMPLE_EXPRESSION.canStandFor(check, services)
+                    && BOOL_EXPRESSION.canStandFor(check, services);
+        }
+    }
+
+    private static class TypedSimpleExpressionSort extends SimpleExpressionSort {
+        private final Type type;
+
+        public TypedSimpleExpressionSort(PrimitiveType type) {
+            super(new Name("Rust" + type.toString().substring(0, 1).toUpperCase()
+                + type.toString().substring(1) + "Expression"));
+            this.type = type;
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return super.canStandFor(check, services) && check instanceof Expr e
+                    && e.type(services) == type;
+        }
+    }
+
+    private static class PatternSort extends ProgramSVSort {
+        public PatternSort() {
+            super(new Name("Pattern"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof Pattern;
+        }
+    }
+
+    private static class LabelSort extends ProgramSVSort {
+        protected LabelSort() {
+            super(new Name("Label"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof ConcreteLabel;
+        }
+    }
+
+    private static class FieldIdentSort extends ProgramSVSort {
+        protected FieldIdentSort() {
+            super(new Name("FieldIdent"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof FieldIdentifier;
+        }
+    }
+
+    private static class NonModelFunctionBodySort extends ProgramSVSort {
+        protected NonModelFunctionBodySort() {
+            super(new Name("NonModelFunctionBody"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof FunctionBodyExpression;
+        }
+    }
+
+    private static class ItemSort extends ProgramSVSort {
+        protected ItemSort() {
+            super(new Name("Item"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof Item;
+        }
+    }
+
+    private static class ElseBranchExpressionSort extends ProgramSVSort {
+        protected ElseBranchExpressionSort() {
+            super(new Name("ElseBranchExpression"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof ElseBranch;
+        }
+    }
+}
