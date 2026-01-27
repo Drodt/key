@@ -65,6 +65,158 @@ pub fn double_array_without_ghost(a: [i32; 10]) -> i32 {
 
     2
 }
+
+#[spec {ensures(result == 2)}]
+pub fn reverse_array_with_ghost(a: [i32; 10]) -> i32 {
+    let mut b = a;
+
+    let old_b = ghost! { snapshot!(b) };
+
+    let mut i = 0;
+    let len = 10;
+    let mut v = len / 2;
+
+    #[invariant(0 <= i && i <= len / 2)]
+    #[invariant(0 <= v && v <= len / 2)]
+    #[invariant(v == (len / 2) - i)]
+    #[variant(v)]
+    loop {
+        if i < len / 2 {
+            let j = (len - 1) - i;
+
+            let tmp= b[i];
+            b[i] = b[j];
+            b[j] = tmp;
+
+            ghost! {
+                let left= b[i] == old_b[j];
+                let right = b[j] == old_b[i];
+                let check = left && right;
+            };
+
+            i += 1;
+            v -= 1;
+            continue;
+        } else {
+            break;
+        }
+    }
+
+    ghost! {
+        let proof = b[0] == old_b[len - 1] && b[len - 1] == old_b[0];
+        let check = proof;
+    };
+
+    2
+}
+
+#[spec {ensures(result == 2)}]
+pub fn reverse_array_without_ghost(a: [i32; 10]) -> i32 {
+    let mut b = a;
+
+    let old_b = a;
+
+    let mut i = 0;
+    let len = 10;
+    let mut v = len / 2;
+
+    #[invariant(0 <= i && i <= len / 2)]
+    #[invariant(0 <= v && v <= len / 2)]
+    #[invariant(v == (len / 2) - i)]
+    #[variant(v)]
+    loop {
+        if i < len / 2 {
+            let j = (len - 1) - i;
+
+            let tmp= b[i];
+            b[i] = b[j];
+            b[j] = tmp;
+
+            let left= b[i] == old_b[j];
+            let right = b[j] == old_b[i];
+            let check = left && right;
+
+
+            i += 1;
+            v -= 1;
+            continue;
+        } else {
+            break;
+        }
+    }
+    let proof = b[0] == old_b[len - 1] && b[len - 1] == old_b[0];
+    let check = proof;
+
+    2
+}
+#[spec {
+    ensures(result > a && result > b)
+}]
+pub fn if_with_ghost(a: u32, b: u32) -> u32 {
+    let old_a = a;
+    let old_b = b;
+
+    let res  =
+        if a > b {
+            let r = a + 1;
+
+            ghost! {
+                let test_cond = old_a > old_b;
+                let test_a = r > old_a;
+                let test_b = r > old_b;
+                let test_final = test_cond && test_a && test_b;
+            };
+
+            r
+        } else {
+            let r = b + 2;
+
+            ghost! {
+                let test_cond = !(old_a > old_b);
+                let test_b = r > old_b;
+                let test_a = r > old_a;
+                let test_final = test_cond && test_b && test_a;
+            };
+
+            r
+        };
+
+    res
+}
+
+#[spec {
+    ensures(result > a && result > b)
+}]
+pub fn if_without_ghost(a: u32, b: u32) -> u32 {
+    let old_a = a;
+    let old_b = b;
+
+    let res  =
+        if a > b {
+            let r = a + 1;
+
+            let test_cond = old_a > old_b;
+            let test_a = r > old_a;
+            let test_b = r > old_b;
+            let test_final = test_cond && test_a && test_b;
+
+            r
+        } else {
+            let r = b + 2;
+
+            let test_cond = !(old_a > old_b);
+            let test_b = r > old_b;
+            let test_a = r > old_a;
+            let test_final = test_cond && test_b && test_a;
+
+            r
+        };
+
+    res
+}
+
+
+/*
 // An GHOSTHOUSE exmaple for the RQ3
 pub struct Person {
     pub id: usize,
@@ -230,3 +382,4 @@ pub fn scare(gh: &mut GhostHouse, intensity: u8) -> Result<(), HouseError> {
 
 
 
+*/
