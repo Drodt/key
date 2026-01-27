@@ -4,7 +4,9 @@
 package org.key_project.rusty.parser.hir.item;
 
 import org.key_project.rusty.parser.hir.Ident;
+import org.key_project.rusty.parser.hir.ty.TyGenerics;
 import org.key_project.rusty.speclang.spec.SpecCase;
 
-public record Fn(Ident ident, FnSig sig, Generics generics, Body body, SpecCase[] specCases) implements ItemKind {
+public record Fn(Ident ident, FnSig sig, Generics generics, Body body, SpecCase[] specCases,
+        TyGenerics tyGenerics) implements ItemKind {
 }

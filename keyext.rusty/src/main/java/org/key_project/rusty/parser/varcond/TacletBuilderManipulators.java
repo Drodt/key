@@ -62,6 +62,32 @@ public class TacletBuilderManipulators {
                     (SchemaVariable) arguments[1]);
             }
         };
+
+    static class NoFreeVarInTacletBuilderCommand extends AbstractTacletBuilderCommand {
+        public NoFreeVarInTacletBuilderCommand(@NonNull ArgumentType... argumentsTypes) {
+            super("noFreeVarIn", argumentsTypes);
+        }
+
+        @Override
+        public void apply(TacletBuilder<?> tacletBuilder, Object[] arguments,
+                List<String> parameters, boolean negated) {
+            for (Object argument : arguments) {
+                tacletBuilder.addNoFreeVarIn((SchemaVariable) argument);
+            }
+        }
+    }
+
+    public static final AbstractTacletBuilderCommand FREE_1 =
+        new NoFreeVarInTacletBuilderCommand(SV);
+    public static final AbstractTacletBuilderCommand FREE_2 =
+        new NoFreeVarInTacletBuilderCommand(SV, SV);
+    public static final AbstractTacletBuilderCommand FREE_3 =
+        new NoFreeVarInTacletBuilderCommand(SV, SV, SV);
+    public static final AbstractTacletBuilderCommand FREE_4 =
+        new NoFreeVarInTacletBuilderCommand(SV, SV, SV, SV);
+    public static final AbstractTacletBuilderCommand FREE_5 =
+        new NoFreeVarInTacletBuilderCommand(SV, SV, SV, SV, SV);
+
     public static final AbstractConditionBuilder DROP_EFFECTLESS_ELEMENTARIES =
         new ConstructorBasedBuilder("dropEffectlessElementaries",
             DropEffectlessElementariesCondition.class, USV, SV, SV);
@@ -186,7 +212,8 @@ public class TacletBuilderManipulators {
     private static final List<TacletBuilderCommand> tacletBuilderCommands = new ArrayList<>(2);
 
     static {
-        register(DIFFERENT, APPLY_UPDATE_ON_RIGID, NEW_DEPENDING_ON, EQUAL_UNIQUE,
+        register(DIFFERENT, APPLY_UPDATE_ON_RIGID, NEW_DEPENDING_ON, FREE_1, FREE_2, FREE_3, FREE_4,
+            FREE_5, EQUAL_UNIQUE,
             DROP_EFFECTLESS_ELEMENTARIES, SIMPLIFY_ITE_UPDATE, NEW_TYPE_OF, NEW_RUSTY_TYPE,
             IS_SUBTYPE, SAME, HAS_SORT,
             NEW_LOCAL_VARS, STORE_EXPR_IN, STORE_TERM_IN, HAS_INVARIANT, GET_INVARIANT,

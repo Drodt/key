@@ -29,6 +29,8 @@ public class DefaultUserInterfaceControl extends AbstractUserInterfaceControl {
     @Override
     protected ProofEnvironment createProofEnvironmentAndRegisterProof(
             ProofOblInput proofOblInput, ProofAggregate proofList, InitConfig initConfig) {
+        initConfig.getServices().getSpecificationRepository().registerProof(proofOblInput,
+            proofList.getFirstProof());
         return null;
     }
 

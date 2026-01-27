@@ -11,19 +11,27 @@ import java.util.Objects;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
+import org.key_project.logic.op.Function;
 import org.key_project.prover.proof.ProofServices;
-import org.key_project.rusty.ast.RustyProgramElement;
-import org.key_project.rusty.ast.expr.BinaryExpression;
-import org.key_project.rusty.ast.expr.FieldIdentifier;
-import org.key_project.rusty.ast.expr.LiteralExpression;
-import org.key_project.rusty.ast.expr.TupleExpression;
+import org.key_project.rusty.ast.*;
+import org.key_project.rusty.ast.abstraction.Enum;
+import org.key_project.rusty.ast.abstraction.ForeignFnType;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
+import org.key_project.rusty.ast.abstraction.Type;
+import org.key_project.rusty.ast.expr.*;
 import org.key_project.rusty.ldt.LDT;
 import org.key_project.rusty.ldt.LDTs;
 import org.key_project.rusty.logic.*;
+import org.key_project.rusty.logic.op.ParametricFunctionDecl;
+import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.logic.sort.GenericArgument;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.proof.*;
 import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.SpecificationRepository;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -167,7 +175,7 @@ public class Services implements LogicServices, ProofServices {
     }
 
     public void addNameProposal(Name name) {
-        // TODO @ DD
+        nameRecorder.addProposal(name);
     }
 
     public RustInfo getRustInfo() {
@@ -202,6 +210,49 @@ public class Services implements LogicServices, ProofServices {
         }
         if (pe instanceof FieldIdentifier fi) {
             return tb.func(fi.field().fieldConst());
+        }
+        if (pe instanceof PathExpr p && p.path().res() instanceof ResDef(Def def)
+                && def instanceof GenericConstParam gcp) {
+            return tb.func(gcp.fn());
+        }
+        if (pe instanceof CallExpression c && c.callee() instanceof PathExpr p
+                && p.path().res() instanceof ResDef(Def def)
+                && def instanceof VariantConstructor(Function fn)) {
+            Term[] subs = new Term[fn.arity()];
+            for (int i = 0; i < subs.length; i++) {
+                subs[i] = convertToLogicElement(c.params().get(i), services);
+            }
+            return tb.func(fn, subs);
+        }
+        if (pe instanceof CallExpression c
+                && c.callee() instanceof PathExpr(Path<Res> path, Type type)
+                && path.res() instanceof ResDef(Def def)
+                && def instanceof GenericVariantConstructor(var pfn)) {
+            Term[] subs = new Term[pfn.argSorts().size()];
+            for (int i = subs.length - 1; i >= 0; i--) {
+                subs[i] = convertToLogicElement(c.params().get(i), services);
+            }
+            ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+            if (type instanceof ForeignFnType fft) {
+                for (int i = fft.getArgs().size() - 1; i >= 0; i--) {
+                    args = args.prepend(fft.getArgs().get(i).sortArg(services));
+                }
+            } else {
+                throw new UnsupportedOperationException("TODO: generics for non-foreign functions");
+            }
+            var fn = ParametricFunctionInstance.get(pfn, args);
+            return tb.func(fn, subs);
+        }
+        if (pe instanceof PathExpr p && p.path().res() instanceof ResDef(Def def)
+                && def instanceof VariantConstructor(Function fn)) {
+            return tb.func(fn);
+        }
+        if (pe instanceof PathExpr p && p.path().res() instanceof ResDef(Def def)
+                && def instanceof GenericVariantConstructor(ParametricFunctionDecl pfn)) {
+            var sort = (ParametricSortInstance) ((Enum) p.type()).sort();
+            ImmutableList<GenericArgument> args = sort.getArgs();
+            var fn = ParametricFunctionInstance.get(pfn, args);
+            return tb.func(fn);
         }
         throw new IllegalArgumentException(
             "Unknown or not convertible ProgramElement " + pe + " of type "

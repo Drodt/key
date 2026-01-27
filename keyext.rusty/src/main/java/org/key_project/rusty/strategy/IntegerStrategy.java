@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
 import org.key_project.logic.Term;
@@ -25,6 +28,7 @@ import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.strategy.feature.*;
 import org.key_project.rusty.strategy.termProjection.*;
 import org.key_project.rusty.strategy.termgenerator.DividePolynomialsProjection;
@@ -34,7 +38,7 @@ import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 
 import org.jspecify.annotations.NonNull;
 
-public class IntegerStrategy extends AbstractFeatureStrategy {
+public class IntegerStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
     public static final Name NAME = new Name("Integer Strategy");
 
     /// Magic constants
@@ -249,7 +253,6 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
     }
 
     private void setupPolySimp(RuleSetDispatchFeature d, IntLDT numbers) {
-
         // category "expansion" (normalising polynomial terms)
 
         bindRuleSet(d, "polySimp_elimSubNeg", longConst(-120));
@@ -909,14 +912,14 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
                     applyTF("divDenom", tf.notContainsDivMod),
                     ifZero(isBelow(ff.modalOperator), longConst(200))));
 
-            bindRuleSet(d, "defOps_jdiv",
+            bindRuleSet(d, "defOps_rdiv",
                 SumFeature.createSum(NonDuplicateAppModPositionFeature.INSTANCE,
                     applyTF("divNum", tf.polynomial), applyTF("divDenom", tf.polynomial),
                     applyTF("divNum", tf.notContainsDivMod),
                     applyTF("divDenom", tf.notContainsDivMod),
                     ifZero(isBelow(ff.modalOperator), longConst(200))));
 
-            bindRuleSet(d, "defOps_jdiv_inline", add(applyTF("divNum", tf.literal),
+            bindRuleSet(d, "defOps_rdiv_inline", add(applyTF("divNum", tf.literal),
                 applyTF("divDenom", tf.polynomial), longConst(-5000)));
 
             setupDefOpsExpandMod(d);
@@ -984,7 +987,7 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+    public RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
             MutableState mState) {
         return instantiationDispatcher.computeCost(app, pio, goal, mState);
     }
@@ -1001,7 +1004,23 @@ public class IntegerStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleSetDispatchFeature getCostDispatcher() {
-        return costComputationDispatcher;
+    public Set<RuleSet> getResponsibilities(StrategyAspect aspect) {
+        var set = new HashSet<RuleSet>();
+        set.addAll(getDispatcher(aspect).ruleSets());
+        return set;
+    }
+
+    @Override
+    public RuleSetDispatchFeature getDispatcher(StrategyAspect aspect) {
+        return switch (aspect) {
+            case StrategyAspect.Cost -> costComputationDispatcher;
+            case StrategyAspect.Instantiation -> instantiationDispatcher;
+            case StrategyAspect.Approval -> approvalDispatcher;
+        };
+    }
+
+    @Override
+    public boolean isResponsibleFor(BuiltInRule rule) {
+        return false;
     }
 }

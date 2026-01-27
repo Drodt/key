@@ -11,6 +11,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.abstraction.*;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
@@ -182,7 +183,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             Sort retSort = accept(ctx.sortId());
             List<Boolean[]> whereToBind = accept(ctx.where_to_bind());
             List<Sort> argSorts = accept(ctx.arg_sorts());
-            assert argSorts != null;
+            assert argSorts != null : funcName;
 
             if (whereToBind != null && whereToBind.size() != argSorts.size()) {
                 semanticError(ctx, "Where-to-bind list must have same length as argument list");

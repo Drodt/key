@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.key_project.logic.Name;
@@ -16,6 +18,8 @@ import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.BuiltInRule;
+import org.key_project.rusty.strategy.ComponentStrategy.StrategyAspect;
 import org.key_project.rusty.strategy.feature.CountBranchFeature;
 import org.key_project.rusty.strategy.feature.EqNonDuplicateAppFeature;
 import org.key_project.rusty.strategy.feature.NonDuplicateAppFeature;
@@ -27,7 +31,7 @@ import org.jspecify.annotations.NonNull;
 import static org.key_project.prover.strategy.costbased.feature.CompareCostsFeature.leq;
 
 /// Strategy tailored to be used as long as a Rust program can be found in the sequent.
-public final class RustyDLStrategy extends AbstractFeatureStrategy {
+public final class RustyDLStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
     public static final AtomicLong PERF_COMPUTE = new AtomicLong();
     public static final AtomicLong PERF_APPROVE = new AtomicLong();
     public static final AtomicLong PERF_INSTANTIATE = new AtomicLong();
@@ -120,7 +124,7 @@ public final class RustyDLStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleAppCost instantiateApp(RuleApp app,
+    public RuleAppCost instantiateApp(RuleApp app,
             PosInOccurrence pio, Goal goal,
             MutableState mState) {
         var time = System.nanoTime();
@@ -242,7 +246,23 @@ public final class RustyDLStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleSetDispatchFeature getCostDispatcher() {
-        return costComputationDispatcher;
+    public Set<RuleSet> getResponsibilities(StrategyAspect aspect) {
+        var set = new HashSet<RuleSet>();
+        set.addAll(getDispatcher(aspect).ruleSets());
+        return set;
+    }
+
+    @Override
+    public RuleSetDispatchFeature getDispatcher(StrategyAspect aspect) {
+        return switch (aspect) {
+            case StrategyAspect.Cost -> costComputationDispatcher;
+            case StrategyAspect.Instantiation -> instantiationDispatcher;
+            case StrategyAspect.Approval -> approvalDispatcher;
+        };
+    }
+
+    @Override
+    public boolean isResponsibleFor(BuiltInRule rule) {
+        return false;
     }
 }

@@ -464,6 +464,7 @@ public class ExpressionBuilder extends DefaultBuilder {
                 assert op instanceof Function;
                 for (int i = 0; i < args.length; i++) {
                     if (i < op.arity() && !op.bindVarsAt(i)) {
+                        // TODO(DD): Check this
                         for (QuantifiableVariable qv : args[i].freeVars()) {
                             if (boundVars.contains(qv)) {
                                 semanticError(ctx,
@@ -662,12 +663,8 @@ public class ExpressionBuilder extends DefaultBuilder {
 
             if (srb.rustyBlock == null) {
                 var rr = new HirRustyReader(services, nss);
-                try {
-                    srb.rustyBlock =
-                        rr.readBlockWithProgramVariables(programVariables(), cleanRusty);
-                } catch (Exception e1) {
-                    srb.rustyBlock = rr.readBlockWithEmptyContext(cleanRusty);
-                }
+                srb.rustyBlock =
+                    rr.readBlockWithProgramVariables(programVariables(), cleanRusty);
             }
         } catch (Exception e) {
             throw new BuildingException(t, "Could not parse Rust: '" + cleanRusty + "'", e);
@@ -956,7 +953,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         }
         if (idx != -1) {
             var deBruijn = boundVars.size() - idx;
-            return new LogicVariable(deBruijn, boundVars.get(idx).sort());
+            return LogicVariable.create(deBruijn, boundVars.get(idx).sort());
         }
 
         return super.lookupVarfuncId(ctx, varfuncName, genericArgsCtxt);
@@ -964,13 +961,5 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     private void unbindVars(List<@NonNull BoundVariable> vars) {
         boundVars.removeAll(vars);
-    }
-
-    protected void enableJavaSchemaMode() {
-        rustySchemaModeAllowed = true;
-    }
-
-    protected void disableJavaSchemaMode() {
-        rustySchemaModeAllowed = false;
     }
 }

@@ -111,7 +111,7 @@ public abstract class AbstractPO implements IPersistablePO {
     public Configuration createLoaderConfig() throws IOException {
         var c = new Configuration();
         c.set(IPersistablePO.PROPERTY_CLASS, getClass().getCanonicalName());
-        c.set(IPersistablePO.PROPERTY_NAME, name);
+        c.set(IPersistablePO.PROPERTY_NAME, name.toString());
         return c;
     }
 
@@ -140,7 +140,6 @@ public abstract class AbstractPO implements IPersistablePO {
     /// createProof()).
     private void createProofHeader(
             RustModel model, Services services) {
-
         if (header != null) {
             return;
         }
@@ -150,12 +149,13 @@ public abstract class AbstractPO implements IPersistablePO {
         // contracts
         ImmutableSet<Contract> contractsToSave = specRepos.getAllContracts();
         for (Contract c : contractsToSave) {
-            if (!c.toBeSaved()) {
+            // TODO(DD): Fix proof loading
+            if (true || !c.toBeSaved()) {
                 contractsToSave = contractsToSave.remove(c);
             }
         }
         if (!contractsToSave.isEmpty()) {
-            sb.append("\\contracts {\n");
+            sb.append("\n\\contracts {\n");
             for (Contract c : contractsToSave) {
                 sb.append(c.proofToString(services));
             }

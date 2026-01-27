@@ -210,7 +210,6 @@ public abstract class AbstractProblemLoader {
     /// @return The created [EnvInput].
     /// @throws IOException Occurred Exception.
     protected EnvInput createEnvInput(FileRepo fileRepo) throws IOException {
-
         final String filename = file.getName();
 
         // set the root directory of the FileRepo (used for resolving paths)
@@ -369,11 +368,9 @@ public abstract class AbstractProblemLoader {
 
         for (Proof p : proofList.getProofs()) {
             // register proof
-            /*
-             * initConfig.getServices().getSpecificationRepository()
-             * .registerProof(poContainer.getProofOblInput(), p);
-             * initConfig.getFileRepo().registerProof(p);
-             */
+            initConfig.getServices().getSpecificationRepository()
+                    .registerProof(poContainer.getProofOblInput(), p);
+            // initConfig.getFileRepo().registerProof(p);
         }
 
         return proofList;

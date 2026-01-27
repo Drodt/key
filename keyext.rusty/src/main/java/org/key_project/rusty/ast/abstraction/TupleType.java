@@ -124,7 +124,7 @@ public class TupleType implements Type {
     }
 
     @Override
-    public Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         var its = new ArrayList<Type>();
         var changed = false;
         for (Type ty : types) {

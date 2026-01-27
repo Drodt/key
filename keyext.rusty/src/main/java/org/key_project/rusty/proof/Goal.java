@@ -216,6 +216,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             }
         }
 
+        fireGoalReplaced(this, parent, goalList);
+
         return goalList;
     }
 
@@ -278,8 +280,14 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
     }
 
+    private void fireGoalReplaced(Goal goal, Node parent, ImmutableList<Goal> newGoals) {
+        for (GoalListener listener : listeners) {
+            listener.goalReplaced(goal, parent, newGoals);
+        }
+    }
+
     public void setBranchLabel(String name) {
-        // TODO @ DD
+        node.getNodeInfo().setBranchLabel(name);
     }
 
     /// puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current

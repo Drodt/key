@@ -38,17 +38,17 @@ public class TestApplyTaclet {
         "A & B", "",
         "", "",
         "A & (A & B)", "",
-        "f(const)=const", "const=f(f(const))",
-        "f(const)=const",
-        "const=f(const)",
-        "f(const)=const", "A & {i:=0}(const=f(const))",
-        "f(const)=const", "A & {i:=0}(const=f(f(const)))",
+        "f(cnst)=cnst", "cnst=f(f(cnst))",
+        "f(cnst)=cnst",
+        "cnst=f(cnst)",
+        "f(cnst)=cnst", "A & {i:=0}(cnst=f(cnst))",
+        "f(cnst)=cnst", "A & {i:=0}(cnst=f(f(cnst)))",
 
-        "{i:=0}(f(const)=const)",
-        "{i:=1}(const=f(const)) & \\<{i=2u32}\\>(const=f(const)) " + "& {i:=0}(const=f(const))",
+        "{i:=0}(f(cnst)=cnst)",
+        "{i:=1}(cnst=f(cnst)) & \\<{i=2u32}\\>(cnst=f(cnst)) " + "& {i:=0}(cnst=f(cnst))",
 
-        "{i:=0}(f(const)=const)",
-        "{i:=1}(const=f(const)) & \\<{i=2u32}\\>(const=f(const)) " + "& {i:=0}(const=const)",
+        "{i:=0}(f(cnst)=cnst)",
+        "{i:=1}(cnst=f(cnst)) & \\<{i=2u32}\\>(cnst=f(cnst)) " + "& {i:=0}(cnst=cnst)",
     };
     Proof[] proof;
 
@@ -535,7 +535,7 @@ public class TestApplyTaclet {
 
         assertEquals(0, appList.size(), "Did not expect a match.");
 
-        Term ifterm = TacletForTests.parseTerm("{i:=0}(f(const)=f(f(const)))");
+        Term ifterm = TacletForTests.parseTerm("{i:=0}(f(cnst)=f(f(cnst)))");
         org.key_project.prover.sequent.SequentFormula ifformula = new SequentFormula(ifterm);
         ImmutableList<AssumesFormulaInstantiation> ifInsts = ImmutableSLList
                 .<AssumesFormulaInstantiation>nil()

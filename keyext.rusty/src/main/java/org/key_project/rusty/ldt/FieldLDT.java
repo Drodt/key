@@ -24,7 +24,6 @@ import org.jspecify.annotations.Nullable;
 
 public class FieldLDT extends LDT {
     public static final Name NAME = new Name("Field");
-    private final Services services;
     private final ParametricSortDecl fieldSort;
 
     private final ParametricFunctionDecl get;
@@ -32,13 +31,12 @@ public class FieldLDT extends LDT {
 
     public FieldLDT(Services services) {
         super(NAME, services);
-        this.services = services;
         fieldSort = parametricSort();
         get = addParametricFunction(services, "get");
         set = addParametricFunction(services, "set");
     }
 
-    public RFunction createField(String prefix, Name fieldName, Type type) {
+    public RFunction createField(String prefix, Name fieldName, Type type, Services services) {
         var argSort = type.getSort(services);
         ParametricSortInstance sort =
             ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)));
@@ -57,7 +55,7 @@ public class FieldLDT extends LDT {
     }
 
     public ParametricFunctionDecl createGenericField(String prefix, Name fieldName, Type type,
-            ImmutableList<GenericParameter> generics) {
+            ImmutableList<GenericParameter> generics, Services services) {
         var argSort = type.getSort(services);
         ParametricSortInstance sort =
             ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)));

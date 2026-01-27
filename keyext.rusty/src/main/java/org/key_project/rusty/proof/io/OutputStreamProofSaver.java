@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Modality;
+import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -23,15 +26,19 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.pp.LogicPrinter;
 import org.key_project.rusty.pp.NotationInfo;
 import org.key_project.rusty.pp.PrettyPrinter;
+import org.key_project.rusty.proof.NameRecorder;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.proof.init.IPersistablePO;
 import org.key_project.rusty.proof.init.Profile;
+import org.key_project.rusty.proof.init.ProofOblInput;
 import org.key_project.rusty.proof.mgt.RuleJustification;
 import org.key_project.rusty.proof.mgt.RuleJustificationBySpec;
 import org.key_project.rusty.rule.ContractRuleApp;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.UseOperationContractRule;
+import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.inst.TermInstantiation;
 import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.util.collection.ImmutableList;
@@ -71,45 +78,20 @@ public class OutputStreamProofSaver {
     }
 
     public String writeSettings(ProofSettings ps) {
-        return ""; // String.format("\\settings %s \n", ps.settingsToString());
+        return String.format("\\settings %s \n", ps.settingsToString());
     }
 
     public void save(OutputStream out) throws IOException {
         try (var ps = new PrintWriter(out, true, StandardCharsets.UTF_8)) {
-            // final ProofOblInput po =
-            // proof.getServices().getSpecificationRepository().getProofOblInput(proof);
+            final ProofOblInput po =
+                proof.getServices().getSpecificationRepository().getProofOblInput(proof);
             LogicPrinter printer = createLogicPrinter(proof.getServices(), false);
 
             // profile
             ps.println(writeProfile(proof.getServices().getProfile()));
 
             // settings
-            /*
-             * final StrategySettings strategySettings = proof.getSettings().getStrategySettings();
-             * final StrategyProperties strategyProperties =
-             * strategySettings.getActiveStrategyProperties();
-             * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
-             * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
-             * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
-             * StrategyProperties.INF_FLOW_CHECK_TRUE);
-             * strategySettings.setActiveStrategyProperties(strategyProperties);
-             * for (final SequentFormula s : proof.root().sequent().succedent().asList()) {
-             * ((InfFlowProof) proof).addLabeledTotalTerm(s.formula());
-             * }
-             * } else {
-             * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
-             * StrategyProperties.INF_FLOW_CHECK_FALSE);
-             * strategySettings.setActiveStrategyProperties(strategyProperties);
-             * }
-             * ps.println(writeSettings(proof.getSettings()));
-             *
-             * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
-             * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
-             * strategyProperties.put(StrategyProperties.INF_FLOW_CHECK_PROPERTY,
-             * StrategyProperties.INF_FLOW_CHECK_FALSE);
-             * strategySettings.setActiveStrategyProperties(strategyProperties);
-             * }
-             */
+            ps.println(writeSettings(proof.getSettings()));
 
             // declarations of symbols, sorts
             String header = proof.header();
@@ -117,32 +99,25 @@ public class OutputStreamProofSaver {
             ps.print(header);
 
             // \problem or \proofObligation
-            /*
-             * if (po instanceof IPersistablePO ppo
-             * && (!(po instanceof AbstractInfFlowPO) || (!(po instanceof InfFlowCompositePO)
-             * && ((InfFlowProof) proof).getIFSymbols().isFreshContract()))) {
-             * var loadingConfig = ppo.createLoaderConfig();
-             * ps.println("\\proofObligation ");
-             * loadingConfig.save(ps, "Proof-Obligation settings");
-             * ps.println("\n");
-             * } else {
-             * if (po instanceof AbstractInfFlowPO && (po instanceof InfFlowCompositePO
-             * || !((InfFlowProof) proof).getIFSymbols().isFreshContract())) {
-             * ps.print(((InfFlowProof) proof).printIFSymbols());
-             * }
-             */
-            final Sequent problemSeq = proof.root().sequent();
-            ps.println("\\problem {");
-            if (problemSeq.antecedent().isEmpty() && problemSeq.succedent().size() == 1) {
-                // Problem statement is a single formula ...
-                printer.printSemisequent(problemSeq.succedent());
+
+            if (po instanceof IPersistablePO ppo) {
+                var loadingConfig = ppo.createLoaderConfig();
+                ps.println("\n\\proofObligation ");
+                loadingConfig.save(ps, "Proof-Obligation settings");
+                ps.println("\n");
             } else {
-                // Problem statement is a proper sequent ...
-                printer.printSequent(problemSeq);
+                final Sequent problemSeq = proof.root().sequent();
+                ps.println("\\problem {");
+                if (problemSeq.antecedent().isEmpty() && problemSeq.succedent().size() == 1) {
+                    // Problem statement is a single formula ...
+                    printer.printSemisequent(problemSeq.succedent());
+                } else {
+                    // Problem statement is a proper sequent ...
+                    printer.printSequent(problemSeq);
+                }
+                ps.println(printer.result());
+                ps.println("}\n");
             }
-            ps.println(printer.result());
-            ps.println("}\n");
-            // }
 
             if (saveProofSteps) {
                 // \proof
@@ -169,23 +144,19 @@ public class OutputStreamProofSaver {
     }
 
     private String newNames2Proof(Node n) {
-        // TODO: What is this even used for?!
-        /*
-         * StringBuilder s = new StringBuilder();
-         * final NameRecorder rec = n.getNameRecorder();
-         * if (rec == null) {
-         * return s.toString();
-         * }
-         * final ImmutableList<Name> proposals = rec.getProposals();
-         * if (proposals.isEmpty()) {
-         * return s.toString();
-         * }
-         * for (final Name proposal : proposals) {
-         * s.append(",").append(proposal);
-         * }
-         * return " (newnames \"" + s.substring(1) + "\")";
-         */
-        return "";
+        StringBuilder s = new StringBuilder();
+        final NameRecorder rec = n.getNameRecorder();
+        if (rec == null) {
+            return s.toString();
+        }
+        final ImmutableList<Name> proposals = rec.getProposals();
+        if (proposals.isEmpty()) {
+            return s.toString();
+        }
+        for (final Name proposal : proposals) {
+            s.append(",").append(proposal);
+        }
+        return " (newnames \"" + s.substring(1) + "\")";
     }
 
     /// Print applied taclet rule for a single taclet rule application into the passed writer.
@@ -202,7 +173,7 @@ public class OutputStreamProofSaver {
         output.append("\"");
         output.append(posInOccurrence2Proof(node.sequent(), appliedRuleApp.posInOccurrence()));
         output.append(newNames2Proof(node));
-        // TODO: output.append(getInteresting(appliedRuleApp.instantiations()));
+        output.append(getInteresting(appliedRuleApp.instantiations()));
         final ImmutableList<AssumesFormulaInstantiation> l =
             appliedRuleApp.assumesFormulaInstantiations();
         if (l != null) {
@@ -291,7 +262,7 @@ public class OutputStreamProofSaver {
         while (childrenIt.hasNext()) {
             final Node child = childrenIt.next();
             output.append(prefix);
-            final String branchLabel = null;// child.getNodeInfo().getBranchLabel();
+            final String branchLabel = child.getNodeInfo().getBranchLabel();
 
             // The branchLabel is ignored when reading in the proof,
             // print it if we have it, ignore it otherwise. (MU)
@@ -382,6 +353,43 @@ public class OutputStreamProofSaver {
             // try to String by chance
             return val.toString();
         }
+    }
+
+    private String getInteresting(SVInstantiations inst) {
+        StringBuilder s = new StringBuilder();
+
+        for (String singleInstantiation : getInterestingInstantiations(inst)) {
+            s.append(" (inst \"").append(escapeCharacters(singleInstantiation)).append("\")");
+        }
+
+        return s.toString();
+    }
+
+    /// Get the "interesting" instantiations of the provided object.
+    ///
+    /// @see SVInstantiations#interesting()
+    /// @param inst instantiations
+    /// @return the "interesting" instantiations (serialized)
+    public Collection<String> getInterestingInstantiations(SVInstantiations inst) {
+        Collection<String> s = new ArrayList<>();
+
+        for (final var pair : inst.interesting()) {
+            final SchemaVariable var = pair.key();
+
+            final Object value = pair.value().getInstantiation();
+
+            if (!(value instanceof Term || value instanceof RustyProgramElement
+                    || value instanceof Name)) {
+                throw new IllegalStateException("Saving failed.\n"
+                    + "FIXME: Unhandled instantiation type: " + value.getClass());
+            }
+
+            String singleInstantiation =
+                var.name() + "=" + printAnything(value, proof.getServices(), false);
+            s.add(singleInstantiation);
+        }
+
+        return s;
     }
 
     private static String printSequent(Sequent val,

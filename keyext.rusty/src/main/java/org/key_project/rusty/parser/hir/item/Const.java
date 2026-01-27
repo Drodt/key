@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.item;
 
+import org.key_project.rusty.parser.hir.Ident;
 import org.key_project.rusty.parser.hir.hirty.HirTy;
 
-public record Const(HirTy ty, Body body) implements ItemKind {
+public record Const(Ident ident, HirTy ty, Body body) implements ItemKind {
 }

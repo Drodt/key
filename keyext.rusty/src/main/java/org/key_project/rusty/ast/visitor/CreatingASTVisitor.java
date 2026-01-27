@@ -79,7 +79,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     @Override
     public void performActionOnBlockExpression(BlockExpression x) {
         ExtList changeList = getTop();
-        if (changeList.getFirst() == CHANGED) {
+        if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             if (!preservesPositionInfo) {
                 // TODO changeList.removeFirstOccurrence(PositionInfo.class);
@@ -95,7 +95,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     @Override
     public void performActionOnGhostBlockExpression(GhostBlockExpression x) {
         ExtList changeList = getTop();
-        if (changeList.getFirst() == CHANGED) {
+        if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
             changeList.removeFirst();
             if (!preservesPositionInfo) {
                 // TODO changeList.removeFirstOccurrence(PositionInfo.class);
@@ -107,8 +107,6 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
             doDefaultAction(x);
         }
     }
-
-
 
     @Override
     public void performActionOnContextBlockExpression(ContextBlockExpression x) {
@@ -141,9 +139,14 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
+    public void performActionOnSnapshotExpression(SnapshotExpression x) { doDefaultAction(x); }
+
+
+    @Override
     public void performActionOnProgramVariable(ProgramVariable x) {
         throw new RuntimeException("TODO @ DD");
     }
+
 
     @Override
     public void performActionOnSchemaVariable(SchemaVariable x) {
@@ -218,6 +221,17 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
             @Override
             RustyProgramElement createNewElement(ExtList changeList) {
                 return new BinaryExpression(changeList);
+            }
+        };
+        def.doAction(x);
+    }
+
+    @Override
+    public void performActionOnIndexExpression(IndexExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new IndexExpression(changeList, x.ty());
             }
         };
         def.doAction(x);
@@ -344,6 +358,17 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
             @Override
             RustyProgramElement createNewElement(ExtList changeList) {
                 return new ArrayExpression(changeList, services);
+            }
+        };
+        def.doAction(x);
+    }
+
+    @Override
+    public void performActionOnReturnExpression(ReturnExpression x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            RustyProgramElement createNewElement(ExtList changeList) {
+                return new ReturnExpression(changeList);
             }
         };
         def.doAction(x);

@@ -28,15 +28,21 @@ public class InnerVariableNamer extends VariableNamer {
         Iterable<Name> globals = wrapGlobals(goal.getNode().getLocalProgVars());
         map.clear();
 
-        Name newName = new Name(bai.basename() + (bai.index() == 0 ? "" : "_" + bai.index()));
-        int newcounter = getMaxCounterInGlobalsAndProgram(bai.basename(), globals,
-            getProgramFromPIO(posOfFind), null);
-        final NamespaceSet namespaces = services.getNamespaces();
+        Name proposal = services.getNameRecorder().getProposal();
+        Name newName;
+        if (proposal != null) {
+            newName = proposal;
+        } else {
+            newName = new Name(bai.basename() + (bai.index() == 0 ? "" : "_" + bai.index()));
+            int newcounter = getMaxCounterInGlobalsAndProgram(bai.basename(), globals,
+                getProgramFromPIO(posOfFind), null);
+            final NamespaceSet namespaces = services.getNamespaces();
 
-        while (!isUniqueInGlobals(newName.toString(), globals)
-                || namespaces.lookupLogicSymbol(newName) != null) {
-            newcounter += 1;
-            newName = new Name(bai.basename() + "_" + newcounter);
+            while (!isUniqueInGlobals(newName.toString(), globals)
+                    || namespaces.lookupLogicSymbol(newName) != null) {
+                newcounter += 1;
+                newName = new Name(bai.basename() + "_" + newcounter);
+            }
         }
 
         ProgramVariable newVar = var;

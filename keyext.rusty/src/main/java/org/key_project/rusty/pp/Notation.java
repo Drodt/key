@@ -114,10 +114,11 @@ public abstract class Notation {
         }
 
         public void print(Term t, LogicPrinter sp) {
+            sp.addBoundVars(t.boundVars());
             sp.printQuantifierTerm(name, (ImmutableArray<QuantifiableVariable>) t.varsBoundHere(0),
                 t.sub(0), ass);
+            sp.removeBoundVars(t.boundVars().size());
         }
-
     }
 
 
@@ -261,8 +262,8 @@ public abstract class Notation {
         public void print(Term t, LogicPrinter sp) {
             if (t.op() instanceof ProgramVariable) {
                 sp.printConstant(t.op().name().toString());
-            } else if (t.op() instanceof LogicVariable) {
-                sp.printConstant(t.op().name().toString());
+            } else if (t.op() instanceof LogicVariable lv) {
+                sp.printConstant(sp.getBoundVar(lv.getIndex()).name().toString());
             } else {
                 sp.printConstant(t.op().name().toString());
             }

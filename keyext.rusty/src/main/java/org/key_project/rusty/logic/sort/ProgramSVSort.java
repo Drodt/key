@@ -9,9 +9,8 @@ import java.util.Map;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.ast.ConcreteLabel;
-import org.key_project.rusty.ast.Item;
-import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.*;
+import org.key_project.rusty.ast.abstraction.GenericConstParam;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.expr.*;
@@ -56,11 +55,13 @@ public abstract class ProgramSVSort extends SortImpl {
     public static final ProgramSVSort NON_SIMPLE_EXPRESSION = new NonSimpleExpressionSort();
     public static final ProgramSVSort EXPRESSION = new ExpressionSort();
     public static final ProgramSVSort BLOCK_EXPRESSION = new BlockExpressionSort();
+    public static final ProgramSVSort ELSE_BRANCH_EXPRESSION = new ElseBranchExpressionSort();
     public static final ProgramSVSort BOOL_EXPRESSION = new BoolExpressionSort();
     public static final ProgramSVSort SIMPLE_BOOL_EXPRESSION = new SimpleBoolExpressionSort();
     public static final ProgramSVSort NON_SIMPLE_BOOL_EXPRESSION =
         new NonSimpleBoolExpressionSort();
     public static final ProgramSVSort PATTERN = new PatternSort();
+    public static final ProgramSVSort CONSTRUCTOR = new ConstructorSort();
 
     // ----------- Types of Statement Program SVs -----------------------------
     public static final ProgramSVSort STATEMENT = new StatementSort();
@@ -169,6 +170,9 @@ public abstract class ProgramSVSort extends SortImpl {
 
             if (pe instanceof LitPatExpr)
                 return true;
+            if (pe instanceof PathExpr p && p.path().res() instanceof ResDef rd
+                    && rd.def() instanceof GenericConstParam)
+                return true;
 
             return VARIABLE.canStandFor(pe, services);
         }
@@ -189,6 +193,11 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             if (!(check instanceof Expr))
+                return false;
+            // Rust encodes an `if let p = e` as an if expression with expression `let p = e` as
+            // guard.
+            // We have special rules for if let; don't unfold it like a "normal" expression
+            if (check instanceof LetExpression)
                 return false;
             return !SIMPLE_EXPRESSION.canStandFor(check, services);
         }
@@ -371,6 +380,37 @@ public abstract class ProgramSVSort extends SortImpl {
         @Override
         public boolean canStandFor(RustyProgramElement check, Services services) {
             return check instanceof Item;
+        }
+    }
+
+    private static class ElseBranchExpressionSort extends ProgramSVSort {
+        protected ElseBranchExpressionSort() {
+            super(new Name("ElseBranchExpression"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            return check instanceof ElseBranch;
+        }
+    }
+
+    private static class ConstructorSort extends ProgramSVSort {
+        protected ConstructorSort() {
+            super(new Name("Constructor"));
+        }
+
+        @Override
+        public boolean canStandFor(RustyProgramElement check, Services services) {
+            if (check instanceof CallExpression ce && ce.callee() instanceof PathExpr pe
+                    && pe.path().res() instanceof ResDef(Def def)
+                    && (def instanceof VariantConstructor
+                            || def instanceof GenericVariantConstructor)
+                    && ce.params().stream()
+                            .allMatch(e -> SIMPLE_EXPRESSION.canStandFor(e, services)))
+                return true;
+            return (check instanceof PathExpr pe && pe.path().res() instanceof ResDef(Def def)
+                    && (def instanceof VariantConstructor
+                            || def instanceof GenericVariantConstructor));
         }
     }
 }

@@ -8,5 +8,5 @@ import org.key_project.util.collection.ImmutableArray;
 
 
 public interface HasGenerics extends Named {
-    ImmutableArray<GenericTyParam> params();
+    ImmutableArray<GenericParam> params();
 }

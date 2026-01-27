@@ -11,8 +11,8 @@ import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.rusty.ServiceCaches;
 
 /// Binary feature that returns zero iff the find-formula of a rule contains a d-path consisting
-/// only
-/// of positive literals (as a formula of the antecedent). Used terminology is defined in Diss. by
+/// only of positive literals (as a formula of the antecedent). Used terminology is defined in Diss.
+/// by
 /// Martin Giese.
 public class PurePosDPathFeature extends AbstractBetaFeature {
     public final static Feature INSTANCE = new PurePosDPathFeature();

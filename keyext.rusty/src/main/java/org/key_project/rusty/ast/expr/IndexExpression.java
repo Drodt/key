@@ -9,6 +9,7 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -16,6 +17,12 @@ public final class IndexExpression implements Expr {
     private final Expr base;
     private final Expr index;
     private final Type ty;
+
+    public IndexExpression(ExtList changeList, Type ty) {
+        this.base = changeList.removeFirstOccurrence(Expr.class);
+        this.index = changeList.removeFirstOccurrence(Expr.class);
+        this.ty = ty;
+    }
 
     public IndexExpression(Expr base, Expr index, Type ty) {
         this.base = base;

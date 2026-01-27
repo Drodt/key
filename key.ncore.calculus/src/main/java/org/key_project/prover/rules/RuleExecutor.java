@@ -9,7 +9,6 @@ import org.key_project.util.collection.ImmutableList;
 import org.jspecify.annotations.NonNull;
 
 public interface RuleExecutor<Goal extends @NonNull ProofGoal<Goal>> {
-
     /// applies the given rule application to the specified goal
     ///
     /// @param goal the goal that the rule application should refer to.

@@ -60,9 +60,7 @@ public class LexPathOrdering implements TermOrdering {
     private record CacheKey(Term left, Term right) {
     }
 
-
     private final HashMap<CacheKey, CompRes> cache = new LinkedHashMap<>();
-
 
     private CompRes compareHelp(Term p_a, Term p_b) {
         final CacheKey key = new CacheKey(p_a, p_b);
@@ -78,7 +76,6 @@ public class LexPathOrdering implements TermOrdering {
     }
 
     private CompRes compareHelp2(Term p_a, Term p_b) {
-
         if (oneSubGeq(p_a, p_b)) {
             return GREATER;
         }
@@ -331,7 +328,7 @@ public class LexPathOrdering implements TermOrdering {
                 case "add", "intersect", "seqSingleton" -> 6;
                 case "mul", "union", "seqConcat" -> 7;
                 case "div", "infiniteUnion" -> 8;
-                case "jdiv", "setMinus" -> 9;
+                case "rdiv", "setMinus" -> 9;
                 default -> null;
             };
         }

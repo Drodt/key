@@ -13,7 +13,7 @@ import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.util.collection.ImmutableList;
 
 public record GenericField(Name name, Type type, ParametricFunctionDecl fieldConst) {
-    public Field instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services) {
+    public Field instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         Type instantiated = type.instantiate(instMap, services);
         return new Field(name, instantiated, ParametricFunctionInstance.get(fieldConst,
             ImmutableList.of(new SortArg(instantiated.getSort(services)))));

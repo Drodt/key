@@ -48,6 +48,8 @@ expr
    | closureExpr # ClosureExpression_
    | exprWithBlock # ExpressionWithBlock_
    | PANIC LPAREN RPAREN # EmptyPanic
+   | GHOST blockExpr # GhostBlockExpression
+   | SNAPSHOT LPAREN schemaVariable RPAREN # SnapshotExpression
    ;
 
 stmt
@@ -55,6 +57,7 @@ stmt
    | letStmt
    | exprStmt
    | schemaStmt SEMI
+   | PANIC_FRAME LPAREN schemaVariable COMMA blockExpr RPAREN
    ;
 
 schemaStmt
@@ -118,7 +121,7 @@ infiniteLoopExpr
    ;
 
 loopScope
-    : 'loop_scope!' '(' idx=schemaVariable ',' blockExpr ')';
+    : 'loop_scope!' '(' idx=schemaVariable ',' ret=schemaVariable ',' blockExpr ')';
 
 loopLabel
    : label COLON

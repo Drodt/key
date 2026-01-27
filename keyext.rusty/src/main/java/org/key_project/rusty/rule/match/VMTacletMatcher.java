@@ -13,7 +13,6 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.VariableCondition;
-import org.key_project.prover.rules.conditions.NotFreeIn;
 import org.key_project.prover.rules.instantiation.*;
 import org.key_project.prover.rules.matcher.vm.VMProgramInterpreter;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -40,13 +39,13 @@ public class VMTacletMatcher implements TacletMatcher {
     /// the variable conditions of the taclet that need to be satisfied by found schema variable
     /// instantiations
     private final ImmutableList<org.key_project.prover.rules.VariableCondition> varconditions;
-    /// the built-in notFreeIn variable conditions
-    private final ImmutableList<NotFreeIn> varsNotFreeIn;
 
     /// the assumes sequent of the taclet
     private final org.key_project.prover.sequent.Sequent assumesSequent;
     /// the bound variables
     private final ImmutableSet<QuantifiableVariable> boundVars;
+    /// not free var ins
+    private final Taclet taclet;
 
     /// flag indicating if preceding updates of the term to be matched should be ignored this
     /// requires the taclet to ignore updates and that the find term does not start with an
@@ -56,11 +55,11 @@ public class VMTacletMatcher implements TacletMatcher {
     private final Term findExp;
 
     public VMTacletMatcher(Taclet taclet) {
+        this.taclet = taclet;
         varconditions = (ImmutableList<org.key_project.prover.rules.VariableCondition>) taclet
                 .getVariableConditions();
         assumesSequent = taclet.assumesSequent();
         boundVars = taclet.getBoundVariables();
-        varsNotFreeIn = (ImmutableList<NotFreeIn>) taclet.varsNotFreeIn();
 
         if (taclet instanceof FindTaclet ft) {
             findExp = ft.find();
@@ -131,19 +130,6 @@ public class VMTacletMatcher implements TacletMatcher {
         return (v instanceof QuantifiableVariable) && boundVars.contains(v);
     }
 
-    /// looks if a variable is declared as not free in
-    ///
-    /// @param var the SchemaVariable to look for
-    /// @return true iff declared not free
-    private boolean varDeclaredNotFree(SchemaVariable var) {
-        for (final NotFreeIn nfi : varsNotFreeIn) {
-            if (nfi.first() == var) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /// {@inheritDoc}
     @Override
     public final MatchConditions checkVariableConditions(SchemaVariable var,
@@ -153,7 +139,7 @@ public class VMTacletMatcher implements TacletMatcher {
         if (matchCond != null) {
             if (instantiationCandidate instanceof Term term) {
                 if (!(term.op() instanceof QuantifiableVariable)) {
-                    if (varIsBound(var) || varDeclaredNotFree(var)) {
+                    if (varIsBound(var)) {
                         // match(x) is not a variable, but the corresponding template variable is
                         // bound
                         // or declared non free (so it has to be matched to a variable)
@@ -161,6 +147,13 @@ public class VMTacletMatcher implements TacletMatcher {
                     }
                 }
             }
+
+            if (instantiationCandidate instanceof Term instTerm
+                    && taclet.noFreeVarIns().contains(var) &&
+                    !instTerm.freeVars().isEmpty()) {
+                return null;
+            }
+
             // check generic conditions
             for (final VariableCondition vc : varconditions) {
                 matchCond = vc.check(var, instantiationCandidate, matchCond, services);

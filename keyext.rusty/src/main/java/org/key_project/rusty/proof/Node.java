@@ -34,6 +34,9 @@ public class Node implements Iterable<Node> {
 
     private boolean closed = false;
 
+    /// contains non-logical content, used for user feedback
+    private NodeInfo nodeInfo;
+
     private RuleApp appliedRuleApp;
 
     /// Serial number of this proof node.
@@ -66,6 +69,7 @@ public class Node implements Iterable<Node> {
     private Node(Proof proof) {
         this.proof = proof;
         serialNr = proof.getServices().getCounter(NODES).getCountPlusPlus();
+        nodeInfo = new NodeInfo(this);
     }
 
     /// creates a node with the given contents and associated proof
@@ -326,5 +330,12 @@ public class Node implements Iterable<Node> {
     /// @return true iff this node is the root, i.e., has no parents.
     public boolean root() {
         return parent == null;
+    }
+
+    /// the node information object encapsulates non-logical information of the node, e.g.
+    ///
+    /// @return the NodeInfo containing non-logical information
+    public NodeInfo getNodeInfo() {
+        return nodeInfo;
     }
 }

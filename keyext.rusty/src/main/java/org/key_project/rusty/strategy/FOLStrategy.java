@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.key_project.logic.Name;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
@@ -20,6 +23,7 @@ import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.strategy.feature.*;
 import org.key_project.rusty.strategy.quantifierHeuristics.HeuristicInstantiation;
 import org.key_project.rusty.strategy.quantifierHeuristics.InstantiationCost;
@@ -38,7 +42,7 @@ import org.jspecify.annotations.NonNull;
 
 import static org.key_project.prover.strategy.costbased.feature.CompareCostsFeature.leq;
 
-public class FOLStrategy extends AbstractFeatureStrategy {
+public class FOLStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
     public static final Name NAME = new Name("FOL Strategy");
 
     protected final StrategyProperties strategyProperties;
@@ -128,6 +132,8 @@ public class FOLStrategy extends AbstractFeatureStrategy {
 
         bindRuleSet(d, "cut", not(isInstantiated("cutFormula")));
 
+        bindRuleSet(d, "apply_auxiliary_eq", inftyConst());
+
         if (quantifierInstantiatedEnabled()) {
             setupFormulaNormalisation(d);
         } else {
@@ -157,6 +163,11 @@ public class FOLStrategy extends AbstractFeatureStrategy {
         // TestSymbolicExecutionTreeBuilder#testInstanceOfNotInEndlessLoop()
         bindRuleSet(d, "apply_equations", EqNonDuplicateAppFeature.INSTANCE);
 
+        bindRuleSet(d, "apply_auxiliary_eq",
+            add(NoSelfApplicationFeature.INSTANCE, isInstantiated("s"),
+                not(ContainsTermFeature.create(instOf("s"), instOf("t1")))));
+
+
         return d;
     }
 
@@ -171,14 +182,9 @@ public class FOLStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    protected RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+    public RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
             MutableState mState) {
         return instantiationF.computeCost(app, pio, goal, mState);
-    }
-
-    @Override
-    protected RuleSetDispatchFeature getCostDispatcher() {
-        return costComputationDispatcher;
     }
 
     @Override
@@ -208,8 +214,7 @@ public class FOLStrategy extends AbstractFeatureStrategy {
     /// @param pio corresponding [PosInOccurrence]
     /// @param goal corresponding goal
     /// @param mState the [MutableState] to query for information like current value of
-    /// [TermBuffer]s or
-    /// [ChoicePoint]s
+    /// [TermBuffer]s or [ChoicePoint]s
     /// @return the cost of the rule application expressed as a <code>RuleAppCost</code> object.
     /// <code>TopRuleAppCost.INSTANCE</code> indicates that the rule shall not be applied at
     /// all (it is discarded by the strategy).
@@ -423,10 +428,7 @@ public class FOLStrategy extends AbstractFeatureStrategy {
                 ScaleFeature.createScaled(CountMaxDPathFeature.INSTANCE, 10.0), longConst(20)));
         TermBuffer superF = new TermBuffer();
         final ProjectionToTerm<Goal> splitCondition = sub(FocusProjection.INSTANCE, 0);
-        bindRuleSet(d, "split_cond", add(// do not split over formulas containing auxiliary
-            // variables
-            applyTF(FocusProjection.INSTANCE,
-                rec(any(), not(selectSkolemConstantTermFeature()))),
+        bindRuleSet(d, "split_cond", add(
             // prefer splits when condition has quantifiers (less
             // likely to be simplified away)
             applyTF(splitCondition,
@@ -447,10 +449,7 @@ public class FOLStrategy extends AbstractFeatureStrategy {
                         AllowedCutPositionFeature.INSTANCE,
                         ifZero(notBelowQuantifier(),
                             add(
-                                applyTF(cutFormula, add(ff.cutAllowed,
-                                    // do not cut over formulas containing
-                                    // auxiliary variables
-                                    rec(any(), not(selectSkolemConstantTermFeature())))),
+                                applyTF(cutFormula, ff.cutAllowed),
                                 countOccurrencesInSeq, // standard costs
                                 longConst(100)),
                             SumFeature // check for cuts below quantifiers
@@ -566,5 +565,26 @@ public class FOLStrategy extends AbstractFeatureStrategy {
     private boolean normalSplitting() {
         return StrategyProperties.SPLITTING_NORMAL
                 .equals(strategyProperties.getProperty(StrategyProperties.SPLITTING_OPTIONS_KEY));
+    }
+
+    @Override
+    public boolean isResponsibleFor(BuiltInRule rule) {
+        return false;
+    }
+
+    @Override
+    public Set<RuleSet> getResponsibilities(StrategyAspect aspect) {
+        var set = new HashSet<RuleSet>();
+        set.addAll(getDispatcher(aspect).ruleSets());
+        return set;
+    }
+
+    @Override
+    public RuleSetDispatchFeature getDispatcher(StrategyAspect aspect) {
+        return switch (aspect) {
+            case StrategyAspect.Cost -> costComputationDispatcher;
+            case StrategyAspect.Instantiation -> instantiationDispatcher;
+            case StrategyAspect.Approval -> approvalDispatcher;
+        };
     }
 }

@@ -18,5 +18,5 @@ public interface Type extends Named {
 
     RustType toRustType(Services services);
 
-    Type instantiate(Map<GenericTyParam, GenericTyArg> instMap, Services services);
+    Type instantiate(Map<GenericParam, GenericTyArg> instMap, Services services);
 }

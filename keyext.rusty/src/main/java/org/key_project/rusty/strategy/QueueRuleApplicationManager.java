@@ -228,7 +228,6 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
          * Try to find a rule app that can be completed until both queues are exhausted.
          */
         while (nextRuleApp == null && !(queue.isEmpty() && furtherAppsQueue.isEmpty())) {
-
             /*
              * Determine the minimum rule app container, ranging over both queues. Putting this into
              * a separate method would be convenient. But since we are using immutable data

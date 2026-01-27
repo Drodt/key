@@ -26,12 +26,16 @@ public class LoopSpecConverter extends AbstractSpecConverter {
 
     public LoopSpecification convert(LoopSpec loopSpec, Function fn, LoopExpression target,
             Map<HirId, ProgramVariable> pvs) {
-        var invariant = Arrays.stream(loopSpec.invariants()).map(wp -> convert(wp.value(), pvs))
+        setLocalParams(fn.getLocalIdsToGenericParams());
+        setCtx(new ConversionCtx(pvs));
+        var invariant = Arrays.stream(loopSpec.invariants()).map(wp -> convert(wp.value()))
                 .reduce(tb.tt(), tb::and);
-        var variant = loopSpec.variant() == null ? null : convert(loopSpec.variant().value(), pvs);
+        var variant = loopSpec.variant() == null ? null : convert(loopSpec.variant().value());
         var localIns = tb.var(MiscTools.getLocalIns(target, services));
         var localOuts = tb.var(MiscTools.getLocalOuts(target, services));
         var atPres = createAtPres(ProgramFunction.collectParameters(fn), tb);
+        clearCtx();
+        clearLocalParams();
         return new LoopSpecImpl(target, invariant, variant, localIns, localOuts, atPres);
     }
 

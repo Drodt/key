@@ -59,7 +59,6 @@ public class SVInstantiationCP implements Feature {
     }
 
     private SchemaVariable findSVWithName(TacletApp app) {
-
         if (svToInstantiate == null) {
             return app.taclet().getTrigger().triggerVar();
         }

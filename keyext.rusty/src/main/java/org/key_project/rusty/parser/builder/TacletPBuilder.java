@@ -99,7 +99,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         this.requiredChoices = Objects.requireNonNullElse(choices, ChoiceExpr.TRUE);
         List<Taclet> seq = mapOf(ctx.taclet());
         topLevelTaclets.addAll(seq);
-        disableJavaSchemaMode();
+        disableRustySchemaMode();
         return null;
     }
 
@@ -168,7 +168,7 @@ public class TacletPBuilder extends ExpressionBuilder {
             b.setChoices(choices);
             b.setAnnotations(tacletAnnotations);
             // b.setOrigin(BuilderHelpers.getPosition(ctx));
-            Taclet r = b.getTaclet();
+            Taclet r = b.getTaclet(services);
             registerTaclet(r);
             currentTBuilder.pop();
             return r;
@@ -215,7 +215,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         b.setAnnotations(tacletAnnotations);
         // b.setOrigin(BuilderHelpers.getPosition(ctx));
         try {
-            Taclet r = peekTBuilder().getTaclet();
+            Taclet r = peekTBuilder().getTaclet(services);
             registerTaclet(r);
             setSchemaVariables(schemaVariables().parent());
             currentTBuilder.pop();
@@ -226,7 +226,7 @@ public class TacletPBuilder extends ExpressionBuilder {
     }
 
     private void registerTaclet(TacletBuilder<?> tb) {
-        var taclet = tb.getTaclet();
+        var taclet = tb.getTaclet(services);
         taclet2Builder.put(taclet, peekTBuilder());
         topLevelTaclets.add(taclet);
     }
@@ -541,7 +541,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         var ind = new ArrayList<Term>(args.length);
 
         for (int i = 0; i < argSort.size(); i++) {
-            final var lv = new LogicVariable(i, argSort.get(i));
+            final var lv = LogicVariable.create(i, argSort.get(i));
             bvs.add(new BoundVariable(new Name(argNames.get(i)), argSort.get(i)));
             args[i] = services.getTermFactory().createTerm(lv);
 

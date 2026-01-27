@@ -20,7 +20,7 @@ pub fn contains<const N: usize>(arr: &[i128; N], v: i128) -> bool {
     }
 
     #[invariant(
-        l < r && r < N && forall(|x: usize| x < l ==> arr[x] < v) && forall(|x: usize| r < x && x < N ==> v < arr[x])
+        0 <= l && l < r && r < N && forall(|x: usize| x < l ==> arr[x] < v) && forall(|x: usize| r < x && x < N ==> v < arr[x])
     )]
     #[variant(r - l)]
     while r > l + 1 {
