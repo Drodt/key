@@ -86,8 +86,8 @@ public class ProofCollections {
          */
 
         var ghost = c.group("ghost");
-        //ghost.provable("double_array_with_ghost.key");
-        //ghost.provable("double_array_without_ghost.key");
+        // ghost.provable("double_array_with_ghost.key");
+        // ghost.provable("double_array_without_ghost.key");
 
         ghost.provable("reverse_array_with_ghost.key");
         ghost.provable("reverse_array_without_ghost.key");
@@ -95,7 +95,7 @@ public class ProofCollections {
         ghost.provable("if_with_ghost.key");
         ghost.provable("if_without_ghost.key");
 
-        //ghost.provable("first-ghost.key");
+        // ghost.provable("first-ghost.key");
 
         // var algos = c.group("algorithms");
         // algos.provable("binary-search/binary-search.key");
