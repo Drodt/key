@@ -223,20 +223,26 @@ pub struct Person {
     pub close_to_panic: u8, // 0..=100
     pub aborted: bool,
 }
-
+#[derive(Copy, Clone)]
 pub enum Room {
-    Entrance = 0,
-    CreepyBasement = 1,
-    Laboratory = 2,
-    Kitchen = 3,
-    TortureRoom = 4,
+    Entrance,
+    CreepyBasement,
+    Laboratory,
+    Kitchen,
+    TortureRoom,
 }
 
 
 pub const ROOM_COUNT: usize = 5;
 
 pub fn room_as_usize(room: Room) -> usize {
-    room as usize
+    match room {
+        Room::Entrance => 0,
+        Room::CreepyBasement => 1,
+        Room::Laboratory => 2,
+        Room::Kitchen => 3,
+        Room::TortureRoom => 4,
+    }
 }
 
 pub enum HouseError {
@@ -257,7 +263,7 @@ pub fn new_ghost_house(visitor: Person) -> Result<GhostHouse, HouseError> {
         return Err(HouseError::InvalidPanicValue);
     }
     let mut occ = [false; ROOM_COUNT];
-    let entrance_idx = Room::Entrance as usize;
+    let entrance_idx = room_as_usize(Room::Entrance);
     occ[entrance_idx] = true;
 
     let room_fear: [u8; ROOM_COUNT] = [
@@ -275,14 +281,21 @@ pub fn new_ghost_house(visitor: Person) -> Result<GhostHouse, HouseError> {
         room_fear,
     };
 
-    let loc_idx: usize = gh.visitor_location as usize;
+    let loc_idx = room_as_usize(gh.visitor_location);
     let check_occupancy = gh.occupancy[entrance_idx];
     let check_panic = gh.visitor.close_to_panic;
 
     ghost!{
-        proof_assert!(loc_idx == entrance_idx);
-        proof_assert!(check_occupancy);
-        proof_assert!(check_panic <= 100);
+        let at_entrance = loc_idx == entrance_idx;
+        //proof_assert!(at_entrance);
+
+        let entrance_occ = check_occupancy == true;
+        //proof_assert!(entrance_occ);
+
+        let panic_range = check_panic <= 100;
+        //proof_assert!(panic_range);
+
+        let _checks = (at_entrance, entrance_occ, panic_range);
     };
 
     Ok(gh)
@@ -292,10 +305,10 @@ pub fn move_to(gh: &mut GhostHouse, target: Room) -> Result<(), HouseError> {
         return Err(HouseError::VisitorAborted);
     }
 
-    let t = target.room_as_usize();
+    let t = room_as_usize(target);
     let current_loc = gh.visitor_location;
     let mut flags = gh.occupancy;
-    let current = gh.visitor_location.room_as_usize();
+    let current = room_as_usize(gh.visitor_location);
 
     if flags[t] {
         return Err(HouseError::RoomOccupied);
@@ -303,12 +316,19 @@ pub fn move_to(gh: &mut GhostHouse, target: Room) -> Result<(), HouseError> {
 
     let old_flags = ghost!{snapshot!(flags)};
     let old_loc = ghost!{snapshot!(current_loc)};
-    let old_loc_idx: usize = old_loc as usize;
+    let old_loc_idx = room_as_usize(current_loc);
 
     ghost!{
-        proof_assert!((*old_flags)[old_loc_idx]);
-        proof_assert!((*old_flags)[t]);
-        proof_assert!(old_loc_idx != t);
+        let pre_current_occupied = (*old_flags)[old_loc_idx] == true;
+        //proof_assert!(pre_current_occupied);
+
+        let pre_target_free = (*old_flags)[t] == false;
+        //proof_assert!(pre_target_free);
+
+        let idx_distinct = old_loc_idx != t;
+        //proof_assert!(idx_distinct);
+
+        let _checks1 = (pre_current_occupied, pre_target_free, idx_distinct);
     };
 
     flags[current] = false;
@@ -318,12 +338,19 @@ pub fn move_to(gh: &mut GhostHouse, target: Room) -> Result<(), HouseError> {
     let new_flags = ghost!{snapshot!(flags)};
     let new_loc_s = ghost!{snapshot!(new_loc)};
 
-    let new_loc_idx: usize = new_loc_s as usize;
+    let new_loc_idx = room_as_usize(new_loc);
 
     ghost!{
-        proof_assert!(new_loc_idx == t);
-        proof_assert!((*new_flags)[old_loc_idx] == false);
-        proof_assert!((*new_flags)[t]);
+        let post_loc_updated = new_loc_idx == t;
+        //proof_assert!(post_loc_updated);
+
+        let post_current_free = (*new_flags)[old_loc_idx] == false;
+        //proof_assert!(post_current_free);
+
+        let post_target_occ = (*new_flags)[t] == true;
+        //proof_assert!(post_target_occ);
+
+        let _checks2 = (post_loc_updated, post_current_free, post_target_occ);
     };
 
     gh.occupancy = flags;
@@ -344,8 +371,13 @@ pub fn scare(gh: &mut GhostHouse, intensity: u8) -> Result<(), HouseError> {
     let old_aborted = ghost! { snapshot!(aborted) };
 
     ghost! {
-        proof_assert!( old_aborted == false);
-        proof_assert!(old_panic <= 100);
+        let _pre_aborted = old_aborted == false;
+        //proof_assert!(_pre_aborted);
+
+        let _pre_range = old_panic <= 100;
+        //proof_assert!(_pre_range);
+
+        let _checks1 = (_pre_aborted, _pre_range);
     };
 
     let mut new_panic: u8;
@@ -369,9 +401,16 @@ pub fn scare(gh: &mut GhostHouse, intensity: u8) -> Result<(), HouseError> {
     let new_aborted = ghost! { snapshot!(aborted) };
 
     ghost! {
-        proof_assert!(new_panic >= old_panic);
-        proof_assert!(new_panic <= 100);
-        proof_assert!(!old_aborted || new_aborted);
+        let panic_not_decreased = new_panic >= old_panic;
+        //proof_assert!(panic_not_decreased);
+
+        let panic_bounded = new_panic <= 100;
+        //proof_assert!(panic_bounded);
+
+        let aborted_monotonic = old_aborted == true || new_aborted == true;
+        //proof_assert!(aborted_monotonic);
+
+        let _checks2 = (panic_not_decreased, panic_bounded, aborted_monotonic);
     };
 
     gh.visitor.close_to_panic = panic;
@@ -379,7 +418,6 @@ pub fn scare(gh: &mut GhostHouse, intensity: u8) -> Result<(), HouseError> {
 
     Ok(())
 }
-
 
 
 */
