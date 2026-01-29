@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.keyproject.key.api.data;
 
-import de.uka.ilkd.key.proof.Proof;
+import org.key_project.rusty.proof.Proof;
 
 /**
  *

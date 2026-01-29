@@ -252,4 +252,12 @@ public class PositionTable {
         }
         return list.head();
     }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public Range getRange(int i) {
+        return new Range(startPos[i], endPos[i]);
+    }
 }

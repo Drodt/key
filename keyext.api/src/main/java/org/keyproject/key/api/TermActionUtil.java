@@ -7,12 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import de.uka.ilkd.key.control.KeYEnvironment;
-import de.uka.ilkd.key.control.ProofControl;
+import org.key_project.rusty.control.KeYEnvironment;
+import org.key_project.rusty.control.ProofControl;
 import de.uka.ilkd.key.macros.ProofMacro;
-import de.uka.ilkd.key.pp.PosInSequent;
-import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.rule.*;
+import org.key_project.rusty.pp.PosInSequent;
+import org.key_project.rusty.proof.Goal;
+import org.key_project.rusty.rule.*;
 
 import org.key_project.logic.Name;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -79,7 +79,7 @@ public class TermActionUtil {
         this.nodeTextId = nodeTextId;
         occ = pos.getPosInOccurrence();
         ProofControl c = env.getUi().getProofControl();
-        final ImmutableList<BuiltInRule> builtInRules = c.getBuiltInRule(goal, occ);
+        // final ImmutableList<BuiltInRule> builtInRules = c.getBuiltInRule(goal, occ);
         var macros = ClassLoaderUtil.loadServices(ProofMacro.class);
         for (ProofMacro macro : macros) {
             var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
@@ -88,27 +88,27 @@ public class TermActionUtil {
                 macro.getCategory(), TermActionKind.Macro);
             add(ta);
         }
-        ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
-        var find = removeRewrites(findTaclet)
-                .prepend(c.getRewriteTaclet(goal, occ));
-        var nofind = c.getNoFindTaclet(goal);
+        // ImmutableList<TacletApp> findTaclet = c.getFindTaclet(goal, occ);
+        // var find = removeRewrites(findTaclet)
+        //         .prepend(c.getRewriteTaclet(goal, occ));
+        // var nofind = c.getNoFindTaclet(goal);
 
 
-        for (TacletApp tacletApp : find) {
-            var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
-                "find:" + tacletApp.rule());
-            TermActionDesc ta = new TermActionDesc(id, tacletApp.rule().displayName(),
-                tacletApp.rule().toString(), "", TermActionKind.Taclet);
-            add(ta);
-        }
+        // for (TacletApp tacletApp : find) {
+        //     var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
+        //         "find:" + tacletApp.rule());
+        //     TermActionDesc ta = new TermActionDesc(id, tacletApp.rule().displayName(),
+        //         tacletApp.rule().toString(), "", TermActionKind.Taclet);
+        //     add(ta);
+        // }
 
-        for (TacletApp tacletApp : nofind) {
-            var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
-                "nofind:" + tacletApp.rule());
-            TermActionDesc ta = new TermActionDesc(id, tacletApp.rule().displayName(),
-                tacletApp.rule().toString(), "", TermActionKind.Taclet);
-            add(ta);
-        }
+        // for (TacletApp tacletApp : nofind) {
+        //     var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
+        //         "nofind:" + tacletApp.rule());
+        //     TermActionDesc ta = new TermActionDesc(id, tacletApp.rule().displayName(),
+        //         tacletApp.rule().toString(), "", TermActionKind.Taclet);
+        //     add(ta);
+        // }
     }
 
     private void add(TermActionDesc ta) {
@@ -123,12 +123,13 @@ public class TermActionUtil {
      */
     private static ImmutableList<TacletApp> removeRewrites(
             ImmutableList<TacletApp> list) {
-        ImmutableList<TacletApp> result = ImmutableSLList.nil();
-        for (TacletApp tacletApp : list) {
-            Taclet taclet = tacletApp.taclet();
-            result = (taclet instanceof RewriteTaclet ? result : result.prepend(tacletApp));
-        }
-        return result;
+        // ImmutableList<TacletApp> result = ImmutableSLList.nil();
+        // for (TacletApp tacletApp : list) {
+        //     Taclet taclet = tacletApp.taclet();
+        //     result = (taclet instanceof RewriteTaclet ? result : result.prepend(tacletApp));
+        // }
+        // return result;
+        return null;
     }
 
     public List<TermActionDesc> getActions() {

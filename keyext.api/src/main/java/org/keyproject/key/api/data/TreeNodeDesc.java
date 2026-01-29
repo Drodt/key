@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.keyproject.key.api.data;
 
-import de.uka.ilkd.key.proof.Node;
+import org.key_project.rusty.proof.Node;
 
 
 /**
@@ -13,7 +13,7 @@ import de.uka.ilkd.key.proof.Node;
 public record TreeNodeDesc(KeyIdentifications.NodeId id, String name)
         implements KeYDataTransferObject {
     public static TreeNodeDesc from(KeyIdentifications.ProofId proofId, Node root) {
-        return new TreeNodeDesc(new KeyIdentifications.NodeId(proofId, "" + root.serialNr()),
-            root.name());
+        return new TreeNodeDesc(new KeyIdentifications.NodeId(proofId, "" + root.getSerialNr()),
+            "");
     }
 }

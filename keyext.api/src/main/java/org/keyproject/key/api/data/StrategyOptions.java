@@ -5,9 +5,9 @@ package org.keyproject.key.api.data;
 
 import java.lang.reflect.Field;
 
-import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.settings.StrategySettings;
-import de.uka.ilkd.key.strategy.StrategyProperties;
+import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.settings.StrategySettings;
+import org.key_project.rusty.strategy.StrategyProperties;
 
 /**
  * @author Alexander Weigl
@@ -33,9 +33,12 @@ public record StrategyOptions(
     public static StrategyOptions from(StrategySettings settings) {
         var sp = settings.getActiveStrategyProperties();
         return new StrategyOptions(
-            sp.getProperty(StrategyProperties.METHOD_OPTIONS_KEY),
-            sp.getProperty(StrategyProperties.DEP_OPTIONS_KEY),
-            sp.getProperty(StrategyProperties.QUERY_OPTIONS_KEY),
+            // sp.getProperty(StrategyProperties.METHOD_OPTIONS_KEY),
+            // sp.getProperty(StrategyProperties.DEP_OPTIONS_KEY),
+            // sp.getProperty(StrategyProperties.QUERY_OPTIONS_KEY),
+            "",
+            "",
+            "",
             sp.getProperty(StrategyProperties.NON_LIN_ARITH_OPTIONS_KEY),
             sp.getProperty(StrategyProperties.STOPMODE_OPTIONS_KEY),
             settings.getMaxSteps());
@@ -64,21 +67,21 @@ public record StrategyOptions(
         var defaultOptions = defaultOptions();
         StrategyProperties sp = proof.getSettings().getStrategySettings()
                 .getActiveStrategyProperties();
-        if (method != null) {
-            sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, getVal(method));
-        } else {
-            sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, defaultOptions.method());
-        }
-        if (dep != null) {
-            sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, getVal(dep));
-        } else {
-            sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, defaultOptions.dep());
-        }
-        if (query != null) {
-            sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, getVal(query));
-        } else {
-            sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, defaultOptions.query());
-        }
+        // if (method != null) {
+        //     sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, getVal(method));
+        // } else {
+        //     sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, defaultOptions.method());
+        // }
+        // if (dep != null) {
+        //     sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, getVal(dep));
+        // } else {
+        //     sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, defaultOptions.dep());
+        // }
+        // if (query != null) {
+        //     sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, getVal(query));
+        // } else {
+        //     sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, defaultOptions.query());
+        // }
         if (nonLinArith != null) {
             sp.setProperty(StrategyProperties.NON_LIN_ARITH_OPTIONS_KEY, getVal(nonLinArith));
         } else {

@@ -5,9 +5,9 @@ package org.keyproject.key.api.data;
 
 import java.util.Objects;
 
-import de.uka.ilkd.key.control.KeYEnvironment;
-import de.uka.ilkd.key.proof.Node;
-import de.uka.ilkd.key.proof.Proof;
+import org.key_project.rusty.control.KeYEnvironment;
+import org.key_project.rusty.proof.Node;
+import org.key_project.rusty.proof.Proof;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -64,7 +64,7 @@ public class KeyIdentifications {
     public Node find(NodeId nodeId) {
         Proof p = find(nodeId.proofId);
         var id = Integer.parseInt(nodeId.nodeId());
-        var opt = p.findAny(it -> it.serialNr() == id);
+        var opt = p.findAny(it -> it.getSerialNr() == id);
         return Objects.requireNonNull(opt, "Could not find node with serialNr  " + nodeId.nodeId);
     }
 
