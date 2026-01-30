@@ -391,14 +391,6 @@ public final class KeyApiImpl implements KeyApi {
             var lp = new LogicPrinter(notInfo, env.getServices(), layouter);
             lp.printSequent(node.sequent());
 
-            // FIXME: We need to set the sequent filter for future calls to goal/actions
-            // to work. This is a bit unintuitive, because we need to call goal/print
-            // before goal/actions can function and ideally this would not be the case.
-            // We also only save the most recent sequent in the filter, so calls to
-            // goal/actions must call goal/print before when switching between goals.
-            // This is ok for the current UI impl for now, but should be fixed later.
-            filter.setSequent(node.sequent());
-
             var id = new NodeTextId(nodeId, uniqueCounter.getAndIncrement());
             var t = new NodeText(lp.result(), layouter.getInitialPositionTable());
             data.register(id, t);
@@ -432,8 +424,6 @@ public final class KeyApiImpl implements KeyApi {
         return terms;
     }
 
-    private final IdentitySequentPrintFilter filter = new IdentitySequentPrintFilter();
-
     @Override
     public CompletableFuture<List<TermActionDesc>> actions(NodeTextId printId, int caretPos) {
         return CompletableFuture.supplyAsync(() -> {
@@ -441,6 +431,10 @@ public final class KeyApiImpl implements KeyApi {
             var proof = data.find(printId.nodeId().proofId());
             var goal = proof.getOpenGoal(node);
             var nodeText = data.find(printId);
+
+            var filter = new IdentitySequentPrintFilter();
+            filter.setSequent(node.sequent());
+
             var pis = nodeText.table().getPosInSequent(caretPos, filter);
             return new TermActionUtil(printId, data.find(printId.nodeId().proofId().env()), pis,
                 goal)
