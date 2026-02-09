@@ -102,7 +102,12 @@ public class RuleAppIndex {
     public void addNoPosTacletApp(NoPosTacletApp tacletApp) {
         tacletIndex.add(tacletApp);
 
+        if (autoMode) {
+            interactiveTacletAppIndex.clearIndexes();
+        }
+
         interactiveTacletAppIndex.addedNoPosTacletApp(tacletApp);
+        automatedTacletAppIndex.addedNoPosTacletApp(tacletApp);
     }
 
     /**

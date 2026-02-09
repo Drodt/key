@@ -12,7 +12,8 @@ import org.jspecify.annotations.Nullable;
 /// Keeps some central paths to files and directories.
 ///
 ///
-/// By default, all KeY configurations are stored in a directory named ".rusty-key" inside the user's
+/// By default, all KeY configurations are stored in a directory named ".rusty-key" inside the
+/// user's
 /// home
 /// directory. In Microsoft Windows operating systems this is directly the hard disc that contains
 /// the KeY code. But the eclipse integration requires to change the default location. This is

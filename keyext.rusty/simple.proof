@@ -1,5 +1,33 @@
 \profile "Rust Profile";
 
+\settings // Proof-Settings-Config-File
+{
+    "Choice": {
+        "architecture": "architecture:A64",
+        "intRules": "intRules:ignoreOverFlow",
+        "integerSimplificationRules": "integerSimplificationRules:full",
+        "panics": "panics:allow",
+        "programRules": "programRules:Rust"
+    },
+    "Strategy": {
+        "ActiveStrategy": "Modular RustyDL Strategy",
+        "MaximumNumberOfAutomaticApplications": 10000,
+        "Timeout": -1,
+        "options": {
+            "AUTO_INDUCTION_OPTIONS_KEY": "AUTO_INDUCTION_OFF",
+            "FUNCTION_OPTIONS_KEY": "FUNCTION_CONTRACT",
+            "LOOP_OPTIONS_KEY": "LOOP_INVARIANT",
+            "NON_LIN_ARITH_OPTIONS_KEY": "NON_LIN_ARITH_NONE",
+            "QUANTIFIERS_OPTIONS_KEY": "QUANTIFIERS_NON_SPLITTING_WITH_PROGS",
+            "SPLITTING_OPTIONS_KEY": "SPLITTING_DELAYED",
+            "STOPMODE_OPTIONS_KEY": "STOPMODE_DEFAULT",
+            "USER_TACLETS_OPTIONS_KEY1": "USER_TACLETS_OFF",
+            "USER_TACLETS_OPTIONS_KEY2": "USER_TACLETS_OFF",
+            "USER_TACLETS_OPTIONS_KEY3": "USER_TACLETS_OFF"
+        }
+    }
+} 
+
 \problem {
 \<{
   i = 2u32;
@@ -9,8 +37,9 @@
 
 \proof {
 (branch "dummy ID"
-(rule "assignment" (formula "1"))
-(rule "emptyModalityValue" (formula "1") (term "1"))
+(rule "assignment" (formula "1") (newnames "pnc"))
+(rule "simple_expr_stmt" (formula "1") (term "1"))
+(rule "empty_modality_value" (formula "1") (term "1"))
 (rule "applyOnRigidFormula" (formula "1"))
 (rule "applyOnPV" (formula "1") (term "0"))
 (rule "applyOnRigidTerm" (formula "1") (term "1"))
