@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'org.key_project'
-version = '2.13.0'
+version = '0.1.0'
 
 configurations { antlr4 }
 
@@ -26,11 +26,14 @@ dependencies {
 
     implementation('info.picocli:picocli:4.7.7')
     annotationProcessor('info.picocli:picocli-codegen:4.7.7')
+
+    // logging implementation used by the slf4j
+    implementation("ch.qos.logback:logback-classic:1.5.28")
 }
 
 shadowJar {
     archiveClassifier.set("exe")
-    archiveBaseName.set("key")
+    archiveBaseName.set("rusty-key")
     filesMatching("META-INF/services/**") {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE // needed for mergeServices
     }
