@@ -22,6 +22,16 @@ import org.jspecify.annotations.Nullable;
 public class Node implements Iterable<Node> {
     private static final String NODES = "nodes";
 
+    private static final String OPEN_GOAL = "OPEN GOAL";
+
+    private static final String CLOSED_GOAL = "Closed goal";
+
+    private static final String INTERACTIVE_GOAL = "INTERACTIVE GOAL";
+
+    private static final String RULE_WITHOUT_NAME = "rule without name";
+
+    private static final String RULE_APPLICATION_WITHOUT_RULE = "rule application without rule";
+
     /// the proof the node belongs to
     private final Proof proof;
 
@@ -64,6 +74,8 @@ public class Node implements Iterable<Node> {
     private ImmutableList<Function> localFunctions = ImmutableSLList.nil();
 
     private NameRecorder nameRecorder;
+
+    private String cachedName = null;
 
     /// creates an empty node that is root and leaf.
     private Node(Proof proof) {
@@ -337,5 +349,40 @@ public class Node implements Iterable<Node> {
     /// @return the NodeInfo containing non-logical information
     public NodeInfo getNodeInfo() {
         return nodeInfo;
+    }
+
+    public String name() {
+        if (cachedName == null) {
+            RuleApp rap = getAppliedRuleApp();
+            if (rap == null) {
+                final Goal goal = proof().getOpenGoal(this);
+                if (this.isClosed()) {
+                    return CLOSED_GOAL; // don't cache this
+                } else if (goal == null) {
+                    // should never happen (please check)
+                    return "UNKNOWN GOAL KIND (Probably a bug)";
+                } else if (goal.isAutomatic()) {
+                    cachedName = OPEN_GOAL;
+                } else {
+                    cachedName = INTERACTIVE_GOAL;
+                }
+                return cachedName;
+            }
+
+            if (rap.rule() == null) {
+                cachedName = RULE_APPLICATION_WITHOUT_RULE;
+                return cachedName;
+            }
+
+            if (nodeInfo.getFirstActiveExprString() != null) {
+                return nodeInfo.getFirstActiveExprString();
+            }
+
+            cachedName = rap.displayName();
+            if (cachedName == null) {
+                cachedName = RULE_WITHOUT_NAME;
+            }
+        }
+        return cachedName;
     }
 }
