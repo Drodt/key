@@ -1,0 +1,38 @@
+\programVariables {
+    y: i32;
+    z: i32;
+}
+
+\problem {
+    ==> \<{y = 2; let x = &y; z = *x;}\>(z = 2)
+}
+
+\proof {
+    (branch "root"
+        (rule "assignment" (formula "1")) // ==> \<{(); let x = &y; z = *x;}\>(z = 2)
+        (rule "simple_expr_stmt" (formula "1") (term "1")) // ==> {y:=2}\<{let x = &y; z = *x;}\>(z = 2)
+        (rule "let_ident_pat_assign_no_type" (formula "1") (term "1")) // ==> {y:=2}\<{let x; x = &y; z = *x;}\>(z = 2)
+        (rule "let_ident_pat_no_type" (formula "1") (term "1")) // ==> {y:=2}\<{x = &y; z = *x;}\>(z = 2)
+        (rule "assign_shared_borrow" (formula "1") (term "1")) // ==> {y:=2}{x:=refS<[int]>(y)}\<{(); z = *x;}\>(z = 2)
+        (rule "simple_expr_stmt" (formula "1") (term "1,1")) // ==> {y:=2}{x:=refS<[int]>(y)}\<{z = *x;}\>(z = 2)
+        (rule "assign_deref_shared" (formula "1") (term "1,1")) // ==> {y:=2}{x:=refS<[int]>(y)}{z:=derefS<[int]>(x)}\<{();}\>(z = 2)
+        (rule "simple_expr_stmt" (formula "1") (term "1,1,1")) // ==> {y:=2}{x:=refS<[int]>(y)}{z:=derefS<[int]>(x)}\<{}\>(z = 2)
+        (rule "empty_modality" (formula "1") (term "1,1,1")) // ==> {y:=2}{x:=refS<[int]>(y)}{z:=derefS<[int]>(x)}(z = 2)
+        (rule "sequentialToParallel2" (formula "1")) // ==> {y:=2||{y:=2}(x:=refS<[int]>(y))}{z:=derefS<[int]>(x)}(z = 2)
+        (rule "applyOnElementary" (formula "1") (term "1,0")) // ==> {y:=2||x:={y:=2}refS<[int]>(y)}{z:=derefS<[int]>(x)}(z = 2)
+        (rule "applyOnRigidTerm" (formula "1") (term "0,1,0")) // ==> {y:=2||x:=refS<[int]>({y:=2}y)}{z:=derefS<[int]>(x)}(z = 2)
+        (rule "applyOnPV" (formula "1") (term "0,0,1,0")) // ==> {y:=2||x:=refS<[int]>(2)}{z:=derefS<[int]>(x)}(z = 2)
+        (rule "sequentialToParallel2" (formula "1")) // ==> {y:=2||x:=refS<[int]>(2)||{y:=2||x:=refS<[int]>(2)}(z:=derefS<[int]>(x))}(z = 2)
+        (rule "simplifyUpdate3" (formula "1") (term "1,0")) // ==> {y:=2||x:=refS<[int]>(2)||z:={x:=refS<[int]>(2)}derefS<[int]>(x)}(z = 2)
+        (rule "applyOnElementary" (formula "1") (term "1,0")) // ==> {y:=2||x:=refS<[int]>(2)||z:={x:=refS<[int]>(2)}derefS<[int]>(x)}(z = 2)
+        (rule "applyOnRigidTerm" (formula "1") (term "0,1,0")) // ==> {y:=2||x:=refS<[int]>(2)||z:=derefS<[int]>({x:=refS<[int]>(2)}x)}(z = 2)
+        (rule "applyOnPV" (formula "1") (term "0,0,1,0")) // ==> {y:=2||x:=refS<[int]>(2)||z:=derefS<[int]>(refS<[int]>(2))}(z = 2)
+        (rule "deref_of_shared" (formula "1") (term "0,1,0")) // ==> {y:=2||x:=refS<[int]>(2)||z:=2}(z = 2)
+        (rule "simplifyUpdate2" (formula "1")) // ==> {z:=2}(z = 2)
+        (rule "applyOnRigidFormula" (formula "1")) // ==> {z:=2}z = {z:=2}2
+        (rule "applyOnPV" (formula "1") (term "0")) // ==> 2 = {z:=2}2
+        (rule "simplifyUpdate1" (formula "1") (term "1")) // ==> 2 = 2
+        (rule "eqClose" (formula "1")) // ==> true
+        (rule "closeTrue" (formula "1")) // closed
+    )
+}
