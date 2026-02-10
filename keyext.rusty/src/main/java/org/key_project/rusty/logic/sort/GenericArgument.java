@@ -15,7 +15,7 @@ public interface GenericArgument extends SyntaxElement {
     default GenericArgument instantiateParamArg(SVInstantiations svInst, Services services) {
         if (this instanceof SortArg sa) {
             if (sa.sort() instanceof GenericSort gs) {
-                return new SortArg(svInst.getGenericSortInstantiations().getRealSort(gs));
+                return new SortArg(svInst.getGenericSortInstantiations().getRealSort(gs, services));
             } else if (sa.sort() instanceof ParametricSortInstance psi) {
                 ImmutableList<GenericArgument> args = ImmutableSLList.nil();
 

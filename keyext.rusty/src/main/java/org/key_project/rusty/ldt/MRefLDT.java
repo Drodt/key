@@ -1,0 +1,74 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.ldt;
+
+import org.key_project.logic.Name;
+import org.key_project.logic.Term;
+import org.key_project.logic.op.Function;
+import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.expr.BinaryExpression;
+import org.key_project.rusty.ast.expr.LiteralExpression;
+import org.key_project.rusty.logic.op.ParametricFunctionDecl;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+public class MRefLDT extends LDT {
+    public static final Name NAME = new Name("MRef");
+
+    private final ParametricFunctionDecl refM;
+    private final ParametricFunctionDecl derefM;
+    private final ParametricFunctionDecl arrPlace;
+
+    public MRefLDT(Services services) {
+        super(NAME, services);
+
+        refM = addParametricFunction(services, "refM");
+        derefM = addParametricFunction(services, "derefM");
+        arrPlace = addParametricFunction(services, "arrPlace");
+    }
+
+    public ParametricFunctionDecl getRefM() {
+        return refM;
+    }
+
+    public ParametricFunctionDecl getDerefM() {
+        return derefM;
+    }
+
+    public ParametricFunctionDecl getArrPlace() {
+        return arrPlace;
+    }
+
+    @Override
+    public @Nullable Term translateLiteral(LiteralExpression lit, Services services) {
+        return null;
+    }
+
+    @Override
+    public @Nullable Function getFunctionFor(BinaryExpression.Operator op, Services services) {
+        return null;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term[] subs, Services services) {
+        return false;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term sub, Services services) {
+        return false;
+    }
+
+    @Override
+    public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
+            Services services) {
+        return false;
+    }
+
+    @Override
+    public @NonNull Name name() {
+        return NAME;
+    }
+}

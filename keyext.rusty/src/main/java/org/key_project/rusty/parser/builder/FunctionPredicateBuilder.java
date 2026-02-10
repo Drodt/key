@@ -120,6 +120,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
 
     @Override
     public Object visitPred_decl(KeYRustyParser.Pred_declContext ctx) {
+        boolean rigid = ctx.NON_RIGID() == null;
         String pred_name = accept(ctx.funcpred_name());
         List<Boolean> whereToBind = accept(ctx.where_to_bind());
         List<Sort> argSorts = accept(ctx.arg_sorts());
@@ -147,8 +148,10 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
 
             assert argSorts != null;
             Function p = new RFunction(new Name(pred_name), RustyDLTheory.FORMULA,
-                argSorts.toArray(new Sort[0]),
-                whereToBind == null ? null : whereToBind.toArray(new Boolean[0]), false);
+                new ImmutableArray<>(argSorts.toArray(new Sort[0])),
+                whereToBind == null ? null
+                        : new ImmutableArray<>(whereToBind.toArray(new Boolean[0])),
+                false, rigid, false);
 
             if (lookup(p.name()) == null) {
                 functions().parent().add(p);
@@ -163,6 +166,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
     @Override
     public Object visitFunc_decl(KeYRustyParser.Func_declContext ctx) {
         boolean unique = ctx.UNIQUE() != null;
+        boolean rigid = ctx.NON_RIGID() == null;
         String funcName = accept(ctx.funcpred_name());
         var sorts = new Namespace<>(nss.sorts());
         var consts = new Namespace<>(nss.functions());
@@ -207,16 +211,17 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             if (f == null) {
                 Name name = new Name(funcName);
                 Sort[] sortsArray = argSorts.toArray(new Sort[0]);
-                Boolean[] whereToBind1 =
-                    whereToBind == null ? null : whereToBind.toArray(new Boolean[0]);
+                ImmutableArray<Boolean> whereToBind1 =
+                    whereToBind == null ? null
+                            : new ImmutableArray<>(whereToBind.toArray(new Boolean[0]));
                 if (genericParameters == null)
-                    f = new RFunction(name, retSort, sortsArray,
-                        whereToBind1, unique);
+                    f = new RFunction(name, retSort, new ImmutableArray<>(sortsArray),
+                        whereToBind1, unique, rigid, false);
                 else {
                     var d = new ParametricFunctionDecl(name,
                         ImmutableList.fromList(genericParameters), new ImmutableArray<>(sortsArray),
-                        retSort, whereToBind1 == null ? null : new ImmutableArray<>(whereToBind1),
-                        unique, true, false);
+                        retSort, whereToBind1 == null ? null : whereToBind1,
+                        unique, rigid, false);
                     nss.parametricFunctions().add(d);
                     return null;
                 }
@@ -239,5 +244,4 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
     public Object visitPred_decls(KeYRustyParser.Pred_declsContext ctx) {
         return mapOf(ctx.pred_decl());
     }
-
 }

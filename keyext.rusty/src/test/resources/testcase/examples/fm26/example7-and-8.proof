@@ -1,0 +1,26 @@
+\problem {
+    ==> \<{let mut x = 1; let y = &mut x; *y = 3;}\>(true)
+}
+
+\proof {
+    (branch "root"
+        (rule "let_ident_pat_assign_mut_no_type" (formula "1")) // ==> \<{let mut x; x = 1; let y = &mut x; *y = 3;}\>(true)
+        (rule "let_ident_pat_mut_no_type" (formula "1")) // ==> \<{x = 1; let y = &mut x; *y = 3;}\>(true)
+        (rule "assignment" (formula "1")) // ==> {x:=1}\<{(); let y = &mut x; *y = 3;}\>(true)
+        (rule "simple_expr_stmt" (formula "1") (term "1")) // ==> {x:=1}\<{let y = &mut x; *y = 3;}\>(true)
+        (rule "let_ident_pat_assign_no_type" (formula "1") (term "1")) // ==> {x:=1}\<{let y; y = &mut x; *y = 3;}\>(true)
+        (rule "let_ident_pat_no_type" (formula "1") (term "1")) // ==> {x:=1}\<{y = &mut x; *y = 3;}\>(true)
+        (rule "assign_mut_borrow" (formula "1") (term "1")) // ==> {x:=1}{y:=refM<[int]>([[x]])}\<{(); *y = 3;}\>(true)
+        (rule "simple_expr_stmt" (formula "1") (term "1,1")) // ==> {x:=1}{y:=refM<[int]>([[x]])}\<{*y = 3;}\>(true)
+        (rule "deref_assign" (formula "1") (term "1,1")) // ==> {x:=1}{y:=refM<[int]>([[x]])}{y *-> 3}\<{();}\>(true)
+        (rule "simple_expr_stmt" (formula "1") (term "1,1,1")) // ==> {x:=1}{y:=refM<[int]>([[x]])}{y *-> 3}\<{}\>(true)
+        (rule "sequentialToParallel2" (formula "1")) // ==> {x:=1||{x:=1}(y:=refM<[int]>([[x]]))}{y *-> 3}\<{}\>(true)
+        (rule "simplifyUpdate3" (formula "1") (term "1,0")) // ==> {x:=1||y:=refM<[int]>([[x]]))}{y *-> 3}\<{}\>(true)
+        (rule "sequentialToParallel2" (formula "1")) // ==> {x:=1||y:=refM<[int]>([[x]]))||{x:=1||y:=refM<[int]>([[x]]))}(y *-> 3)}\<{}\>(true)
+        (rule "applyOnMutating" (formula "1") (term "1,0")) // ==> {x:=1||y:=refM<[int]>([[x]]))||{x:=1||y:=refM<[int]>([[x]]))}y *-> {x:=1||y:=refM<[int]>([[x]]))}3)}\<{}\>(true)
+        (rule "simplifyUpdate1" (formula "1") (term "1,1,0")) // ==> {x:=1||y:=refM<[int]>([[x]]))||{x:=1||y:=refM<[int]>([[x]]))}y *-> 3)}\<{}\>(true)
+        (rule "simplifyUpdate1" (formula "1") (term "0,1,0")) // ==> {x:=1||y:=refM<[int]>([[x]]))||{y:=refM<[int]>([[x]]))}y *-> 3)}\<{}\>(true)
+        (rule "applyOnPV" (formula "1") (term "0,1,0")) // ==> {x:=1||y:=refM<[int]>([[x]]))||refM<[int]>([[x]])) *-> 3)}\<{}\>(true)
+        (rule "applyMutating" (formula "1") (term "1,0")) // ==> {x:=1||y:=refM<[int]>([[x]]))||x:=3)}\<{}\>(true)
+    )
+}

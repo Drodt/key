@@ -74,6 +74,16 @@ public class PosTacletApp extends TacletApp {
         this.pos = pos;
     }
 
+    /// creates a new Taclet application containing all the instantiations given by the
+    /// SVInstantiations and forget the old ones.
+    ///
+    /// @param svi the SVInstantiations whose entries are the needed instantiations
+    /// @return the new Taclet application
+    @Override
+    protected TacletApp setInstantiation(SVInstantiations svi, Services services) {
+        return createPosTacletApp((FindTaclet) taclet(), svi, assumesFormulaInstantiations(),
+            posInOccurrence(), services);
+    }
 
     /// returns the LogicVariables that are bound above the PositionInOccurrence of the
     /// PosTacletApp.

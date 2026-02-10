@@ -102,6 +102,7 @@ public class NotationInfo {
         tbl.put(Equality.class,
             new Notation.Infix("=", PRIORITY_EQUAL, PRIORITY_COMPARISON, PRIORITY_COMPARISON));
         tbl.put(ElementaryUpdate.class, new Notation.ElementaryUpdateNotation());
+        tbl.put(MutatingUpdate.class, new Notation.MutatingUpdateNotation());
         tbl.put(SchemaVariable.class, new Notation.SchemaVariableNotation());
 
         return tbl;
