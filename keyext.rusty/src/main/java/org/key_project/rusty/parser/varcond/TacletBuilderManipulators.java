@@ -63,6 +63,10 @@ public class TacletBuilderManipulators {
             }
         };
 
+    public static final AbstractConditionBuilder APPLY_ELEMENTARIES_ON_DEREFM =
+        new ConstructorBasedBuilder("applyElementariesOnDerefM",
+            ApplyElementariesOnDerefMCondition.class, USV, SV, SV);
+
     static class NoFreeVarInTacletBuilderCommand extends AbstractTacletBuilderCommand {
         public NoFreeVarInTacletBuilderCommand(@NonNull ArgumentType... argumentsTypes) {
             super("noFreeVarIn", argumentsTypes);
@@ -91,6 +95,9 @@ public class TacletBuilderManipulators {
     public static final AbstractConditionBuilder DROP_EFFECTLESS_ELEMENTARIES =
         new ConstructorBasedBuilder("dropEffectlessElementaries",
             DropEffectlessElementariesCondition.class, USV, SV, SV);
+    public static final AbstractConditionBuilder DROP_EFFECTLESS_MUTATING =
+        new ConstructorBasedBuilder("dropEffectlessMutating",
+            DropEffectlessMutatingCondition.class, USV, SV, SV);
     public static final AbstractConditionBuilder EQUAL_UNIQUE =
         new ConstructorBasedBuilder("equalUnique", EqualUniqueCondition.class, TSV, TSV, FSV);
     public static final AbstractConditionBuilder SIMPLIFY_ITE_UPDATE =
@@ -212,9 +219,11 @@ public class TacletBuilderManipulators {
     private static final List<TacletBuilderCommand> tacletBuilderCommands = new ArrayList<>(2);
 
     static {
-        register(DIFFERENT, APPLY_UPDATE_ON_RIGID, NEW_DEPENDING_ON, FREE_1, FREE_2, FREE_3, FREE_4,
+        register(DIFFERENT, APPLY_UPDATE_ON_RIGID, APPLY_ELEMENTARIES_ON_DEREFM, NEW_DEPENDING_ON,
+            FREE_1, FREE_2, FREE_3, FREE_4,
             FREE_5, EQUAL_UNIQUE,
-            DROP_EFFECTLESS_ELEMENTARIES, SIMPLIFY_ITE_UPDATE, NEW_TYPE_OF, NEW_RUSTY_TYPE,
+            DROP_EFFECTLESS_ELEMENTARIES, DROP_EFFECTLESS_MUTATING, SIMPLIFY_ITE_UPDATE,
+            NEW_TYPE_OF, NEW_RUSTY_TYPE,
             IS_SUBTYPE, SAME, HAS_SORT,
             NEW_LOCAL_VARS, STORE_EXPR_IN, STORE_TERM_IN, HAS_INVARIANT, GET_INVARIANT,
             GET_VARIANT, IS_LABELED);

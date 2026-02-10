@@ -863,6 +863,21 @@ public class LogicPrinter {
         maybeParens(t.sub(0), ass2);
     }
 
+    /// Print an elementary update. This looks like <code>loc := val</code>
+    ///
+    /// @param asgn the assignment operator (including spaces)
+    /// @param ass2 associativity for the new values
+    public void printMutatingUpdate(String asgn, Term t, int ass2) {
+        assert t.arity() == 2;
+        layouter.startTerm(2);
+
+        maybeParens(t.sub(0), ass2);
+
+        layouter.print(asgn);
+
+        maybeParens(t.sub(1), ass2);
+    }
+
     private void printParallelUpdateHelper(String separator, Term t, int ass) {
         assert t.arity() == 2;
         layouter.startTerm(2);

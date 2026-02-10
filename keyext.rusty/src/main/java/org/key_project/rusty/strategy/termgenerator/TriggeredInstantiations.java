@@ -94,7 +94,7 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
                     final var sv = taclet.getTrigger().triggerVar();
                     final Sort svSort;
                     if (sv.sort() instanceof GenericSort) {
-                        svSort = svInst.getGenericSortInstantiations().getRealSort(sv);
+                        svSort = svInst.getGenericSortInstantiations().getRealSort(sv, services);
                     } else {
                         svSort = sv.sort();
                     }

@@ -115,7 +115,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
             var place = term.sub(0);
             var t = term.sub(1);
             var placeName = place.op().name().toString();
-            var pvName = placeName.substring(1, place.op().name().toString().length() - 1);
+            var pvName = placeName.substring(2, place.op().name().toString().length() - 2);
             var pv = services.getNamespaces().programVariables().lookup(pvName);
             return services.getTermBuilder().elementary(pv, t);
         }
@@ -144,14 +144,14 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         if (t.op() instanceof ProgramVariable pv) {
             var name = pv.name();
             var tb = services.getTermBuilder();
-            var c = services.getNamespaces().functions().lookup("/" + name + "/");
+            var c = services.getNamespaces().functions().lookup("[[" + name + "]]");
             if (c == null) {
                 var innerSort = t.sort();
                 var pSort = services.getNamespaces().parametricSorts().lookup("Place");
                 assert pSort != null;
                 var sort =
                     ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(innerSort)));
-                c = new RFunction(new Name("/" + name + "/"), sort);
+                c = new RFunction(new Name("[[" + name + "]]"), sort);
                 services.getNamespaces().functions().add(c);
             }
 

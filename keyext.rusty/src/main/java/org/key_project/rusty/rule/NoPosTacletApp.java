@@ -79,6 +79,11 @@ public class NoPosTacletApp extends TacletApp {
         return res;
     }
 
+    @Override
+    protected TacletApp setInstantiation(SVInstantiations svi, Services services) {
+        return new NoPosTacletApp(taclet(), svi, assumesFormulaInstantiations());
+    }
+
 
     /// creates a NoPosTacletApp for the given taclet and no instantiation information
     ///

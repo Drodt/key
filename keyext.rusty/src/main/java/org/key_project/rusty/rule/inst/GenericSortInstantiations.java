@@ -15,8 +15,12 @@ import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.instantiation.InstantiationEntry;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
+import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.GenericSort;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.util.collection.*;
 
 public final class GenericSortInstantiations {
@@ -164,16 +168,35 @@ public final class GenericSortInstantiations {
     /// @return p_s iff p_s is not a generic sort, the concrete sort p_s is instantiated with
     /// currently otherwise
     /// @throws GenericSortException iff p_s is a generic sort which is not yet instantiated
-    public Sort getRealSort(OperatorSV p_sv) {
-        return getRealSort(p_sv.sort());
+    public Sort getRealSort(OperatorSV p_sv, Services services) {
+        return getRealSort(p_sv.sort(), services);
     }
 
-    public Sort getRealSort(Sort p_s) {
-        if (p_s instanceof GenericSort) {
-            p_s = getInstantiation((GenericSort) p_s);
+    public Sort getRealSort(Sort p_s, Services services) {
+        if (p_s instanceof GenericSort gs) {
+            p_s = getInstantiation(gs);
             if (p_s == null) {
                 throw new GenericSortException("Generic sort is not yet instantiated", null);
             }
+        } else if (p_s instanceof ParametricSortInstance psi && psi.containsGenericSort()) {
+            ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+            for (int i = psi.getArgs().size() - 1; i >= 0; --i) {
+                GenericArgument oa = psi.getArgs().get(i);
+                if (oa instanceof SortArg(Sort sort)) {
+                    Sort realSort = getRealSort(sort, services);
+                    if (realSort == null) {
+                        throw new GenericSortException("Generic sort is not yet instantiated",
+                            null);
+                    }
+                    args = args.prepend(new SortArg(realSort));
+                } else {
+                    args = args.prepend(oa);
+                }
+            }
+            var inst = ParametricSortInstance.get(psi.getBase(), args);
+            if (inst.containsGenericSort())
+                throw new GenericSortException("Generic sort is not yet instantiated", null);
+            p_s = inst;
         }
 
         return p_s;

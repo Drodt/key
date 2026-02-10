@@ -106,7 +106,7 @@ public class SyntaxElementMatchProgramGenerator {
         if (arg instanceof SortArg sa) {
             if (sa.sort() instanceof GenericSort gs) {
                 program.add(getMatchGenericSortInstruction(gs));
-                program.add(gotoNextInstruction());
+                program.add(gotoNextSiblingInstruction());
             } else if (sa.sort() instanceof ParametricSortInstance psi) {
                 matchParametricSortInstance(program, psi);
             } else {
