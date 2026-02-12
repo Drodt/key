@@ -386,4 +386,8 @@ public class Node implements Iterable<Node> {
         }
         return cachedName;
     }
+
+    public Stream<Node> childrenStream() {
+        return children.stream();
+    }
 }
