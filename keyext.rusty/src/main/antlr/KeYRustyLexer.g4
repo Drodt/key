@@ -21,6 +21,8 @@ GET_VARIANT   : '\\getVariant';
 IS_LABELED    : '\\isLabeled';
 DIFFERENT     : '\\different';
 NO_FREE_VAR_IN : '\\noFreeVarIn';
+DROP_EFFECTLESS_MUTATING: '\\dropEffectlessMutating';
+APPLY_ELEMENTARIES_ON_DEREF_M: '\\applyElementariesOnDerefM';
 
 OPENTYPEPARAMS:'<' '[';
 CLOSETYPEPARAMS:']' '>';
@@ -28,3 +30,5 @@ CLOSETYPEPARAMS:']' '>';
 CONST : 'const';
 
 SORT: '\\sort';
+
+NON_RIGID: '\\nonRigid';

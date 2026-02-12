@@ -8,9 +8,12 @@ import java.util.Objects;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.ast.abstraction.PrimitiveType;
+import org.key_project.rusty.ast.abstraction.ReferenceType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
+import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.util.ExtList;
 
 import org.jspecify.annotations.NonNull;
@@ -62,6 +65,21 @@ public final class UnaryExpression implements Expr {
             return 0;
         }
 
+        @Override
+        public @Nullable MatchConditions match(SourceData sourceData,
+                @Nullable MatchConditions mc) {
+            final var src = sourceData.getSource();
+            if (src == null)
+                return null;
+
+            if (src.getClass() != this.getClass()) {
+                return null;
+            }
+            if (this != src)
+                return null;
+            sourceData.next();
+            return mc;
+        }
     }
 
     @Override
@@ -101,7 +119,13 @@ public final class UnaryExpression implements Expr {
         return switch (op) {
             case Neg -> expr.type(services);
             case Not -> PrimitiveType.BOOL;
-            case Deref -> throw new UnsupportedOperationException();
+            case Deref -> {
+                var inner = expr.type(services);
+                if (inner instanceof ReferenceType rt)
+                    yield rt.inner();
+                else
+                    throw new UnsupportedOperationException("Deref of non reference type");
+            }
         };
     }
 
@@ -120,5 +144,4 @@ public final class UnaryExpression implements Expr {
     public int hashCode() {
         return Objects.hash(op, expr);
     }
-
 }

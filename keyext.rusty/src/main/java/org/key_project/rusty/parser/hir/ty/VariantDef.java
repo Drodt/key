@@ -7,5 +7,8 @@ import java.util.Map;
 
 import org.key_project.rusty.parser.hir.DefId;
 
-public record VariantDef(DefId defId, String name, Map<Integer, TyFieldDef> fields) {
+import org.jspecify.annotations.Nullable;
+
+public record VariantDef(DefId defId, @Nullable VariantCtor ctor, String name,
+        Map<Integer, TyFieldDef> fields) {
 }

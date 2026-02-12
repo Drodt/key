@@ -4,11 +4,12 @@
 package org.key_project.rusty.ast;
 
 import org.key_project.logic.SyntaxElement;
+import org.key_project.logic.op.Function;
 import org.key_project.rusty.ast.visitor.Visitor;
 
 import org.jspecify.annotations.NonNull;
 
-public record VariantConstructor() implements Def {
+public record VariantConstructor(Function fn) implements Def {
     @Override
     public void visit(Visitor v) {
         v.performActionOnVariantConstructor(this);
@@ -22,5 +23,10 @@ public record VariantConstructor() implements Def {
     @Override
     public int getChildCount() {
         return 0;
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return fn.name().toString();
     }
 }

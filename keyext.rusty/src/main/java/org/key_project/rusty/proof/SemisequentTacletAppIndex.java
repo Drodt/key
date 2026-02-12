@@ -119,13 +119,13 @@ public class SemisequentTacletAppIndex {
 
         while (it.hasNext()) {
             var cfma = it.next();
-            final TermTacletAppIndex oldIndex = termIndices.get(cfma);
+            final TermTacletAppIndex oldIndex = result.termIndices.get(cfma);
             assert oldIndex != null
                     : "Term index that is supposed to be updated " + "does not exist";
 
             final PosInOccurrence pos = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
 
-            termIndices = termIndices.put(cfma,
+            result.termIndices = result.termIndices.put(cfma,
                 oldIndex.addTaclet(newTaclet, pos, services, tacletIndex, listener));
         }
 

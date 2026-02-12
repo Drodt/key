@@ -7,6 +7,8 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 
+import org.jspecify.annotations.NonNull;
+
 public record PathRustType(Type type) implements RustType {
     @Override
     public Type type() {
@@ -15,16 +17,21 @@ public record PathRustType(Type type) implements RustType {
 
     @Override
     public void visit(Visitor v) {
-
+        v.performActionOnPathRustType(this);
     }
 
     @Override
-    public SyntaxElement getChild(int n) {
+    public @NonNull SyntaxElement getChild(int n) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int getChildCount() {
         return 0;
+    }
+
+    @Override
+    public @NonNull String toString() {
+        return type.toString();
     }
 }

@@ -33,6 +33,7 @@ import org.key_project.rusty.prover.impl.PerfScope;
 import org.key_project.rusty.speclang.ContractFactory;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.rusty.speclang.ProgramVariableCollection;
+import org.key_project.rusty.util.KeYResourceManager;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -78,10 +79,10 @@ public class HirRustyReader {
                 }
             }));
             if (context.getRustPath() == null) {
-                Files.copy(Path.of("./src/main/resources/rust-toolchain.toml"),
-                    tmpDir.resolve("rust-toolchain.toml"));
-                Files.copy(Path.of("./src/main/resources/Cargo.toml"),
-                    tmpDir.resolve("Cargo.toml"));
+                KeYResourceManager.getManager().copy(getClass(), "rust-toolchain.toml",
+                    tmpDir.resolve("rust-toolchain.toml").toString(), true);
+                KeYResourceManager.getManager().copy(getClass(), "Cargo.toml",
+                    tmpDir.resolve("Cargo.toml").toString(), true);
                 Path src = tmpDir.resolve("src");
                 Files.createDirectory(src);
                 Path lib = Files.createFile(src.resolve("lib.rs"));
@@ -124,7 +125,8 @@ public class HirRustyReader {
                         var pre = tb.geq(tb.var(a), tb.zero());
                         var post = tb.equals(tb.var(result), tb.add(tb.var(a), tb.var(b)));
                         var pvs =
-                            new ProgramVariableCollection(null, ImmutableList.of(a, b), result);
+                            new ProgramVariableCollection(null, ImmutableList.of(a, b), result,
+                                tb.panicVar(true));
                         FunctionalOperationContract contract = factory.func("my_contract",
                             target, true, pre, null, post, null, pvs, true);
                         services.getSpecificationRepository().addContract(contract);
@@ -135,7 +137,7 @@ public class HirRustyReader {
                 assert es != null;
                 return new RustyBlock(es.getExpression());
             } else {
-                throw new RuntimeException("TODO");
+                throw new RuntimeException("Missing Rust path (\\programSource)");
             }
         } catch (IOException | ProofInputException e) {
             throw new RuntimeException(e);

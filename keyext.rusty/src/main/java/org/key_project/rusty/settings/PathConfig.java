@@ -9,13 +9,13 @@ import org.key_project.util.java.IOUtil;
 
 import org.jspecify.annotations.Nullable;
 
-///
 /// Keeps some central paths to files and directories.
 ///
 ///
-/// By default all KeY configurations are stored in a directory named ".rusty-key" inside the user's
+/// By default, all KeY configurations are stored in a directory named ".rusty-key" inside the
+/// user's
 /// home
-/// directory. In Microsoft windows operating systems this is directly the hard disc that contains
+/// directory. In Microsoft Windows operating systems this is directly the hard disc that contains
 /// the KeY code. But the eclipse integration requires to change the default location. This is
 /// possible via [#setKeyConfigDir(String)] which should be called once before something is
 /// done with KeY (e.g. before the `MainWindow` is opened).
@@ -37,14 +37,14 @@ public final class PathConfig {
     /// directory where to find the KeY configuration files
     private static @Nullable String keyConfigDir = null;
 
-    private PathConfig() {
-    }
-
     /*
      * Initializes the instance variables with the default settings.
      */
     static {
         setKeyConfigDir(IOUtil.getHomeDirectory() + File.separator + KEY_DIRECTORY_NAME);
+    }
+
+    private PathConfig() {
     }
 
     /// Returns the path to the directory that contains KeY configuration files.

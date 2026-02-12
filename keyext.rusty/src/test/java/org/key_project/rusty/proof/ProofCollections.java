@@ -86,10 +86,23 @@ public class ProofCollections {
         tuples.loadable("man-tuple-test.proof");
 
         var option = c.group("option");
-        option.loadable("option.key");
+        option.provable("option.key");
+        option.loadable("man-option.proof");
 
         var algos = c.group("algorithms");
         algos.provable("binary-search/binary-search.key");
+
+        var fm26 = c.group("fm26");
+        fm26.provable("fm26/example1.key");
+        fm26.provable("fm26/example2.key");
+        fm26.provable("fm26/example3.key");
+        fm26.provable("fm26/example4.key");
+        fm26.notprovable("fm26/example4-overflow.key");
+        fm26.loadable("fm26/example5.proof");
+        fm26.loadable("fm26/example6.proof");
+        fm26.loadable("fm26/example7-and-8.proof");
+        fm26.provable("fm26/example9.key");
+        fm26.provable("fm26/example11.key");
 
         return c;
     }

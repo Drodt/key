@@ -16,6 +16,7 @@ import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.expr.FunctionFrame;
 import org.key_project.rusty.ast.expr.LoopScope;
+import org.key_project.rusty.ast.expr.PanicFrame;
 import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.op.*;
@@ -486,7 +487,7 @@ public class TacletIndex {
         /// the classes that represent prefix elements of a Rust block
         static final Class<?>[] prefixClasses =
             new Class<?>[] { BlockExpression.class, ExpressionStatement.class, LoopScope.class,
-                FunctionFrame.class };
+                FunctionFrame.class, PanicFrame.class };
 
         /// number of prefix types
         static final int PREFIXTYPES = prefixClasses.length;
@@ -496,7 +497,7 @@ public class TacletIndex {
 
         /// fields to indicate the position of the next relevant child (the next possible prefix
         /// element or real statement
-        static final int[] nextChild = { 0, 0, 2, 1 };
+        static final int[] nextChild = { 0, 0, 2, 1, 1 };
 
         PrefixOccurrences() {
             reset();

@@ -17,7 +17,6 @@ public record GenericConstParam(Name name, Function fn) implements GenericParam 
         return new ConstParam(name, fn.sort());
     }
 
-
     @Override
     public void visit(Visitor v) {
 

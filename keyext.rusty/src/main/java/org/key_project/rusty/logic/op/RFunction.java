@@ -12,7 +12,7 @@ import org.key_project.util.collection.ImmutableArray;
 import org.jspecify.annotations.Nullable;
 
 public class RFunction extends Function {
-    RFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
+    public RFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
             @Nullable ImmutableArray<Boolean> whereToBind, boolean unique, boolean isRigid,
             boolean isSkolemConstant) {
         super(name, argSorts, sort, whereToBind, isRigid, unique, isSkolemConstant);

@@ -309,13 +309,12 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             NoPosTacletApp.createFixedNoPosTacletApp(rule, insts, proof().getServices());
         if (tacletApp != null) {
             addNoPosTacletApp(tacletApp);
-            /*
-             * if (proof().getInitConfig() != null) { // do not break everything
-             * // because of ProofMgt
-             * proof().getInitConfig().registerRuleIntroducedAtNode(tacletApp,
-             * node.parent() != null ? node.parent() : node, isAxiom);
-             * }
-             */
+
+            if (proof().getInitConfig() != null) { // do not break everything
+                // because of ProofMgt
+                proof().getInitConfig().registerRuleIntroducedAtNode(tacletApp,
+                    node.parent() != null ? node.parent() : node, isAxiom);
+            }
         }
     }
 
