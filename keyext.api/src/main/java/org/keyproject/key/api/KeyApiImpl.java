@@ -256,7 +256,13 @@ public final class KeyApiImpl implements KeyApi {
 
     @Override
     public CompletableFuture<List<NodeDesc>> pruneTo(NodeId nodeId) {
-        return null;
+        return CompletableFuture.supplyAsync(() -> {
+            var proof = data.find(nodeId.proofId());
+            var node = data.find(nodeId);
+
+            var nodes = proof.pruneProof(node);
+            return asNodeDesc(nodeId.proofId(), nodes.stream());
+        });
     }
 
     /*
