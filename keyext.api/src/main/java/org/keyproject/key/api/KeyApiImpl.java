@@ -4,6 +4,7 @@
 package org.keyproject.key.api;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
@@ -36,6 +37,7 @@ import de.uka.ilkd.key.proof.ProofAggregate;
 import de.uka.ilkd.key.proof.init.*;
 import de.uka.ilkd.key.proof.io.AbstractProblemLoader;
 import de.uka.ilkd.key.proof.io.ProblemLoaderException;
+import de.uka.ilkd.key.proof.io.OutputStreamProofSaver;
 import de.uka.ilkd.key.scripts.ProofScriptCommand;
 import de.uka.ilkd.key.scripts.ProofScriptEngine;
 import de.uka.ilkd.key.scripts.ScriptException;
@@ -274,6 +276,24 @@ public final class KeyApiImpl implements KeyApi {
      * });
      * }
      */
+
+    @Override
+    public CompletableFuture<Boolean> save(ProofId proofId, String path) {
+        return CompletableFuture.supplyAsync(() -> {
+            var proof = data.find(proofId);
+            var saver = new OutputStreamProofSaver(proof);
+
+            try {
+                var file = new File(path);
+                var writer = new FileOutputStream(file);
+                saver.save(writer);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return true;
+        });
+    }
 
     @Override
     public CompletableFuture<TreeNodeDesc> treeRoot(ProofId proof) {
