@@ -118,4 +118,10 @@ public interface ProofApi {
     default CompletableFuture<Void> statistics(ProofId proof) {
         return CompletableFuture.completedFuture(null);
     }
+
+    /**
+     * Saves this proof to the given path.
+     */
+    @JsonRequest
+    CompletableFuture<Boolean> save(ProofId proof, String path);
 }
