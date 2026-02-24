@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
@@ -45,6 +46,9 @@ public class NodeInfo {
     private @Nullable RustyProgramElement firstExpr = null;
 
     private String firstExprString = null;
+
+    /// Information about changes respective to the parent of this node.
+    private SequentChangeInfo sequentChangeInfo;
 
     public NodeInfo(Node node) {
         this.node = node;
@@ -209,5 +213,13 @@ public class NodeInfo {
             }
         }
         return activeExpr;
+    }
+
+    public SequentChangeInfo getSequentChangeInfo() {
+        return sequentChangeInfo;
+    }
+
+    public void setSequentChangeInfo(SequentChangeInfo sequentChangeInfo) {
+        this.sequentChangeInfo = sequentChangeInfo;
     }
 }

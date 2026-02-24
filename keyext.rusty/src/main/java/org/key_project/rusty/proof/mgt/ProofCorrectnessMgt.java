@@ -54,4 +54,9 @@ public final class ProofCorrectnessMgt {
     public boolean isContractApplicable(Contract contract) {
         return true;
     }
+
+    public void ruleUnApplied(org.key_project.prover.rules.RuleApp r) {
+        cachedRuleApps.remove(r);
+    }
+
 }
