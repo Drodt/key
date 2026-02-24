@@ -218,4 +218,26 @@ public class RuleAppIndex {
         automatedTacletAppIndex.setNewRuleListener(newRuleListener);
         builtInRuleAppIndex.setNewRuleListener(newRuleListener);
     }
+
+    /// remove a Taclet with instantiation information from the Taclet Index of this TacletAppIndex.
+    ///
+    /// @param tacletApp the [NoPosTacletApp] to remove
+    public void removeNoPosTacletApp(NoPosTacletApp tacletApp) {
+        tacletIndex.remove(tacletApp);
+
+        if (autoMode) {
+            interactiveTacletAppIndex.clearIndexes();
+        }
+
+        interactiveTacletAppIndex.removedNoPosTacletApp(tacletApp);
+        automatedTacletAppIndex.removedNoPosTacletApp(tacletApp);
+    }
+
+    /// Empties all caches
+    public void clearIndexes() {
+        // Currently this only applies to the taclet index
+        interactiveTacletAppIndex.clearIndexes();
+        automatedTacletAppIndex.clearIndexes();
+    }
+
 }

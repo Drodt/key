@@ -8,6 +8,7 @@ import java.util.*;
 import org.key_project.logic.op.Function;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.rusty.logic.RenamingTable;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
@@ -384,5 +385,56 @@ public class Node implements Iterable<Node> {
             }
         }
         return cachedName;
+    }
+
+    public Iterable<NoPosTacletApp> getLocalIntroducedRules() {
+        return localIntroducedRules;
+    }
+
+    /// Opens a previously closed node and all its closed parents.
+    void reopen() {
+        closed = false;
+        Node tmp = parent;
+        while (tmp != null && tmp.isClosed()) {
+            tmp.closed = false;
+            tmp = tmp.parent();
+        }
+        clearNameCache();
+    }
+
+    public void clearNameCache() {
+        cachedName = null;
+    }
+
+    /// When pruning, data referring to future nodes has to be cleared; however, the sequent change
+    /// info and the relevant files are related to the parent node, and have to be preserved.
+    void clearNodeInfo() {
+        if (this.nodeInfo != null) {
+            SequentChangeInfo oldSeqChangeInfo =
+                this.nodeInfo.getSequentChangeInfo();
+            this.nodeInfo = new NodeInfo(this);
+            this.nodeInfo.setSequentChangeInfo(oldSeqChangeInfo);
+        } else {
+            this.nodeInfo = new NodeInfo(this);
+        }
+    }
+
+    /// Removes child/parent relationship between the given node and this node; if the given node is
+    /// not child of this node, nothing happens and then and only then false is returned.
+    ///
+    /// @param child the child to remove.
+    /// @return false iff the given node was not child of this node and nothing has been done.
+    boolean remove(Node child) {
+        if (children.remove(child)) {
+            child.parent = null;
+            final ListIterator<Node> it = children.listIterator(child.siblingNr);
+            while (it.hasNext()) {
+                it.next().siblingNr--;
+            }
+            child.siblingNr = -1;
+            return true;
+        } else {
+            return false;
+        }
     }
 }

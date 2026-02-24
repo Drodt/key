@@ -438,4 +438,23 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     public void removeGoalListener(GoalListener l) {
         listeners.remove(l);
     }
+
+    void pruneToParent() {
+        setNode(getNode().parent());
+        removeLastAppliedRuleApp();
+        resetLocalSymbols();
+    }
+
+    private void resetLocalSymbols() {
+        NamespaceSet newNS = proof().getServices().getNamespaces().copyWithParent();
+        for (ProgramVariable pv : node.getLocalProgVars()) {
+            newNS.programVariables().add(pv);
+        }
+        for (Function op : node.getLocalFunctions()) {
+            newNS.functions().add(op);
+        }
+
+        localNamespaces = newNS.copyWithParent();
+    }
+
 }

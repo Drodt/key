@@ -489,6 +489,170 @@ public class Proof implements ProofObject<Goal>, Named {
         return result;
     }
 
+    /// Performs an undo operation on the given goal. This is equivalent to a pruning of the parent
+    /// node of the goal (if this parent node exists).
+    ///
+    /// @param goal the Goal where the last rule application gets undone
+    public synchronized void pruneProof(Goal goal) {
+        if (goal.getNode().parent() != null) {
+            pruneProof(goal.getNode().parent());
+        }
+    }
+
+    /// Prunes the subtree beneath the node <code>cuttingPoint</code>, i.e. the node
+    /// <code>cuttingPoint</code> remains as the last node on the branch. As a result, an open goal
+    /// is associated with this node.
+    ///
+    /// @param cuttingPoint node below which to prune
+    /// @return the subtrees that have been pruned.
+    public synchronized ImmutableList<Node> pruneProof(Node cuttingPoint) {
+        return pruneProof(cuttingPoint, true);
+    }
+
+    public synchronized ImmutableList<Node> pruneProof(Node cuttingPoint, boolean fireChanges) {
+        assert cuttingPoint.proof() == this;
+        if (getOpenGoal(cuttingPoint) != null) {
+            return null;
+        }
+        // abort pruning if the node is closed and pruning in closed branches is disabled
+        // if (cuttingPoint.isClosed() && GeneralSettings.noPruningClosed) {
+        // return null;
+        // }
+
+        ProofPruner pruner = new ProofPruner(this);
+        if (fireChanges) {
+            fireProofIsBeingPruned(cuttingPoint);
+        }
+        ImmutableList<Node> result = pruner.prune(cuttingPoint);
+        if (fireChanges) {
+            fireProofGoalsChanged();
+            fireProofPruned(cuttingPoint);
+        }
+        return result;
+    }
+
+    /// Makes a downwards directed breadth first search on the proof tree, starting with node
+    /// <code>startNode</code>. The visited notes are reported to the object <code>visitor</code>.
+    /// The first reported node is <code>startNode</code>.
+    public void breadthFirstSearch(Node startNode, ProofVisitor visitor) {
+        ArrayDeque<Node> queue = new ArrayDeque<>();
+        queue.add(startNode);
+        while (!queue.isEmpty()) {
+            Node currentNode = queue.poll();
+            Iterator<Node> it = currentNode.childrenIterator();
+            while (it.hasNext()) {
+                queue.add(it.next());
+            }
+            visitor.visit(this, currentNode);
+        }
+    }
+
+    /// Get the closed goal belonging to the given node if it exists.
+    ///
+    /// @param node the Node where a corresponding closed goal is searched
+    /// @return the closed goal that belongs to the given node or null if the node is an inner one
+    /// or
+    /// an open goal
+    public @Nullable Goal getClosedGoal(Node node) {
+        for (final Goal result : closedGoals) {
+            if (result.getNode() == node) {
+                return result;
+            }
+        }
+        return null;
+    }
+
+    /// Opens a previously closed node (the one corresponding to p_goal) and all its closed parents.
+    ///
+    /// This is, for instance, needed for the `MergeRule`: In a situation where a merge node
+    /// and its associated partners have been closed and the merge node is then pruned away, the
+    /// partners have to be reopened again. Otherwise, we have a soundness issue.
+    ///
+    /// This will automatically add the goal to the list of open goals.
+    ///
+    /// @param goal The goal to be opened again.
+    public void reOpenGoal(Goal goal) {
+        add(goal);
+        goal.getNode().reopen();
+        closedGoals = closedGoals.removeAll(goal);
+        fireProofStructureChanged();
+    }
+
+    /// adds a new goal to the list of goals
+    ///
+    /// @param goal the Goal to be added
+    private void add(Goal goal) {
+        ImmutableList<Goal> newOpenGoals = openGoals.prepend(goal);
+        if (openGoals != newOpenGoals) {
+            openGoals = newOpenGoals;
+            fireProofGoalsAdded(goal);
+        }
+    }
+
+    public void traverseFromChildToParent(Node child, Node parent, ProofVisitor visitor) {
+        do {
+            visitor.visit(this, child);
+            child = child.parent();
+        } while (child != parent);
+    }
+
+    void removeOpenGoals(Collection<Node> toBeRemoved) {
+        ImmutableList<Goal> newGoalList = ImmutableSLList.nil();
+        for (Goal openGoal : openGoals()) {
+            if (!toBeRemoved.contains(openGoal.getNode())) {
+                newGoalList = newGoalList.append(openGoal);
+            }
+        }
+        openGoals = newGoalList;
+    }
+
+    /// Removes the given collection of Nodes from the closedGoals. Nodes in the given collection
+    /// which are not member of closedGoals are ignored. This method does not reopen the goals!
+    /// This has to be done via the method reOpenGoal() if desired.
+    ///
+    /// @param toBeRemoved the goals to remove
+    void removeClosedGoals(Collection<Node> toBeRemoved) {
+        ImmutableList<Goal> newGoalList = ImmutableSLList.nil();
+        for (Goal closedGoal : closedGoals) {
+            if (!toBeRemoved.contains(closedGoal.getNode())) {
+                newGoalList = newGoalList.prepend(closedGoal);
+            }
+        }
+        closedGoals = newGoalList;
+    }
+
+
+    /// fires the event that the proof is being pruned at the given node
+    protected void fireProofIsBeingPruned(Node below) {
+        ProofTreeEvent e = new ProofTreeEvent(this, below);
+        synchronized (listenerList) {
+            for (ProofTreeListener listener : listenerList) {
+                listener.proofIsBeingPruned(e);
+            }
+        }
+    }
+
+    /// fires the event that the proof has been pruned at the given node
+    protected void fireProofPruned(Node below) {
+        ProofTreeEvent e = new ProofTreeEvent(this, below);
+        synchronized (listenerList) {
+            for (ProofTreeListener listener : listenerList) {
+                listener.proofPruned(e);
+            }
+        }
+    }
+
+    /// fires the event that the proof has been restructured
+    public void fireProofGoalsChanged() {
+        ProofTreeEvent e = new ProofTreeEvent(this, openGoals());
+        synchronized (listenerList) {
+            for (ProofTreeListener listener : listenerList) {
+                listener.proofGoalsChanged(e);
+            }
+        }
+    }
+
+
     /// fires the event that a rule has been applied
     protected void fireRuleApplied(ProofEvent p_e) {
         synchronized (ruleAppListenerList) {
@@ -497,4 +661,30 @@ public class Proof implements ProofObject<Goal>, Named {
             }
         }
     }
+
+    /// fires the event that new goals have been added to the list of goals
+    protected void fireProofGoalsAdded(ImmutableList<Goal> goals) {
+        ProofTreeEvent e = new ProofTreeEvent(this, goals);
+        synchronized (listenerList) {
+            for (ProofTreeListener listener : listenerList) {
+                listener.proofGoalsAdded(e);
+            }
+        }
+    }
+
+    /// fires the event that new goals have been added to the list of goals
+    protected void fireProofGoalsAdded(Goal goal) {
+        fireProofGoalsAdded(ImmutableSLList.<Goal>nil().prepend(goal));
+    }
+
+    /// fires the event that the proof has been restructured
+    public void fireProofStructureChanged() {
+        ProofTreeEvent e = new ProofTreeEvent(this);
+        synchronized (listenerList) {
+            for (ProofTreeListener listener : listenerList) {
+                listener.proofStructureChanged(e);
+            }
+        }
+    }
+
 }
