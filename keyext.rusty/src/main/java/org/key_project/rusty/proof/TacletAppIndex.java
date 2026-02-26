@@ -293,4 +293,26 @@ public class TacletAppIndex {
     public void fillCache() {
         ensureIndicesExist();
     }
+
+    /// updates the internal caches after a Taclet with instantiation information has been removed
+    /// from the TacletIndex.
+    ///
+    /// @param tacletApp the partially instantiated Taclet to remove
+    public void removedNoPosTacletApp(NoPosTacletApp tacletApp) {
+        if (indexCaches.isRelevantTaclet(tacletApp.taclet())) {
+            // we must flush the index cache, and we must no longer use a cache
+            // that we share with other instances of <code>TacletAppIndex</code>
+            // (that maybe live of different goals)
+            clearAndDetachCache();
+        } else {
+            clearIndexes();
+        }
+    }
+
+    /// Delete all cached information about taclet apps. This also makes the index cache of this
+    /// index independent of the caches of other indexes (expensive)
+    public void clearAndDetachCache() {
+        clearIndexes();
+        createNewIndexCache();
+    }
 }
