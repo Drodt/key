@@ -4,6 +4,7 @@
 package org.keyproject.key.api;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import org.key_project.util.reflection.ClassLoaderUtil;
 import org.jspecify.annotations.NonNull;
 import org.keyproject.key.api.data.KeyIdentifications;
 import org.keyproject.key.api.data.KeyIdentifications.NodeTextId;
+import org.keyproject.key.api.data.KeyIdentifications.TermActionId;
 import org.keyproject.key.api.data.TermActionDesc;
 import org.keyproject.key.api.data.TermActionKind;
 
@@ -72,8 +74,10 @@ public class TermActionUtil {
     private final List<TermActionDesc> actions = new ArrayList<>(1024);
     private final NodeTextId nodeTextId;
 
+    private final HashMap<Integer, TacletApp> tacletRules = new HashMap<>();
+
     public TermActionUtil(@NonNull NodeTextId nodeTextId, @NonNull KeYEnvironment<?> env,
-            @NonNull PosInSequent pos, @NonNull Goal goal) {
+            @NonNull PosInSequent pos, @NonNull Goal goal, int caretPos) {
         this.pos = pos;
         this.goal = goal;
         this.nodeTextId = nodeTextId;
@@ -82,8 +86,8 @@ public class TermActionUtil {
         final ImmutableList<BuiltInRule> builtInRules = c.getBuiltInRule(goal, occ);
         var macros = ClassLoaderUtil.loadServices(ProofMacro.class);
         for (ProofMacro macro : macros) {
-            var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
-                "macro:" + macro.getScriptCommandName());
+            var id = new KeyIdentifications.TermActionId(nodeTextId, pos.toString(),
+                "macro:" + macro.getScriptCommandName(), caretPos);
             TermActionDesc ta = new TermActionDesc(id, macro.getName(), macro.getDescription(),
                 macro.getCategory(), TermActionKind.Macro);
             add(ta);
@@ -95,24 +99,30 @@ public class TermActionUtil {
 
 
         for (TacletApp tacletApp : find) {
-            var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
-                "find:" + tacletApp.rule());
+            var id = new KeyIdentifications.TermActionId(nodeTextId, pos.toString(),
+                "find:" + tacletApp.rule(), caretPos);
             TermActionDesc ta = new TermActionDesc(id, tacletApp.rule().displayName(),
                 tacletApp.rule().toString(), "", TermActionKind.Taclet);
-            add(ta);
+            var index = add(ta);
+
+            tacletRules.put(index, tacletApp);
         }
 
         for (TacletApp tacletApp : nofind) {
-            var id = new KeyIdentifications.TermActionId(nodeTextId.nodeId(), pos.toString(),
-                "nofind:" + tacletApp.rule());
+            var id = new KeyIdentifications.TermActionId(nodeTextId, pos.toString(),
+                "nofind:" + tacletApp.rule(), caretPos);
             TermActionDesc ta = new TermActionDesc(id, tacletApp.rule().displayName(),
                 tacletApp.rule().toString(), "", TermActionKind.Taclet);
-            add(ta);
+            var index = add(ta);
+
+            tacletRules.put(index, tacletApp);
         }
     }
 
-    private void add(TermActionDesc ta) {
+    private int add(TermActionDesc ta) {
+        var index = actions.size();
         actions.add(ta);
+        return index;
     }
 
     /**
@@ -133,5 +143,28 @@ public class TermActionUtil {
 
     public List<TermActionDesc> getActions() {
         return actions;
+    }
+
+    // Applies the action with the given `id` on the goal used to create this instance.
+    // Returns `true` if the rule was found and applied, `false` otherwise.
+    public boolean applyAction(TermActionId id) {
+        for (int i = 0; i < actions.size(); i++) {
+            var desc = actions.get(i);
+
+            if (desc.commandId().id().equals(id.id())) {
+                switch (desc.kind()) {
+                    case Taclet:
+                        var rule = tacletRules.get(i);
+                        goal.apply(rule);
+                        break;
+                    default:
+                        throw new RuntimeException("not yet implemented");
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }

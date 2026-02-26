@@ -463,15 +463,27 @@ public final class KeyApiImpl implements KeyApi {
 
             var pis = nodeText.table().getPosInSequent(caretPos, filter);
             return new TermActionUtil(printId, data.find(printId.nodeId().proofId().env()), pis,
-                goal)
+                goal, caretPos)
                     .getActions();
         });
-
     }
 
     @Override
     public CompletableFuture<Boolean> applyAction(TermActionId id) {
-        return CompletableFuture.completedFuture(false);
+        // FIXME: We can probably cache this work in `actions`.
+        return CompletableFuture.supplyAsync(() -> {
+            var node = data.find(id.nodeTextId().nodeId());
+            var proof = data.find(id.nodeTextId().nodeId().proofId());
+            var goal = proof.getOpenGoal(node);
+            var nodeText = data.find(id.nodeTextId());
+
+            var filter = new IdentitySequentPrintFilter();
+            filter.setSequent(node.sequent());
+
+            var pis = nodeText.table().getPosInSequent(id.caretPos(), filter);
+            var util = new TermActionUtil(id.nodeTextId(), data.find(id.nodeTextId().nodeId().proofId().env()), pis, goal, id.caretPos());
+            return util.applyAction(id);
+        });
     }
 
     @Override
