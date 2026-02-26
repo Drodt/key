@@ -263,6 +263,11 @@ public final class KeyApiImpl implements KeyApi {
             var node = data.find(nodeId);
 
             var nodes = proof.pruneProof(node);
+            // Undocumented
+            if (nodes == null) {
+                return new ArrayList<>();
+            }
+
             return asNodeDesc(nodeId.proofId(), nodes.stream());
         });
     }
