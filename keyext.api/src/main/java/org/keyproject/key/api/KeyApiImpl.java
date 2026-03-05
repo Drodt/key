@@ -487,7 +487,9 @@ public final class KeyApiImpl implements KeyApi {
 
             var pis = nodeText.table().getPosInSequent(id.caretPos(), filter);
             var util = new TermActionUtil(id.nodeTextId(), data.find(id.nodeTextId().nodeId().proofId().env()), pis, goal, id.caretPos());
-            return util.applyAction(id);
+
+            var env = data.find(id.nodeTextId().nodeId().proofId().env());
+            return util.applyAction(id, env.getServices());
         });
     }
 
