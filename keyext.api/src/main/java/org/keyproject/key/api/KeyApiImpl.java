@@ -44,6 +44,7 @@ import de.uka.ilkd.key.scripts.ScriptException;
 import de.uka.ilkd.key.speclang.PositionedString;
 import de.uka.ilkd.key.strategy.StrategyProperties;
 import de.uka.ilkd.key.util.KeYConstants;
+import de.uka.ilkd.key.rule.TacletApp;
 
 import org.key_project.prover.engine.ProverTaskListener;
 import org.key_project.prover.engine.TaskFinishedInfo;
@@ -426,8 +427,15 @@ public final class KeyApiImpl implements KeyApi {
             var t = new NodeText(lp.result(), layouter.getInitialPositionTable());
             data.register(id, t);
 
+            String tacletApplicationInfo = null;
+            var rule = node.getAppliedRuleApp();
+            if (rule != null && rule instanceof TacletApp) {
+                var taclet = ((TacletApp) rule).taclet();
+                tacletApplicationInfo = taclet.toString();
+            }
+
             var terms = expandTermsForTable(layouter.getInitialPositionTable());
-            return new NodeTextDesc(id, lp.result(), terms);
+            return new NodeTextDesc(id, lp.result(), terms, tacletApplicationInfo);
         });
     }
 
