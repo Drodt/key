@@ -39,9 +39,12 @@ import org.key_project.rusty.proof.io.AbstractProblemLoader;
 import org.key_project.rusty.proof.io.ProblemLoaderException;
 import org.key_project.rusty.proof.io.OutputStreamProofSaver;
 import org.key_project.rusty.strategy.StrategyProperties;
+import org.key_project.rusty.rule.TacletApp;
 // import org.key_project.rusty.scripts.ProofScriptCommand;
 // import org.key_project.rusty.scripts.ProofScriptEngine;
 // import org.key_project.rusty.scripts.ScriptException;
+
+
 import org.key_project.prover.engine.ProverTaskListener;
 import org.key_project.prover.engine.TaskFinishedInfo;
 import org.key_project.util.collection.ImmutableList;
@@ -431,8 +434,15 @@ public final class KeyApiImpl implements KeyApi {
             var t = new NodeText(lp.result(), layouter.getInitialPositionTable());
             data.register(id, t);
 
+            String tacletApplicationInfo = null;
+            var rule = node.getAppliedRuleApp();
+            if (rule != null && rule instanceof TacletApp) {
+                var taclet = ((TacletApp) rule).taclet();
+                tacletApplicationInfo = taclet.toString();
+            }
+
             var terms = expandTermsForTable(layouter.getInitialPositionTable());
-            return new NodeTextDesc(id, lp.result(), terms);
+            return new NodeTextDesc(id, lp.result(), terms, tacletApplicationInfo);
         });
     }
 
@@ -492,7 +502,9 @@ public final class KeyApiImpl implements KeyApi {
 
             var pis = nodeText.table().getPosInSequent(id.caretPos(), filter);
             var util = new TermActionUtil(id.nodeTextId(), data.find(id.nodeTextId().nodeId().proofId().env()), pis, goal, id.caretPos());
-            return util.applyAction(id);
+
+            var env = data.find(id.nodeTextId().nodeId().proofId().env());
+            return util.applyAction(id, env.getServices());
         });
     }
 

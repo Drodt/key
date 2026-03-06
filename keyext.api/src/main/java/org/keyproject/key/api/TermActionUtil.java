@@ -14,6 +14,7 @@ import de.uka.ilkd.key.macros.ProofMacro;
 import org.key_project.rusty.pp.PosInSequent;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.*;
+import org.key_project.rusty.Services;
 
 import org.key_project.logic.Name;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -148,7 +149,7 @@ public class TermActionUtil {
 
     // Applies the action with the given `id` on the goal used to create this instance.
     // Returns `true` if the rule was found and applied, `false` otherwise.
-    public boolean applyAction(TermActionId id) {
+    public boolean applyAction(TermActionId id, Services services) {
         for (int i = 0; i < actions.size(); i++) {
             var desc = actions.get(i);
 
@@ -156,7 +157,8 @@ public class TermActionUtil {
                 switch (desc.kind()) {
                     case Taclet:
                         var rule = tacletRules.get(i);
-                        goal.apply(rule);
+                        var inst = rule.setPosInOccurrence(occ, services);
+                        goal.apply(inst);
                         break;
                     default:
                         throw new RuntimeException("not yet implemented");
