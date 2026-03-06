@@ -46,7 +46,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         ImmutableSLList.nil();
     protected ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> goals =
         ImmutableSLList.nil();
-    protected TacletAttributes attrs = new TacletAttributes(null, null);
+    protected TacletAttributes attrs = new TacletAttributes(NONAME.toString(), null);
 
     /// List of additional generic conditions on the instantiations of schema variables.
     protected ImmutableList<org.key_project.prover.rules.VariableCondition> variableConditions =
@@ -109,10 +109,14 @@ public abstract class TacletBuilder<T extends Taclet> {
     /// sets the name of the Taclet to be built
     public void setName(Name name) {
         this.name = name;
+        if (NONAME.toString().equals(attrs.displayName())) {
+            this.attrs = new TacletAttributes(name.toString(), attrs.trigger());
+        }
     }
 
     /// sets an optional display name (presented to the user)
     public void setDisplayName(String s) {
+        assert s != null;
         attrs = new TacletAttributes(s, attrs.trigger());
     }
 
