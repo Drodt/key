@@ -4,8 +4,11 @@
 package org.key_project.rusty.control;
 
 import org.key_project.prover.engine.ProverTaskListener;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.BuiltInRule;
+import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.ImmutableList;
 
 /// A [ProofControl] provides the user interface independent logic to apply rules on a proof.
@@ -21,6 +24,10 @@ import org.key_project.util.collection.ImmutableList;
 ///
 /// @author Martin Hentschel
 public interface ProofControl {
+    boolean isMinimizeInteraction();
+
+    void setMinimizeInteraction(boolean minimizeInteraction);
+
     /// Starts the auto mode for the given [Proof].
     ///
     /// @param proof The [Proof] to start auto mode of.
@@ -57,4 +64,26 @@ public interface ProofControl {
     /// @return The default [ProverTaskListener] which will be added to all started
     /// [ApplyStrategy] instances.
     ProverTaskListener getDefaultProverTaskListener();
+
+    /// collects all applicable RewriteTaclets of the current goal (called by the SequentViewer)
+    ///
+    /// @return a list of Taclets with all applicable RewriteTaclets
+    ImmutableList<TacletApp> getRewriteTaclet(Goal focusedGoal,
+            PosInOccurrence pos);
+
+    /// collects all applicable FindTaclets of the current goal (called by the SequentViewer)
+    ///
+    /// @return a list of Taclets with all applicable FindTaclets
+    ImmutableList<TacletApp> getFindTaclet(Goal focusedGoal,
+            PosInOccurrence pos);
+
+    /// collects all applicable NoFindTaclets of the current goal (called by the SequentViewer)
+    ///
+    /// @return a list of Taclets with all applicable NoFindTaclets
+    ImmutableList<TacletApp> getNoFindTaclet(Goal focusedGoal);
+
+    /// collects all built-in rules that are applicable at the given sequent position 'pos'.
+    ///
+    /// @param pos the PosInSequent where to look for applicable rules
+    ImmutableList<BuiltInRule> getBuiltInRule(Goal focusedGoal, PosInOccurrence pos);
 }

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -88,6 +89,30 @@ public class TacletAppIndex {
     /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(Services services) {
         return tacletIndex().getNoFindTaclet(services);
+    }
+
+    /// collects all RewriteTacletInstantiations in a subterm of the constrainedFormula described by
+    /// a PosInOccurrence. RewriteTaclets with wrong prefix are filtered out.
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
+    public ImmutableList<NoPosTacletApp> getRewriteTaclet(
+            PosInOccurrence pos) {
+
+        final Iterator<NoPosTacletApp> it = getFindTaclet(pos).iterator();
+
+        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+
+        while (it.hasNext()) {
+            final NoPosTacletApp tacletApp = it.next();
+            final var t = tacletApp.taclet();
+            if (t instanceof RewriteTaclet && ((RewriteTaclet) t).checkPrefix(pos,
+                MatchConditions.EMPTY_MATCHCONDITIONS) != null) {
+                result = result.prepend(tacletApp);
+            }
+        }
+
+        return result;
     }
 
     /// collects all FindTaclets with instantiations and position
