@@ -41,7 +41,7 @@ public class NodeInfo {
     /// flag true if the first and active statement have been determined
     private boolean determinedFstAndActiveExpr = false;
     /// firstStatement stripped of method frames
-    private @Nullable RustyProgramElement activeStatement = null;
+    private @Nullable RustyProgramElement activeExpr = null;
     /// used for proof tree annotation when applicable
     private @Nullable RustyProgramElement firstExpr = null;
 
@@ -140,7 +140,7 @@ public class NodeInfo {
     public String getFirstActiveExprString() {
         determineFirstAndActiveExpr();
         if (firstExpr != null) {
-            firstExprString = String.valueOf(activeStatement);
+            firstExprString = String.valueOf(activeExpr);
             return firstExprString;
         }
         return null;
@@ -155,7 +155,7 @@ public class NodeInfo {
         if (ruleApp instanceof PosTacletApp) {
             firstExpr = computeFirstExpr(ruleApp);
             firstExprString = null;
-            activeStatement = computeActiveExpr(ruleApp);
+            activeExpr = computeActiveExpr(ruleApp);
             determinedFstAndActiveExpr = true;
         }
     }
@@ -177,6 +177,9 @@ public class NodeInfo {
             Term t = TermBuilder.goBelowUpdates(pta.posInOccurrence().subTerm());
             if (t.op() instanceof RModality mod) {
                 final RustyProgramElement pe = mod.programBlock().program();
+                if (pe.getChildCount() == 0) {
+                    return pe;
+                }
                 firstExpr = (RustyProgramElement) pe.getChild(0);
             }
         }

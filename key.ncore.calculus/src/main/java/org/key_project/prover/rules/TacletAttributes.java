@@ -11,6 +11,6 @@ import org.jspecify.annotations.Nullable;
 /// name of the taclet
 /// @param trigger a condition signalling whether an applicable taclet should be applied by the
 /// strategies or avoided
-/// (this condition does not effect soundness, the taclet must be sound irrespective of the trigger)
+/// (this condition does not affect soundness, the taclet must be sound irrespective of the trigger)
 public record TacletAttributes(@NonNull String displayName, @Nullable Trigger trigger) {
 }
