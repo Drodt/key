@@ -225,4 +225,12 @@ public class NodeInfo {
     public void setSequentChangeInfo(SequentChangeInfo sequentChangeInfo) {
         this.sequentChangeInfo = sequentChangeInfo;
     }
+
+    public void updateNoteInfo() {
+        determinedFstAndActiveExpr = false;
+        firstExpr = null;
+        firstExprString = null;
+        activeExpr = null;
+        determineFirstAndActiveExpr();
+    }
 }

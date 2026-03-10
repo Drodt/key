@@ -118,9 +118,9 @@ public class Node implements Iterable<Node> {
     }
 
     public void setAppliedRuleApp(RuleApp ruleApp) {
-        // this.nodeInfo.updateNoteInfo();
+        this.nodeInfo.updateNoteInfo();
         this.appliedRuleApp = ruleApp;
-        // clearNameCache();
+        clearNameCache();
     }
 
     public Proof proof() {
@@ -223,7 +223,7 @@ public class Node implements Iterable<Node> {
             result = tmp;
             tmp = tmp.parent();
         }
-        // clearNameCache();
+        clearNameCache();
         return result;
     }
 
