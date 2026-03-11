@@ -5,5 +5,5 @@ package org.key_project.rusty.parser.hir.item;
 
 import org.key_project.rusty.parser.hir.Ident;
 
-public record Struct(Ident ident, VariantData data, Generics generics) {
+public record Struct(Ident ident, VariantData data, Generics generics) implements ItemKind {
 }
