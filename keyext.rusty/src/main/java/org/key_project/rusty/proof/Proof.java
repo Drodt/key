@@ -687,4 +687,15 @@ public class Proof implements ProofObject<Goal>, Named {
         }
     }
 
+    public int countBranches() {
+        return root.countBranches();
+    }
+
+    /// get the list of goals of the subtree starting with node which are enabled.
+    ///
+    /// @param node the Node where to start from
+    /// @return the list of enabled goals of the subtree starting with node
+    public ImmutableList<Goal> getSubtreeEnabledGoals(Node node) {
+        return filterEnabledGoals(getSubtreeGoals(node));
+    }
 }

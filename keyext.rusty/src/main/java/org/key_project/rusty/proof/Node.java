@@ -437,4 +437,8 @@ public class Node implements Iterable<Node> {
             return false;
         }
     }
+
+    public int countBranches() {
+        return getLeaves().size();
+    }
 }
