@@ -27,4 +27,8 @@ PANIC
 
  FN_FRAME: 'fn_frame!';
 
+ GHOST: 'ghost!';
+
+ SNAPSHOT: 'snapshot!';
+
  PANIC_FRAME: 'panic_frame!';

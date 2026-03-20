@@ -229,8 +229,18 @@ public class SchemaConverter {
                 (ProgramSV) lookupSchemaVariable(cb.schemaVariable().getText().substring(2));
             return new ConstBlockExpression(sv);
         }
+        if (ctx instanceof RustySchemaParser.GhostBlockExpressionContext gh) {
+            var block = convertBlockExpr(gh.blockExpr());
+            return new GhostBlockExpression(block.getStatements(), block.getValue());
+        }
+        if (ctx instanceof RustySchemaParser.SnapshotExpressionContext se) {
+            var sv =
+                (ProgramSV) lookupSchemaVariable(se.schemaVariable().getText().substring(2));
+            return new SnapshotExpression(sv);
+        }
         throw new UnsupportedOperationException(
             "Unknown expr: " + ctx.getText() + " class: " + ctx.getClass());
+
     }
 
     private Expr convertLiteralExpr(

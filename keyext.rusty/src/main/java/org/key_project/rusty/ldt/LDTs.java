@@ -25,6 +25,7 @@ public class LDTs implements Iterable<LDT> {
     private final TupleLDT tupleLDT;
     private final SRefLDT sRefLDT;
     private final MRefLDT mRefLDT;
+    private final GhostLDT ghostLDT;
     private final Map<Name, LDT> map;
 
     public LDTs(Services services) {
@@ -38,6 +39,7 @@ public class LDTs implements Iterable<LDT> {
         tupleLDT = new TupleLDT(services);
         sRefLDT = new SRefLDT(services);
         mRefLDT = new MRefLDT(services);
+        ghostLDT = new GhostLDT(services);
         map = new HashMap<>();
         map.put(boolLDT.name(), boolLDT);
         map.put(intLDT.name(), intLDT);
@@ -49,6 +51,7 @@ public class LDTs implements Iterable<LDT> {
         map.put(tupleLDT.name(), tupleLDT);
         map.put(sRefLDT.name(), sRefLDT);
         map.put(mRefLDT.name(), mRefLDT);
+        map.put(ghostLDT.name(), ghostLDT);
     }
 
     public BoolLDT getBoolLDT() {
@@ -89,6 +92,10 @@ public class LDTs implements Iterable<LDT> {
 
     public MRefLDT getmRefLDT() {
         return mRefLDT;
+    }
+
+    public GhostLDT getGhostLDT() {
+        return ghostLDT;
     }
 
     public @Nullable LDT get(Name name) {

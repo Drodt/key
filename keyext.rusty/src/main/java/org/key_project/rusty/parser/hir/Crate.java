@@ -8,6 +8,7 @@ import org.key_project.rusty.parser.hir.hirty.HirTyKind;
 import org.key_project.rusty.parser.hir.hirty.PrimHirTy;
 import org.key_project.rusty.parser.hir.item.FnRetTy;
 import org.key_project.rusty.parser.hir.item.ItemKind;
+import org.key_project.rusty.parser.hir.item.Use;
 import org.key_project.rusty.parser.hir.item.VariantData;
 import org.key_project.rusty.parser.hir.pat.ByRef;
 import org.key_project.rusty.parser.hir.pat.PatExprKind;
@@ -15,7 +16,6 @@ import org.key_project.rusty.parser.hir.pat.PatKind;
 import org.key_project.rusty.parser.hir.stmt.LocalSource;
 import org.key_project.rusty.parser.hir.stmt.StmtKind;
 import org.key_project.rusty.parser.hir.ty.*;
-import org.key_project.rusty.speclang.spec.SpecMap;
 import org.key_project.rusty.speclang.spec.TermKind;
 import org.key_project.rusty.speclang.spec.TermStmtKind;
 
@@ -23,10 +23,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.GsonBuilder;
 
 public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
-    public record WrapperOutput(Crate crate, SpecMap specs) {
-    }
-
-    public static WrapperOutput parseJSON(String json) {
+    public static Crate parseJSON(String json) {
         var gson =
             new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                     .registerTypeAdapter(ItemKind.class, new ItemKind.Adapter())
@@ -59,6 +56,7 @@ public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
                     .registerTypeAdapter(TyGenericParamDefKind.class,
                         new TyGenericParamDefKind.Adapter())
                     .registerTypeAdapter(GenericArg.class, new GenericArg.Adapter())
+                    .registerTypeAdapter(Use.UseKind.class, new Use.UseKind.Adapter())
                     .registerTypeAdapter(ConstExprKind.class, new ConstExprKind.Adapter())
                     .registerTypeAdapter(TermStmtKind.class, new TermStmtKind.Adapter())
                     .registerTypeAdapter(ParamName.class, new ParamName.Adapter())
@@ -66,6 +64,6 @@ public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
                     .registerTypeAdapter(LifetimeParamKind.class, new LifetimeParamKind.Adapter())
                     .registerTypeAdapter(VariantData.class, new VariantData.Adapter())
                     .create();
-        return gson.fromJson(json, WrapperOutput.class);
+        return gson.fromJson(json, Crate.class);
     }
 }

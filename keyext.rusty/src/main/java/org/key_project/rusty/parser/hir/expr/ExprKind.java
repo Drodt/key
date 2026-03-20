@@ -5,6 +5,7 @@ package org.key_project.rusty.parser.hir.expr;
 
 import org.key_project.rusty.parser.hir.*;
 import org.key_project.rusty.parser.hir.hirty.HirTy;
+import org.key_project.rusty.speclang.spec.LoopSpec;
 
 import org.jspecify.annotations.Nullable;
 
@@ -46,7 +47,8 @@ public interface ExprKind {
     record If(Expr cond, Expr then, @Nullable Expr els) implements ExprKind {
     }
 
-    record Loop(Block block, @Nullable Label label, Span span) implements ExprKind {
+    record Loop(Block block, @Nullable Label label, Span span, @Nullable LoopSpec spec)
+            implements ExprKind {
     }
 
     record Match(Expr expr, Arm[] arms, MatchSource src) implements ExprKind {
@@ -56,6 +58,14 @@ public interface ExprKind {
     }
 
     record BlockExpr(Block block) implements ExprKind {
+    }
+
+    record GhostBlockExpr(Block block) implements ExprKind {
+
+    }
+
+    record Snapshot(Expr expr) implements ExprKind {
+
     }
 
     record Assign(Expr left, Expr right, Span span) implements ExprKind {
@@ -114,6 +124,8 @@ public interface ExprKind {
                 case "Match" -> Match.class;
                 case "Closure" -> Closure.class;
                 case "Block" -> BlockExpr.class;
+                case "GhostBlock" -> GhostBlockExpr.class;
+                case "Snapshot" -> Snapshot.class;
                 case "Assign" -> Assign.class;
                 case "AssignOp" -> AssignOp.class;
                 case "Field" -> Field.class;

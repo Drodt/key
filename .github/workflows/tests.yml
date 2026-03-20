@@ -28,7 +28,7 @@ jobs:
           keyext.exploration, keyext.slicing, key.ncore, key.ui, key.core, key.core.rifl,
           key.core.testgen, keyext.isabelletranslation,  keyext.ui.testgen,  key.ncore.calculus,
           key.util, key.core.example, keyext.caching,
-          keyext.proofmanagement, key.removegenerics ]
+          keyext.proofmanagement, key.removegenerics, keyext.rusty ]
     continue-on-error: true
     runs-on: ${{ matrix.os }}
     env:

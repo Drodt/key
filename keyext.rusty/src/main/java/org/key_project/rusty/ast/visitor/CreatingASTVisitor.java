@@ -93,6 +93,22 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
+    public void performActionOnGhostBlockExpression(GhostBlockExpression x) {
+        ExtList changeList = getTop();
+        if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
+            changeList.removeFirst();
+            if (!preservesPositionInfo) {
+                // TODO changeList.removeFirstOccurrence(PositionInfo.class);
+            }
+            var newBlock = new GhostBlockExpression(changeList);
+            addChild(newBlock);
+            changed();
+        } else {
+            doDefaultAction(x);
+        }
+    }
+
+    @Override
     public void performActionOnContextBlockExpression(ContextBlockExpression x) {
         ExtList changeList = getTop();
         if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
@@ -123,9 +139,14 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
     }
 
     @Override
+    public void performActionOnSnapshotExpression(SnapshotExpression x) { doDefaultAction(x); }
+
+
+    @Override
     public void performActionOnProgramVariable(ProgramVariable x) {
         throw new RuntimeException("TODO @ DD");
     }
+
 
     @Override
     public void performActionOnSchemaVariable(SchemaVariable x) {

@@ -25,6 +25,7 @@ import org.key_project.rusty.ast.stmt.ItemStatement;
 import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.ast.ty.*;
+import org.key_project.rusty.logic.op.IProgramVariable;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 import org.key_project.rusty.logic.op.ProgramFunction;
 import org.key_project.rusty.logic.op.ProgramVariable;
@@ -48,8 +49,6 @@ import org.key_project.rusty.parser.hir.ty.TyConst;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
-import org.key_project.rusty.speclang.spec.LoopSpec;
-import org.key_project.rusty.speclang.spec.SpecMap;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
@@ -59,30 +58,15 @@ import org.jspecify.annotations.Nullable;
 public class HirConverter {
     private final Services services;
 
-    private final @Nullable Map<DefId, FnSpec> fnSpecs;
-    private final @Nullable Map<HirId, LoopSpec> loopSpecs;
     private final Map<DefId, Adt> adts = new HashMap<>();
     private final FnSpecConverter fnSpecConverter;
     private final LoopSpecConverter loopSpecConverter;
     private @Nullable GenericParam[] currentParams = null;
 
-    public HirConverter(Services services, @Nullable SpecMap specs) {
+    public HirConverter(Services services) {
         this.services = services;
         fnSpecConverter = new FnSpecConverter(services);
         loopSpecConverter = new LoopSpecConverter(services);
-        if (specs != null) {
-            fnSpecs = new HashMap<>(specs.fnSpecs().length);
-            loopSpecs = new HashMap<>(specs.loopSpecs().length);
-            for (var e : specs.fnSpecs()) {
-                fnSpecs.put(e.id(), e.value());
-            }
-            for (var e : specs.loopSpecs()) {
-                loopSpecs.put(e.id(), e.value());
-            }
-        } else {
-            fnSpecs = null;
-            loopSpecs = null;
-        }
     }
 
     public Services getServices() {
@@ -132,8 +116,8 @@ public class HirConverter {
         Crate crate1 = new Crate(convertMod(crate.topMod()));
         for (var fn : fnsToComplete.keySet()) {
             currentFn = fn;
-            var spec = fn2Spec.get(fn);
             var hirFn = fnsToComplete.get(fn);
+            var specCases = hirFn.specCases();
             convertGenerics(hirFn.tyGenerics());
             if (hirFn.generics() != null) {
                 org.key_project.rusty.parser.hir.GenericParam[] params = hirFn.generics().params();
@@ -165,11 +149,10 @@ public class HirConverter {
             fn.setParams(new ImmutableArray<>(params));
             fn.setBody((BlockExpression) convertExpr(hirFn.body().value()));
             services.getRustInfo().registerFunction(fn);
-            if (spec != null) {
+            if (specCases.length > 0) {
                 var contracts =
-                    fnSpecConverter.convert(spec,
-                        Objects.requireNonNull(services.getRustInfo().getFunction(fn),
-                            "Could not get function for " + fn));
+                    fnSpecConverter.convert(specCases,
+                        Objects.requireNonNull(services.getRustInfo().getFunction(fn)));
                 for (var contract : contracts) {
                     services.getSpecificationRepository().addContract(contract);
                 }
@@ -199,8 +182,21 @@ public class HirConverter {
                                                                        // above
             case org.key_project.rusty.parser.hir.item.Struct s -> null; // Handled by ADT
                                                                          // conversion above
+            case org.key_project.rusty.parser.hir.item.Const c -> convertConstDef(c);
             default -> throw new IllegalArgumentException("Unknown item: " + item);
         };
+    }
+
+    private Item convertConstDef(org.key_project.rusty.parser.hir.item.Const c) {
+        var rustTy = convertHirTy(c.ty());
+        assert c.body().params().length == 0;
+        org.key_project.rusty.parser.hir.expr.Expr value = c.body().value();
+        var expr = convertExpr(value);
+        // TODO: Get type in second step
+        var ty = convertTy(rawTypes.get(value.hirId()));
+        String name = c.ident().name();
+        var fn = new RFunction(new Name(name), ty.getSort(services));
+        return new ConstDef(name, rustTy, expr, fn);
     }
 
     private Item convertUse(org.key_project.rusty.parser.hir.item.Use use) {
@@ -209,9 +205,12 @@ public class HirConverter {
             return new ImmutableArray<>(lst);
         });
         var kind = switch (use.useKind()) {
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.Single -> Use.UseKind.Single;
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.Glob -> Use.UseKind.Glob;
-            case org.key_project.rusty.parser.hir.item.Use.UseKind.ListStem -> Use.UseKind.ListStem;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.Single ignored ->
+                Use.UseKind.Single;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.Glob ignored -> Use.UseKind.Glob;
+            case org.key_project.rusty.parser.hir.item.Use.UseKind.ListStem ignored ->
+                Use.UseKind.ListStem;
+            default -> throw new IllegalArgumentException("Unknown use kind: " + use);
         };
         return new Use(path, kind);
     }
@@ -223,11 +222,6 @@ public class HirConverter {
         @SuppressWarnings("argument.type.incompatible")
         Function function = new Function(name, Function.ImplicitSelfKind.None,
             null, retTy, null);
-        if (fnSpecs != null) {
-            var spec = fnSpecs.get(new DefId(id.localDefIndex(), 0));
-            if (spec != null)
-                fn2Spec.put(function, Objects.requireNonNull(spec, name.toString()));
-        }
         localFns.put(id, function);
         fnsToComplete.put(function, fn);
         return function;
@@ -281,8 +275,16 @@ public class HirConverter {
             case ExprKind.Struct e -> convertStructExpr(e);
             case ExprKind.Repeat e -> convertRepeat(e, ty);
             // case ExprKind.Yield e -> convertYieldExpr(e);
+            case ExprKind.GhostBlockExpr e -> convertGhostBlockExpr(e);
+            case ExprKind.Snapshot e -> convertSnapshotExpr(e);
             default -> throw new IllegalArgumentException("Unknown expression: " + expr);
         };
+    }
+
+    private SnapshotExpression convertSnapshotExpr(ExprKind.Snapshot e) {
+        var body = e.expr();
+        IProgramVariable pv = (IProgramVariable) convertExpr(body);
+        return new SnapshotExpression(pv);
     }
 
     private ConstBlockExpression convertConstBlockExpr(ExprKind.ConstBlock e) {
@@ -409,6 +411,12 @@ public class HirConverter {
         return new BlockExpression(ImmutableList.fromList(stmts), value);
     }
 
+    private GhostBlockExpression convertGhostBlockExpr(ExprKind.GhostBlockExpr expr) {
+        var stmts = Arrays.stream(expr.block().stmts()).map(this::convertStmt).toList();
+        var value = expr.block().expr() == null ? null : convertExpr(expr.block().expr());
+        return new GhostBlockExpression(ImmutableList.fromList(stmts), value);
+    }
+
     private LiteralExpression convertLitExpr(Lit expr, Type type) {
         return switch (expr.node()) {
             case LitKind.Bool(var v) -> new BooleanLiteralExpression(v);
@@ -453,9 +461,8 @@ public class HirConverter {
         var body = convertBlockExpr(new ExprKind.BlockExpr(l.block()));
         var le = new InfiniteLoopExpression(null, body);
 
-        if (loopSpecs != null && loopSpecs.containsKey(id)) {
-            var ls = loopSpecConverter.convert(loopSpecs.get(id),
-                Objects.requireNonNull(currentFn, "Missing local fn"),
+        if (l.spec() != null) {
+            var ls = loopSpecConverter.convert(l.spec(), Objects.requireNonNull(currentFn),
                 le, pvs);
             services.getSpecificationRepository().addLoopSpec(ls);
         }
@@ -882,6 +889,9 @@ public class HirConverter {
         Adt adt = switch (def.kind()) {
             case Struct -> {
                 assert def.variants().size() == 1;
+                if (def.pathStr().equals("rml_contracts::Ghost")) {
+                    yield new GenericGhostType(generics, services);
+                }
                 if (generics.isEmpty()) {
                     var fields = convertFields(def.pathStr(), def.variants().get(0).fields());
                     yield new Struct(name, fields, null, null);
@@ -990,6 +1000,7 @@ public class HirConverter {
             case Enum e -> e;
             case GenericStruct g -> g.instantiate(convertGenericArgs(args), services);
             case Struct s -> s;
+            case GenericGhostType g -> g.instantiate(convertGenericArgs(args), services);
             default -> throw new IllegalArgumentException("Unknown adt: " + adt);
         };
 

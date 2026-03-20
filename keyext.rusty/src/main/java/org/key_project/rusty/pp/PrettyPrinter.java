@@ -180,6 +180,31 @@ public class PrettyPrinter implements Visitor {
     }
 
     @Override
+    public void performActionOnGhostBlockExpression(GhostBlockExpression x) {
+        layouter.keyWord("ghost!");
+        layouter.print(" ");
+
+        if (x.getChildCount() == 0) {
+            markStart(x);
+            layouter.print("{}");
+            markEnd(x);
+        } else {
+            beginBlock();
+            for (Statement stmt : x.getStatements()) {
+                layouter.nl();
+                stmt.visit(this);
+            }
+            if (x.getValue() != null) {
+                layouter.nl();
+                x.getValue().visit(this);
+            }
+            endBlock();
+        }
+    }
+
+
+
+    @Override
     public void performActionOnBooleanLiteralExpression(BooleanLiteralExpression x) {
         layouter.keyWord(x.getValue() ? "true" : "false");
     }
@@ -764,5 +789,46 @@ public class PrettyPrinter implements Visitor {
         layouter.print(", ");
         x.getBody().visit(this);
         layouter.print(")");
+    }
+
+    @Override
+    public void performActionOnGhostRustType(GhostRustType x) {
+        layouter.keyWord("Ghost");
+        layouter.print("<");
+        x.inner().visit(this);
+        layouter.print(">");
+    }
+
+    public void performActionOnSnapshotExpression(SnapshotExpression x) {
+        layouter.keyWord("snapshot!");
+        layouter.print("(");
+        x.getPv().visit(this);
+        layouter.print(")");
+    }
+
+    @Override
+    public void performActionOnStructDef(StructDef x) {
+        layouter.keyWord("struct");
+        layouter.print(" ");
+        // TODO
+    }
+
+    @Override
+    public void performActionOnEnumDef(EnumDef x) {
+        layouter.keyWord("enum");
+        layouter.print(" ");
+        // TODO
+    }
+
+    public void performActionOnConstDef(ConstDef x) {
+        layouter.keyWord("const");
+        layouter.print(" ");
+        layouter.print(x.name());
+        layouter.print(": ");
+        x.rustType().visit(this);
+        layouter.print(" = ");
+        x.expr().visit(this);
+        layouter.print(";");
+        layouter.brk();
     }
 }

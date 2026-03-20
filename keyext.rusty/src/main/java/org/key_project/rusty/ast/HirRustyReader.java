@@ -91,8 +91,8 @@ public class HirRustyReader {
 
                 var wrapperOutput = getWrapperOutput(tmpDir);
                 var beforeConversion = System.nanoTime();
-                var converter = new HirConverter(services, null);
-                var converted = converter.convertCrate(wrapperOutput.crate());
+                var converter = new HirConverter(services);
+                var converted = converter.convertCrate(wrapperOutput);
                 LOGGER.debug("HIR conversion took {}",
                     PerfScope.formatTime(System.nanoTime() - beforeConversion));
                 BlockExpression body = converted.getVerificationTarget().body();
@@ -144,11 +144,11 @@ public class HirRustyReader {
         }
     }
 
-    public static Crate.WrapperOutput getWrapperOutput(Path path) throws IOException {
+    public static Crate getWrapperOutput(Path path) throws IOException {
         return getWrapperOutput(path, false);
     }
 
-    public static Crate.WrapperOutput getWrapperOutput(Path path, boolean clean)
+    public static Crate getWrapperOutput(Path path, boolean clean)
             throws IOException {
         var startTime = System.nanoTime();
         long rustCEnd;
@@ -156,7 +156,7 @@ public class HirRustyReader {
             Process cleanCmd =
                 Runtime.getRuntime().exec(new String[] { "cargo", "clean" }, null, path.toFile());
             cleanCmd.waitFor();
-            var command = new String[] { "cargo", "key", "-o", "hir.json" };
+            var command = new String[] { "cargo", "rml", "-o", "hir.json" };
             Process cmd = Runtime.getRuntime().exec(command, null, path.toFile());
             var stdErr = cmd.getErrorStream();
             var errReader = new BufferedReader(new InputStreamReader(stdErr));
@@ -176,7 +176,7 @@ public class HirRustyReader {
             LOGGER.debug("rustc took {}", PerfScope.formatTime(rustCEnd - startTime));
         }
         var hir = Files.readString(path.resolve("hir.json"), Charset.defaultCharset());
-        Crate.WrapperOutput output = Crate.parseJSON(hir);
+        Crate output = Crate.parseJSON(hir);
         LOGGER.debug("JSON parsing took {}", PerfScope.formatTime(System.nanoTime() - rustCEnd));
         return output;
     }

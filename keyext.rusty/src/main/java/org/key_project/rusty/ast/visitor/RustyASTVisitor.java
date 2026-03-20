@@ -66,6 +66,12 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
     }
 
     @Override
+    public void performActionOnGhostBlockExpression(GhostBlockExpression x) {
+        doDefaultAction(x);
+    }
+
+
+    @Override
     public void performActionOnBooleanLiteralExpression(BooleanLiteralExpression x) {
         doDefaultAction(x);
     }
@@ -412,6 +418,28 @@ public abstract class RustyASTVisitor extends RustyASTWalker implements Visitor 
 
     @Override
     public void performActionOnPanicFrame(PanicFrame x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnGhostRustType(GhostRustType x) {
+        doDefaultAction(x);
+    }
+
+    public void performActionOnSnapshotExpression(SnapshotExpression x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnStructDef(StructDef x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnEnumDef(EnumDef x) {
+        doDefaultAction(x);
+    }
+
+    @Override
+    public void performActionOnConstDef(ConstDef x) {
         doDefaultAction(x);
     }
 }

@@ -36,6 +36,7 @@ public class ProofCollections {
         settings.setVerboseOutput(true);
 
         var c = new ProofCollection(settings);
+
         var simple = c.group("simple");
         simple.provable("simple.key");
         simple.loadable("man-simple.proof");
@@ -88,6 +89,14 @@ public class ProofCollections {
         var option = c.group("option");
         option.provable("option.key");
         option.loadable("man-option.proof");
+
+        var ghost = c.group("ghost");
+        ghost.provable("double_array_with_ghost.key");
+        ghost.provable("double_array_without_ghost.key");
+        ghost.provable("reverse_array_with_ghost.key");
+        ghost.provable("reverse_array_without_ghost.key");
+        ghost.provable("if_with_ghost.key");
+        ghost.provable("if_without_ghost.key");
 
         var algos = c.group("algorithms");
         algos.provable("binary-search/binary-search.key");

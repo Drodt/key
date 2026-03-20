@@ -147,6 +147,10 @@ public interface Visitor {
 
     void performActionOnTupleRustType(TupleRustType x);
 
+    void performActionOnGhostBlockExpression(GhostBlockExpression x);
+
+    void performActionOnSnapshotExpression(SnapshotExpression x);
+
     void performActionOnPathExpr(PathExpr x);
 
     <R> void performActionOnPath(Path<R> x);
@@ -162,4 +166,12 @@ public interface Visitor {
     void performActionOnPathRustType(PathRustType x);
 
     void performActionOnPanicFrame(PanicFrame x);
+
+    void performActionOnGhostRustType(GhostRustType x);
+
+    void performActionOnStructDef(StructDef x);
+
+    void performActionOnEnumDef(EnumDef x);
+
+    void performActionOnConstDef(ConstDef x);
 }

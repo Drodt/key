@@ -58,6 +58,7 @@ public class ProgramContextAdder {
                 case FunctionFrame ff -> createFunctionFrameWrapper(ff, (BlockExpression) body);
                 case LoopScope ls -> createLoopScopeWrapper(ls, (BlockExpression) body);
                 case PanicFrame pf -> createPanicFrameWrapper(pf, (BlockExpression) body);
+                case GhostBlockExpression ge -> createGhostBlockExprWrapper(ge, body);
                 case null, default -> throw new RuntimeException(
                     new UnexpectedException(
                         "Unexpected block type: " + (context != null ? context.getClass() : null)));
@@ -143,6 +144,10 @@ public class ProgramContextAdder {
         } else if (wrapper instanceof ExpressionStatement es) {
             assert putIn.getStatements().isEmpty() : putIn.toString();
             return new ExpressionStatement(Objects.requireNonNull(putIn.getValue()), es.hasSemi());
+        } else if (wrapper instanceof GhostBlockExpression gb) {
+            var be = new BlockExpression(gb.getStatements(), gb.getValue());
+            be = (BlockExpression) createWrapperBody(be, putIn, suffix);
+            return new GhostBlockExpression(be.getStatements(), be.getValue());
         } else {
             throw new RuntimeException("Unexpected context : " + wrapper);
         }
@@ -172,6 +177,20 @@ public class ProgramContextAdder {
 
     private LoopScope createLoopScopeWrapper(LoopScope old, BlockExpression body) {
         return new LoopScope(old.getIndex(), old.getReturnVar(), body);
+    }
+
+    private RustyProgramElement createGhostBlockExprWrapper(GhostBlockExpression wrapper,
+            RustyProgramElement replacement) {
+        int childCount = wrapper.getChildCount();
+        if (childCount <= 1) {
+            if (replacement instanceof GhostBlockExpression ge)
+                return ge;
+            if (replacement instanceof Expr e)
+                return new GhostBlockExpression(ImmutableSLList.nil(), e);
+        }
+        var body = wrapper.getStatements().tail();
+        body = body.prepend(wrapExprIfNecessary(replacement));
+        return new GhostBlockExpression(body, wrapper.getValue());
     }
 
     private PanicFrame createPanicFrameWrapper(PanicFrame wrapper,

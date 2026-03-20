@@ -26,10 +26,11 @@ public class FnSpecConverter extends AbstractSpecConverter {
         super(services);
     }
 
-    public List<FunctionalOperationContract> convert(FnSpec fnSpec, ProgramFunction target) {
+    public List<FunctionalOperationContract> convert(SpecCase[] fnSpecCases,
+            ProgramFunction target) {
         setLocalParams(target.getFunction().getLocalIdsToGenericParams());
         List<FunctionalOperationContract> contracts =
-            Arrays.stream(fnSpec.cases()).flatMap(c -> convert(c, target)).toList();
+            Arrays.stream(fnSpecCases).flatMap(c -> convert(c, target)).toList();
         clearLocalParams();
         return contracts;
     }
