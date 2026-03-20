@@ -89,9 +89,13 @@ public class BasicTest {
             proof);
         assertEquals(1, proof.openGoals().size());
         System.out.println(proof.openGoals().head().sequent());
-        assertEquals(TacletForTests.parseTerm("{i:=2}\\<{i}\\>(i=2)"),
+        assertEquals(TacletForTests.parseTerm("{i:=2}\\<{(); i}\\>(i=2)"),
             proof.openGoals().head().sequent().succedent().getFirst().formula());
-        applyRule("emptyModalityValue",
+        applyRule("simple_expr_stmt",
+            new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
+                PosInTerm.getTopLevel().down(1), false),
+            proof);
+        applyRule("empty_modality_value",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel().down(1), false),
             proof);
@@ -162,21 +166,25 @@ public class BasicTest {
             proof);
         assertEquals(1, proof.openGoals().size());
         System.out.println("After assignment:\n" + proof.openGoals().head().sequent());
-        applyRule("ifElseSplit",
+        applyRule("simple_expr_stmt",
+            new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
+                PosInTerm.getTopLevel().down(1), false),
+            proof);
+        applyRule("if_else_split",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel(), false),
             proof);
         assertEquals(2, proof.openGoals().size());
-        System.out.println("After ifElseSplit:\n" + proof.openGoals().head().sequent());
+        System.out.println("After if_else_split:\n" + proof.openGoals().head().sequent());
         System.out.println(proof.openGoals().get(1).sequent());
 
         // Sub goal 1
-        applyRule("emptyBlockValue",
+        applyRule("empty_block_value",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel().down(1), false),
             proof);
         assertEquals(2, proof.openGoals().size());
-        System.out.println("After emptyBlockValue:\n" + proof.openGoals().head().sequent());
+        System.out.println("After empty_block_value:\n" + proof.openGoals().head().sequent());
         System.out.println(proof.openGoals().get(1).sequent());
         applyRule("assignment",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
@@ -185,12 +193,16 @@ public class BasicTest {
         assertEquals(2, proof.openGoals().size());
         System.out.println("After assignment:\n" + proof.openGoals().head().sequent());
         System.out.println(proof.openGoals().get(1).sequent());
-        applyRule("emptyModalityValue",
+        applyRule("simple_expr_stmt",
+            new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
+                PosInTerm.getTopLevel().down(1).down(1), false),
+            proof);
+        applyRule("empty_modality_value",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),
                 PosInTerm.getTopLevel().down(1).down(1), false),
             proof);
         assertEquals(2, proof.openGoals().size());
-        System.out.println("After emptyModalityValue:\n" + proof.openGoals().head().sequent());
+        System.out.println("After empty_modality_value:\n" + proof.openGoals().head().sequent());
         System.out.println(proof.openGoals().get(1).sequent());
         applyRule("simplifyUpdate2",
             new PosInOccurrence(proof.openGoals().head().sequent().succedent().getFirst(),

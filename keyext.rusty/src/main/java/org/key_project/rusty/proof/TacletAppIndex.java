@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.proof;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -88,6 +89,30 @@ public class TacletAppIndex {
     /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(Services services) {
         return tacletIndex().getNoFindTaclet(services);
+    }
+
+    /// collects all RewriteTacletInstantiations in a subterm of the constrainedFormula described by
+    /// a PosInOccurrence. RewriteTaclets with wrong prefix are filtered out.
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
+    public ImmutableList<NoPosTacletApp> getRewriteTaclet(
+            PosInOccurrence pos) {
+
+        final Iterator<NoPosTacletApp> it = getFindTaclet(pos).iterator();
+
+        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+
+        while (it.hasNext()) {
+            final NoPosTacletApp tacletApp = it.next();
+            final var t = tacletApp.taclet();
+            if (t instanceof RewriteTaclet && ((RewriteTaclet) t).checkPrefix(pos,
+                MatchConditions.EMPTY_MATCHCONDITIONS) != null) {
+                result = result.prepend(tacletApp);
+            }
+        }
+
+        return result;
     }
 
     /// collects all FindTaclets with instantiations and position
@@ -292,5 +317,27 @@ public class TacletAppIndex {
     /// (NewRuleListener gets informed)
     public void fillCache() {
         ensureIndicesExist();
+    }
+
+    /// updates the internal caches after a Taclet with instantiation information has been removed
+    /// from the TacletIndex.
+    ///
+    /// @param tacletApp the partially instantiated Taclet to remove
+    public void removedNoPosTacletApp(NoPosTacletApp tacletApp) {
+        if (indexCaches.isRelevantTaclet(tacletApp.taclet())) {
+            // we must flush the index cache, and we must no longer use a cache
+            // that we share with other instances of <code>TacletAppIndex</code>
+            // (that maybe live of different goals)
+            clearAndDetachCache();
+        } else {
+            clearIndexes();
+        }
+    }
+
+    /// Delete all cached information about taclet apps. This also makes the index cache of this
+    /// index independent of the caches of other indexes (expensive)
+    public void clearAndDetachCache() {
+        clearIndexes();
+        createNewIndexCache();
     }
 }

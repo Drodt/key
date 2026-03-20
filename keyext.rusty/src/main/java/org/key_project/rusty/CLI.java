@@ -140,6 +140,12 @@ public class CLI {
             if (cli.verbose) {
                 System.err.println(e);
                 System.err.println(Arrays.toString(e.getStackTrace()));
+                Throwable t = e;
+                while (t.getCause() != null) {
+                    System.err.println(t);
+                    System.err.println(Arrays.toString(t.getCause().getStackTrace()));
+                    t = t.getCause();
+                }
             }
             return false;
         }

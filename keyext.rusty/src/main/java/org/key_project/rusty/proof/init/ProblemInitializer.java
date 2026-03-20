@@ -167,7 +167,7 @@ public final class ProblemInitializer {
                 LOGGER.debug("HIR conversion took {}",
                     PerfScope.formatTime(System.nanoTime() - beforeConversion));
             } catch (IOException e) {
-                throw new ProofInputException(e);
+                throw new ProofInputException("Failed to convert HIR", e);
             }
         }
         File initialFile = envInput.getInitialFile();

@@ -169,27 +169,22 @@ public class HirConverter {
 
     private Mod convertMod(org.key_project.rusty.parser.hir.Mod mod) {
         return new Mod(
-            Arrays.stream(mod.items()).map(this::convertItem).collect(ImmutableList.collector()));
+            Arrays.stream(mod.items()).map(this::convertItem).filter(Objects::nonNull)
+                    .collect(ImmutableList.collector()));
     }
 
-    private Item convertItem(org.key_project.rusty.parser.hir.item.Item item) {
+    private @Nullable Item convertItem(org.key_project.rusty.parser.hir.item.Item item) {
         return switch (item.kind()) {
             case org.key_project.rusty.parser.hir.item.Use use -> convertUse(use);
             case Fn fn -> convertFn(fn, item.ownerId().defId());
             case org.key_project.rusty.parser.hir.item.ExternCrate ec -> convertExternCrate(ec);
-            case org.key_project.rusty.parser.hir.item.Struct s -> convertStructDef(s);
-            case org.key_project.rusty.parser.hir.item.Enum e -> convertEnumDef(e);
+            case org.key_project.rusty.parser.hir.item.Enum e -> null; // Handled by ADT conversion
+                                                                       // above
+            case org.key_project.rusty.parser.hir.item.Struct s -> null; // Handled by ADT
+                                                                         // conversion above
             case org.key_project.rusty.parser.hir.item.Const c -> convertConstDef(c);
             default -> throw new IllegalArgumentException("Unknown item: " + item);
         };
-    }
-
-    private Item convertStructDef(org.key_project.rusty.parser.hir.item.Struct s) {
-        return new StructDef();
-    }
-
-    private Item convertEnumDef(org.key_project.rusty.parser.hir.item.Enum e) {
-        return new EnumDef();
     }
 
     private Item convertConstDef(org.key_project.rusty.parser.hir.item.Const c) {

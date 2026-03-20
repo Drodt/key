@@ -168,6 +168,13 @@ public abstract class TacletApp implements RuleApp {
         return true;
     }
 
+    /// creates a new Taclet application containing all the instantiations given by the
+    /// SVInstantiations and forget the old ones
+    ///
+    /// @param svi the SVInstantiations whose entries are the needed instantiations
+    /// @return the new Taclet application
+    protected abstract TacletApp setInstantiation(SVInstantiations svi, Services services);
+
     public static boolean checkNoFreeVars(Taclet taclet, SVInstantiations instantiations,
             PosInOccurrence pos) {
         for (var pair : instantiations.getInstantiationMap()) {
@@ -553,7 +560,7 @@ public abstract class TacletApp implements RuleApp {
         final GenericSortCondition c = GenericSortCondition.forceInstantiation(sv.sort(), false);
         if (c != null) {
             try {
-                // app = app.setInstantiation(app.instantiations().add(c, services), services);
+                app = app.setInstantiation(app.instantiations().add(c, services), services);
             } catch (GenericSortException e) {
                 return null;
             }
@@ -661,7 +668,7 @@ public abstract class TacletApp implements RuleApp {
     /// @param services the Services class allowing access to the type model
     public TacletApp createSkolemConstant(String instantiation, OperatorSV sv,
             boolean interesting, Services services) {
-        return createSkolemConstant(instantiation, sv, getRealSort(sv), interesting,
+        return createSkolemConstant(instantiation, sv, getRealSort(sv, services), interesting,
             services);
     }
 
@@ -675,8 +682,8 @@ public abstract class TacletApp implements RuleApp {
     /// @return p_s iff p_s is not a generic sort, the concrete sort p_s is instantiated with
     /// currently otherwise
     /// @throws GenericSortException iff p_s is a generic sort which is not yet instantiated
-    public Sort getRealSort(OperatorSV p_sv) {
-        return instantiations().getGenericSortInstantiations().getRealSort(p_sv);
+    public Sort getRealSort(OperatorSV p_sv, Services services) {
+        return instantiations().getGenericSortInstantiations().getRealSort(p_sv, services);
     }
 
     /// creates a new Taclet application containing all the instantiations, constraints, new

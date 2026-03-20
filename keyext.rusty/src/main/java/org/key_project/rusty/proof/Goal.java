@@ -309,13 +309,12 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             NoPosTacletApp.createFixedNoPosTacletApp(rule, insts, proof().getServices());
         if (tacletApp != null) {
             addNoPosTacletApp(tacletApp);
-            /*
-             * if (proof().getInitConfig() != null) { // do not break everything
-             * // because of ProofMgt
-             * proof().getInitConfig().registerRuleIntroducedAtNode(tacletApp,
-             * node.parent() != null ? node.parent() : node, isAxiom);
-             * }
-             */
+
+            if (proof().getInitConfig() != null) { // do not break everything
+                // because of ProofMgt
+                proof().getInitConfig().registerRuleIntroducedAtNode(tacletApp,
+                    node.parent() != null ? node.parent() : node, isAxiom);
+            }
         }
     }
 
@@ -439,4 +438,23 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     public void removeGoalListener(GoalListener l) {
         listeners.remove(l);
     }
+
+    void pruneToParent() {
+        setNode(getNode().parent());
+        removeLastAppliedRuleApp();
+        resetLocalSymbols();
+    }
+
+    private void resetLocalSymbols() {
+        NamespaceSet newNS = proof().getServices().getNamespaces().copyWithParent();
+        for (ProgramVariable pv : node.getLocalProgVars()) {
+            newNS.programVariables().add(pv);
+        }
+        for (Function op : node.getLocalFunctions()) {
+            newNS.functions().add(op);
+        }
+
+        localNamespaces = newNS.copyWithParent();
+    }
+
 }

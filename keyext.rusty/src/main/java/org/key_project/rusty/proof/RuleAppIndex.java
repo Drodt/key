@@ -102,7 +102,12 @@ public class RuleAppIndex {
     public void addNoPosTacletApp(NoPosTacletApp tacletApp) {
         tacletIndex.add(tacletApp);
 
+        if (autoMode) {
+            interactiveTacletAppIndex.clearIndexes();
+        }
+
         interactiveTacletAppIndex.addedNoPosTacletApp(tacletApp);
+        automatedTacletAppIndex.addedNoPosTacletApp(tacletApp);
     }
 
     /**
@@ -212,5 +217,71 @@ public class RuleAppIndex {
         interactiveTacletAppIndex.setNewRuleListener(newRuleListener);
         automatedTacletAppIndex.setNewRuleListener(newRuleListener);
         builtInRuleAppIndex.setNewRuleListener(newRuleListener);
+    }
+
+    /// remove a Taclet with instantiation information from the Taclet Index of this TacletAppIndex.
+    ///
+    /// @param tacletApp the [NoPosTacletApp] to remove
+    public void removeNoPosTacletApp(NoPosTacletApp tacletApp) {
+        tacletIndex.remove(tacletApp);
+
+        if (autoMode) {
+            interactiveTacletAppIndex.clearIndexes();
+        }
+
+        interactiveTacletAppIndex.removedNoPosTacletApp(tacletApp);
+        automatedTacletAppIndex.removedNoPosTacletApp(tacletApp);
+    }
+
+    /// Empties all caches
+    public void clearIndexes() {
+        // Currently this only applies to the taclet index
+        interactiveTacletAppIndex.clearIndexes();
+        automatedTacletAppIndex.clearIndexes();
+    }
+
+    /// collects all FindTacletInstantiations for the given heuristics and position
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
+    public ImmutableList<NoPosTacletApp> getFindTaclet(
+            PosInOccurrence pos) {
+        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+        if (!autoMode) {
+            result = result.prepend(interactiveTacletAppIndex.getFindTaclet(pos));
+        }
+        result = result.prepend(automatedTacletAppIndex.getFindTaclet(pos));
+        return result;
+    }
+
+    /// collects all NoFindTacletInstantiations for the given heuristics
+    ///
+    /// @param services the Services object encapsulating information about the datastructures
+    /// like types etc.
+    /// @return list of all possible instantiations
+    public ImmutableList<NoPosTacletApp> getNoFindTaclet(Services services) {
+        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+        if (!autoMode) {
+            result = interactiveTacletAppIndex.getNoFindTaclet(services);
+        }
+        result = result.prepend(automatedTacletAppIndex.getNoFindTaclet(services));
+        return result;
+    }
+
+    /// collects all RewriteTacletInstantiations for the given heuristics in a subterm of the
+    /// sequent formula described by a PosInOccurrence
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
+    public ImmutableList<NoPosTacletApp> getRewriteTaclet(
+            PosInOccurrence pos) {
+        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+        if (!autoMode) {
+            result =
+                result.prepend(interactiveTacletAppIndex.getRewriteTaclet(pos));
+        }
+        result = result.prepend(automatedTacletAppIndex.getRewriteTaclet(pos));
+
+        return result;
     }
 }

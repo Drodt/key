@@ -195,8 +195,8 @@ public class LogicPrinter {
         }
         printGoalTemplates(taclet);
         if (showWholeTaclet) {
-            // printHeuristics(taclet);
-            // printTriggers(taclet);
+            printHeuristics(taclet);
+            printTriggers(taclet);
         }
         // printAttribs(taclet);
         if (showWholeTaclet) {
@@ -208,6 +208,50 @@ public class LogicPrinter {
         layouter.end();
         instantiations = SVInstantiations.EMPTY_SVINSTANTIATIONS;
         quantifiableVariablePrintMode = QuantifiableVariablePrintMode.NORMAL;
+    }
+
+    protected void printHeuristics(Taclet taclet) {
+        if (taclet.getRuleSets().isEmpty()) {
+            return;
+        }
+        layouter.nl().beginRelativeC().print("\\heuristics(").brk(0);
+        for (Iterator<RuleSet> it = taclet.getRuleSets().iterator(); it.hasNext();) {
+            RuleSet tgt = it.next();
+            printHeuristic(tgt);
+            if (it.hasNext()) {
+                layouter.print(",").brk();
+            }
+        }
+        layouter.end().print(")");
+    }
+
+    protected void printHeuristic(RuleSet sv) {
+        layouter.print(sv.name().toString());
+    }
+
+    protected void printTriggers(Taclet taclet) {
+        if (!taclet.hasTrigger()) {
+            return;
+        }
+        layouter.nl().beginC().print("\\trigger {");
+        Trigger trigger = taclet.getTrigger();
+        printSchemaVariable(trigger.triggerVar());
+        layouter.print("} ");
+        printTerm(trigger.trigger());
+        if (trigger.hasAvoidConditions()) {
+            layouter.brk(1, 2);
+            layouter.print(" \\avoid ");
+            boolean notFirst = false;
+            for (var cond : trigger.avoidConditions()) {
+                if (notFirst) {
+                    layouter.print(", ");
+                } else {
+                    notFirst = true;
+                }
+                printTerm(cond);
+            }
+        }
+        layouter.print(";").end();
     }
 
     protected void printDisplayName(Taclet taclet) {
@@ -861,6 +905,21 @@ public class LogicPrinter {
         layouter.print(asgn);
 
         maybeParens(t.sub(0), ass2);
+    }
+
+    /// Print an elementary update. This looks like <code>loc := val</code>
+    ///
+    /// @param asgn the assignment operator (including spaces)
+    /// @param ass2 associativity for the new values
+    public void printMutatingUpdate(String asgn, Term t, int ass2) {
+        assert t.arity() == 2;
+        layouter.startTerm(2);
+
+        maybeParens(t.sub(0), ass2);
+
+        layouter.print(asgn);
+
+        maybeParens(t.sub(1), ass2);
     }
 
     private void printParallelUpdateHelper(String separator, Term t, int ass) {

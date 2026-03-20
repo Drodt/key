@@ -171,4 +171,19 @@ public class ParametricSortInstance extends AbstractSort implements SyntaxElemen
     public @NonNull SyntaxElement getChild(int n) {
         return Objects.requireNonNull(args.get(n));
     }
+
+    /// Whether this sort contains generic sorts.
+    public boolean containsGenericSort() {
+        for (GenericArgument arg : args) {
+            if (arg instanceof SortArg(Sort sort)) {
+                if (sort instanceof ParametricSortInstance psi && psi.containsGenericSort()) {
+                    return true;
+                }
+                if (sort instanceof GenericSort) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

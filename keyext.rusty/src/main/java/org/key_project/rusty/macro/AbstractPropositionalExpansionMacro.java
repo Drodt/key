@@ -1,0 +1,104 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package org.key_project.rusty.macro;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.key_project.logic.Name;
+import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
+import org.key_project.prover.strategy.costbased.RuleAppCost;
+import org.key_project.prover.strategy.costbased.TopRuleAppCost;
+import org.key_project.rusty.proof.Goal;
+import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.strategy.RuleAppCostCollector;
+import org.key_project.rusty.strategy.Strategy;
+
+import org.jspecify.annotations.NonNull;
+
+public abstract class AbstractPropositionalExpansionMacro extends StrategyProofMacro {
+    protected static Set<String> asSet(String... strings) {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(strings)));
+    }
+
+    @Override
+    public String getCategory() {
+        return "Propositional";
+    }
+
+    /**
+     * Gets the set of admitted rule names.
+     *
+     * @return a constant non-<code>null</code> set
+     */
+    protected abstract Set<String> getAdmittedRuleNames();
+
+    @Override
+    protected Strategy<@NonNull Goal> createStrategy(Proof proof,
+            PosInOccurrence posInOcc) {
+        return new PropExpansionStrategy(proof.getActiveStrategy(), getAdmittedRuleNames());
+    }
+
+    /// This strategy accepts all rule apps for which the rule name is in the admitted set and
+    /// rejects everything else.
+    private static class PropExpansionStrategy implements Strategy<Goal> {
+
+        private final Name NAME = new Name(PropExpansionStrategy.class.getSimpleName());
+
+        private final Set<String> admittedRuleNames;
+        private final Strategy<@NonNull Goal> delegate;
+
+        public PropExpansionStrategy(Strategy<@NonNull Goal> delegate,
+                Set<String> admittedRuleNames) {
+            this.delegate = delegate;
+            this.admittedRuleNames = admittedRuleNames;
+        }
+
+        @Override
+        public @NonNull Name name() {
+            return NAME;
+        }
+
+        @Override
+        public <G extends ProofGoal<@NonNull G>> RuleAppCost computeCost(RuleApp ruleApp,
+                PosInOccurrence pio, G goal,
+                MutableState mState) {
+            String name = ruleApp.rule().name().toString();
+            if (admittedRuleNames.contains(name)) {
+                final RuleAppCost origCost = delegate.computeCost(ruleApp, pio, goal, mState);
+                // pass through negative costs
+                if (origCost instanceof NumberRuleAppCost
+                        && ((NumberRuleAppCost) origCost).getValue() < 0) {
+                    return origCost;
+                }
+                // cap costs at zero
+                return NumberRuleAppCost.getZeroCost();
+            } else {
+                return TopRuleAppCost.INSTANCE;
+            }
+        }
+
+        @Override
+        public boolean isApprovedApp(RuleApp app, PosInOccurrence pio,
+                Goal goal) {
+            return delegate.isApprovedApp(app, pio, goal);
+        }
+
+        @Override
+        public void instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
+                RuleAppCostCollector collector) {
+        }
+
+        @Override
+        public boolean isStopAtFirstNonCloseableGoal() {
+            return false;
+        }
+    }
+}

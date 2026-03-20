@@ -3,5 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.item;
 
-public record Enum() implements ItemKind {
+import org.key_project.rusty.parser.hir.Ident;
+
+public record Enum(Ident ident, EnumDef def, Generics generics) implements ItemKind {
 }

@@ -11,6 +11,7 @@ package org.key_project.rusty.parser;
 varexpId
  : APPLY_UPDATE_ON_RIGID
  | DROP_EFFECTLESS_ELEMENTARIES
+ | DROP_EFFECTLESS_MUTATING
  | SIMPLIFY_IF_THEN_ELSE_UPDATE
  | EQUAL_UNIQUE
  | NEW_TYPE_OF
@@ -28,6 +29,7 @@ varexpId
  | ISSUBTYPE
  | HASSORT
  | NO_FREE_VAR_IN
+ | APPLY_ELEMENTARIES_ON_DEREF_M
  ;
 
 prog_var_decls
@@ -124,6 +126,7 @@ func_decl
 :
     doc=DOC_COMMENT?
     (UNIQUE)?
+    (NON_RIGID)?
     func_name = funcpred_name
     formal_sort_param_decls?
 	whereToBind=where_to_bind?
@@ -136,6 +139,7 @@ func_decl
 pred_decl
 :
   doc=DOC_COMMENT?
+  (NON_RIGID)?
   pred_name = funcpred_name
   formal_sort_param_decls?
   (whereToBind=where_to_bind)?

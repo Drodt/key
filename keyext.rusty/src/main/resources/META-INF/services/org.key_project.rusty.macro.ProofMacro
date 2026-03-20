@@ -1,0 +1,12 @@
+#
+# Macros to appear in the context menu
+# (this list is loaded into ProofMacroMenu#REGISTERED_MACROS)
+
+org.key_project.rusty.macro.AutoPilotPrepareProofMacro
+org.key_project.rusty.macro.FinishSymbolicExecutionMacro
+org.key_project.rusty.macro.FullAutoPilotProofMacro
+org.key_project.rusty.macro.FullPropositionalExpansionMacro
+org.key_project.rusty.macro.IntegerSimplificationMacro
+org.key_project.rusty.macro.PropositionalExpansionMacro
+org.key_project.rusty.macro.TryCloseMacro
+org.key_project.rusty.macro.UpdateSimplificationMacro

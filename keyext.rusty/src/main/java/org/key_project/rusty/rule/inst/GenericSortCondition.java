@@ -29,7 +29,6 @@ public abstract class GenericSortCondition {
     /// sorts that don't match)
     public static ImmutableList<GenericSortCondition> createCondition(SchemaVariable sv,
             InstantiationEntry<?> p_entry) {
-
         if (!(p_entry instanceof TermInstantiation ti)) {
             return null;
         }
@@ -95,7 +94,6 @@ public abstract class GenericSortCondition {
     /// GenericSortInstantiations)
     /// @return the resulting condition, or null if "p_s" is not generic
     public static GenericSortCondition forceInstantiation(Sort p_s, boolean p_maximum) {
-
         if (p_s instanceof GenericSort) {
             return createForceInstantiationCondition((GenericSort) p_s, p_maximum);
         }

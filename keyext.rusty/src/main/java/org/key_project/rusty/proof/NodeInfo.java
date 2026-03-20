@@ -7,13 +7,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.key_project.logic.Name;
+import org.key_project.logic.Term;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.SequentChangeInfo;
+import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ast.expr.BlockExpression;
+import org.key_project.rusty.logic.PossibleProgramPrefix;
+import org.key_project.rusty.logic.TermBuilder;
+import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.proof.io.ProofSaver;
+import org.key_project.rusty.rule.PosTacletApp;
 import org.key_project.rusty.rule.TacletApp;
 
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.key_project.rusty.proof.Statistics.isSymbolicExecution;
 
 /// The node info object contains additional information about a node used to give user feedback.
 /// The
@@ -25,8 +35,20 @@ public class NodeInfo {
     private boolean interactiveApplication = false;
 
     private String branchLabel = null;
-    /** the node this info object belongs to */
+    /// the node this info object belongs to
     private final Node node;
+
+    /// flag true if the first and active statement have been determined
+    private boolean determinedFstAndActiveExpr = false;
+    /// firstStatement stripped of method frames
+    private @Nullable RustyProgramElement activeExpr = null;
+    /// used for proof tree annotation when applicable
+    private @Nullable RustyProgramElement firstExpr = null;
+
+    private String firstExprString = null;
+
+    /// Information about changes respective to the parent of this node.
+    private SequentChangeInfo sequentChangeInfo;
 
     public NodeInfo(Node node) {
         this.node = node;
@@ -39,12 +61,11 @@ public class NodeInfo {
         return branchLabel;
     }
 
-    /**
-     * sets the branch label of a node. Schema variables occurring in string <tt>s</tt> are replaced
-     * by their instantiations if possible
-     *
-     * @param s the String to be set
-     */
+    /// sets the branch label of a node. Schema variables occurring in string <tt>s</tt> are
+    /// replaced
+    /// by their instantiations if possible
+    ///
+    /// @param s the String to be set
     public void setBranchLabel(@Nullable String s) {
         if (s == null) {
             return;
@@ -111,5 +132,105 @@ public class NodeInfo {
     /// @return boolean for interactive rule application as described above
     public boolean getInteractiveRuleApplication() {
         return interactiveApplication;
+    }
+
+    /// returns a string representation of the first active expression or null if no such exists
+    ///
+    /// @return string representation of first expression as described above
+    public String getFirstActiveExprString() {
+        determineFirstAndActiveExpr();
+        if (firstExpr != null) {
+            firstExprString = String.valueOf(activeExpr);
+            return firstExprString;
+        }
+        return null;
+    }
+
+    /// determines the first and active expr if the applied taclet worked on a modality
+    private void determineFirstAndActiveExpr() {
+        if (determinedFstAndActiveExpr) {
+            return;
+        }
+        final RuleApp ruleApp = node.getAppliedRuleApp();
+        if (ruleApp instanceof PosTacletApp) {
+            firstExpr = computeFirstExpr(ruleApp);
+            firstExprString = null;
+            activeExpr = computeActiveExpr(ruleApp);
+            determinedFstAndActiveExpr = true;
+        }
+    }
+
+    /// Computes the first expr in the given [RuleApp].
+    ///
+    /// This functionality is independent of concrete [NodeInfo]s and used for instance by
+    /// the symbolic execution tree extraction.
+    ///
+    /// @param ruleApp The given [RuleApp].
+    /// @return The first expr or `null` if no one is provided.
+    public static @Nullable RustyProgramElement computeFirstExpr(
+            RuleApp ruleApp) {
+        RustyProgramElement firstExpr = null;
+        if (ruleApp instanceof PosTacletApp pta) {
+            if (!isSymbolicExecution(pta.taclet())) {
+                return null;
+            }
+            Term t = TermBuilder.goBelowUpdates(pta.posInOccurrence().subTerm());
+            if (t.op() instanceof RModality mod) {
+                final RustyProgramElement pe = mod.programBlock().program();
+                if (pe.getChildCount() == 0) {
+                    return pe;
+                }
+                firstExpr = (RustyProgramElement) pe.getChild(0);
+            }
+        }
+        return firstExpr;
+    }
+
+    /// Computes the active expr in the given [RuleApp].
+    ///
+    /// This functionality is independent of concrete [NodeInfo]s and used for instance by
+    /// the symbolic execution tree extraction.
+    ///
+    /// @param ruleApp The given [RuleApp].
+    /// @return The active expr or `null` if no one is provided.
+    public static @Nullable RustyProgramElement computeActiveExpr(
+            RuleApp ruleApp) {
+        RustyProgramElement firstExpr = computeFirstExpr(ruleApp);
+        return computeActiveExpr(firstExpr);
+    }
+
+    /// Computes the active expression in the given [RustyProgramElement].
+    ///
+    /// This functionality is independent of concrete [NodeInfo]s and used for instance by
+    /// the symbolic execution tree extraction.
+    ///
+    /// @param firstExpr The given [RustyProgramElement].
+    /// @return The active expr or `null` if no one is provided.
+    public static @Nullable RustyProgramElement computeActiveExpr(RustyProgramElement firstExpr) {
+        RustyProgramElement activeExpr = null;
+        if (firstExpr != null) {
+            activeExpr = firstExpr;
+            while ((activeExpr instanceof PossibleProgramPrefix pp && pp.isPrefix())
+                    && !(activeExpr instanceof BlockExpression)) {
+                activeExpr = (RustyProgramElement) activeExpr.getChild(0);
+            }
+        }
+        return activeExpr;
+    }
+
+    public SequentChangeInfo getSequentChangeInfo() {
+        return sequentChangeInfo;
+    }
+
+    public void setSequentChangeInfo(SequentChangeInfo sequentChangeInfo) {
+        this.sequentChangeInfo = sequentChangeInfo;
+    }
+
+    public void updateNoteInfo() {
+        determinedFstAndActiveExpr = false;
+        firstExpr = null;
+        firstExprString = null;
+        activeExpr = null;
+        determineFirstAndActiveExpr();
     }
 }
