@@ -4,6 +4,7 @@
 package org.key_project.rusty.proof;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
@@ -662,6 +663,50 @@ public class Proof implements ProofObject<Goal>, Named {
         }
     }
 
+    /**
+     * Returns the list of all, open and closed, goals.
+     *
+     * @return list with all goals.
+     * @see #openGoals()
+     * @see #closedGoals()
+     */
+    public ImmutableList<Goal> allGoals() {
+        return openGoals.size() < closedGoals.size() ? closedGoals.prepend(openGoals)
+                : openGoals.prepend(closedGoals);
+    }
+
+    /**
+     * Bread-first search for the first node, that matches the given predicate.
+     *
+     * @param pred non-null test function
+     * @return a node fulfilling {@code pred} or null
+     */
+    public @Nullable Node findAny(@NonNull Predicate<Node> pred) {
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            Node cur = queue.poll();
+            if (pred.test(cur)) {
+                return cur;
+            }
+            Iterator<Node> iter = cur.childrenIterator();
+            while (iter.hasNext()) {
+                queue.add(iter.next());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the list of closed goals, needed to make pruning in closed branches possible. If the
+     * list needs too much memory, pruning can be disabled via the command line option
+     * "--no-pruning-closed". In this case the list will not be filled.
+     *
+     * @return list with the closed goals
+     */
+    public ImmutableList<Goal> closedGoals() {
+        return closedGoals;
+    }
     /// fires the event that new goals have been added to the list of goals
     protected void fireProofGoalsAdded(ImmutableList<Goal> goals) {
         ProofTreeEvent e = new ProofTreeEvent(this, goals);

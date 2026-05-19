@@ -198,6 +198,14 @@ public class PositionTable {
         startPos[subTermNo] = start;
     }
 
+    public int getRows() {
+        return rows;
+    }
+
+    public Range getRange(int i) {
+        return new Range(startPos[i], endPos[i]);
+    }
+
     /**
      * Return of the children of this PositionTable
      */

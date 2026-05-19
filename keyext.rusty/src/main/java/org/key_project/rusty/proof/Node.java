@@ -4,6 +4,7 @@
 package org.key_project.rusty.proof;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import org.key_project.logic.op.Function;
 import org.key_project.prover.rules.RuleApp;
@@ -385,6 +386,10 @@ public class Node implements Iterable<Node> {
             }
         }
         return cachedName;
+    }
+
+    public Stream<Node> childrenStream() {
+        return children.stream();
     }
 
     public Iterable<NoPosTacletApp> getLocalIntroducedRules() {
