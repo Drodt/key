@@ -3,4 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.keyproject.key.api.data;
 
-public record NodeTextSpan(int start, int end, NodeTextSpan[] children) implements KeYDataTransferObject {}
+public record NodeTextSpan(int start, int end, NodeTextSpan[] children)
+        implements KeYDataTransferObject {
+}

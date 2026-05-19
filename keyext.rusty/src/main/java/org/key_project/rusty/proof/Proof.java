@@ -707,6 +707,7 @@ public class Proof implements ProofObject<Goal>, Named {
     public ImmutableList<Goal> closedGoals() {
         return closedGoals;
     }
+
     /// fires the event that new goals have been added to the list of goals
     protected void fireProofGoalsAdded(ImmutableList<Goal> goals) {
         ProofTreeEvent e = new ProofTreeEvent(this, goals);

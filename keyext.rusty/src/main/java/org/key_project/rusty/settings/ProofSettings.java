@@ -77,11 +77,12 @@ public class ProofSettings {
             // LOGGER.warn("The settings in {} are *not* read.", PROVER_CONFIG_FILE);
         } else {
             FileReader reader;
-            try{
-                reader = new FileReader(PROVER_CONFIG_FILE_NEW, StandardCharsets.UTF_8);} catch (IOException e) {
-                    // throw e;
-                    return;
-                };
+            try {
+                reader = new FileReader(PROVER_CONFIG_FILE_NEW, StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                // throw e;
+                return;
+            } ;
 
             try (var in = new BufferedReader(
                 reader)) {

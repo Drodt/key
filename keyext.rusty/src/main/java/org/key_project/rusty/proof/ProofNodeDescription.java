@@ -43,4 +43,3 @@ public class ProofNodeDescription implements Serializable {
         return "Show Postcondition/Modifiable";
     }
 }
-

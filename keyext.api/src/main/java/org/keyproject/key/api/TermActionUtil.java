@@ -8,17 +8,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import de.uka.ilkd.key.macros.ProofMacro;
+
+import org.key_project.logic.Name;
+import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.control.KeYEnvironment;
 import org.key_project.rusty.control.ProofControl;
-import de.uka.ilkd.key.macros.ProofMacro;
 import org.key_project.rusty.pp.PosInSequent;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.*;
-import org.key_project.prover.rules.Taclet;
-import org.key_project.rusty.Services;
-
-import org.key_project.logic.Name;
-import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.reflection.ClassLoaderUtil;

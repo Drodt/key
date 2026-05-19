@@ -68,19 +68,19 @@ public record StrategyOptions(
         StrategyProperties sp = proof.getSettings().getStrategySettings()
                 .getActiveStrategyProperties();
         // if (method != null) {
-        //     sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, getVal(method));
+        // sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, getVal(method));
         // } else {
-        //     sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, defaultOptions.method());
+        // sp.setProperty(StrategyProperties.METHOD_OPTIONS_KEY, defaultOptions.method());
         // }
         // if (dep != null) {
-        //     sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, getVal(dep));
+        // sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, getVal(dep));
         // } else {
-        //     sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, defaultOptions.dep());
+        // sp.setProperty(StrategyProperties.DEP_OPTIONS_KEY, defaultOptions.dep());
         // }
         // if (query != null) {
-        //     sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, getVal(query));
+        // sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, getVal(query));
         // } else {
-        //     sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, defaultOptions.query());
+        // sp.setProperty(StrategyProperties.QUERY_OPTIONS_KEY, defaultOptions.query());
         // }
         if (nonLinArith != null) {
             sp.setProperty(StrategyProperties.NON_LIN_ARITH_OPTIONS_KEY, getVal(nonLinArith));

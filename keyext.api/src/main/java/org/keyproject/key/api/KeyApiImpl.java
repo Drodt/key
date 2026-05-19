@@ -6,25 +6,20 @@ package org.keyproject.key.api;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Stack;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import java.util.Stack;
-import java.util.ArrayList;
 
-import org.key_project.rusty.control.AbstractUserInterfaceControl;
+import de.uka.ilkd.key.macros.ProofMacroFinishedInfo;
+
+import org.key_project.prover.engine.ProverTaskListener;
+import org.key_project.prover.engine.TaskFinishedInfo;
 import org.key_project.rusty.control.DefaultUserInterfaceControl;
 import org.key_project.rusty.control.KeYEnvironment;
-// import org.key_project.rusty.gui.ExampleChooser;
-// import org.key_project.rusty.macros.ProofMacro;
-import de.uka.ilkd.key.macros.ProofMacroFinishedInfo;
-import org.key_project.rusty.parser.ParsingFacade;
 import org.key_project.rusty.pp.IdentitySequentPrintFilter;
 import org.key_project.rusty.pp.LogicPrinter;
 import org.key_project.rusty.pp.NotationInfo;
@@ -36,20 +31,12 @@ import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.ProofAggregate;
 import org.key_project.rusty.proof.init.*;
 import org.key_project.rusty.proof.io.AbstractProblemLoader;
-import org.key_project.rusty.proof.io.ProblemLoaderException;
 import org.key_project.rusty.proof.io.OutputStreamProofSaver;
-import org.key_project.rusty.strategy.StrategyProperties;
+import org.key_project.rusty.proof.io.ProblemLoaderException;
 import org.key_project.rusty.rule.TacletApp;
-// import org.key_project.rusty.scripts.ProofScriptCommand;
-// import org.key_project.rusty.scripts.ProofScriptEngine;
-// import org.key_project.rusty.scripts.ScriptException;
-
-
-import org.key_project.prover.engine.ProverTaskListener;
-import org.key_project.prover.engine.TaskFinishedInfo;
+import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
-import org.key_project.util.reflection.ClassLoaderUtil;
 
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -92,8 +79,8 @@ public final class KeyApiImpl implements KeyApi {
     @JsonRequest
     public CompletableFuture<List<ExampleDesc>> examples() {
         // return CompletableFutures
-                // .computeAsync((c) -> ExampleChooser.listExamples(ExampleChooser.lookForExamples())
-                        // .stream().map(ExampleDesc::from).toList());
+        // .computeAsync((c) -> ExampleChooser.listExamples(ExampleChooser.lookForExamples())
+        // .stream().map(ExampleDesc::from).toList());
         return null;
     }
 
@@ -125,19 +112,19 @@ public final class KeyApiImpl implements KeyApi {
     @Override
     public CompletableFuture<List<ProofMacroDesc>> getAvailableMacros() {
         // return CompletableFuture.completedFuture(
-        //     StreamSupport
-        //             .stream(ClassLoaderUtil.loadServices(ProofMacro.class).spliterator(), false)
-        //             .map(ProofMacroDesc::from).toList());
+        // StreamSupport
+        // .stream(ClassLoaderUtil.loadServices(ProofMacro.class).spliterator(), false)
+        // .map(ProofMacroDesc::from).toList());
         return null;
     }
 
     @Override
     public CompletableFuture<List<ProofScriptCommandDesc>> getAvailableScriptCommands() {
         // return CompletableFuture.completedFuture(
-        //     StreamSupport
-        //             .stream(ClassLoaderUtil.loadServices(ProofScriptCommand.class).spliterator(),
-        //                 false)
-        //             .map(ProofScriptCommandDesc::from).toList());
+        // StreamSupport
+        // .stream(ClassLoaderUtil.loadServices(ProofScriptCommand.class).spliterator(),
+        // false)
+        // .map(ProofScriptCommandDesc::from).toList());
         return null;
     }
 
@@ -145,17 +132,17 @@ public final class KeyApiImpl implements KeyApi {
     public CompletableFuture<MacroStatistic> script(ProofId proofId, String scriptLine,
             StrategyOptions options) {
         // return CompletableFuture.supplyAsync(() -> {
-        //     var proof = data.find(proofId);
-        //     var env = data.find(proofId.env());
-        //     var script = ParsingFacade.parseScript(scriptLine);
-        //     var pe = new ProofScriptEngine(script);
+        // var proof = data.find(proofId);
+        // var env = data.find(proofId.env());
+        // var script = ParsingFacade.parseScript(scriptLine);
+        // var pe = new ProofScriptEngine(script);
 
-        //     try {
-        //         pe.execute((AbstractUserInterfaceControl) env.getProofControl(), proof);
-        //         return new MacroStatistic(proofId, scriptLine, -1, -1);
-        //     } catch (IOException | InterruptedException | ScriptException e) {
-        //         throw new RuntimeException(e);
-        //     }
+        // try {
+        // pe.execute((AbstractUserInterfaceControl) env.getProofControl(), proof);
+        // return new MacroStatistic(proofId, scriptLine, -1, -1);
+        // } catch (IOException | InterruptedException | ScriptException e) {
+        // throw new RuntimeException(e);
+        // }
         // });
         return null;
     }
@@ -164,19 +151,19 @@ public final class KeyApiImpl implements KeyApi {
     public CompletableFuture<MacroStatistic> macro(ProofId proofId, String macroName,
             StrategyOptions options) {
         // return CompletableFuture.supplyAsync(() -> {
-        //     var proof = data.find(proofId);
-        //     var env = data.find(proofId.env());
-        //     var macro = StreamSupport
-        //             .stream(ClassLoaderUtil.loadServices(ProofMacro.class).spliterator(), false)
-        //             .filter(it -> it.getName().equals(macroName)).findFirst().orElseThrow();
+        // var proof = data.find(proofId);
+        // var env = data.find(proofId.env());
+        // var macro = StreamSupport
+        // .stream(ClassLoaderUtil.loadServices(ProofMacro.class).spliterator(), false)
+        // .filter(it -> it.getName().equals(macroName)).findFirst().orElseThrow();
 
-        //     try {
-        //         var info =
-        //             macro.applyTo(env.getUi(), proof, proof.openGoals(), null, clientListener);
-        //         return MacroStatistic.from(proofId, info);
-        //     } catch (Exception e) {
-        //         throw new RuntimeException(e);
-        //     }
+        // try {
+        // var info =
+        // macro.applyTo(env.getUi(), proof, proof.openGoals(), null, clientListener);
+        // return MacroStatistic.from(proofId, info);
+        // } catch (Exception e) {
+        // throw new RuntimeException(e);
+        // }
         // });
         return null;
 
@@ -381,10 +368,10 @@ public final class KeyApiImpl implements KeyApi {
     @Override
     public CompletableFuture<List<ContractDesc>> contracts(EnvironmentId envId) {
         // return CompletableFuture.supplyAsync(() -> {
-        //     var env = data.find(envId);
-        //     var contracts = env.getProofContracts();
-        //     return contracts.stream().map(it -> ContractDesc.from(envId, env.getServices(), it))
-        //             .toList();
+        // var env = data.find(envId);
+        // var contracts = env.getProofContracts();
+        // return contracts.stream().map(it -> ContractDesc.from(envId, env.getServices(), it))
+        // .toList();
         // });
         return null;
     }
@@ -392,22 +379,22 @@ public final class KeyApiImpl implements KeyApi {
     @Override
     public CompletableFuture<ProofId> openContract(ContractId contractId) {
         // return CompletableFuture.supplyAsync(() -> {
-        //     var env = data.find(contractId.envId());
-        //     var contracts = env.getProofContracts();
-        //     var contract =
-        //         contracts.stream()
-        //                 .filter(it -> Objects.equals(it.getName(), contractId.contractId()))
-        //                 .findFirst();
-        //     if (contract.isPresent()) {
-        //         try {
-        //             var proof = env.createProof(contract.get().createProofObl(env.getInitConfig()));
-        //             return data.register(contractId.envId(), proof);
-        //         } catch (ProofInputException e) {
-        //             throw new RuntimeException(e);
-        //         }
-        //     } else {
-        //         return null;
-        //     }
+        // var env = data.find(contractId.envId());
+        // var contracts = env.getProofContracts();
+        // var contract =
+        // contracts.stream()
+        // .filter(it -> Objects.equals(it.getName(), contractId.contractId()))
+        // .findFirst();
+        // if (contract.isPresent()) {
+        // try {
+        // var proof = env.createProof(contract.get().createProofObl(env.getInitConfig()));
+        // return data.register(contractId.envId(), proof);
+        // } catch (ProofInputException e) {
+        // throw new RuntimeException(e);
+        // }
+        // } else {
+        // return null;
+        // }
         // });
         return null;
     }
@@ -501,7 +488,8 @@ public final class KeyApiImpl implements KeyApi {
             filter.setSequent(node.sequent());
 
             var pis = nodeText.table().getPosInSequent(id.caretPos(), filter);
-            var util = new TermActionUtil(id.nodeTextId(), data.find(id.nodeTextId().nodeId().proofId().env()), pis, goal, id.caretPos());
+            var util = new TermActionUtil(id.nodeTextId(),
+                data.find(id.nodeTextId().nodeId().proofId().env()), pis, goal, id.caretPos());
 
             var env = data.find(id.nodeTextId().nodeId().proofId().env());
             return util.applyAction(id, env.getServices());
@@ -522,32 +510,32 @@ public final class KeyApiImpl implements KeyApi {
     @Override
     public CompletableFuture<ProofId> loadExample(String name) {
         // return CompletableFutures.computeAsync((c) -> {
-        //     var examples = ExampleChooser.listExamples(ExampleChooser.lookForExamples())
-        //             .stream().filter(it -> it.getName().equals(name)).findFirst();
-        //     if (examples.isPresent()) {
-        //         var ex = examples.get();
-        //         Proof proof = null;
-        //         KeYEnvironment<?> env = null;
-        //         try {
-        //             var loader = control.load(JavaProfile.getDefaultProfile(),
-        //                 ex.getObligationFile(),
-        //                 null, null, null, null, true, null);
-        //             InitConfig initConfig = loader.getInitConfig();
+        // var examples = ExampleChooser.listExamples(ExampleChooser.lookForExamples())
+        // .stream().filter(it -> it.getName().equals(name)).findFirst();
+        // if (examples.isPresent()) {
+        // var ex = examples.get();
+        // Proof proof = null;
+        // KeYEnvironment<?> env = null;
+        // try {
+        // var loader = control.load(JavaProfile.getDefaultProfile(),
+        // ex.getObligationFile(),
+        // null, null, null, null, true, null);
+        // InitConfig initConfig = loader.getInitConfig();
 
-        //             env = new KeYEnvironment<>(control, initConfig, loader.getProof(),
-        //                 loader.getProofScript(), loader.getResult());
-        //             var envId = new EnvironmentId(env.toString());
-        //             data.register(envId, env);
-        //             proof = Objects.requireNonNull(env.getLoadedProof());
-        //             var proofId = new ProofId(envId, proof.name().toString());
-        //             return data.register(proofId, proof);
-        //         } catch (ProblemLoaderException e) {
-        //             if (env != null)
-        //                 env.dispose();
-        //             throw new RuntimeException(e);
-        //         }
-        //     }
-        //     throw new IllegalArgumentException("Unknown example");
+        // env = new KeYEnvironment<>(control, initConfig, loader.getProof(),
+        // loader.getProofScript(), loader.getResult());
+        // var envId = new EnvironmentId(env.toString());
+        // data.register(envId, env);
+        // proof = Objects.requireNonNull(env.getLoadedProof());
+        // var proofId = new ProofId(envId, proof.name().toString());
+        // return data.register(proofId, proof);
+        // } catch (ProblemLoaderException e) {
+        // if (env != null)
+        // env.dispose();
+        // throw new RuntimeException(e);
+        // }
+        // }
+        // throw new IllegalArgumentException("Unknown example");
         // });
         return null;
     }
@@ -578,26 +566,26 @@ public final class KeyApiImpl implements KeyApi {
     @Override
     public CompletableFuture<ProofId> loadKey(String content) {
         // return CompletableFutures.computeAsync((c) -> {
-        //     Proof proof = null;
-        //     KeYEnvironment<?> env = null;
-        //     try {
-        //         final var tempFile = File.createTempFile("json-rpc-", ".key");
-        //         Files.writeString(tempFile.toPath(), content);
-        //         var loader = control.load(RustProfile.getDefaultInstance(),
-        //             tempFile, null, null, true, null);
-        //         InitConfig initConfig = loader.getInitConfig();
-        //         env = new KeYEnvironment<>(control, initConfig, loader.getProof(),
-        //             loader.getProofScript(), loader.getResult());
-        //         var envId = new EnvironmentId(env.toString());
-        //         data.register(envId, env);
-        //         proof = Objects.requireNonNull(env.getLoadedProof());
-        //         var proofId = new ProofId(envId, proof.name().toString());
-        //         return data.register(proofId, proof);
-        //     } catch (ProblemLoaderException | IOException e) {
-        //         if (env != null)
-        //             env.dispose();
-        //         throw new RuntimeException(e);
-        //     }
+        // Proof proof = null;
+        // KeYEnvironment<?> env = null;
+        // try {
+        // final var tempFile = File.createTempFile("json-rpc-", ".key");
+        // Files.writeString(tempFile.toPath(), content);
+        // var loader = control.load(RustProfile.getDefaultInstance(),
+        // tempFile, null, null, true, null);
+        // InitConfig initConfig = loader.getInitConfig();
+        // env = new KeYEnvironment<>(control, initConfig, loader.getProof(),
+        // loader.getProofScript(), loader.getResult());
+        // var envId = new EnvironmentId(env.toString());
+        // data.register(envId, env);
+        // proof = Objects.requireNonNull(env.getLoadedProof());
+        // var proofId = new ProofId(envId, proof.name().toString());
+        // return data.register(proofId, proof);
+        // } catch (ProblemLoaderException | IOException e) {
+        // if (env != null)
+        // env.dispose();
+        // throw new RuntimeException(e);
+        // }
         // });
         return null;
     }
@@ -619,13 +607,14 @@ public final class KeyApiImpl implements KeyApi {
                     // params.problemFile() != null ? params.problemFile().asPath() : null,
                     file,
                     // params.classPath() != null
-                    //         ? params.classPath().stream().map(Uri::asPath).toList()
-                    //         : null,
+                    // ? params.classPath().stream().map(Uri::asPath).toList()
+                    // : null,
                     null,
                     // params.bootClassPath() != null ? params.bootClassPath().asPath() : null,
                     null,
-                    // params.includes() != null ? params.includes().stream().map(Uri::asPath).toList()
-                    //         : null,
+                    // params.includes() != null ?
+                    // params.includes().stream().map(Uri::asPath).toList()
+                    // : null,
                     true,
                     null);
                 InitConfig initConfig = loader.getInitConfig();
@@ -730,7 +719,7 @@ public final class KeyApiImpl implements KeyApi {
 
         // @Override
         // public void showIssueDialog(Collection<PositionedString> issues) {
-            // super.showIssueDialog(issues);
+        // super.showIssueDialog(issues);
         // }
     }
 }
