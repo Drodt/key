@@ -63,6 +63,29 @@ public class NoFindTacletExecutor extends TacletExecutor {
         return newGoals;
     }
 
+    @Override
+    public org.key_project.util.collection.ImmutableList<SequentChangeInfo> getResultSequentChanges(
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
+        final var services = goal.getOverlayServices();
+        final var tacletApp = (TacletApp) ruleApp;
+        final MatchConditions mc = tacletApp.matchConditions();
+        final var newSequentsForGoals = checkAssumesGoals(goal,
+            tacletApp.assumesFormulaInstantiations(), mc, taclet.goalTemplates().size());
+        org.key_project.util.collection.ImmutableList<SequentChangeInfo> result =
+            org.key_project.util.collection.ImmutableSLList.nil();
+        final var it = newSequentsForGoals.iterator();
+        for (var nextGT : taclet.goalTemplates()) {
+            final TacletGoalTemplate gt = (TacletGoalTemplate) nextGT;
+            final SequentChangeInfo currentSequent = it.next();
+            applyAdd(gt.sequent(), currentSequent, services, mc, goal, tacletApp);
+            result = result.append(currentSequent);
+        }
+        while (it.hasNext()) {
+            result = result.append(it.next());
+        }
+        return result;
+    }
+
     /// adds the sequent of the add part of the Taclet to the goal sequent
     ///
     /// @param add the Sequent to be added

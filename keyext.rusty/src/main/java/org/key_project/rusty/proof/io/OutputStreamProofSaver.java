@@ -392,7 +392,7 @@ public class OutputStreamProofSaver {
         return s;
     }
 
-    private static String printSequent(Sequent val,
+    public static String printSequent(Sequent val,
             Services services) {
         final LogicPrinter printer = createLogicPrinter(services, services == null);
         printer.printSequent(val);
