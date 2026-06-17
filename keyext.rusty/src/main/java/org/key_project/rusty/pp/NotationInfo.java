@@ -92,7 +92,7 @@ public class NotationInfo {
             new Notation.ModalSVNotation(PRIORITY_MODALITY, PRIORITY_POST_MODALITY));
         tbl.put(IfThenElse.IF_THEN_ELSE, new Notation.IfThenElse(PRIORITY_ATOM, "\\if"));
         // tbl.put(IfExThenElse.IF_EX_THEN_ELSE, new Notation.IfThenElse(PRIORITY_ATOM, "\\ifEx"));
-        tbl.put(SubstOp.SUBST, new Notation.Subst());
+        tbl.put(WarySubstOp.SUBST, new Notation.Subst());
         tbl.put(UpdateApplication.UPDATE_APPLICATION, new Notation.UpdateApplicationNotation());
         tbl.put(UpdateJunctor.PARALLEL_UPDATE, new Notation.ParallelUpdateNotation());
 
