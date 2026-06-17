@@ -89,7 +89,7 @@ public class TestTacletBuild {
             JavaDLSequentKit.createSuccSequent(ImmutableSLList.singleton(new SequentFormula(t1)));
         JTerm t2 = tb.ex((QuantifiableVariable) u, A);
         SuccTacletBuilder sb = new SuccTacletBuilder();
-        sb.setIfSequent(seq);
+        sb.setAssumesSequent(seq);
         sb.setFind(t2);
         try {
             sb.getTaclet();
@@ -112,7 +112,7 @@ public class TestTacletBuild {
                 .createSuccSequent(ImmutableSLList.singleton(new SequentFormula(t2))
                         .prepend(new SequentFormula(t1)));
         SuccTacletBuilder sb = new SuccTacletBuilder();
-        sb.setIfSequent(seq);
+        sb.setAssumesSequent(seq);
         sb.setFind(A);
         try {
             sb.getTaclet();
@@ -142,7 +142,6 @@ public class TestTacletBuild {
     }
 
     private final HelperClassForTests helper = new HelperClassForTests();
-
     public static final Path testRules =
         HelperClassForTests.TESTCASE_DIRECTORY.resolve("tacletprefix");
 
@@ -163,6 +162,5 @@ public class TestTacletBuild {
         }
         fail("Expected an invalid prefix exception as the the addrule contains "
             + "a schemavariable with wrong prefix.");
-
     }
 }

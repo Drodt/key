@@ -6,6 +6,7 @@ package de.uka.ilkd.key.settings;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import javax.swing.*;
 
 /**
  * This class encapsulates information about: 1) relative font size in the prover view 2) the
@@ -75,13 +76,6 @@ public class ViewSettings extends AbstractPropertiesSettings {
     /// Property name for property [#defaultLookAndFeelDecorated]
     public static final String PROP_DEFAULT_LOOK_AND_FEEL_DECORATED = "defaultLookAndFeelDecorated";
 
-    /**
-     * Boolean flag, if activate the LAF draws the decoration by itself. e.g., FlatLAF
-     */
-    private final PropertyEntry<Boolean> defaultLookAndFeelDecorated =
-        createBooleanProperty(PROP_DEFAULT_LOOK_AND_FEEL_DECORATED, true);
-
-
     private static final String SHOW_JAVA_WARNING = "ShowJavaWarning";
 
     /**
@@ -108,6 +102,11 @@ public class ViewSettings extends AbstractPropertiesSettings {
      * confirm exiting by default
      */
     private static final String CONFIRM_EXIT = "ConfirmExit";
+
+    /**
+     * use the classic (pre-2026) taclet instantiation dialog instead of the redesigned one
+     */
+    private static final String USE_CLASSIC_TACLET_DIALOG = "UseClassicTacletDialog";
 
     /**
      * Heatmap options property
@@ -164,7 +163,8 @@ public class ViewSettings extends AbstractPropertiesSettings {
 
     private static final String NOTIFICATION_AFTER_MACRO = "[View]notificationAfterMacro";
 
-    private static final String LOOK_AND_FEEL_DEFAULT = "com.formdev.flatlaf.FlatLightLaf";
+    private static final String LOOK_AND_FEEL_DEFAULT =
+        UIManager.getCrossPlatformLookAndFeelClassName();
 
     public static final String NOTIFICATION_ALWAYS = "Always";
     public static final String NOTIFICATION_UNFOCUSED = "When not focused";
@@ -206,6 +206,8 @@ public class ViewSettings extends AbstractPropertiesSettings {
     private final PropertyEntry<Boolean> hidePackagePrefix =
         createBooleanProperty(HIDE_PACKAGE_PREFIX, false);
     private final PropertyEntry<Boolean> confirmExit = createBooleanProperty(CONFIRM_EXIT, true);
+    private final PropertyEntry<Boolean> useClassicTacletDialog =
+        createBooleanProperty(USE_CLASSIC_TACLET_DIALOG, false);
     private final PropertyEntry<Boolean> showLoadExamplesDialog =
         createBooleanProperty(SHOW_LOAD_EXAMPLES_DIALOG, true);
     private final PropertyEntry<Boolean> showWholeTaclet =
@@ -213,6 +215,10 @@ public class ViewSettings extends AbstractPropertiesSettings {
     private final PropertyEntry<Integer> sizeIndex = createIntegerProperty(FONT_INDEX, 2);
     private final PropertyEntry<String> lookAndFeel =
         createStringProperty(PROP_LOOK_AND_FEEL, LOOK_AND_FEEL_DEFAULT);
+    /// Boolean flag, if activate the LAF draws the decoration by itself. e.g., FlatLAF. We disable
+    /// it by default, because it prevents the main window to be dragged properly with some LAFs.
+    private final PropertyEntry<Boolean> defaultLookAndFeelDecorated =
+        createBooleanProperty(PROP_DEFAULT_LOOK_AND_FEEL_DECORATED, false);
     private final PropertyEntry<Boolean> showSequentViewTooltips =
         createBooleanProperty(SEQUENT_VIEW_TOOLTIP, true);
     private final PropertyEntry<Boolean> showSourceViewTooltips =
@@ -363,10 +369,6 @@ public class ViewSettings extends AbstractPropertiesSettings {
     }
 
 
-    public PropertyEntry<String> lookAndFeel() {
-        return lookAndFeel;
-    }
-
     /**
      * @return class name of the look and feel to use
      */
@@ -513,6 +515,21 @@ public class ViewSettings extends AbstractPropertiesSettings {
      */
     public void setConfirmExit(boolean confirmExit) {
         this.confirmExit.set(confirmExit);
+    }
+
+    /**
+     * Whether to use the classic (pre-2026) taclet instantiation dialog instead of the redesigned
+     * one. Provided as a fallback for a migration period; the redesigned dialog is the default.
+     */
+    public boolean isUseClassicTacletDialog() {
+        return useClassicTacletDialog.get();
+    }
+
+    /**
+     * Set whether to use the classic taclet instantiation dialog instead of the redesigned one.
+     */
+    public void setUseClassicTacletDialog(boolean b) {
+        this.useClassicTacletDialog.set(b);
     }
 
     public boolean getShowUninstantiatedTaclet() {

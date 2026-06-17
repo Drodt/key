@@ -38,7 +38,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     protected Taclet taclet;
 
     protected Name name = NONAME;
-    protected Sequent ifseq = RustySequentKit.getInstance().getEmptySequent();
+    protected Sequent assumesSeq = RustySequentKit.getInstance().getEmptySequent();
     protected ImmutableList<NewVarcond> varsNew = ImmutableSLList.nil();
     protected final ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
     protected ImmutableList<@NonNull SchemaVariable> noFreeVarIns = ImmutableSLList.nil();
@@ -121,9 +121,9 @@ public abstract class TacletBuilder<T extends Taclet> {
     }
 
     /// sets the ifseq of the Taclet to be built
-    public void setIfSequent(org.key_project.prover.sequent.Sequent seq) {
+    public void setassumesSequent(org.key_project.prover.sequent.Sequent seq) {
         checkContainsFreeVarSV(seq, getName(), "sequent");
-        this.ifseq = seq;
+        this.assumesSeq = seq;
     }
 
     /// adds a new _new_ variable to the variable conditions of the Taclet: v is new and has the
@@ -173,7 +173,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     public abstract void addTacletGoalTemplate(TacletGoalTemplate goal);
 
     public org.key_project.prover.sequent.Sequent ifSequent() {
-        return ifseq;
+        return assumesSeq;
     }
 
     public ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> goalTemplates() {

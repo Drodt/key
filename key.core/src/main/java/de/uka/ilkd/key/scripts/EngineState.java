@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.NamespaceSet;
-import de.uka.ilkd.key.nparser.KeYParser.ProofScriptExpressionContext;
+import de.uka.ilkd.key.nparser.JavaKeYParser.ProofScriptExpressionContext;
 import de.uka.ilkd.key.nparser.KeyIO;
 import de.uka.ilkd.key.parser.ParserException;
 import de.uka.ilkd.key.pp.AbbrevMap;
@@ -281,7 +281,7 @@ public class EngineState {
 
     public Sort toSort(String sortName) throws ScriptException {
         return (getFirstOpenAutomaticGoal() == null ? getProof().getServices().getNamespaces()
-                : getFirstOpenAutomaticGoal().getLocalNamespaces()).sorts().lookup(sortName);
+                : getFirstOpenAutomaticGoal().getLocalNamespaces()).lookupSortOrAlias(sortName);
     }
 
     public Sequent toSequent(String sequent) throws ParserException, ScriptException {

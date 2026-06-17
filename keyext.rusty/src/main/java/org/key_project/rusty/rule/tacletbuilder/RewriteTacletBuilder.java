@@ -54,7 +54,7 @@ public class RewriteTacletBuilder<T extends RewriteTaclet> extends FindTacletBui
         TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this, services);
         prefixBuilder.build();
         RewriteTaclet t = new RewriteTaclet(name,
-            new TacletApplPart(ifseq, applicationRestriction, varsNew, varsNotFreeIn,
+            new TacletApplPart(assumesSeq, applicationRestriction, varsNew, varsNotFreeIn,
                 varsNewDependingOn,
                 variableConditions),
             goals, ruleSets, attrs, (Term) find, prefixBuilder.getPrefixMap(),

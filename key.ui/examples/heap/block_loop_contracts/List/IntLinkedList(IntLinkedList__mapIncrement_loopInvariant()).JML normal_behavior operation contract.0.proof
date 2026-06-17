@@ -952,7 +952,7 @@
             (rule "replace_known_left" (formula "26") (term "1") (ifseqformula "15"))
             (builtin "One Step Simplification" (formula "26"))
             (rule "allLeft" (formula "11") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
             (rule "inEqSimp_homoInEq1" (formula "11") (term "1"))
             (rule "polySimp_mulComm0" (formula "11") (term "1,0,1"))
             (rule "polySimp_rightDist" (formula "11") (term "1,0,1"))
@@ -1115,7 +1115,7 @@
             (builtin "One Step Simplification" (formula "13"))
             (rule "notLeft" (formula "13"))
             (rule "allLeft" (formula "16") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
             (rule "inEqSimp_homoInEq1" (formula "16") (term "1"))
             (rule "polySimp_mulComm0" (formula "16") (term "1,0,1"))
             (rule "polySimp_rightDist" (formula "16") (term "1,0,1"))
@@ -1224,7 +1224,7 @@
             (rule "qeq_literals" (formula "25") (term "0,1,0"))
             (builtin "One Step Simplification" (formula "25"))
             (rule "allLeft" (formula "21") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
             (rule "inEqSimp_homoInEq1" (formula "21") (term "1,0,0,0,0"))
             (rule "polySimp_mulComm0" (formula "21") (term "1,0,1,0,0,0,0"))
             (rule "polySimp_rightDist" (formula "21") (term "1,0,1,0,0,0,0"))
@@ -2617,7 +2617,7 @@
                                                             (rule "commute_and" (formula "11") (term "0,0,1,0,1,0"))
                                                             (rule "commute_and" (formula "21") (term "0,0,1,0,1,0"))
                                                             (rule "ifthenelse_split" (formula "3") (term "0"))
-                                                            (branch "current_0.<created> = TRUE TRUE"
+                                                            (branch "current_0.$created = TRUE TRUE"
                                                                (rule "hideAuxiliaryEq" (formula "4"))
                                                                (rule "replace_known_left" (formula "4") (term "0,1,0,0") (ifseqformula "3"))
                                                                (builtin "One Step Simplification" (formula "4"))
@@ -3423,7 +3423,7 @@
                                                                                     (builtin "One Step Simplification" (formula "44"))
                                                                                     (rule "shift_paren_or" (formula "34") (term "0,0,0,0,0"))
                                                                                     (rule "allLeft" (formula "17") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                     (rule "replace_known_left" (formula "17") (term "0,0,0") (ifseqformula "26"))
                                                                                     (builtin "One Step Simplification" (formula "17"))
                                                                                     (rule "inEqSimp_homoInEq1" (formula "17") (term "1"))
@@ -4360,7 +4360,7 @@
                                                                                     (builtin "One Step Simplification" (formula "1"))
                                                                                     (rule "true_left" (formula "1"))
                                                                                     (rule "allLeft" (formula "17") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                     (rule "replace_known_left" (formula "17") (term "0,0,0") (ifseqformula "26"))
                                                                                     (builtin "One Step Simplification" (formula "17"))
                                                                                     (rule "inEqSimp_homoInEq0" (formula "17") (term "0"))
@@ -7077,7 +7077,7 @@
                                                                                     (rule "leq_literals" (formula "21") (term "0,1"))
                                                                                     (builtin "One Step Simplification" (formula "21"))
                                                                                     (rule "allLeft" (formula "17") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                     (rule "inEqSimp_homoInEq0" (formula "17") (term "1,0"))
                                                                                     (rule "polySimp_mulComm0" (formula "17") (term "1,0,1,0"))
                                                                                     (rule "polySimp_rightDist" (formula "17") (term "1,0,1,0"))
@@ -7136,7 +7136,7 @@
                                                                                     (rule "leq_literals" (formula "18") (term "0,1"))
                                                                                     (builtin "One Step Simplification" (formula "18"))
                                                                                     (rule "allLeft" (formula "19") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                     (rule "inEqSimp_homoInEq1" (formula "19") (term "1"))
                                                                                     (rule "polySimp_mulComm0" (formula "19") (term "1,0,1"))
                                                                                     (rule "polySimp_rightDist" (formula "19") (term "1,0,1"))
@@ -7215,7 +7215,7 @@
                                                                                     (rule "elementOfSingleton" (formula "38") (term "0,0,0"))
                                                                                     (builtin "One Step Simplification" (formula "38"))
                                                                                     (rule "allLeft" (formula "39") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                     (rule "inEqSimp_homoInEq1" (formula "39") (term "1"))
                                                                                     (rule "polySimp_mulComm0" (formula "39") (term "1,0,1"))
                                                                                     (rule "polySimp_rightDist" (formula "39") (term "1,0,1"))
@@ -8555,7 +8555,7 @@
                                                                   )
                                                                )
                                                             )
-                                                            (branch "current_0.<created> = TRUE FALSE"
+                                                            (branch "current_0.$created = TRUE FALSE"
                                                                (rule "hideAuxiliaryEq" (formula "3"))
                                                                (rule "replace_known_right" (formula "3") (term "0,1,0,0") (ifseqformula "28"))
                                                                (builtin "One Step Simplification" (formula "3"))
@@ -9288,7 +9288,7 @@
                                                                                  (builtin "One Step Simplification" (formula "27"))
                                                                                  (rule "true_left" (formula "27"))
                                                                                  (rule "allLeft" (formula "13") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "replace_known_left" (formula "13") (term "0,0,0") (ifseqformula "22"))
                                                                                  (builtin "One Step Simplification" (formula "13"))
                                                                                  (rule "inEqSimp_homoInEq1" (formula "13") (term "1"))
@@ -10798,7 +10798,7 @@
                                                                                  (builtin "One Step Simplification" (formula "43"))
                                                                                  (rule "shift_paren_or" (formula "30") (term "0,0,0,0,0"))
                                                                                  (rule "allLeft" (formula "13") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "replace_known_left" (formula "13") (term "0,0,0") (ifseqformula "22"))
                                                                                  (builtin "One Step Simplification" (formula "13"))
                                                                                  (rule "inEqSimp_homoInEq0" (formula "13") (term "0"))
@@ -11638,7 +11638,7 @@
                                                                                  (builtin "One Step Simplification" (formula "13"))
                                                                                  (rule "true_left" (formula "13"))
                                                                                  (rule "allLeft" (formula "13") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "inEqSimp_homoInEq0" (formula "13") (term "1,0"))
                                                                                  (rule "polySimp_mulComm0" (formula "13") (term "1,0,1,0"))
                                                                                  (rule "polySimp_rightDist" (formula "13") (term "1,0,1,0"))
@@ -11685,7 +11685,7 @@
                                                                                  (rule "leq_literals" (formula "14") (term "0,1"))
                                                                                  (builtin "One Step Simplification" (formula "14"))
                                                                                  (rule "allLeft" (formula "15") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "inEqSimp_homoInEq1" (formula "15") (term "1"))
                                                                                  (rule "polySimp_mulComm0" (formula "15") (term "1,0,1"))
                                                                                  (rule "polySimp_rightDist" (formula "15") (term "1,0,1"))
@@ -11825,7 +11825,7 @@
                                                                                  (rule "hideAuxiliaryEq" (formula "34"))
                                                                                  (rule "eqSymm" (formula "34"))
                                                                                  (rule "allLeft" (formula "35") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "inEqSimp_homoInEq0" (formula "35") (term "1,0"))
                                                                                  (rule "polySimp_mulComm0" (formula "35") (term "1,0,1,0"))
                                                                                  (rule "polySimp_rightDist" (formula "35") (term "1,0,1,0"))
@@ -12731,7 +12731,7 @@
                                                                (rule "commute_or" (formula "28") (term "0,0"))
                                                                (rule "commute_or" (formula "21") (term "0,0"))
                                                                (rule "ifthenelse_split" (formula "4") (term "0"))
-                                                               (branch "current_0.<created> = TRUE TRUE"
+                                                               (branch "current_0.$created = TRUE TRUE"
                                                                   (rule "hideAuxiliaryEq" (formula "5"))
                                                                   (rule "replace_known_left" (formula "5") (term "0,1,0,0") (ifseqformula "4"))
                                                                   (builtin "One Step Simplification" (formula "5"))
@@ -13010,7 +13010,7 @@
                                                                               (rule "commute_and" (formula "33") (term "0,0,1,1,0,0,0,0,0"))
                                                                               (rule "shift_paren_or" (formula "16") (term "0,0,0,0,0"))
                                                                               (rule "allLeft" (formula "27") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "27") (term "0,0,0") (ifseqformula "20"))
                                                                               (builtin "One Step Simplification" (formula "27"))
                                                                               (rule "inEqSimp_homoInEq0" (formula "27") (term "0"))
@@ -13420,7 +13420,7 @@
                                                                               (rule "commute_and" (formula "33") (term "0,0,1,1,0,0,0,0,0"))
                                                                               (rule "shift_paren_or" (formula "16") (term "0,0,0,0,0"))
                                                                               (rule "allLeft" (formula "27") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "27") (term "0,0,0") (ifseqformula "20"))
                                                                               (builtin "One Step Simplification" (formula "27"))
                                                                               (rule "inEqSimp_homoInEq0" (formula "27") (term "0"))
@@ -14427,7 +14427,7 @@
                                                                      )
                                                                   )
                                                                )
-                                                               (branch "current_0.<created> = TRUE FALSE"
+                                                               (branch "current_0.$created = TRUE FALSE"
                                                                   (rule "hideAuxiliaryEq" (formula "4"))
                                                                   (rule "replace_known_right" (formula "4") (term "0,1,0,0") (ifseqformula "29"))
                                                                   (builtin "One Step Simplification" (formula "4"))
@@ -14689,7 +14689,7 @@
                                                                            (rule "shift_paren_or" (formula "27") (term "0,0,0,0,0"))
                                                                            (rule "commute_and" (formula "28") (term "0,0,1,1,0,0,0,0,0"))
                                                                            (rule "allLeft" (formula "11") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "replace_known_left" (formula "11") (term "0,0,0") (ifseqformula "20"))
                                                                            (builtin "One Step Simplification" (formula "11"))
                                                                            (rule "inEqSimp_homoInEq0" (formula "11") (term "0"))
@@ -15106,7 +15106,7 @@
                                                                            (rule "commute_and" (formula "29") (term "0,0,1,1,0,0,0,0,0"))
                                                                            (rule "shift_paren_or" (formula "12") (term "0,0,0,0,0"))
                                                                            (rule "allLeft" (formula "23") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "replace_known_left" (formula "23") (term "0,0,0") (ifseqformula "16"))
                                                                            (builtin "One Step Simplification" (formula "23"))
                                                                            (rule "inEqSimp_homoInEq1" (formula "23") (term "1"))
@@ -15543,7 +15543,7 @@
                                                                   (branch " current_0 = (IntNode)(self.nodeseq@heap[anon( {(self, IntList::$seq)} ∪ infiniteUnion{int j;}(if ( j < self.size ∧ j ≥ 0) then ({((IntNode)self.nodeseq[j], IntNode::$data)}) else (∅)), anon_heap_LOOP«anonHeapFunction»)][i_3_0]) TRUE"
                                                                      (rule "selectOfStore" (formula "38") (term "0,1") (userinteraction))
                                                                      (rule "ifthenelse_split" (formula "38") (term "0,1") (userinteraction))
-                                                                     (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::<created> TRUE"
+                                                                     (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::#$created TRUE"
                                                                         (rule "castDel" (formula "39") (term "0,1") (userinteraction))
                                                                         (rule "getOfSeqConcat" (formula "39") (term "1") (userinteraction))
                                                                         (rule "ifthenelse_split" (formula "39") (term "1") (userinteraction))
@@ -15963,7 +15963,7 @@
                                                                            (rule "commute_and" (formula "12") (term "0,0,1,0"))
                                                                            (rule "commute_and_2" (formula "6") (term "0,0,0,0"))
                                                                            (rule "ifthenelse_split" (formula "5") (term "0"))
-                                                                           (branch "current_0.<created> = TRUE TRUE"
+                                                                           (branch "current_0.$created = TRUE TRUE"
                                                                               (rule "applyEqReverse" (formula "25") (term "1") (ifseqformula "6"))
                                                                               (rule "hideAuxiliaryEq" (formula "6"))
                                                                               (rule "replace_known_left" (formula "22") (term "0,1,0,0") (ifseqformula "5"))
@@ -18390,7 +18390,7 @@
                                                                                  )
                                                                               )
                                                                            )
-                                                                           (branch "current_0.<created> = TRUE FALSE"
+                                                                           (branch "current_0.$created = TRUE FALSE"
                                                                               (rule "applyEqReverse" (formula "24") (term "1") (ifseqformula "5"))
                                                                               (rule "hideAuxiliaryEq" (formula "5"))
                                                                               (rule "replace_known_right" (formula "21") (term "0,1,0,0") (ifseqformula "33"))
@@ -18800,7 +18800,7 @@
                                                                                              (builtin "One Step Simplification" (formula "29"))
                                                                                              (rule "true_left" (formula "29"))
                                                                                              (rule "allLeft" (formula "13") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                              (rule "replace_known_left" (formula "13") (term "0,0,0") (ifseqformula "22"))
                                                                                              (builtin "One Step Simplification" (formula "13"))
                                                                                              (rule "inEqSimp_homoInEq1" (formula "13") (term "1"))
@@ -19488,7 +19488,7 @@
                                                                                              (builtin "One Step Simplification" (formula "29"))
                                                                                              (rule "true_left" (formula "29"))
                                                                                              (rule "allLeft" (formula "13") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                              (rule "replace_known_left" (formula "13") (term "0,0,0") (ifseqformula "22"))
                                                                                              (builtin "One Step Simplification" (formula "13"))
                                                                                              (rule "inEqSimp_homoInEq1" (formula "13") (term "1"))
@@ -20604,7 +20604,7 @@
                                                                               (rule "nnf_imp2or" (formula "26") (term "0,1,0,1,0"))
                                                                               (rule "commute_and" (formula "12") (term "0,0,1,0"))
                                                                               (rule "ifthenelse_split" (formula "5") (term "0"))
-                                                                              (branch "current_0.<created> = TRUE TRUE"
+                                                                              (branch "current_0.$created = TRUE TRUE"
                                                                                  (rule "applyEqReverse" (formula "26") (term "1") (ifseqformula "6"))
                                                                                  (rule "hideAuxiliaryEq" (formula "6"))
                                                                                  (rule "replace_known_left" (formula "23") (term "0,1,0,0") (ifseqformula "5"))
@@ -24459,7 +24459,7 @@
                                                                                     )
                                                                                  )
                                                                               )
-                                                                              (branch "current_0.<created> = TRUE FALSE"
+                                                                              (branch "current_0.$created = TRUE FALSE"
                                                                                  (rule "applyEqReverse" (formula "25") (term "1") (ifseqformula "5"))
                                                                                  (rule "hideAuxiliaryEq" (formula "5"))
                                                                                  (rule "replace_known_right" (formula "22") (term "0,1,0,0") (ifseqformula "33"))
@@ -24925,7 +24925,7 @@
                                                                                                 (rule "true_left" (formula "30"))
                                                                                                 (rule "commute_and" (formula "33") (term "0,0,1,1,0,0,0,0,0"))
                                                                                                 (rule "allLeft" (formula "13") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                                 (rule "replace_known_left" (formula "13") (term "0,0,0") (ifseqformula "22"))
                                                                                                 (builtin "One Step Simplification" (formula "13"))
                                                                                                 (rule "inEqSimp_homoInEq0" (formula "13") (term "0"))
@@ -26211,7 +26211,7 @@
                                                                            )
                                                                         )
                                                                      )
-                                                                     (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::<created> FALSE"
+                                                                     (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::#$created FALSE"
                                                                         (builtin "One Step Simplification" (formula "2"))
                                                                         (builtin "One Step Simplification" (formula "38"))
                                                                         (rule "closeTrue" (formula "38"))
@@ -26693,7 +26693,7 @@
                                                                      (rule "commute_and" (formula "10") (term "0,0,1,0"))
                                                                      (rule "commute_and_2" (formula "4") (term "0,0,0,0"))
                                                                      (rule "ifthenelse_split" (formula "3") (term "0"))
-                                                                     (branch "current_0.<created> = TRUE TRUE"
+                                                                     (branch "current_0.$created = TRUE TRUE"
                                                                         (rule "hideAuxiliaryEq" (formula "4"))
                                                                         (rule "replace_known_left" (formula "4") (term "0,1,0,0") (ifseqformula "3"))
                                                                         (builtin "One Step Simplification" (formula "4"))
@@ -26867,7 +26867,7 @@
                                                                                     (builtin "One Step Simplification" (formula "31"))
                                                                                     (rule "false_right" (formula "31"))
                                                                                     (rule "ifthenelse_split" (formula "23") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "21") (term "0,1,0,0") (ifseqformula "23"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "commute_or" (formula "25") (term "0,0"))
@@ -27651,7 +27651,7 @@
                                                                                           (rule "close" (formula "32") (ifseqformula "13"))
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "21") (term "0,1,0,0") (ifseqformula "31"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "eqSymm" (formula "21"))
@@ -29060,7 +29060,7 @@
                                                                                     (builtin "One Step Simplification" (formula "31"))
                                                                                     (rule "false_right" (formula "31"))
                                                                                     (rule "ifthenelse_split" (formula "23") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "21") (term "0,1,0,0") (ifseqformula "23"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "commute_or" (formula "25") (term "0,0"))
@@ -29877,7 +29877,7 @@
                                                                                           (rule "close" (formula "33") (ifseqformula "28"))
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "21") (term "0,1,0,0") (ifseqformula "31"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "eqSymm" (formula "21"))
@@ -30434,7 +30434,7 @@
                                                                                     (builtin "One Step Simplification" (formula "31"))
                                                                                     (rule "false_right" (formula "31"))
                                                                                     (rule "ifthenelse_split" (formula "23") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "21") (term "0,1,0,0") (ifseqformula "23"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "commute_or" (formula "25") (term "0,0"))
@@ -31395,7 +31395,7 @@
                                                                                           )
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "21") (term "0,1,0,0") (ifseqformula "31"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "eqSymm" (formula "21"))
@@ -33351,7 +33351,7 @@
                                                                                     (builtin "One Step Simplification" (formula "31"))
                                                                                     (rule "false_right" (formula "31"))
                                                                                     (rule "ifthenelse_split" (formula "23") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "21") (term "0,1,0,0") (ifseqformula "23"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "commute_or" (formula "25") (term "0,0"))
@@ -34356,7 +34356,7 @@
                                                                                           )
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "21") (term "0,1,0,0") (ifseqformula "31"))
                                                                                        (builtin "One Step Simplification" (formula "21"))
                                                                                        (rule "eqSymm" (formula "21"))
@@ -35094,7 +35094,7 @@
                                                                            )
                                                                         )
                                                                      )
-                                                                     (branch "current_0.<created> = TRUE FALSE"
+                                                                     (branch "current_0.$created = TRUE FALSE"
                                                                         (rule "hideAuxiliaryEq" (formula "3"))
                                                                         (rule "replace_known_right" (formula "3") (term "0,1,0,0") (ifseqformula "32"))
                                                                         (builtin "One Step Simplification" (formula "3"))
@@ -35285,7 +35285,7 @@
                                                                                     (builtin "One Step Simplification" (formula "30"))
                                                                                     (rule "false_right" (formula "30"))
                                                                                     (rule "ifthenelse_split" (formula "21") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "19") (term "0,1,0,0") (ifseqformula "21"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "commute_or" (formula "23") (term "0,0"))
@@ -35726,7 +35726,7 @@
                                                                                           (rule "close" (formula "32") (ifseqformula "11"))
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "19") (term "0,1,0,0") (ifseqformula "30"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "eqSymm" (formula "19"))
@@ -36195,7 +36195,7 @@
                                                                                     (builtin "One Step Simplification" (formula "30"))
                                                                                     (rule "false_right" (formula "30"))
                                                                                     (rule "ifthenelse_split" (formula "21") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "19") (term "0,1,0,0") (ifseqformula "21"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "commute_or" (formula "23") (term "0,0"))
@@ -36476,7 +36476,7 @@
                                                                                                 (rule "polySimp_elimOne" (formula "27") (term "1,1"))
                                                                                                 (rule "shift_paren_or" (formula "13") (term "0,0,0,0,0"))
                                                                                                 (rule "allLeft" (formula "31") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                                 (rule "replace_known_left" (formula "31") (term "0,0,0") (ifseqformula "17"))
                                                                                                 (builtin "One Step Simplification" (formula "31"))
                                                                                                 (rule "inEqSimp_homoInEq1" (formula "31") (term "1"))
@@ -36530,7 +36530,7 @@
                                                                                                 (rule "mul_literals" (formula "1") (term "1,1,0,0"))
                                                                                                 (rule "shift_paren_or" (formula "14") (term "0,0,0,0,0"))
                                                                                                 (rule "allLeft" (formula "29") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                                 (rule "replace_known_left" (formula "29") (term "0,0,0") (ifseqformula "18"))
                                                                                                 (builtin "One Step Simplification" (formula "29"))
                                                                                                 (rule "inEqSimp_homoInEq1" (formula "29") (term "1"))
@@ -36611,7 +36611,7 @@
                                                                                           (rule "close" (formula "31") (ifseqformula "3"))
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "19") (term "0,1,0,0") (ifseqformula "30"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "eqSymm" (formula "19"))
@@ -36883,7 +36883,7 @@
                                                                                              (rule "true_left" (formula "25"))
                                                                                              (rule "shift_paren_or" (formula "13") (term "0,0,0,0,0"))
                                                                                              (rule "allLeft" (formula "27") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                              (rule "replace_known_left" (formula "27") (term "0,0,0") (ifseqformula "17"))
                                                                                              (builtin "One Step Simplification" (formula "27"))
                                                                                              (rule "inEqSimp_homoInEq1" (formula "27") (term "1"))
@@ -37610,7 +37610,7 @@
                                                                                     (builtin "One Step Simplification" (formula "30"))
                                                                                     (rule "false_right" (formula "30"))
                                                                                     (rule "ifthenelse_split" (formula "21") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "19") (term "0,1,0,0") (ifseqformula "21"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "commute_or" (formula "23") (term "0,0"))
@@ -37984,7 +37984,7 @@
                                                                                           (rule "close" (formula "33") (ifseqformula "11"))
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "19") (term "0,1,0,0") (ifseqformula "30"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "eqSymm" (formula "19"))
@@ -39033,7 +39033,7 @@
                                                                                     (builtin "One Step Simplification" (formula "30"))
                                                                                     (rule "false_right" (formula "30"))
                                                                                     (rule "ifthenelse_split" (formula "21") (term "0"))
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                                        (rule "replace_known_left" (formula "19") (term "0,1,0,0") (ifseqformula "21"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "commute_or" (formula "23") (term "0,0"))
@@ -39475,7 +39475,7 @@
                                                                                           (rule "close" (formula "32") (ifseqformula "3"))
                                                                                        )
                                                                                     )
-                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                                    (branch "(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                                        (rule "replace_known_right" (formula "19") (term "0,1,0,0") (ifseqformula "30"))
                                                                                        (builtin "One Step Simplification" (formula "19"))
                                                                                        (rule "eqSymm" (formula "19"))
@@ -40185,7 +40185,7 @@
                                                             (rule "commute_and_2" (formula "7") (term "0,0,0,0"))
                                                             (rule "commute_or" (formula "29") (term "0,0"))
                                                             (rule "ifthenelse_split" (formula "6") (term "0"))
-                                                            (branch "current_0.<created> = TRUE TRUE"
+                                                            (branch "current_0.$created = TRUE TRUE"
                                                                (rule "hideAuxiliaryEq" (formula "7"))
                                                                (rule "replace_known_left" (formula "7") (term "0,1,0,0") (ifseqformula "6"))
                                                                (builtin "One Step Simplification" (formula "7"))
@@ -40487,7 +40487,7 @@
                                                                            (rule "commute_or_2" (formula "33") (term "0,0,0,0"))
                                                                            (rule "shift_paren_or" (formula "33") (term "0,0,0,0,0"))
                                                                            (rule "allLeft" (formula "17") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "replace_known_left" (formula "17") (term "0,0,0") (ifseqformula "26"))
                                                                            (builtin "One Step Simplification" (formula "17"))
                                                                            (rule "inEqSimp_homoInEq0" (formula "17") (term "0"))
@@ -40904,7 +40904,7 @@
                                                                            (rule "commute_or_2" (formula "33") (term "0,0,0,0"))
                                                                            (rule "shift_paren_or" (formula "33") (term "0,0,0,0,0"))
                                                                            (rule "allLeft" (formula "17") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "replace_known_left" (formula "17") (term "0,0,0") (ifseqformula "26"))
                                                                            (builtin "One Step Simplification" (formula "17"))
                                                                            (rule "inEqSimp_homoInEq1" (formula "17") (term "1"))
@@ -41744,7 +41744,7 @@
                                                                            (builtin "One Step Simplification" (formula "7"))
                                                                            (rule "true_left" (formula "7"))
                                                                            (rule "allLeft" (formula "17") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "inEqSimp_homoInEq0" (formula "17") (term "1,0"))
                                                                            (rule "polySimp_mulComm0" (formula "17") (term "1,0,1,0"))
                                                                            (rule "polySimp_rightDist" (formula "17") (term "1,0,1,0"))
@@ -41790,7 +41790,7 @@
                                                                            (builtin "One Step Simplification" (formula "17"))
                                                                            (rule "notLeft" (formula "17"))
                                                                            (rule "allLeft" (formula "18") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "inEqSimp_homoInEq0" (formula "18") (term "1,0"))
                                                                            (rule "polySimp_mulComm0" (formula "18") (term "1,0,1,0"))
                                                                            (rule "polySimp_rightDist" (formula "18") (term "1,0,1,0"))
@@ -42108,7 +42108,7 @@
                                                                   )
                                                                )
                                                             )
-                                                            (branch "current_0.<created> = TRUE FALSE"
+                                                            (branch "current_0.$created = TRUE FALSE"
                                                                (rule "hideAuxiliaryEq" (formula "6"))
                                                                (rule "replace_known_right" (formula "6") (term "0,1,0,0") (ifseqformula "31"))
                                                                (builtin "One Step Simplification" (formula "6"))
@@ -42382,7 +42382,7 @@
                                                                         (rule "shift_paren_or" (formula "29") (term "0,0,0,0,0"))
                                                                         (rule "commute_and" (formula "30") (term "0,0,1,1,0,0,0,0,0"))
                                                                         (rule "allLeft" (formula "13") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                         (rule "replace_known_left" (formula "13") (term "0,0,0") (ifseqformula "22"))
                                                                         (builtin "One Step Simplification" (formula "13"))
                                                                         (rule "inEqSimp_homoInEq1" (formula "13") (term "1"))
@@ -42808,7 +42808,7 @@
                                                                         (rule "commute_and" (formula "31") (term "0,0,1,1,0,0,0,0,0"))
                                                                         (rule "shift_paren_or" (formula "14") (term "0,0,0,0,0"))
                                                                         (rule "allLeft" (formula "25") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                         (rule "replace_known_left" (formula "25") (term "0,0,0") (ifseqformula "18"))
                                                                         (builtin "One Step Simplification" (formula "25"))
                                                                         (rule "inEqSimp_homoInEq0" (formula "25") (term "0"))
@@ -43088,7 +43088,7 @@
                                                                         (builtin "One Step Simplification" (formula "25"))
                                                                         (rule "notLeft" (formula "25"))
                                                                         (rule "allLeft" (formula "27") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                         (rule "inEqSimp_homoInEq0" (formula "27") (term "1,0"))
                                                                         (rule "polySimp_mulComm0" (formula "27") (term "1,0,1,0"))
                                                                         (rule "polySimp_rightDist" (formula "27") (term "1,0,1,0"))
@@ -43184,7 +43184,7 @@
                                                                         (builtin "One Step Simplification" (formula "29"))
                                                                         (rule "eqSymm" (formula "29") (term "1,0,0,0,0"))
                                                                         (rule "allLeft" (formula "25") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                         (rule "inEqSimp_homoInEq0" (formula "25") (term "1,0"))
                                                                         (rule "polySimp_mulComm0" (formula "25") (term "1,0,1,0"))
                                                                         (rule "polySimp_rightDist" (formula "25") (term "1,0,1,0"))
@@ -43600,7 +43600,7 @@
                                                          (rule "polySimp_elimOne" (formula "12") (term "1,0,0,0,1,0,1,0"))
                                                          (rule "commute_and_2" (formula "5") (term "0,0,0,0"))
                                                          (rule "ifthenelse_split" (formula "4") (term "0"))
-                                                         (branch "current_0.<created> = TRUE TRUE"
+                                                         (branch "current_0.$created = TRUE TRUE"
                                                             (rule "hideAuxiliaryEq" (formula "5"))
                                                             (rule "replace_known_left" (formula "5") (term "0,1,0,0") (ifseqformula "4"))
                                                             (builtin "One Step Simplification" (formula "5"))
@@ -43944,7 +43944,7 @@
                                                                         (builtin "One Step Simplification" (formula "33"))
                                                                         (rule "false_right" (formula "33"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "2"))
                                                                            (rule "notLeft" (formula "1"))
@@ -44136,7 +44136,7 @@
                                                                               (builtin "One Step Simplification" (formula "4"))
                                                                               (rule "true_left" (formula "4"))
                                                                               (rule "allLeft" (formula "25") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "25") (term "0,0,0") (ifseqformula "19"))
                                                                               (builtin "One Step Simplification" (formula "25"))
                                                                               (rule "inEqSimp_homoInEq0" (formula "25") (term "0"))
@@ -44354,7 +44354,7 @@
                                                                               (rule "closeFalse" (formula "1"))
                                                                            )
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "34") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "33"))
@@ -44542,7 +44542,7 @@
                                                                                  (builtin "One Step Simplification" (formula "5"))
                                                                                  (rule "true_left" (formula "5"))
                                                                                  (rule "allLeft" (formula "26") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "replace_known_left" (formula "26") (term "0,0,0") (ifseqformula "20"))
                                                                                  (builtin "One Step Simplification" (formula "26"))
                                                                                  (rule "inEqSimp_homoInEq0" (formula "26") (term "0"))
@@ -44597,7 +44597,7 @@
                                                                                  (builtin "One Step Simplification" (formula "5"))
                                                                                  (rule "true_left" (formula "5"))
                                                                                  (rule "allLeft" (formula "26") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "replace_known_left" (formula "26") (term "0,0,0") (ifseqformula "20"))
                                                                                  (builtin "One Step Simplification" (formula "26"))
                                                                                  (rule "inEqSimp_homoInEq0" (formula "26") (term "0"))
@@ -45090,7 +45090,7 @@
                                                                         (builtin "One Step Simplification" (formula "34"))
                                                                         (rule "false_right" (formula "34"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "2"))
                                                                            (rule "notLeft" (formula "1"))
@@ -45273,7 +45273,7 @@
                                                                               (builtin "One Step Simplification" (formula "1"))
                                                                               (rule "true_left" (formula "1"))
                                                                               (rule "allLeft" (formula "25") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "25") (term "0,0,0") (ifseqformula "19"))
                                                                               (builtin "One Step Simplification" (formula "25"))
                                                                               (rule "inEqSimp_homoInEq0" (formula "25") (term "0"))
@@ -45487,7 +45487,7 @@
                                                                               (rule "closeFalse" (formula "1"))
                                                                            )
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "35") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "34"))
@@ -45675,7 +45675,7 @@
                                                                                  (builtin "One Step Simplification" (formula "5"))
                                                                                  (rule "true_left" (formula "5"))
                                                                                  (rule "allLeft" (formula "26") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "replace_known_left" (formula "26") (term "0,0,0") (ifseqformula "20"))
                                                                                  (builtin "One Step Simplification" (formula "26"))
                                                                                  (rule "inEqSimp_homoInEq1" (formula "26") (term "1"))
@@ -45726,7 +45726,7 @@
                                                                                  (builtin "One Step Simplification" (formula "5"))
                                                                                  (rule "true_left" (formula "5"))
                                                                                  (rule "allLeft" (formula "26") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                                  (rule "replace_known_left" (formula "26") (term "0,0,0") (ifseqformula "20"))
                                                                                  (builtin "One Step Simplification" (formula "26"))
                                                                                  (rule "inEqSimp_homoInEq1" (formula "26") (term "1"))
@@ -46239,7 +46239,7 @@
                                                                         (builtin "One Step Simplification" (formula "34"))
                                                                         (rule "false_right" (formula "34"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "2"))
                                                                            (rule "notLeft" (formula "1"))
@@ -46613,7 +46613,7 @@
                                                                               (rule "closeFalse" (formula "1"))
                                                                            )
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "35") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "34"))
@@ -47271,7 +47271,7 @@
                                                                         (builtin "One Step Simplification" (formula "35"))
                                                                         (rule "false_right" (formula "35"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "1"))
@@ -47677,7 +47677,7 @@
                                                                               (rule "closeFalse" (formula "1"))
                                                                            )
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "36") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "35"))
@@ -48110,7 +48110,7 @@
                                                                )
                                                             )
                                                          )
-                                                         (branch "current_0.<created> = TRUE FALSE"
+                                                         (branch "current_0.$created = TRUE FALSE"
                                                             (rule "hideAuxiliaryEq" (formula "4"))
                                                             (rule "replace_known_right" (formula "4") (term "0,1,0,0") (ifseqformula "29"))
                                                             (builtin "One Step Simplification" (formula "4"))
@@ -48398,7 +48398,7 @@
                                                                         (builtin "One Step Simplification" (formula "33"))
                                                                         (rule "false_right" (formula "33"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "1"))
@@ -48568,7 +48568,7 @@
                                                                            (builtin "One Step Simplification" (formula "1"))
                                                                            (rule "true_left" (formula "1"))
                                                                            (rule "allLeft" (formula "21") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "replace_known_left" (formula "21") (term "0,0,0") (ifseqformula "15"))
                                                                            (builtin "One Step Simplification" (formula "21"))
                                                                            (rule "inEqSimp_homoInEq1" (formula "21") (term "1"))
@@ -48603,7 +48603,7 @@
                                                                            (builtin "One Step Simplification" (formula "21"))
                                                                            (rule "closeFalse" (formula "21"))
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "34") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "33"))
@@ -48768,7 +48768,7 @@
                                                                               (rule "eqSymm" (formula "39"))
                                                                               (rule "applyEq" (formula "39") (term "1") (ifseqformula "25"))
                                                                               (rule "allLeft" (formula "22") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "22") (term "0,0,0") (ifseqformula "16"))
                                                                               (builtin "One Step Simplification" (formula "22"))
                                                                               (rule "inEqSimp_homoInEq1" (formula "22") (term "1"))
@@ -48811,7 +48811,7 @@
                                                                               (builtin "One Step Simplification" (formula "36"))
                                                                               (rule "notRight" (formula "36"))
                                                                               (rule "allLeft" (formula "22") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "22") (term "0,0,0") (ifseqformula "16"))
                                                                               (builtin "One Step Simplification" (formula "22"))
                                                                               (rule "inEqSimp_homoInEq0" (formula "22") (term "0"))
@@ -49047,7 +49047,7 @@
                                                                         (builtin "One Step Simplification" (formula "34"))
                                                                         (rule "false_right" (formula "34"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "2"))
                                                                            (rule "notLeft" (formula "1"))
@@ -49225,7 +49225,7 @@
                                                                            (builtin "One Step Simplification" (formula "21"))
                                                                            (rule "closeFalse" (formula "21"))
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "35") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "34"))
@@ -49612,7 +49612,7 @@
                                                                         (builtin "One Step Simplification" (formula "34"))
                                                                         (rule "false_right" (formula "34"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "2"))
                                                                            (rule "notLeft" (formula "1"))
@@ -49782,7 +49782,7 @@
                                                                            (builtin "One Step Simplification" (formula "1"))
                                                                            (rule "true_left" (formula "1"))
                                                                            (rule "allLeft" (formula "21") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                            (rule "replace_known_left" (formula "21") (term "0,0,0") (ifseqformula "15"))
                                                                            (builtin "One Step Simplification" (formula "21"))
                                                                            (rule "inEqSimp_homoInEq0" (formula "21") (term "0"))
@@ -49813,7 +49813,7 @@
                                                                            (builtin "One Step Simplification" (formula "28"))
                                                                            (rule "closeFalse" (formula "28"))
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "35") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "34"))
@@ -49978,7 +49978,7 @@
                                                                               (rule "eqSymm" (formula "40"))
                                                                               (rule "applyEq" (formula "40") (term "1") (ifseqformula "25"))
                                                                               (rule "allLeft" (formula "22") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "22") (term "0,0,0") (ifseqformula "16"))
                                                                               (builtin "One Step Simplification" (formula "22"))
                                                                               (rule "inEqSimp_homoInEq0" (formula "22") (term "0"))
@@ -50017,7 +50017,7 @@
                                                                               (builtin "One Step Simplification" (formula "36"))
                                                                               (rule "notRight" (formula "36"))
                                                                               (rule "allLeft" (formula "22") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                                               (rule "replace_known_left" (formula "22") (term "0,0,0") (ifseqformula "16"))
                                                                               (builtin "One Step Simplification" (formula "22"))
                                                                               (rule "inEqSimp_homoInEq1" (formula "22") (term "1"))
@@ -50250,7 +50250,7 @@
                                                                         (builtin "One Step Simplification" (formula "35"))
                                                                         (rule "false_right" (formula "35"))
                                                                         (rule "ifthenelse_split" (formula "1") (term "0"))
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE TRUE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE TRUE"
                                                                            (rule "andLeft" (formula "1"))
                                                                            (rule "notLeft" (formula "2"))
                                                                            (rule "notLeft" (formula "1"))
@@ -50450,7 +50450,7 @@
                                                                            (rule "applyEqReverse" (formula "27") (term "0") (ifseqformula "26"))
                                                                            (rule "close" (formula "44") (ifseqformula "27"))
                                                                         )
-                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].<created> = TRUE FALSE"
+                                                                        (branch " ¬(IntNode)self.nodeseq[i_3_0] = null ∧ ¬(IntNode)self.nodeseq[i_3_0].$created = TRUE FALSE"
                                                                            (rule "applyEqReverse" (formula "36") (term "1") (ifseqformula "1"))
                                                                            (rule "hideAuxiliaryEq" (formula "1"))
                                                                            (rule "eqSymm" (formula "35"))
@@ -51394,7 +51394,7 @@
                                              (rule "commute_and" (formula "8") (term "0,0,1,0"))
                                              (rule "commute_and_2" (formula "2") (term "0,0,0,0"))
                                              (rule "ifthenelse_split" (formula "1") (term "0"))
-                                             (branch "current_0.<created> = TRUE TRUE"
+                                             (branch "current_0.$created = TRUE TRUE"
                                                 (rule "hideAuxiliaryEq" (formula "2"))
                                                 (rule "replace_known_left" (formula "2") (term "0,1,0,0") (ifseqformula "1"))
                                                 (builtin "One Step Simplification" (formula "2"))
@@ -52194,7 +52194,7 @@
                                                    )
                                                 )
                                              )
-                                             (branch "current_0.<created> = TRUE FALSE"
+                                             (branch "current_0.$created = TRUE FALSE"
                                                 (rule "hideAuxiliaryEq" (formula "1"))
                                                 (rule "replace_known_right" (formula "1") (term "0,1,0,0") (ifseqformula "26"))
                                                 (builtin "One Step Simplification" (formula "1"))
@@ -53337,7 +53337,7 @@
                                        (rule "commute_or" (formula "24") (term "0,0"))
                                        (rule "commute_or" (formula "25") (term "0,0"))
                                        (rule "ifthenelse_split" (formula "2") (term "0"))
-                                       (branch "current_0.<created> = TRUE TRUE"
+                                       (branch "current_0.$created = TRUE TRUE"
                                           (rule "applyEqReverse" (formula "30") (term "1") (ifseqformula "3"))
                                           (rule "hideAuxiliaryEq" (formula "3"))
                                           (rule "replace_known_left" (formula "3") (term "0,1,0,0") (ifseqformula "2"))
@@ -53617,7 +53617,7 @@
                                                       (rule "commute_and" (formula "31") (term "0,0,1,1,0,0,0,0,0"))
                                                       (rule "shift_paren_or" (formula "14") (term "0,0,0,0,0"))
                                                       (rule "allLeft" (formula "25") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                       (rule "replace_known_left" (formula "25") (term "0,0,0") (ifseqformula "18"))
                                                       (builtin "One Step Simplification" (formula "25"))
                                                       (rule "inEqSimp_homoInEq0" (formula "25") (term "0"))
@@ -54028,7 +54028,7 @@
                                                       (rule "commute_and" (formula "31") (term "0,0,1,1,0,0,0,0,0"))
                                                       (rule "shift_paren_or" (formula "14") (term "0,0,0,0,0"))
                                                       (rule "allLeft" (formula "25") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                       (rule "replace_known_left" (formula "25") (term "0,0,0") (ifseqformula "18"))
                                                       (builtin "One Step Simplification" (formula "25"))
                                                       (rule "inEqSimp_homoInEq1" (formula "25") (term "1"))
@@ -54915,7 +54915,7 @@
                                                       (builtin "One Step Simplification" (formula "25"))
                                                       (rule "notLeft" (formula "25"))
                                                       (rule "allLeft" (formula "25") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                       (rule "inEqSimp_homoInEq0" (formula "25") (term "1,0"))
                                                       (rule "polySimp_mulComm0" (formula "25") (term "1,0,1,0"))
                                                       (rule "polySimp_rightDist" (formula "25") (term "1,0,1,0"))
@@ -55024,7 +55024,7 @@
                                                       (builtin "One Step Simplification" (formula "27"))
                                                       (rule "eqSymm" (formula "27") (term "1,0,0,0"))
                                                       (rule "allLeft" (formula "28") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                       (rule "inEqSimp_homoInEq1" (formula "28") (term "1"))
                                                       (rule "polySimp_mulComm0" (formula "28") (term "1,0,1"))
                                                       (rule "polySimp_rightDist" (formula "28") (term "1,0,1"))
@@ -55344,7 +55344,7 @@
                                              )
                                           )
                                        )
-                                       (branch "current_0.<created> = TRUE FALSE"
+                                       (branch "current_0.$created = TRUE FALSE"
                                           (rule "applyEqReverse" (formula "30") (term "1") (ifseqformula "2"))
                                           (rule "hideAuxiliaryEq" (formula "2"))
                                           (rule "replace_known_right" (formula "2") (term "0,1,0,0") (ifseqformula "26"))
@@ -55608,7 +55608,7 @@
                                                    (rule "commute_and" (formula "27") (term "0,0,1,1,0,0,0,0,0"))
                                                    (rule "shift_paren_or" (formula "10") (term "0,0,0,0,0"))
                                                    (rule "allLeft" (formula "21") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                    (rule "replace_known_left" (formula "21") (term "0,0,0") (ifseqformula "14"))
                                                    (builtin "One Step Simplification" (formula "21"))
                                                    (rule "inEqSimp_homoInEq0" (formula "21") (term "0"))
@@ -55822,7 +55822,7 @@
                                                    (rule "commute_and" (formula "27") (term "0,0,1,1,0,0,0,0,0"))
                                                    (rule "shift_paren_or" (formula "10") (term "0,0,0,0,0"))
                                                    (rule "allLeft" (formula "21") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                    (rule "replace_known_left" (formula "21") (term "0,0,0") (ifseqformula "14"))
                                                    (builtin "One Step Simplification" (formula "21"))
                                                    (rule "inEqSimp_homoInEq1" (formula "21") (term "1"))
@@ -56257,7 +56257,7 @@
                                                    (builtin "One Step Simplification" (formula "21"))
                                                    (rule "notLeft" (formula "21"))
                                                    (rule "allLeft" (formula "21") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                    (rule "inEqSimp_homoInEq1" (formula "21") (term "1"))
                                                    (rule "polySimp_mulComm0" (formula "21") (term "1,0,1"))
                                                    (rule "polySimp_rightDist" (formula "21") (term "1,0,1"))
@@ -56346,7 +56346,7 @@
                                                    (rule "hideAuxiliaryEq" (formula "23"))
                                                    (rule "eqSymm" (formula "23"))
                                                    (rule "allLeft" (formula "24") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                    (rule "inEqSimp_homoInEq1" (formula "24") (term "1"))
                                                    (rule "polySimp_mulComm0" (formula "24") (term "1,0,1"))
                                                    (rule "polySimp_rightDist" (formula "24") (term "1,0,1"))
@@ -57178,7 +57178,7 @@
                                  (branch "CUT: j_0 = i_0 TRUE"
                                     (rule "selectOfStore" (formula "33") (term "0,0,1") (userinteraction))
                                     (rule "ifthenelse_split" (formula "33") (term "0,0,1") (userinteraction))
-                                    (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::<created> TRUE"
+                                    (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::#$created TRUE"
                                        (rule "castDel" (formula "34") (term "0,0,1") (userinteraction))
                                        (rule "getOfSeqConcat" (formula "34") (term "0,1") (userinteraction))
                                        (rule "ifthenelse_split" (formula "34") (term "0,1") (userinteraction))
@@ -57489,7 +57489,7 @@
                                           (rule "commute_and" (formula "10") (term "0,0,1,0"))
                                           (rule "commute_or" (formula "27") (term "0,0"))
                                           (rule "ifthenelse_split" (formula "3") (term "0"))
-                                          (branch "current_0.<created> = TRUE TRUE"
+                                          (branch "current_0.$created = TRUE TRUE"
                                              (rule "hideAuxiliaryEq" (formula "4"))
                                              (rule "replace_known_left" (formula "4") (term "0,1,0,0") (ifseqformula "3"))
                                              (builtin "One Step Simplification" (formula "4"))
@@ -57768,7 +57768,7 @@
                                                 )
                                              )
                                           )
-                                          (branch "current_0.<created> = TRUE FALSE"
+                                          (branch "current_0.$created = TRUE FALSE"
                                              (rule "hideAuxiliaryEq" (formula "3"))
                                              (rule "replace_known_right" (formula "3") (term "0,1,0,0") (ifseqformula "28"))
                                              (builtin "One Step Simplification" (formula "3"))
@@ -58046,7 +58046,7 @@
                                              (rule "ifthenelse_split" (formula "36") (term "0,1") (userinteraction))
                                              (branch " j_0 - seqSub(self.seq@anon_heap_LOOP«anonHeapFunction», 0, i_0).length = 0 TRUE"
                                                 (rule "ifthenelse_split" (formula "6") (term "0") (userinteraction))
-                                                (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = current_0 ∧ j < self.size ∧ j ≥ 0) ∨ ¬current_0.<created> = TRUE TRUE"
+                                                (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = current_0 ∧ j < self.size ∧ j ≥ 0) ∨ ¬current_0.$created = TRUE TRUE"
                                                    (rule "impRight" (formula "38") (userinteraction))
                                                    (rule "applyEqReverse" (formula "39") (term "1,0,0") (ifseqformula "8") (userinteraction))
                                                    (rule "castDel" (formula "39") (term "0") (userinteraction))
@@ -58496,7 +58496,7 @@
                                                          (rule "andLeft" (formula "1") (userinteraction))
                                                          (rule "selectOfAnon" (formula "2") (term "0") (userinteraction))
                                                          (rule "ifthenelse_split" (formula "2") (term "0") (userinteraction))
-                                                         (branch " ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ {(self, IntList::$seq)} ∪ infiniteUnion{int j;}(if ( j < self.size ∧ j ≥ 0) then ({((IntNode)self.nodeseq[j], IntNode::$data)}) else (∅)) ∧ ¬IntNode::$data = java.lang.Object::<created> ∨ ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ freshLocs(heap) TRUE"
+                                                         (branch " ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ {(self, IntList::$seq)} ∪ infiniteUnion{int j;}(if ( j < self.size ∧ j ≥ 0) then ({((IntNode)self.nodeseq[j], IntNode::$data)}) else (∅)) ∧ ¬IntNode::$data = java.lang.Object::#$created ∨ ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ freshLocs(heap) TRUE"
                                                             (rule "applyEq" (formula "44") (term "1,0") (ifseqformula "3") (userinteraction))
                                                             (builtin "One Step Simplification" (formula "9"))
                                                             (builtin "One Step Simplification" (formula "8"))
@@ -58994,7 +58994,7 @@
                                                                (rule "commute_and_2" (formula "2") (term "0,0"))
                                                                (rule "commute_or" (formula "32") (term "0,0"))
                                                                (rule "cut_direct" (formula "33") (term "0"))
-                                                               (branch "CUT: current_0.<created> = TRUE TRUE"
+                                                               (branch "CUT: current_0.$created = TRUE TRUE"
                                                                   (builtin "One Step Simplification" (formula "34"))
                                                                   (rule "true_left" (formula "34"))
                                                                   (rule "replace_known_left" (formula "5") (term "0,0") (ifseqformula "33"))
@@ -60141,7 +60141,7 @@
                                                                      )
                                                                   )
                                                                )
-                                                               (branch "CUT: current_0.<created> = TRUE FALSE"
+                                                               (branch "CUT: current_0.$created = TRUE FALSE"
                                                                   (builtin "One Step Simplification" (formula "33"))
                                                                   (rule "replace_known_right" (formula "5") (term "0,0") (ifseqformula "34"))
                                                                   (builtin "One Step Simplification" (formula "5"))
@@ -60936,7 +60936,7 @@
                                                                )
                                                             )
                                                          )
-                                                         (branch " ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ {(self, IntList::$seq)} ∪ infiniteUnion{int j;}(if ( j < self.size ∧ j ≥ 0) then ({((IntNode)self.nodeseq[j], IntNode::$data)}) else (∅)) ∧ ¬IntNode::$data = java.lang.Object::<created> ∨ ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ freshLocs(heap) FALSE"
+                                                         (branch " ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ {(self, IntList::$seq)} ∪ infiniteUnion{int j;}(if ( j < self.size ∧ j ≥ 0) then ({((IntNode)self.nodeseq[j], IntNode::$data)}) else (∅)) ∧ ¬IntNode::$data = java.lang.Object::#$created ∨ ((IntNode)self.nodeseq[i_0], IntNode::$data) ∊ freshLocs(heap) FALSE"
                                                             (builtin "One Step Simplification" (formula "8"))
                                                             (builtin "One Step Simplification" (formula "7"))
                                                             (builtin "One Step Simplification" (formula "39") (ifInst ""  (formula "1")))
@@ -62655,7 +62655,7 @@
                                                       )
                                                    )
                                                 )
-                                                (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = current_0 ∧ j < self.size ∧ j ≥ 0) ∨ ¬current_0.<created> = TRUE FALSE"
+                                                (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = current_0 ∧ j < self.size ∧ j ≥ 0) ∨ ¬current_0.$created = TRUE FALSE"
                                                    (builtin "One Step Simplification" (formula "3"))
                                                    (builtin "One Step Simplification" (formula "2"))
                                                    (rule "true_left" (formula "3"))
@@ -64192,7 +64192,7 @@
                                              (rule "commute_and" (formula "10") (term "0,0,1,0"))
                                              (rule "commute_and_2" (formula "4") (term "0,0,0,0"))
                                              (rule "ifthenelse_split" (formula "3") (term "0"))
-                                             (branch "current_0.<created> = TRUE TRUE"
+                                             (branch "current_0.$created = TRUE TRUE"
                                                 (rule "hideAuxiliaryEq" (formula "4"))
                                                 (rule "replace_known_left" (formula "4") (term "0,1,0,0") (ifseqformula "3"))
                                                 (builtin "One Step Simplification" (formula "4"))
@@ -64514,7 +64514,7 @@
                                                    )
                                                 )
                                              )
-                                             (branch "current_0.<created> = TRUE FALSE"
+                                             (branch "current_0.$created = TRUE FALSE"
                                                 (rule "hideAuxiliaryEq" (formula "3"))
                                                 (rule "replace_known_right" (formula "3") (term "0,1,0,0") (ifseqformula "28"))
                                                 (builtin "One Step Simplification" (formula "3"))
@@ -64833,7 +64833,7 @@
                                           )
                                        )
                                     )
-                                    (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::<created> FALSE"
+                                    (branch " self = self ∧ IntList::$seq = IntList::$seq ∧ ¬IntList::$seq = java.lang.Object::#$created FALSE"
                                        (builtin "One Step Simplification" (formula "33"))
                                        (rule "closeTrue" (formula "33"))
                                     )
@@ -65270,7 +65270,7 @@
                                     (rule "inEqSimp_sepPosMonomial0" (formula "12") (term "1,0,0,1,0,1,0"))
                                     (rule "mul_literals" (formula "12") (term "1,1,0,0,1,0,1,0"))
                                     (rule "ifthenelse_split" (formula "4") (term "0"))
-                                    (branch "current_0.<created> = TRUE TRUE"
+                                    (branch "current_0.$created = TRUE TRUE"
                                        (rule "hideAuxiliaryEq" (formula "5"))
                                        (rule "replace_known_left" (formula "5") (term "0,1,0,0") (ifseqformula "4"))
                                        (builtin "One Step Simplification" (formula "5"))
@@ -65837,7 +65837,7 @@
                                           )
                                        )
                                     )
-                                    (branch "current_0.<created> = TRUE FALSE"
+                                    (branch "current_0.$created = TRUE FALSE"
                                        (rule "hideAuxiliaryEq" (formula "4"))
                                        (rule "replace_known_right" (formula "4") (term "0,1,0,0") (ifseqformula "28"))
                                        (builtin "One Step Simplification" (formula "4"))
@@ -66577,7 +66577,7 @@
                               (rule "commute_and_2" (formula "4") (term "0,0,0,0"))
                               (rule "commute_and" (formula "10") (term "0,0,1,0"))
                               (rule "ifthenelse_split" (formula "3") (term "0"))
-                              (branch "current_0.<created> = TRUE TRUE"
+                              (branch "current_0.$created = TRUE TRUE"
                                  (rule "hideAuxiliaryEq" (formula "4"))
                                  (rule "replace_known_left" (formula "4") (term "0,1,0,0") (ifseqformula "3"))
                                  (builtin "One Step Simplification" (formula "4"))
@@ -67843,7 +67843,7 @@
                                     )
                                  )
                               )
-                              (branch "current_0.<created> = TRUE FALSE"
+                              (branch "current_0.$created = TRUE FALSE"
                                  (rule "hideAuxiliaryEq" (formula "3"))
                                  (rule "replace_known_right" (formula "3") (term "0,1,0,0") (ifseqformula "28"))
                                  (builtin "One Step Simplification" (formula "3"))
@@ -69026,7 +69026,7 @@
                         (rule "commute_and" (formula "3") (term "0,0"))
                         (rule "commute_or" (formula "27") (term "0,0"))
                         (rule "ifthenelse_split" (formula "4") (term "0"))
-                        (branch "current_0.<created> = TRUE TRUE"
+                        (branch "current_0.$created = TRUE TRUE"
                            (rule "hideAuxiliaryEq" (formula "5"))
                            (rule "replace_known_left" (formula "5") (term "0,1,0,0") (ifseqformula "4"))
                            (builtin "One Step Simplification" (formula "5"))
@@ -69339,7 +69339,7 @@
                                              (rule "commute_or" (formula "29") (term "0,0"))
                                              (rule "commute_or_2" (formula "30") (term "0,0,0,0"))
                                              (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "replace_known_left" (formula "3") (term "0,0,0") (ifseqformula "24"))
                                              (builtin "One Step Simplification" (formula "3"))
                                              (rule "inEqSimp_homoInEq0" (formula "3") (term "0"))
@@ -69761,7 +69761,7 @@
                                                 (rule "applyEqReverse" (formula "47") (term "0") (ifseqformula "7"))
                                                 (rule "hideAuxiliaryEq" (formula "7"))
                                                 (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                 (rule "inEqSimp_homoInEq0" (formula "3") (term "1,0"))
                                                 (rule "polySimp_mulComm0" (formula "3") (term "1,0,1,0"))
                                                 (rule "polySimp_rightDist" (formula "3") (term "1,0,1,0"))
@@ -69803,7 +69803,7 @@
                                                 (builtin "One Step Simplification" (formula "3"))
                                                 (rule "true_left" (formula "3"))
                                                 (rule "allLeft" (formula "18") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                 (rule "replace_known_left" (formula "18") (term "0,0,0") (ifseqformula "27"))
                                                 (builtin "One Step Simplification" (formula "18"))
                                                 (rule "inEqSimp_homoInEq0" (formula "18") (term "0"))
@@ -70196,7 +70196,7 @@
                                              (rule "commute_or" (formula "29") (term "0,0"))
                                              (rule "commute_or_2" (formula "30") (term "0,0,0,0"))
                                              (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "replace_known_left" (formula "3") (term "0,0,0") (ifseqformula "24"))
                                              (builtin "One Step Simplification" (formula "3"))
                                              (rule "inEqSimp_homoInEq1" (formula "3") (term "1"))
@@ -70623,7 +70623,7 @@
                                                 (rule "applyEqReverse" (formula "49") (term "0") (ifseqformula "7"))
                                                 (rule "hideAuxiliaryEq" (formula "7"))
                                                 (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                 (rule "inEqSimp_homoInEq0" (formula "3") (term "1,0"))
                                                 (rule "polySimp_mulComm0" (formula "3") (term "1,0,1,0"))
                                                 (rule "polySimp_rightDist" (formula "3") (term "1,0,1,0"))
@@ -70667,7 +70667,7 @@
                                                 (rule "true_left" (formula "3"))
                                                 (rule "shift_paren_or" (formula "33") (term "0,0,0,0,0"))
                                                 (rule "allLeft" (formula "18") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                 (rule "replace_known_left" (formula "18") (term "0,0,0") (ifseqformula "27"))
                                                 (builtin "One Step Simplification" (formula "18"))
                                                 (rule "inEqSimp_homoInEq0" (formula "18") (term "0"))
@@ -71463,7 +71463,7 @@
                                                 (rule "applyEqReverse" (formula "49") (term "0") (ifseqformula "7"))
                                                 (rule "hideAuxiliaryEq" (formula "7"))
                                                 (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                 (rule "inEqSimp_homoInEq1" (formula "3") (term "1"))
                                                 (rule "polySimp_mulComm0" (formula "3") (term "1,0,1"))
                                                 (rule "polySimp_rightDist" (formula "3") (term "1,0,1"))
@@ -72316,7 +72316,7 @@
                                                 (rule "applyEqReverse" (formula "49") (term "0") (ifseqformula "7"))
                                                 (rule "hideAuxiliaryEq" (formula "7"))
                                                 (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                                 (rule "inEqSimp_homoInEq1" (formula "3") (term "1"))
                                                 (rule "polySimp_mulComm0" (formula "3") (term "1,0,1"))
                                                 (rule "polySimp_rightDist" (formula "3") (term "1,0,1"))
@@ -72518,7 +72518,7 @@
                               )
                            )
                         )
-                        (branch "current_0.<created> = TRUE FALSE"
+                        (branch "current_0.$created = TRUE FALSE"
                            (rule "hideAuxiliaryEq" (formula "4"))
                            (rule "replace_known_right" (formula "4") (term "0,1,0,0") (ifseqformula "29"))
                            (builtin "One Step Simplification" (formula "4"))
@@ -72814,7 +72814,7 @@
                                           (rule "commute_or" (formula "25") (term "0,0"))
                                           (rule "commute_or_2" (formula "26") (term "0,0,0,0"))
                                           (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                           (rule "replace_known_left" (formula "3") (term "0,0,0") (ifseqformula "20"))
                                           (builtin "One Step Simplification" (formula "3"))
                                           (rule "inEqSimp_homoInEq1" (formula "3") (term "1"))
@@ -73000,7 +73000,7 @@
                                           (rule "applyEqReverse" (formula "41") (term "0") (ifseqformula "5"))
                                           (rule "hideAuxiliaryEq" (formula "5"))
                                           (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                           (rule "inEqSimp_homoInEq0" (formula "3") (term "1,0"))
                                           (rule "polySimp_mulComm0" (formula "3") (term "1,0,1,0"))
                                           (rule "polySimp_rightDist" (formula "3") (term "1,0,1,0"))
@@ -73125,7 +73125,7 @@
                                              (rule "commute_or" (formula "28") (term "0,0"))
                                              (rule "commute_or_2" (formula "29") (term "0,0,0,0"))
                                              (rule "allLeft" (formula "14") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "replace_known_left" (formula "14") (term "0,0,0") (ifseqformula "23"))
                                              (builtin "One Step Simplification" (formula "14"))
                                              (rule "inEqSimp_homoInEq1" (formula "14") (term "1"))
@@ -73649,7 +73649,7 @@
                                              (rule "applyEqReverse" (formula "46") (term "0") (ifseqformula "7"))
                                              (rule "hideAuxiliaryEq" (formula "7"))
                                              (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "inEqSimp_homoInEq0" (formula "3") (term "1,0"))
                                              (rule "polySimp_mulComm0" (formula "3") (term "1,0,1,0"))
                                              (rule "polySimp_rightDist" (formula "3") (term "1,0,1,0"))
@@ -73709,7 +73709,7 @@
                                              (rule "inEqSimp_sepPosMonomial0" (formula "1") (term "1,0,0"))
                                              (rule "mul_literals" (formula "1") (term "1,1,0,0"))
                                              (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "inEqSimp_homoInEq0" (formula "3") (term "1,0"))
                                              (rule "polySimp_mulComm0" (formula "3") (term "1,0,1,0"))
                                              (rule "polySimp_rightDist" (formula "3") (term "1,0,1,0"))
@@ -74012,7 +74012,7 @@
                                           (rule "commute_or" (formula "25") (term "0,0"))
                                           (rule "commute_or_2" (formula "26") (term "0,0,0,0"))
                                           (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                           (rule "replace_known_left" (formula "3") (term "0,0,0") (ifseqformula "20"))
                                           (builtin "One Step Simplification" (formula "3"))
                                           (rule "inEqSimp_homoInEq0" (formula "3") (term "0"))
@@ -74286,7 +74286,7 @@
                                              (rule "applyEqReverse" (formula "46") (term "0") (ifseqformula "7"))
                                              (rule "hideAuxiliaryEq" (formula "7"))
                                              (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "inEqSimp_homoInEq0" (formula "3") (term "1,0"))
                                              (rule "polySimp_mulComm0" (formula "3") (term "1,0,1,0"))
                                              (rule "polySimp_rightDist" (formula "3") (term "1,0,1,0"))
@@ -74322,7 +74322,7 @@
                                              (builtin "One Step Simplification" (formula "3"))
                                              (rule "notLeft" (formula "3"))
                                              (rule "allLeft" (formula "14") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "replace_known_left" (formula "14") (term "0,0,0") (ifseqformula "23"))
                                              (builtin "One Step Simplification" (formula "14"))
                                              (rule "inEqSimp_homoInEq1" (formula "14") (term "1"))
@@ -74911,7 +74911,7 @@
                                              (rule "applyEqReverse" (formula "48") (term "0") (ifseqformula "7"))
                                              (rule "hideAuxiliaryEq" (formula "7"))
                                              (rule "allLeft" (formula "3") (inst "t=add(Z(neglit(1(#))),
-    int::select(heap, self, IntLinkedList::$size))"))
+    select<[int]>(heap, self, IntLinkedList::$size))"))
                                              (rule "inEqSimp_homoInEq0" (formula "3") (term "1,0"))
                                              (rule "polySimp_mulComm0" (formula "3") (term "1,0,1,0"))
                                              (rule "polySimp_rightDist" (formula "3") (term "1,0,1,0"))
@@ -76658,7 +76658,7 @@
                (rule "commute_or" (formula "22") (term "0,0"))
                (rule "commute_or_2" (formula "24") (term "0,0,0,0"))
                (rule "orLeft" (formula "25"))
-               (branch " ¬self.last = null ∧ ¬self.last.<created> = TRUE ∧ (self.last@heap).next@anon_heap_LOOP«anonHeapFunction» = null"
+               (branch " ¬self.last = null ∧ ¬self.last.$created = TRUE ∧ (self.last@heap).next@anon_heap_LOOP«anonHeapFunction» = null"
                   (rule "andLeft" (formula "25"))
                   (rule "andLeft" (formula "25"))
                   (rule "notLeft" (formula "26"))
@@ -76666,7 +76666,7 @@
                   (rule "referencedObjectIsCreatedRight" (formula "35") (ifseqformula "34"))
                   (rule "close" (formula "35") (ifseqformula "6"))
                )
-               (branch " ¬(¬self.last = null ∧ ¬self.last.<created> = TRUE) ∧ self.last.next = null"
+               (branch " ¬(¬self.last = null ∧ ¬self.last.$created = TRUE) ∧ self.last.next = null"
                   (rule "andLeft" (formula "25"))
                   (rule "notLeft" (formula "25"))
                   (rule "shift_paren_or" (formula "24") (term "0,0,0,0,0"))
@@ -76742,7 +76742,7 @@
                   (rule "qeq_literals" (formula "24") (term "0,1"))
                   (builtin "One Step Simplification" (formula "24"))
                   (rule "ifthenelse_split" (formula "1") (term "0"))
-                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].<created> = TRUE TRUE"
+                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].$created = TRUE TRUE"
                      (rule "andLeft" (formula "1"))
                      (rule "notLeft" (formula "2"))
                      (rule "notLeft" (formula "1"))
@@ -76786,7 +76786,7 @@
                      (rule "leq_literals" (formula "23"))
                      (rule "closeFalse" (formula "23"))
                   )
-                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].<created> = TRUE FALSE"
+                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].$created = TRUE FALSE"
                      (rule "applyEqReverse" (formula "41") (term "1,1") (ifseqformula "1"))
                      (rule "hideAuxiliaryEq" (formula "1"))
                      (rule "replace_known_right" (formula "1") (term "1,0,0") (ifseqformula "37"))
@@ -77395,7 +77395,7 @@
             (rule "commute_or" (formula "23") (term "0,0"))
             (rule "commute_or_2" (formula "25") (term "0,0,0,0"))
             (rule "orLeft" (formula "26"))
-            (branch " ¬self.last = null ∧ ¬self.last.<created> = TRUE ∧ (self.last@heap).next@anon_heap_LOOP«anonHeapFunction» = null"
+            (branch " ¬self.last = null ∧ ¬self.last.$created = TRUE ∧ (self.last@heap).next@anon_heap_LOOP«anonHeapFunction» = null"
                (rule "andLeft" (formula "26"))
                (rule "andLeft" (formula "26"))
                (rule "notLeft" (formula "26"))
@@ -77403,7 +77403,7 @@
                (rule "referencedObjectIsCreatedRight" (formula "32") (ifseqformula "33"))
                (rule "close" (formula "32") (ifseqformula "6"))
             )
-            (branch " ¬(¬self.last = null ∧ ¬self.last.<created> = TRUE) ∧ self.last.next = null"
+            (branch " ¬(¬self.last = null ∧ ¬self.last.$created = TRUE) ∧ self.last.next = null"
                (rule "andLeft" (formula "26"))
                (rule "notLeft" (formula "26"))
                (rule "shift_paren_or" (formula "25") (term "0,0,0,0,0"))
@@ -78819,7 +78819,7 @@
                   (builtin "One Step Simplification" (formula "20"))
                   (rule "true_left" (formula "20"))
                   (rule "ifthenelse_split" (formula "2") (term "0"))
-                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].<created> = TRUE TRUE"
+                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].$created = TRUE TRUE"
                      (rule "andLeft" (formula "2"))
                      (rule "notLeft" (formula "2"))
                      (rule "notLeft" (formula "2"))
@@ -79656,7 +79656,7 @@
                            (builtin "One Step Simplification" (formula "43"))
                            (rule "commute_or_2" (formula "44") (term "0"))
                            (rule "ifthenelse_split" (formula "35") (term "0"))
-                           (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = (IntNode)self.nodeseq[1 + i_2_0] ∧ j ≥ 0 ∧ j ≤ -1 + i_0) ∨ ¬(IntNode)self.nodeseq[1 + i_2_0].<created> = TRUE TRUE"
+                           (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = (IntNode)self.nodeseq[1 + i_2_0] ∧ j ≥ 0 ∧ j ≤ -1 + i_0) ∨ ¬(IntNode)self.nodeseq[1 + i_2_0].$created = TRUE TRUE"
                               (rule "eqSymm" (formula "36"))
                               (rule "seqGetAlphaCast" (formula "39") (term "0"))
                               (rule "castDel" (formula "39") (term "0"))
@@ -79687,7 +79687,7 @@
                               (builtin "One Step Simplification" (formula "42"))
                               (rule "closeFalse" (formula "42"))
                            )
-                           (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = (IntNode)self.nodeseq[1 + i_2_0] ∧ j ≥ 0 ∧ j ≤ -1 + i_0) ∨ ¬(IntNode)self.nodeseq[1 + i_2_0].<created> = TRUE FALSE"
+                           (branch " ∃ int j; ( (IntNode)self.nodeseq[j] = (IntNode)self.nodeseq[1 + i_2_0] ∧ j ≥ 0 ∧ j ≤ -1 + i_0) ∨ ¬(IntNode)self.nodeseq[1 + i_2_0].$created = TRUE FALSE"
                               (rule "orRight" (formula "59"))
                               (rule "notRight" (formula "60"))
                               (rule "eqSymm" (formula "36"))
@@ -79745,7 +79745,7 @@
                         )
                      )
                   )
-                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].<created> = TRUE FALSE"
+                  (branch " ¬(IntNode)self.nodeseq[i_2_0] = null ∧ ¬(IntNode)self.nodeseq[i_2_0].$created = TRUE FALSE"
                      (rule "applyEqReverse" (formula "37") (term "1,1") (ifseqformula "2"))
                      (rule "hideAuxiliaryEq" (formula "2"))
                      (rule "eqSymm" (formula "36") (term "1"))

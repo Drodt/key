@@ -139,7 +139,7 @@ public class TacletPBuilder extends ExpressionBuilder {
 
     @Override
     public Taclet visitTaclet(KeYRustyParser.TacletContext ctx) {
-        Sequent ifSeq = RustySequentKit.getInstance().getEmptySequent();
+        Sequent assumesSeq = RustySequentKit.getInstance().getEmptySequent();
         ImmutableSet<TacletAnnotation> tacletAnnotations = DefaultImmutableSet.nil();
         if (ctx.LEMMA() != null) {
             tacletAnnotations = tacletAnnotations.add(TacletAnnotation.LEMMA);
@@ -178,8 +178,8 @@ public class TacletPBuilder extends ExpressionBuilder {
         setSchemaVariables(new Namespace<>(schemaVariables()));
         mapOf(ctx.one_schema_var_decl());
 
-        if (ctx.ifSeq != null) {
-            ifSeq = accept(ctx.ifSeq);
+        if (ctx.assumesSeq != null) {
+            assumesSeq = accept(ctx.assumesSeq);
         }
 
         @Nullable
@@ -206,7 +206,7 @@ public class TacletPBuilder extends ExpressionBuilder {
 
         TacletBuilder<?> b = createTacletBuilderFor(find, applicationRestriction, ctx);
         currentTBuilder.push(b);
-        b.setIfSequent(ifSeq);
+        b.setassumesSequent(assumesSeq);
         b.setName(new Name(name));
         accept(ctx.goalspecs());
         mapOf(ctx.varexplist());
@@ -435,7 +435,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         var res = schemaVariables[argIndex];
 
         tacletBuilder.setFind(tb.func(function, tb.var(x)));
-        tacletBuilder.setIfSequent(RustySequentKit.createAnteSequent(
+        tacletBuilder.setassumesSequent(RustySequentKit.createAnteSequent(
             ImmutableSLList
                     .singleton(new SequentFormula(tb.equals(tb.var(x), tb.func(consFn, args))))));
         tacletBuilder.addTacletGoalTemplate(new RewriteTacletGoalTemplate(tb.var(res)));
@@ -952,11 +952,6 @@ public class TacletPBuilder extends ExpressionBuilder {
             mods = new SchemaVariableModifierSet.FormulaSV();
             accept(ctx.schema_modifiers(), mods);
             s = RustyDLTheory.FORMULA;
-        }
-        if (ctx.TERMLABEL() != null) {
-            makeTermLabelSV = true;
-            mods = new SchemaVariableModifierSet.TermLabelSV();
-            accept(ctx.schema_modifiers(), mods);
         }
         if (ctx.UPDATE() != null) {
             mods = new SchemaVariableModifierSet.FormulaSV();

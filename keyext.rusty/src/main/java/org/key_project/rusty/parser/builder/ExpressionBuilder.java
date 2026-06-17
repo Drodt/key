@@ -375,7 +375,7 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     @Override
     public Object visitBracket_term(KeYRustyParser.Bracket_termContext ctx) {
-        Term t = accept(ctx.primitive_labeled_term());
+        Term t = accept(ctx.primitive_term());
         /*
          * for (int i = 0; i < ctx.bracket_suffix_heap().size(); i++) {
          * KeYRustyParser.Brace_suffixContext brace_suffix =
@@ -392,12 +392,6 @@ public class ExpressionBuilder extends DefaultBuilder {
         }
         throw new RuntimeException("TODO");
         // return handleAttributes(t, ctx.attribute());
-    }
-
-    @Override
-    public Object visitPrimitive_labeled_term(KeYRustyParser.Primitive_labeled_termContext ctx) {
-        return accept(ctx.primitive_term());
-        // return updateOrigin(t, ctx, services);
     }
 
     public <T> T defaultOnException(T defaultValue, Supplier<T> supplier) {

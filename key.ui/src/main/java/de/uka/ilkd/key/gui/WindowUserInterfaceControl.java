@@ -23,6 +23,8 @@ import de.uka.ilkd.key.core.KeYMediator;
 import de.uka.ilkd.key.gui.mergerule.MergeRuleCompletion;
 import de.uka.ilkd.key.gui.notification.events.GeneralFailureEvent;
 import de.uka.ilkd.key.gui.notification.events.NotificationEvent;
+import de.uka.ilkd.key.gui.tacletmatch.TacletMatchDialog;
+import de.uka.ilkd.key.gui.tacletmatch.classic.TacletMatchCompletionDialog;
 import de.uka.ilkd.key.macros.ProofMacro;
 import de.uka.ilkd.key.macros.ProofMacroFinishedInfo;
 import de.uka.ilkd.key.nparser.KeyAst;
@@ -54,6 +56,7 @@ import org.key_project.util.collection.Pair;
 import org.key_project.util.java.SwingUtil;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +98,17 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
         };
     }
 
+
+    public void loadProblem(Path file, Consumer<ProblemLoader> configure) {
+        ProblemLoader problemLoader = getProblemLoader(file, null, null, null, getMediator());
+        configure.accept(problemLoader);
+        mainWindow.addRecentFile(file.toAbsolutePath().toString(),
+            problemLoader.getProfileOfNewProofs(),
+            problemLoader.isLoadSingleJavaFile(),
+            problemLoader.getAdditionalProfileOptions());
+        problemLoader.runAsynchronously();
+    }
+
     /**
      * loads the problem or proof from the given file
      *
@@ -102,12 +116,16 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
      * @param classPath the class path entries to use.
      * @param bootClassPath the boot class path to use.
      */
-    public void loadProblem(Path file, List<Path> classPath, Path bootClassPath,
-            List<Path> includes) {
-        mainWindow.addRecentFile(file.toAbsolutePath().toString());
+    public void loadProblem(Path file, @Nullable List<Path> classPath,
+            @Nullable Path bootClassPath, @Nullable List<Path> includes) {
+        mainWindow.addRecentFile(file.toAbsolutePath().toString(), null, false, null);
         ProblemLoader problemLoader =
             getProblemLoader(file, classPath, bootClassPath, includes, getMediator());
         problemLoader.runAsynchronously();
+    }
+
+    public void loadProblem(Path file, Profile profile) {
+        loadProblem(file, (pl) -> pl.setProfileOfNewProofs(profile));
     }
 
     @Override
@@ -117,7 +135,7 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
 
     @Override
     public void loadProofFromBundle(Path proofBundle, Path proofFilename) {
-        mainWindow.addRecentFile(proofBundle.toAbsolutePath().toString());
+        mainWindow.addRecentFile(proofBundle.toAbsolutePath().toString(), null, false, null);
         ProblemLoader problemLoader =
             getProblemLoader(proofBundle, null, null, null, getMediator());
         problemLoader.setProofPath(proofFilename);
@@ -307,7 +325,13 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
 
     @Override
     public void completeAndApplyTacletMatch(TacletInstantiationModel[] models, Goal goal) {
-        new TacletMatchCompletionDialog(mainWindow, models, goal, mainWindow.getMediator());
+        // the redesigned dialog is the default; the classic one is offered as a migration fallback
+        if (ProofIndependentSettings.DEFAULT_INSTANCE.getViewSettings()
+                .isUseClassicTacletDialog()) {
+            new TacletMatchCompletionDialog(mainWindow, models, goal, mainWindow.getMediator());
+        } else {
+            new TacletMatchDialog(mainWindow, models, goal, mainWindow.getMediator());
+        }
     }
 
     @Override
@@ -355,7 +379,8 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
             boolean forceNewProfileOfNewProofs, Consumer<Proof> callback)
             throws ProblemLoaderException {
         if (file != null) {
-            mainWindow.getRecentFiles().addRecentFile(file.toAbsolutePath().toString());
+            mainWindow.getRecentFiles().addRecentFile(file.toAbsolutePath().toString(), profile,
+                false, null);
         }
         try {
             getMediator().stopInterface(true);
@@ -613,4 +638,5 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
         var dialog = new IssueDialog(mainWindow, "Issues", set, true, null);
         dialog.setVisible(true);
     }
+
 }

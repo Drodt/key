@@ -66,7 +66,7 @@ public class AntecTacletBuilder extends FindTacletBuilder<@NonNull AntecTaclet> 
         prefixBuilder.build();
 
         AntecTaclet t = new AntecTaclet(name,
-            new TacletApplPart(ifseq,
+            new TacletApplPart(assumesSeq,
                 applicationRestriction.combine(ApplicationRestriction.ANTECEDENT_POLARITY),
                 varsNew, varsNotFreeIn, varsNewDependingOn,
                 variableConditions),
