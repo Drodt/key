@@ -14,12 +14,13 @@ import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.instantiation.ListInstantiation;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.logic.sort.SortImpl;
-import org.key_project.rusty.rule.inst.ProgramListInstantiation;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.CreateFrameCond;
 import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
@@ -130,7 +131,8 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         public Term transform(Term term, SVInstantiations svInst, Services services) {
             var sv = term.sub(0);
             var pes =
-                (ProgramListInstantiation) svInst.getInstantiationEntry((SchemaVariable) sv.op());
+                (ListInstantiation<RustyProgramElement>) svInst
+                        .getInstantiationEntry((SchemaVariable) sv.op());
 
             var terms = new Term[pes.getInstantiation().size()];
             for (int i = 0; i < terms.length; i++) {
@@ -232,7 +234,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         public Term transform(Term term, SVInstantiations svInst, Services services) {
             var sort = (ParametricSortInstance) term.sub(0).sort();
             var sv = (SchemaVariable) term.sub(1).op();
-            var inst = (ProgramListInstantiation) svInst.getInstantiationEntry(sv);
+            var inst = (ListInstantiation<RustyProgramElement>) svInst.getInstantiationEntry(sv);
             var lst = inst.getInstantiation();
 
             var terms = new Term[lst.size()];
