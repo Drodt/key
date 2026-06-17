@@ -68,8 +68,7 @@ public class TermBuilder {
         if (decl == null) {
             return term;
         }
-        ImmutableList<GenericArgument> args =
-            ImmutableSLList.<GenericArgument>nil().prepend(new SortArg(sort));
+        ImmutableList<GenericArgument> args = ImmutableSLList.singleton(new SortArg(sort));
         ParametricFunctionInstance castFn = ParametricFunctionInstance.get(decl, args);
         return tf.createTerm(castFn, term);
     }
