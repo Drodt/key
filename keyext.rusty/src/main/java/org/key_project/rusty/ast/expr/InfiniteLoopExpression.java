@@ -12,6 +12,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.Label;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.abstraction.Never;
+import org.key_project.rusty.ast.abstraction.TupleType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.RustyASTWalker;
 import org.key_project.rusty.ast.visitor.Visitor;
@@ -87,10 +88,11 @@ public final class InfiniteLoopExpression implements LoopExpression, LabeledExpr
             return Never.INSTANCE;
         }
         var breaksIt = breaks.iterator();
-        Type tyMax = breaksIt.next().type(services);
+        Expr expr = breaksIt.next().expr();
+        Type tyMax = expr == null ? TupleType.UNIT : expr.type(services);
         while (breaksIt.hasNext()) {
-            var b = breaksIt.next();
-            var ty = b.type(services);
+            expr = breaksIt.next().expr();
+            var ty = expr == null ? TupleType.UNIT : expr.type(services);
             if (ty == Never.INSTANCE) {
                 continue;
             }
