@@ -84,6 +84,36 @@ public abstract class FindTacletExecutor
         return newGoals;
     }
 
+    @Override
+    public org.key_project.util.collection.ImmutableList<SequentChangeInfo> getResultSequentChanges(
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
+        final var services = goal.getOverlayServices();
+        final var tacletApp = (TacletApp) ruleApp;
+        final MatchConditions mc = tacletApp.matchConditions();
+        final var newSequentsForGoals = checkAssumesGoals(goal,
+            tacletApp.assumesFormulaInstantiations(), mc, taclet.goalTemplates().size());
+        org.key_project.util.collection.ImmutableList<SequentChangeInfo> result =
+            org.key_project.util.collection.ImmutableSLList.nil();
+        final var it = newSequentsForGoals.iterator();
+        for (var nextGT : taclet.goalTemplates()) {
+            final var gt = (TacletGoalTemplate) nextGT;
+            final SequentChangeInfo currentSequent = it.next();
+            // Mirrors apply(...) but never splits the goal or sets its sequent; skips the
+            // goal-mutating add-rule / add-progvar steps: only builds the would-be sequents.
+            applyReplacewith(gt, currentSequent, tacletApp.posInOccurrence(), mc, goal, tacletApp,
+                services);
+            final PosInOccurrence posWhereToAdd =
+                updatePositionInformation(tacletApp, gt, currentSequent);
+            applyAdd(gt.sequent(), currentSequent, posWhereToAdd, tacletApp.posInOccurrence(), mc,
+                goal, tacletApp, services);
+            result = result.append(currentSequent);
+        }
+        while (it.hasNext()) {
+            result = result.append(it.next());
+        }
+        return result;
+    }
+
     /// applies the `add`-expressions of taclet goal descriptions
     ///
     /// @param add the [Sequent] with the uninstantiated [SequentFormula]'s to be added
