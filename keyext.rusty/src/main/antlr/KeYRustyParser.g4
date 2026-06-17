@@ -30,6 +30,7 @@ varexpId
  | HASSORT
  | NO_FREE_VAR_IN
  | APPLY_ELEMENTARIES_ON_DEREF_M
+ | NEW_DEPENDING_ON
  ;
 
 prog_var_decls
