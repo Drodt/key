@@ -21,7 +21,6 @@ import org.jspecify.annotations.NonNull;
 
 /// Instances of this class are immutable
 public class FindTacletAppContainer extends TacletAppContainer {
-
     /// The position of the rule app in two different representations: <code>positionTag</code>
     /// denotes the concerned formula and survives modifications of the sequent and of parts of the
     /// formula, and <code>applicationPosition</code> is the original position for which the rule
@@ -29,6 +28,12 @@ public class FindTacletAppContainer extends TacletAppContainer {
     /// was created
     private final FormulaTag positionTag;
     private final PosInOccurrence applicationPosition;
+
+    /// Cache for [#getPosInOccurrence(Goal)]: the position re-targeted to the current
+    /// version of the formula. Rebuilding it on every query forces a fresh walk to the
+    /// (possibly deep) find position each time the subterm is accessed. The cache is only
+    /// an optimization, the container stays observably immutable.
+    private PosInOccurrence currentPositionCache;
 
     public String toString() {
         return getTacletApp().toString();
@@ -162,7 +167,11 @@ public class FindTacletAppContainer extends TacletAppContainer {
         final PosInOccurrence topPos =
             p_goal.getFormulaTagManager().getPosForTag(positionTag);
         assert topPos != null;
-        return applicationPosition.replaceSequentFormula(topPos.sequentFormula());
+        PosInOccurrence cached = currentPositionCache;
+        if (cached == null || cached.sequentFormula() != topPos.sequentFormula()) {
+            cached = applicationPosition.replaceSequentFormula(topPos.sequentFormula());
+            currentPositionCache = cached;
+        }
+        return cached;
     }
-
 }
