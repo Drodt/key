@@ -54,9 +54,9 @@ sourceSets.main.java.srcDirs(String.valueOf(projectDir) + '/build/generated-src/
 
 tasks.register('runAntlr4Key', JavaExec) {
     //see incremental task api, prevents rerun if nothing has changed.
-    inputs.files "src/main/antlr/KeYRustyLexer.g4", "src/main/antlr/RustyLexer.g4",
+    inputs.files "src/main/antlr/KeYRustyLexer.g4",
                  "src/main/antlr/RustySchemaLexer.g4",
-                 "src/main/antlr/KeYRustyParser.g4", "src/main/antlr/RustyParser.g4",
+                 "src/main/antlr/KeYRustyParser.g4",
                  "src/main/antlr/RustySchemaParser.g4"
     outputs.dir antlr4OutputKey
     classpath = configurations.antlr4
@@ -65,9 +65,9 @@ tasks.register('runAntlr4Key', JavaExec) {
             "-lib", "../key.ncore/src/main/antlr/",
             "-Xexact-output-dir", "-o", antlr4OutputKey,
             //"-package", "org.key_project.rusty.parser",
-            "src/main/antlr/KeYRustyLexer.g4", "src/main/antlr/RustyLexer.g4",
+            "src/main/antlr/KeYRustyLexer.g4",
             "src/main/antlr/RustySchemaLexer.g4",
-            "src/main/antlr/KeYRustyParser.g4", "src/main/antlr/RustyParser.g4",
+            "src/main/antlr/KeYRustyParser.g4",
             "src/main/antlr/RustySchemaParser.g4"]
     doFirst {
         file(antlr4OutputKey).mkdirs()
