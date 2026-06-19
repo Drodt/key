@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.key_project.logic.Name;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.util.AssertionFailure;
 import org.key_project.util.LRUCache;
@@ -17,10 +18,23 @@ import org.jspecify.annotations.NonNull;
 /// Establishes a cache for the applied rule apps to query them by name.
 /// See the get method for additional required constraints for correctness.
 ///
+/// Within a rule name the applied apps are additionally bucketed by an application
+/// _fingerprint_: the hash code of the application's focus term (`pos.subTerm()`), or
+/// `0` for find-less apps. This turns the duplicate search in
+/// [AbstractNonDuplicateAppFeature] from a linear scan over all same-named applications on the
+/// branch into an O(1) bucket lookup. It is sound for every duplicate check because each one's
+/// `comparePio` implies the two focus terms are equal up to term labels:
+/// [NonDuplicateAppFeature] (equal positions), [EqNonDuplicateAppFeature] (equal
+/// positions modulo formula renaming) and [NonDuplicateAppModPositionFeature] (equal focus
+/// terms modulo irrelevant labels). As `TermImpl.hashCode` ignores term labels, focus terms
+/// that are equal up to labels always share a fingerprint, so a duplicate can only ever live in the
+/// candidate's own bucket -- including for the modulo-position variant, which deliberately matches
+/// the same focus term at different sequent positions.
+///
 /// @author Julian Wiesler
 public class AppliedRuleAppsNameCache {
-    /// cache of all applied rules by name of a node
-    private final LRUCache<Node, HashMap<Name, List<RuleApp>>> cache =
+    /// cache of all applied rules of a node, by rule name and then by application fingerprint
+    private final LRUCache<Node, HashMap<Name, HashMap<Integer, List<RuleApp>>>> cache =
         new LRUCache<>(32);
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -29,19 +43,36 @@ public class AppliedRuleAppsNameCache {
 
     public AppliedRuleAppsNameCache() {}
 
+    /// @return the fingerprint of a rule application: the hash code of its focus term, or `0`
+    /// for a find-less application. The hash ignores term labels (as does
+    /// `TermImpl.hashCode`); see the class comment for why this is sound for all
+    /// duplicate checks. A find-less app uses `0`; should a focus term also hash to
+    /// `0` the only effect is a shared bucket, which the `sameApplication` scan
+    /// resolves.
+    private static int fingerprint(RuleApp app) {
+        final PosInOccurrence pio = app.posInOccurrence();
+        return pio == null ? 0 : pio.subTerm().hashCode();
+    }
+
+    private static void add(HashMap<Name, HashMap<Integer, List<RuleApp>>> nodeCache, RuleApp app) {
+        nodeCache.computeIfAbsent(app.rule().name(), k -> new HashMap<>())
+                .computeIfAbsent(fingerprint(app), k -> new ArrayList<>())
+                .add(app);
+    }
+
     /// Fills the cache value of this instance for node
     ///
     /// @param node the node
     /// @return the value
-    private @NonNull HashMap<Name, List<RuleApp>> fillCacheForNode(
+    private @NonNull HashMap<Name, HashMap<Integer, List<RuleApp>>> fillCacheForNode(
             Node node) {
-        HashMap<Name, List<RuleApp>> nodeCache;
+        HashMap<Name, HashMap<Integer, List<RuleApp>>> nodeCache;
         try {
             writeLock.lock();
             nodeCache = cache.get(node);
             if (nodeCache == null) {
                 // Try to use parent cache to initialize the new cache
-                HashMap<Name, List<RuleApp>> parentCache =
+                HashMap<Name, HashMap<Integer, List<RuleApp>>> parentCache =
                     node.root() ? null : cache.get(node.parent());
                 nodeCache = new HashMap<>();
 
@@ -51,19 +82,21 @@ public class AppliedRuleAppsNameCache {
                         nodeCache = parentCache;
                     } else {
                         // Copy the parent cache
-                        for (Map.Entry<Name, List<RuleApp>> entry : parentCache
+                        for (Map.Entry<Name, HashMap<Integer, List<RuleApp>>> entry : parentCache
                                 .entrySet()) {
-                            nodeCache.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+                            HashMap<Integer, List<RuleApp>> buckets = new HashMap<>();
+                            for (Map.Entry<Integer, List<RuleApp>> bucket : entry.getValue()
+                                    .entrySet()) {
+                                buckets.put(bucket.getKey(), new ArrayList<>(bucket.getValue()));
+                            }
+                            nodeCache.put(entry.getKey(), buckets);
                         }
                     }
 
                     // Parent did not have a rule applied when we calculated this, add the rule
                     // applied
                     // there
-                    RuleApp parentApp =
-                        node.parent().getAppliedRuleApp();
-                    nodeCache.computeIfAbsent(parentApp.rule().name(), k -> new ArrayList<>())
-                            .add(parentApp);
+                    add(nodeCache, node.parent().getAppliedRuleApp());
 
                     // If this is an inner node, we hope we will never revisit it, remove it from
                     // the
@@ -76,9 +109,7 @@ public class AppliedRuleAppsNameCache {
                     Node current = node;
                     while (!current.root()) {
                         final Node par = current.parent();
-
-                        RuleApp a = par.getAppliedRuleApp();
-                        nodeCache.computeIfAbsent(a.rule().name(), k -> new ArrayList<>()).add(a);
+                        add(nodeCache, par.getAppliedRuleApp());
 
                         current = par;
                     }
@@ -93,24 +124,23 @@ public class AppliedRuleAppsNameCache {
         return nodeCache;
     }
 
-    /// Gets rule apps applied to any node before the given node with the given name.
+    /// Gets rule apps applied to any node before the given node with the given name and the given
+    /// application fingerprint (see [#fingerprint(RuleApp)]).
     ///
     /// Multiple assumptions about nodes:
-    /// * The given node is a leaf, no children, no applied rule
-    /// * Only *new* nodes are appended to nodes
-    /// * Non leaf nodes are not changed, pruning is allowed
-    /// * If the tree is pruned the removed nodes are discarded and not reused
+    /// \* The given node is a leaf, no children, no applied rule
     ///
     /// @param node the node
     /// @param name the name
+    /// @param fingerprint the application fingerprint to restrict to
     /// @return rule apps
     public @NonNull List<RuleApp> get(@NonNull Node node,
-            @NonNull Name name) {
+            @NonNull Name name, int fingerprint) {
         if (node.getAppliedRuleApp() != null || node.childrenCount() != 0) {
             throw new AssertionFailure("Expected an empty leaf node");
         }
 
-        HashMap<Name, List<RuleApp>> nodeCache;
+        HashMap<Name, HashMap<Integer, List<RuleApp>>> nodeCache;
         try {
             readLock.lock();
             nodeCache = cache.get(node);
@@ -122,7 +152,11 @@ public class AppliedRuleAppsNameCache {
             nodeCache = fillCacheForNode(node);
         }
 
-        List<RuleApp> apps = nodeCache.get(name);
+        HashMap<Integer, List<RuleApp>> byFingerprint = nodeCache.get(name);
+        if (byFingerprint == null) {
+            return Collections.emptyList();
+        }
+        List<RuleApp> apps = byFingerprint.get(fingerprint);
         return apps == null ? Collections.emptyList() : Collections.unmodifiableList(apps);
     }
 }

@@ -5,6 +5,7 @@ package org.key_project.rusty.util;
 
 import java.io.File;
 
+import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
@@ -16,11 +17,13 @@ import org.key_project.rusty.proof.TacletIndex;
 import org.key_project.rusty.proof.init.*;
 import org.key_project.rusty.proof.io.KeYFileForTests;
 import org.key_project.rusty.proof.io.RuleSourceFactory;
+import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.key_project.rusty.proof.io.RuleSource.LDT_FILE;
 
@@ -61,6 +64,13 @@ public class TacletForTests {
 
     public static @Nullable TacletIndex getRules() {
         return rules;
+    }
+
+    @NonNull
+    public static NoPosTacletApp lookupTaclet(String name) {
+        var result = getRules().lookup(new Name(name));
+        assertNotNull(result, "Failed to find taclet " + name);
+        return result;
     }
 
     public static void clear() {
