@@ -8,7 +8,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface LitFloatTy {
+public sealed interface LitFloatTy {
     record Suffixed(FloatTy ty) implements LitFloatTy {
     }
 

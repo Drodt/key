@@ -9,7 +9,7 @@ import org.key_project.rusty.speclang.spec.LoopSpec;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ExprKind {
+public sealed interface ExprKind {
     record ConstBlock(ConstBlockExpr block) implements ExprKind {
     }
 

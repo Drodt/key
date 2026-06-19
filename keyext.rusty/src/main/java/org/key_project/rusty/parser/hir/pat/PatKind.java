@@ -11,7 +11,10 @@ import org.key_project.rusty.parser.hir.expr.Expr;
 
 import org.jspecify.annotations.Nullable;
 
-public interface PatKind {
+public sealed interface PatKind
+        permits PatField, PatKind.Binding, PatKind.Box, PatKind.Deref, PatKind.Expr, PatKind.Guard,
+        PatKind.Lit, PatKind.Never, PatKind.Or, PatKind.Path, PatKind.Range, PatKind.Ref,
+        PatKind.Slice, PatKind.Struct, PatKind.Tuple, PatKind.TupleStruct, PatKind.Wild {
     record Wild() implements PatKind {
     }
 

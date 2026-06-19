@@ -8,7 +8,7 @@ import org.key_project.rusty.parser.hir.Span;
 
 import org.jspecify.annotations.Nullable;
 
-public interface CaptureBy {
+public sealed interface CaptureBy {
     record Value(Span moveKw) implements CaptureBy {
     }
     record Ref() implements CaptureBy {

@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface TyConst {
+public sealed interface TyConst {
     record Param(ParamConst pc) implements TyConst {
     }
 

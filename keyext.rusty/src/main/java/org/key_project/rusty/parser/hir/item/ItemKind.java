@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ItemKind {
+public sealed interface ItemKind permits Const, Enum, ExternCrate, Fn, Struct, Use {
     class Adapter extends HirAdapter<ItemKind> {
         @Override
         public @Nullable Class<? extends ItemKind> getType(String tag) {

@@ -5,7 +5,7 @@ package org.key_project.rusty.parser.hir;
 
 import org.jspecify.annotations.Nullable;
 
-public interface DefKind {
+public sealed interface DefKind {
     record Mod() implements DefKind {
     }
 

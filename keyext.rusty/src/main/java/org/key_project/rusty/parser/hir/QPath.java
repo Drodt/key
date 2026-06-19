@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.hirty.HirTy;
 
 import org.jspecify.annotations.Nullable;
 
-public interface QPath {
+public sealed interface QPath {
     record Resolved(@Nullable HirTy ty, Path<Res> path) implements QPath {
     }
 

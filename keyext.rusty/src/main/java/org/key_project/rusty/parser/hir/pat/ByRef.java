@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ByRef {
+public sealed interface ByRef {
     record Yes(boolean mut) implements ByRef {
     }
 

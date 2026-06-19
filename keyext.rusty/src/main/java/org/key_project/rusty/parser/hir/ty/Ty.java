@@ -12,7 +12,7 @@ import org.key_project.rusty.parser.hir.item.FnHeader;
 
 import org.jspecify.annotations.Nullable;
 
-public interface Ty {
+public sealed interface Ty {
     record Bool() implements Ty {
     }
 
@@ -101,7 +101,6 @@ public interface Ty {
                 case "Alias" -> Alias.class;
                 case "Param" -> Param.class;
                 case "Bound" -> Bound.class;
-
                 default -> null;
             };
         }

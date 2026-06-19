@@ -10,7 +10,7 @@ import org.key_project.rusty.parser.hir.item.Item;
 
 import org.jspecify.annotations.Nullable;
 
-public interface HirTyKind {
+public sealed interface HirTyKind {
     // InferDelegation?
 
     record Slice(HirTy ty) implements HirTyKind {

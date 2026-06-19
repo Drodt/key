@@ -3,8 +3,21 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.expr;
 
-public interface MatchSource {
+import org.key_project.rusty.parser.hir.HirAdapter;
+
+import org.jspecify.annotations.Nullable;
+
+public sealed interface MatchSource {
     record Normal() implements MatchSource {
     }
 
+    class Adapter extends HirAdapter<MatchSource> {
+        @Override
+        public @Nullable Class<? extends MatchSource> getType(String tag) {
+            return switch (tag) {
+                case "Normal" -> Normal.class;
+                default -> null;
+            };
+        }
+    }
 }

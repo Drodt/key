@@ -5,7 +5,7 @@ package org.key_project.rusty.parser.hir;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ParamName {
+public sealed interface ParamName {
     record Plain(Ident ident) implements ParamName {
     }
 

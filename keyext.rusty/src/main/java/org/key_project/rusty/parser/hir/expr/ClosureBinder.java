@@ -8,7 +8,7 @@ import org.key_project.rusty.parser.hir.Span;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ClosureBinder {
+public sealed interface ClosureBinder {
     record Default() implements ClosureBinder {
     }
 
