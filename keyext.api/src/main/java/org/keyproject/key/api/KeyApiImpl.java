@@ -412,9 +412,10 @@ public final class KeyApiImpl implements KeyApi {
             var node = data.find(nodeId);
             var env = data.find(nodeId.proofId().env());
             var notInfo = new NotationInfo();
-            int indent = options.indentation() > 0 ? options.indentation() : PosTableLayouter.INDENT;
+            int indent =
+                options.indentation() > 0 ? options.indentation() : PosTableLayouter.INDENT;
             final var layouter =
-                new PosTableLayouter(options.width(),indent, options.pure());
+                new PosTableLayouter(options.width(), indent, options.pure());
             var lp = new LogicPrinter(notInfo, env.getServices(), layouter);
             lp.printSequent(node.sequent());
 
