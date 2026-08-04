@@ -412,8 +412,9 @@ public final class KeyApiImpl implements KeyApi {
             var node = data.find(nodeId);
             var env = data.find(nodeId.proofId().env());
             var notInfo = new NotationInfo();
+            int indent = options.indentation() > 0 ? options.indentation() : PosTableLayouter.INDENT;
             final var layouter =
-                new PosTableLayouter(options.width(), options.indentation(), options.pure());
+                new PosTableLayouter(options.width(),indent, options.pure());
             var lp = new LogicPrinter(notInfo, env.getServices(), layouter);
             lp.printSequent(node.sequent());
 
@@ -428,7 +429,8 @@ public final class KeyApiImpl implements KeyApi {
                 tacletApplicationInfo = taclet.toString();
             }
 
-            var terms = expandTermsForTable(layouter.getInitialPositionTable());
+            var terms = options.pure() ? new NodeTextSpan[0]
+                    : expandTermsForTable(layouter.getInitialPositionTable());
             return new NodeTextDesc(id, lp.result(), terms, tacletApplicationInfo);
         });
     }

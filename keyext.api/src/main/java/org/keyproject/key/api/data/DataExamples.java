@@ -79,7 +79,7 @@ public class DataExamples {
 
     public LoadParams getLoadParams() {
         return new LoadParams(Uri.from(new File("/home/weigl/test.key")),
-            List.of(), null, List.of());
+            List.of());
     }
 
 
