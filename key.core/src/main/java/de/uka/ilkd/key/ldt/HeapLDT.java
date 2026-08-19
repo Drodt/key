@@ -32,7 +32,6 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -125,7 +124,7 @@ public final class HeapLDT extends LDT {
         acc = addFunction(services, "acc");
         reach = addFunction(services, "reach");
         prec = addFunction(services, "prec");
-        heaps = ImmutableSLList.<LocationVariable>nil()
+        heaps = ImmutableList.<LocationVariable>nil()
                 .append((LocationVariable) progVars.lookup(BASE_HEAP_NAME))
                 .append((LocationVariable) progVars.lookup(SAVED_HEAP_NAME));
         if (services instanceof Services s) {
@@ -180,7 +179,7 @@ public final class HeapLDT extends LDT {
      */
     public static @Nullable SplitFieldName trySplitFieldName(Named symbol) {
         if (symbol instanceof ParametricFunctionInstance pfi) {
-            // e.g., $classErroneous<[A]>
+            // e.g., $classErroneous<A>
             return new SplitFieldName(pfi.getArgs().head().sort().toString(),
                 pfi.getBase().name().toString());
         }
@@ -270,7 +269,7 @@ public final class HeapLDT extends LDT {
      * Check if the given operator is an instance of the "final" function to access final fields.
      *
      * @param op the operator to check
-     * @return true if the operator is an instance of the {@code final<[X]>} parametric function
+     * @return true if the operator is an instance of the {@code final<X>} parametric function
      */
     public boolean isFinalOp(org.key_project.logic.op.Operator op) {
         return op instanceof ParametricFunctionInstance pfi

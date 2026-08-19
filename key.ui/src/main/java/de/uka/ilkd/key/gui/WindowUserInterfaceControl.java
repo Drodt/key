@@ -6,10 +6,7 @@ package de.uka.ilkd.key.gui;
 import java.awt.Cursor;
 import java.io.File;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.swing.*;
@@ -192,7 +189,11 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
                     && mainWindow.getMediator().getSelectedProof() == proof) {
                 Goal g = result.nonCloseableGoal();
                 if (g == null) {
-                    g = proof.openGoals().head();
+                    try {
+                        g = proof.openGoals().head();
+                    } catch (NoSuchElementException e) {
+                        // all closed
+                    }
                 }
                 mainWindow.getMediator().goalChosen(g);
                 if (inStopAtFirstUncloseableGoalMode(proof)) {
@@ -211,6 +212,10 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
             if (!isAtLeastOneMacroRunning()) {
                 mainWindow.hideStatusProgress();
                 assert info instanceof ProofMacroFinishedInfo;
+                // Show the macro's aggregate result (total rules applied / goals closed). Without
+                // this the status line keeps whatever the macro's last internal strategy run left
+                // there -- a tiny partial count rather than the whole macro's work.
+                mainWindow.displayResults(info.toString());
                 final Proof proof = (Proof) info.getProof();
                 if (proof != null && !proof.closed()
                         && mainWindow.getMediator().getSelectedProof() == proof) {
@@ -260,8 +265,6 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
                 mainWindow.displayResults(info.toString());
             }
         }
-        // this seems to be a good place to free some memory
-        Runtime.getRuntime().gc();
     }
 
     /**
@@ -540,11 +543,9 @@ public class WindowUserInterfaceControl extends AbstractMediatorUserInterfaceCon
                 }
                 if (result.hasErrors()) {
                     throw new ProblemLoaderException(loader,
-                        "Proof could only be loaded partially.\n" + "In summary "
-                            + result.getErrorList().size()
-                            + " not loadable rule application(s) have been detected.\n"
-                            + "The first one:\n" + result.getErrorList().getFirst().getMessage(),
-                        result.getErrorList().getFirst());
+                        "The proof could only be loaded partially: " + result.getErrorList().size()
+                            + " rule application(s) could not be replayed (see the list below).",
+                        result.getErrorList());
                 }
             }
         }

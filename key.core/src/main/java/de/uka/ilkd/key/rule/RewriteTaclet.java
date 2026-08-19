@@ -37,6 +37,7 @@ import org.jspecify.annotations.NonNull;
  * structure described by the term of the find-part.
  */
 public class RewriteTaclet extends FindTaclet {
+
     /**
      * creates a Schematic Theory Specific Rule (Taclet) with the given parameters that represents a
      * rewrite rule.
@@ -108,6 +109,13 @@ public class RewriteTaclet extends FindTaclet {
     public MatchConditions checkPrefix(
             PosInOccurrence p_pos,
             MatchConditions p_mc) {
+        // Fast path: for an unrestricted taclet the loop below only vetoes on a Transformer on the
+        // path; if the formula has none at all (cached), neither can the prefix, so the O(depth)
+        // walk is skipped.
+        if (applicationRestriction().equals(ApplicationRestriction.NONE)
+                && !((JTerm) p_pos.sequentFormula().formula()).containsTransformerRecursive()) {
+            return p_mc;
+        }
         int polarity = p_pos.isInAntec() ? -1 : 1; // init polarity
         SVInstantiations svi = p_mc.getInstantiations();
         // this is assumed to hold
@@ -176,11 +184,21 @@ public class RewriteTaclet extends FindTaclet {
         return polarity;
     }
 
-
     @Override
     protected StringBuffer toStringFind(StringBuffer sb) {
         StringBuffer res = super.toStringFind(sb);
-        return res.append(applicationRestriction().toString());
+        return res.append(applicationRestriction().toString(needsSameUpdateLevel()));
+    }
+
+    private boolean needsSameUpdateLevel() {
+        if (!assumesSequent.isEmpty()) {
+            return true;
+        }
+        for (var tgt : goalTemplates) {
+            if (!tgt.sequent().isEmpty())
+                return true;
+        }
+        return false;
     }
 
     public SequentFormula getRewriteResult(Goal goal, TermLabelState termLabelState,

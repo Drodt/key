@@ -9,8 +9,8 @@ import java.util.Map;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.ast.SourceElement;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.declaration.ModifierKind;
 import de.uka.ilkd.key.java.ast.declaration.TypeDeclaration;
-import de.uka.ilkd.key.java.ast.declaration.modifier.Private;
 import de.uka.ilkd.key.java.ast.statement.CatchAllStatement;
 import de.uka.ilkd.key.ldt.HeapLDT;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
@@ -32,7 +32,6 @@ import de.uka.ilkd.key.speclang.ContractFactory;
 import de.uka.ilkd.key.speclang.FunctionalOperationContract;
 
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 
 /**
@@ -143,7 +142,7 @@ public final class DLSpecFactory {
 
     private ImmutableList<LocationVariable> extractParamVars(
             UseOperationContractRule.Instantiation inst) throws ProofInputException {
-        ImmutableList<LocationVariable> result = ImmutableSLList.nil();
+        ImmutableList<LocationVariable> result = ImmutableList.nil();
         for (JTerm param : inst.actualParams()) {
             if (param.op() instanceof LocationVariable lv) {
                 result = result.append(lv);
@@ -196,7 +195,8 @@ public final class DLSpecFactory {
         final KeYJavaType kjt = services.getJavaInfo().getKeYJavaType(selfVar.sort());
         assert kjt != null;
 
-        return new ClassInvariantImpl(name, displayName, kjt, new Private(), inv, selfVar);
+        return new ClassInvariantImpl(name, displayName, kjt, ModifierKind.PRIVATE, inv,
+            selfVar);
     }
 
 

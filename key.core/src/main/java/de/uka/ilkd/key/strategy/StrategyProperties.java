@@ -54,6 +54,14 @@ public final class StrategyProperties extends Properties {
     public static final String DEP_ON = "DEP_ON";
     public static final String DEP_OFF = "DEP_OFF";
 
+    public static final String HEAP_REDUCTION_OPTIONS_KEY = "HEAP_REDUCTION_OPTIONS_KEY";
+    public static final String HEAP_REDUCTION_NORMAL = "HEAP_REDUCTION_NORMAL";
+    public static final int HEAP_REDUCTION_NORMAL_BOUND = 8;
+    public static final String HEAP_REDUCTION_DELAYED = "HEAP_REDUCTION_DELAYED";
+    public static final int HEAP_REDUCTION_DELAYED_BOUND = 16;
+    public static final String HEAP_REDUCTION_OFF = "HEAP_REDUCTION_OFF";
+
+
     public static final String QUERY_OPTIONS_KEY = "QUERY_NEW_OPTIONS_KEY";
     public static final String QUERY_ON = "QUERY_ON";
     public static final String QUERY_RESTRICTED = "QUERY_RESTRICTED";
@@ -78,6 +86,19 @@ public final class StrategyProperties extends Properties {
     public static final String QUANTIFIERS_NON_SPLITTING_WITH_PROGS =
         "QUANTIFIERS_NON_SPLITTING_WITH_PROGS";
     public static final String QUANTIFIERS_INSTANTIATE = "QUANTIFIERS_INSTANTIATE";
+
+    /**
+     * The quantifier instantiation treatment. {@link #TRIGGERS_BEST} and {@link #TRIGGERS_GOOD}
+     * both use the theory-aware trigger selection (heap and array reads); they differ in how tied
+     * candidates are ordered, {@code BEST} by the proving-polarity connection to the sequent,
+     * {@code GOOD} by generation with a lighter ordering. {@link #TRIGGERS_CLASSIC} uses the plain
+     * equality-and-integer trigger selection with no candidate ordering, matching the previous
+     * behaviour.
+     */
+    public static final String TRIGGERS_OPTIONS_KEY = "TRIGGERS_OPTIONS_KEY";
+    public static final String TRIGGERS_BEST = "TRIGGERS_BEST";
+    public static final String TRIGGERS_GOOD = "TRIGGERS_GOOD";
+    public static final String TRIGGERS_CLASSIC = "TRIGGERS_CLASSIC";
 
     public static final String VBT_PHASE = "VBT_PHASE"; // Used for verification-based testing
     public static final String VBT_SYM_EX = "VBT_SYM_EX";
@@ -165,12 +186,16 @@ public final class StrategyProperties extends Properties {
         LOOP_SCOPE_INV_TACLET, LOOP_SCOPE_EXPAND, LOOP_NONE, BLOCK_OPTIONS_KEY,
         BLOCK_CONTRACT_INTERNAL, BLOCK_CONTRACT_EXTERNAL, BLOCK_EXPAND, BLOCK_NONE,
         METHOD_OPTIONS_KEY, METHOD_EXPAND, METHOD_CONTRACT, METHOD_NONE, MPS_OPTIONS_KEY, MPS_MERGE,
-        MPS_SKIP, MPS_NONE, DEP_OPTIONS_KEY, DEP_ON, DEP_OFF, QUERY_OPTIONS_KEY, QUERY_ON,
+        MPS_SKIP, MPS_NONE, DEP_OPTIONS_KEY, DEP_ON, DEP_OFF, HEAP_REDUCTION_OPTIONS_KEY,
+        HEAP_REDUCTION_NORMAL, HEAP_REDUCTION_DELAYED, HEAP_REDUCTION_OFF, QUERY_OPTIONS_KEY,
+        QUERY_ON,
         QUERY_RESTRICTED, QUERY_OFF, QUERYAXIOM_OPTIONS_KEY, QUERYAXIOM_ON, QUERYAXIOM_OFF,
         NON_LIN_ARITH_OPTIONS_KEY, NON_LIN_ARITH_NONE, NON_LIN_ARITH_DEF_OPS,
         NON_LIN_ARITH_COMPLETION, OSS_OPTIONS_KEY, OSS_ON, OSS_OFF, QUANTIFIERS_OPTIONS_KEY,
         QUANTIFIERS_NONE, QUANTIFIERS_NON_SPLITTING, QUANTIFIERS_NON_SPLITTING_WITH_PROGS,
-        QUANTIFIERS_INSTANTIATE, VBT_PHASE, VBT_SYM_EX, VBT_QUAN_INST, VBT_MODEL_GEN,
+        QUANTIFIERS_INSTANTIATE, TRIGGERS_OPTIONS_KEY, TRIGGERS_BEST, TRIGGERS_GOOD,
+        TRIGGERS_CLASSIC, VBT_PHASE,
+        VBT_SYM_EX, VBT_QUAN_INST, VBT_MODEL_GEN,
         CLASS_AXIOM_OFF, CLASS_AXIOM_DELAYED, CLASS_AXIOM_FREE, AUTO_INDUCTION_OPTIONS_KEY,
         AUTO_INDUCTION_OFF, AUTO_INDUCTION_RESTRICTED, AUTO_INDUCTION_ON, AUTO_INDUCTION_LEMMA_ON,
         USER_TACLETS_OPTIONS_KEY_BASE, USER_TACLETS_OFF, USER_TACLETS_LOW, USER_TACLETS_HIGH,
@@ -192,10 +217,12 @@ public final class StrategyProperties extends Properties {
         DEFAULT_MAP.setProperty(MPS_OPTIONS_KEY, MPS_MERGE);
         DEFAULT_MAP.setProperty(OSS_OPTIONS_KEY, OSS_ON);
         DEFAULT_MAP.setProperty(DEP_OPTIONS_KEY, DEP_ON);
+        DEFAULT_MAP.setProperty(HEAP_REDUCTION_OPTIONS_KEY, HEAP_REDUCTION_NORMAL);
         DEFAULT_MAP.setProperty(QUERY_OPTIONS_KEY, QUERY_OFF);
         DEFAULT_MAP.setProperty(QUERYAXIOM_OPTIONS_KEY, QUERYAXIOM_ON);
         DEFAULT_MAP.setProperty(NON_LIN_ARITH_OPTIONS_KEY, NON_LIN_ARITH_NONE);
         DEFAULT_MAP.setProperty(QUANTIFIERS_OPTIONS_KEY, QUANTIFIERS_NON_SPLITTING_WITH_PROGS);
+        DEFAULT_MAP.setProperty(TRIGGERS_OPTIONS_KEY, TRIGGERS_BEST);
         for (int i = 1; i <= USER_TACLETS_NUM; ++i) {
             DEFAULT_MAP.setProperty(userTacletsOptionsKey(i), USER_TACLETS_OFF);
         }
@@ -217,11 +244,13 @@ public final class StrategyProperties extends Properties {
         put(METHOD_OPTIONS_KEY, DEFAULT_MAP.get(METHOD_OPTIONS_KEY));
         put(MPS_OPTIONS_KEY, DEFAULT_MAP.get(MPS_OPTIONS_KEY));
         put(DEP_OPTIONS_KEY, DEFAULT_MAP.get(DEP_OPTIONS_KEY));
+        put(HEAP_REDUCTION_OPTIONS_KEY, DEFAULT_MAP.get(HEAP_REDUCTION_OPTIONS_KEY));
         put(QUERY_OPTIONS_KEY, DEFAULT_MAP.get(QUERY_OPTIONS_KEY));
         put(QUERYAXIOM_OPTIONS_KEY, DEFAULT_MAP.get(QUERYAXIOM_OPTIONS_KEY));
         put(NON_LIN_ARITH_OPTIONS_KEY, DEFAULT_MAP.get(NON_LIN_ARITH_OPTIONS_KEY));
         put(OSS_OPTIONS_KEY, DEFAULT_MAP.get(OSS_OPTIONS_KEY));
         put(QUANTIFIERS_OPTIONS_KEY, DEFAULT_MAP.get(QUANTIFIERS_OPTIONS_KEY));
+        put(TRIGGERS_OPTIONS_KEY, DEFAULT_MAP.get(TRIGGERS_OPTIONS_KEY));
         for (int i = 1; i <= USER_TACLETS_NUM; ++i) {
             put(userTacletsOptionsKey(i), DEFAULT_MAP.get(userTacletsOptionsKey(i)));
         }
@@ -249,11 +278,13 @@ public final class StrategyProperties extends Properties {
         sp.put(METHOD_OPTIONS_KEY, readSingleOption(p, METHOD_OPTIONS_KEY));
         sp.put(MPS_OPTIONS_KEY, readSingleOption(p, MPS_OPTIONS_KEY));
         sp.put(DEP_OPTIONS_KEY, readSingleOption(p, DEP_OPTIONS_KEY));
+        sp.put(HEAP_REDUCTION_OPTIONS_KEY, readSingleOption(p, HEAP_REDUCTION_OPTIONS_KEY));
         sp.put(QUERY_OPTIONS_KEY, readSingleOption(p, QUERY_OPTIONS_KEY));
         sp.put(QUERYAXIOM_OPTIONS_KEY, readSingleOption(p, QUERYAXIOM_OPTIONS_KEY));
         sp.put(NON_LIN_ARITH_OPTIONS_KEY, readSingleOption(p, NON_LIN_ARITH_OPTIONS_KEY));
         sp.put(OSS_OPTIONS_KEY, readSingleOption(p, OSS_OPTIONS_KEY));
         sp.put(QUANTIFIERS_OPTIONS_KEY, readSingleOption(p, QUANTIFIERS_OPTIONS_KEY));
+        sp.put(TRIGGERS_OPTIONS_KEY, readSingleOption(p, TRIGGERS_OPTIONS_KEY));
         for (int i = 1; i <= USER_TACLETS_NUM; ++i) {
             sp.put(userTacletsOptionsKey(i), readSingleOption(p, userTacletsOptionsKey(i)));
         }
@@ -302,6 +333,7 @@ public final class StrategyProperties extends Properties {
         sp.setProperty(OSS_OPTIONS_KEY, OSS_ON);
         sp.setProperty(MPS_OPTIONS_KEY, MPS_MERGE);
         sp.setProperty(QUERY_OPTIONS_KEY, QUERY_RESTRICTED);
+        sp.setProperty(TRIGGERS_OPTIONS_KEY, TRIGGERS_BEST);
         sp.setProperty(NON_LIN_ARITH_OPTIONS_KEY,
             NON_LIN_ARITH_DEF_OPS);
         sp.setProperty(AUTO_INDUCTION_OPTIONS_KEY,
@@ -407,11 +439,13 @@ public final class StrategyProperties extends Properties {
         p.put(STRATEGY_PROPERTY + METHOD_OPTIONS_KEY, get(METHOD_OPTIONS_KEY));
         p.put(STRATEGY_PROPERTY + MPS_OPTIONS_KEY, get(MPS_OPTIONS_KEY));
         p.put(STRATEGY_PROPERTY + DEP_OPTIONS_KEY, get(DEP_OPTIONS_KEY));
+        p.put(STRATEGY_PROPERTY + HEAP_REDUCTION_OPTIONS_KEY, get(HEAP_REDUCTION_OPTIONS_KEY));
         p.put(STRATEGY_PROPERTY + QUERY_OPTIONS_KEY, get(QUERY_OPTIONS_KEY));
         p.put(STRATEGY_PROPERTY + QUERYAXIOM_OPTIONS_KEY, get(QUERYAXIOM_OPTIONS_KEY));
         p.put(STRATEGY_PROPERTY + NON_LIN_ARITH_OPTIONS_KEY, get(NON_LIN_ARITH_OPTIONS_KEY));
         p.put(STRATEGY_PROPERTY + OSS_OPTIONS_KEY, get(OSS_OPTIONS_KEY));
         p.put(STRATEGY_PROPERTY + QUANTIFIERS_OPTIONS_KEY, get(QUANTIFIERS_OPTIONS_KEY));
+        p.put(STRATEGY_PROPERTY + TRIGGERS_OPTIONS_KEY, get(TRIGGERS_OPTIONS_KEY));
         for (int i = 1; i <= USER_TACLETS_NUM; ++i) {
             p.put(STRATEGY_PROPERTY + userTacletsOptionsKey(i), get(userTacletsOptionsKey(i)));
         }
@@ -432,9 +466,8 @@ public final class StrategyProperties extends Properties {
         }
     }
 
-
     @Override
-    public synchronized Object clone() {
+    public synchronized StrategyProperties clone() {
         final Properties p = (Properties) super.clone();
         final StrategyProperties sp = new StrategyProperties();
         sp.putAll(p);

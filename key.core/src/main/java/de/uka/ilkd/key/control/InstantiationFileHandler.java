@@ -5,6 +5,7 @@ package de.uka.ilkd.key.control;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.util.*;
 
 import de.uka.ilkd.key.control.instantiation_model.TacletFindModel;
@@ -12,19 +13,66 @@ import de.uka.ilkd.key.control.instantiation_model.TacletInstantiationModel;
 import de.uka.ilkd.key.rule.Taclet;
 import de.uka.ilkd.key.settings.PathConfig;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class InstantiationFileHandler {
-    private static final String INSTANTIATION_DIR =
-        PathConfig.getKeyConfigDir() + File.separator + "instantiations";
+    private static final Logger LOGGER = LoggerFactory.getLogger(InstantiationFileHandler.class);
+
+    private static final Path INSTANTIATION_DIR = getStoragePath();
 
     private static final String SEPARATOR1 = "<<<<<<";
 
     private static final String SEPARATOR2 = ">>>>>>";
 
-    private static final String LINE_END = System.getProperty("line.separator");
+    private static final String LINE_END = System.lineSeparator();
 
     private static final int SAVE_COUNT = 5;
 
-    private static HashMap<String, List<List<String>>> hm;
+
+    private static Map<String, List<List<String>>> hm;
+
+    /// Finds the current place to store used instantiations. If there was a version change
+    /// (the folder does not exist), this method tries to copy previous instantiations to
+    /// the new directory silently. However, if both old and new instantiations exist, they are not
+    /// merge, i.e. only the new ones are used currently.
+    private static Path getStoragePath() {
+        Path cur = PathConfig.currentPaths.keyConfigDir.resolve("instantiations");
+        if (Files.exists(cur)) {
+            /*
+             * At the moment, we do not merge when old and new instantiations are
+             * present. In the future, we could go one step further and try to merge.
+             */
+            return cur;
+        }
+        // create the directory for storing instantiations
+        try {
+            Files.createDirectories(cur);
+        } catch (IOException e) {
+            LOGGER.warn("Could not create the instantiations folder {}", cur, e);
+        }
+
+        // Check if instantiations from older key version exist. If so, try to copy them over.
+        Path prev = PathConfig.previousPaths.keyConfigDir.resolve("instantiations");
+        if (Files.exists(prev)) {
+            try (var files = Files.walk(prev)) {
+                files.forEach(path -> {
+                    try {
+                        Path target = cur.resolve(prev.relativize(path));
+                        // Do not overwrite existing file!
+                        if (!Files.exists(target)) {
+                            Files.copy(path, target);
+                        }
+                    } catch (IOException inner) {
+                        LOGGER.warn("Could not copy instantiation file {}", path, inner);
+                    }
+                });
+            } catch (IOException e) {
+                LOGGER.warn("Could not copy instantiation files from {} to {}", prev, cur, e);
+            }
+        }
+        return cur;
+    }
 
     public static boolean hasInstantiationListsFor(Taclet taclet) {
         if (hm == null) {
@@ -44,19 +92,12 @@ public class InstantiationFileHandler {
     }
 
     private static void createHashMap() {
-        File dir = new File(INSTANTIATION_DIR);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        String[] instFiles = dir.list();
-        if (instFiles == null) {
-            hm = new LinkedHashMap<>(0);
-        } else {
-            // Avoid resizing of HashMap
-            hm = new LinkedHashMap<>(instFiles.length + 1, 1);
-            for (String instFile : instFiles) {
-                hm.put(instFile, null);
-            }
+        hm = new TreeMap<>();
+        try (var stream = Files.list(INSTANTIATION_DIR)) {
+            // using a TreeMap here avoids non-determinsm introduce by the file system.
+            stream.forEach(file -> hm.put(file.getFileName().toString(), null));
+        } catch (IOException e) {
+            LOGGER.warn("Could not read the instantiations folder {}", INSTANTIATION_DIR, e);
         }
     }
 

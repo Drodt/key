@@ -14,10 +14,9 @@ import de.uka.ilkd.key.rule.TacletForTests;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
-import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableArray;
-import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.collection.ImmutableList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,6 +78,21 @@ public class TestTerm {
     }
 
     @Test
+    public void testDepth() {
+        JTerm t_y = tf.createTerm(y);
+        assertEquals(0, t_y.depth());
+        // p(f(y)): a chain of three operators has depth 2
+        JTerm deep = tf.createTerm(p, new JTerm[] { t3() }, null, null);
+        assertEquals(2, deep.depth());
+        // p(f(y)) & p(x): the depth of a term is the maximum over all its subterms plus one,
+        // in particular it is independent of which child the deepest subterm is
+        JTerm deepFirst = tf.createTerm(Junctor.AND, deep, t1());
+        assertEquals(3, deepFirst.depth());
+        JTerm deepLast = tf.createTerm(Junctor.AND, t1(), deep);
+        assertEquals(3, deepLast.depth());
+    }
+
+    @Test
     public void testFreeVars1() {
         JTerm t_allxt2 = tb.all(x, t2());
         JTerm t_allxt2_andt1 = tf.createTerm(Junctor.AND, t_allxt2, t1());
@@ -106,7 +120,7 @@ public class TestTerm {
         JTerm t_allxt1 = tb.all(x, t2());
         JTerm t_allxt1_andt2 = tf.createTerm(Junctor.AND, t_allxt1, t1());
         JTerm t_exw_allxt1_andt2 =
-            tb.ex(ImmutableSLList.<QuantifiableVariable>nil().append(w, x), t_allxt1_andt2);
+            tb.ex(ImmutableList.of(w, x), t_allxt1_andt2);
         assertTrue(!t_exw_allxt1_andt2.freeVars().contains(w)
                 && !t_exw_allxt1_andt2.freeVars().contains(x));
     }
@@ -233,10 +247,16 @@ public class TestTerm {
                 new ImmutableArray<>(noJB), null, null);
         JTerm withJBChild = tf.createTerm(Junctor.NOT, withJB);
         JTerm withJBChildChild = tf.createTerm(Junctor.NOT, withJBChild);
+        // a modality whose program has no statements still carries a JavaBlock
+        JTerm withEmptyJB = tf.createTerm(
+            JModality.getModality(JModality.JavaModalityKind.DIA,
+                JavaBlock.createJavaBlock(new StatementBlock())),
+            new ImmutableArray<>(noJB), null, null);
         assertFalse(noJB.containsJavaBlockRecursive());
         assertFalse(noJBWithChild.containsJavaBlockRecursive());
         assertTrue(withJB.containsJavaBlockRecursive());
         assertTrue(withJBChild.containsJavaBlockRecursive());
         assertTrue(withJBChildChild.containsJavaBlockRecursive());
+        assertTrue(withEmptyJB.containsJavaBlockRecursive());
     }
 }

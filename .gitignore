@@ -76,6 +76,9 @@ checkstyle-diff.txt
 /key.ncore/src/main/antlr/KeYLexer.tokens
 /keyext.rusty/src/main/gen/
 
+# Java Flight Recorder output (e.g. runJfrProbe default mt-jfr-probe.jfr)
+*.jfr
+
 # to be generated
 rust-wrapper/rml/crates/rml-contracts/hir.json
 keyext.rusty/**/*.proof

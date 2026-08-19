@@ -12,8 +12,8 @@ import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.ast.abstraction.Type;
 import de.uka.ilkd.key.java.ast.declaration.LocalVariableDeclaration;
 import de.uka.ilkd.key.java.ast.declaration.VariableSpecification;
+import de.uka.ilkd.key.java.ast.expression.Assignment;
 import de.uka.ilkd.key.java.ast.expression.Expression;
-import de.uka.ilkd.key.java.ast.expression.operator.CopyAssignment;
 import de.uka.ilkd.key.java.ast.reference.ExecutionContext;
 import de.uka.ilkd.key.java.ast.statement.EmptyStatement;
 import de.uka.ilkd.key.java.visitor.JavaASTWalker;
@@ -63,13 +63,6 @@ public abstract class VariableNamer implements InstantiationProposer {
      * default basename for variable name proposals
      */
     private static final String DEFAULT_BASENAME = "var";
-
-
-    /**
-     * name of the counter object used for temporary name proposals
-     */
-    private static final String TEMPCOUNTER_NAME = "VarNamerCnt";
-
 
 
     /**
@@ -419,11 +412,21 @@ public abstract class VariableNamer implements InstantiationProposer {
         if (basename == null || basename.isEmpty()) {
             basename = DEFAULT_BASENAME;
         }
-        int cnt = services.getCounter(TEMPCOUNTER_NAME).getCountPlusPlus();
-        // using null as undo anchor should be okay, since the name which the
-        // the counter is used for is only temporary and will be changed
-        // before the variable enters the logic
-
+        // Smallest index whose name is free in the current namespaces. Call sites on the proving
+        // path hold goal-local overlay services (Goal#getOverlayServices), so the chosen index is
+        // a pure function of the branch state: identical across worker schedulings, proof
+        // reloads and prune/redo cycles. The previous proof-global counter advanced as a side
+        // effect of unrelated mints, so these names -- which, despite the historical "temporary"
+        // label, do reach sequents (e.g. block-contract remembrance variables) -- differed
+        // between otherwise identical proofs (#3851, and the reload drift of #3834). Callers
+        // minting several names with the SAME base within one rule application must register
+        // the symbols (or reserve the names) in between, as the search cannot see unregistered
+        // earlier proposals.
+        int cnt = 0;
+        while (services.getNamespaces()
+                .lookup(new Name(basename + TEMP_INDEX_SEPARATOR + cnt)) != null) {
+            cnt++;
+        }
         return new TempIndProgramElementName(basename, cnt, null);
     }
 
@@ -569,11 +572,6 @@ public abstract class VariableNamer implements InstantiationProposer {
     // (taken from VarNameDeliverer.java, pretty much unchanged)
     // -------------------------------------------------------------------------
 
-    public static void setSuggestiveEnabled(boolean enabled) {
-        suggestive_off = !enabled;
-    }
-
-
     // precondition: sv.sort()==ProgramSVSort.VARIABLE
     public String getSuggestiveNameProposalForProgramVariable(SchemaVariable sv, TacletApp app,
             Services services, ImmutableList<String> previousProposals) {
@@ -600,7 +598,8 @@ public abstract class VariableNamer implements InstantiationProposer {
                             app.instantiations(), services);
                         name = ProofSaver.printProgramElement(rhs);
                         break;
-                    } else if (c.getStatementAt(1) instanceof CopyAssignment p2) {
+                    } else if (c.getStatementAt(1) instanceof Assignment p2
+                            && JavaAstUtils.isCopyAssignment(p2)) {
                         Expression lhs = p2.getExpressionAt(0);
                         if (lhs.equals(sv)) {
                             SchemaVariable rhs = (SchemaVariable) p2.getExpressionAt(1);

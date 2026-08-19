@@ -6,8 +6,10 @@ package de.uka.ilkd.key.logic;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.uka.ilkd.key.java.ast.PositionInfo;
+import de.uka.ilkd.key.logic.equality.RenamingTermProperty;
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.*;
+import de.uka.ilkd.key.logic.sort.ParametricSortInstance;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Property;
@@ -21,7 +23,6 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 
 /**
@@ -56,15 +57,35 @@ class TermImpl implements JTerm {
     private final ImmutableArray<QuantifiableVariable> boundVars;
 
     // caches
-    private enum ThreeValuedTruth {
-        TRUE, FALSE, UNKNOWN
-    }
+
+    /**
+     * The three-valued cached markers of this term, packed two bits each into one int:
+     * {@code 00} = not yet computed, {@code 01} = false, {@code 10} = true. The markers are
+     * <ul>
+     * <li>rigidness ({@link #isRigid()});
+     * <li>whether the term or one of its children has a modality as operator, that is, carries a
+     * program ({@link #containsJavaBlockRecursive()}). A program with no statements counts as
+     * well: the modality is still there, and its {@link JavaBlock} still carries meta information
+     * such as {@link PositionInfo}s. Terms with this marker can't be cached because two of them
+     * may differ only in that meta information;
+     * <li>whether the term or one of its children has a {@link Transformer} operator
+     * ({@link #containsTransformerRecursive()}).
+     * </ul>
+     * One int instead of three fields keeps the term object small. Writes of an int are atomic;
+     * two threads caching different markers at once can lose one of the two updates, which only
+     * means that marker is recomputed on its next query (every marker is a pure function of the
+     * term, so any computed value is the correct one).
+     */
+    private int flags;
+
+    private static final int FLAGS_RIGID_SHIFT = 0;
+    private static final int FLAGS_JAVABLOCK_SHIFT = 2;
+    private static final int FLAGS_TRANSFORMER_SHIFT = 4;
+    private static final int FLAG_MASK = 3;
+    private static final int FLAG_FALSE = 1;
+    private static final int FLAG_TRUE = 2;
 
     private int depth = -1;
-    /**
-     * A cached value for computing the term's rigidness.
-     */
-    private ThreeValuedTruth rigid = ThreeValuedTruth.UNKNOWN;
     private ImmutableSet<QuantifiableVariable> freeVars = null;
     /**
      * Cached {@link #hashCode()} value.
@@ -74,12 +95,21 @@ class TermImpl implements JTerm {
     private Sort sort;
 
     /**
-     * This flag indicates that the {@link JTerm} itself or one of its children contains a non-empty
-     * {@link JavaBlock}. {@link JTerm}s which provides a {@link JavaBlock} directly or indirectly
-     * can't be cached because it is possible that the contained meta information inside the
-     * {@link JavaBlock}, e.g. {@link PositionInfo}s, are different.
+     * Cached renaming-invariant hashCode ({@link RenamingTermProperty#hashCodeModThisProperty}),
+     * used to fast-reject unequal pairs in equality modulo renaming. {@code -1} = not yet
+     * computed.
      */
-    private ThreeValuedTruth containsJavaBlockRecursive = ThreeValuedTruth.UNKNOWN;
+    private int hashcodeModRenaming = -1;
+
+    /**
+     * Cached {@link #nameHash()} value. {@code -1} = not yet computed.
+     */
+    private int nameHash = -1;
+
+    /**
+     * Cached {@link #labelAgnosticHash()} value. {@code -1} = not yet computed.
+     */
+    private int labelAgnosticHash = -1;
 
     // -------------------------------------------------------------------------
     // constructors
@@ -95,36 +125,13 @@ class TermImpl implements JTerm {
      * @param boundVars the bounded variables (if applicable), e.g., for quantifiers
      */
     public TermImpl(Operator op, ImmutableArray<JTerm> subs,
-            ImmutableArray<QuantifiableVariable> boundVars,
-            String origin) {
+            ImmutableArray<QuantifiableVariable> boundVars) {
         assert op != null;
         assert subs != null;
         this.op = op;
         this.subs = subs.isEmpty() ? EMPTY_TERM_LIST : subs;
         this.boundVars = boundVars == null ? EMPTY_VAR_LIST : boundVars;
-        this.origin = origin;
     }
-
-    TermImpl(Operator op, ImmutableArray<JTerm> subs,
-            ImmutableArray<QuantifiableVariable> boundVars) {
-        this(op, subs, boundVars, "");
-    }
-
-    /**
-     * For which feature is this information needed?
-     * What is the difference from {@link de.uka.ilkd.key.logic.label.OriginTermLabel}?
-     */
-    private final String origin;
-
-    @Override
-    public @Nullable String getOrigin() {
-        return origin;
-    }
-
-    // -------------------------------------------------------------------------
-    // internal methods
-    // -------------------------------------------------------------------------
-
 
     private ImmutableSet<QuantifiableVariable> determineFreeVars() {
         ImmutableSet<QuantifiableVariable> localFreeVars =
@@ -231,12 +238,109 @@ class TermImpl implements JTerm {
 
 
     @Override
+    public int nameHash() {
+        if (nameHash == -1) {
+            computeHashes();
+        }
+        return nameHash;
+    }
+
+    @Override
+    public int labelAgnosticHash() {
+        if (labelAgnosticHash == -1) {
+            computeHashes();
+        }
+        return labelAgnosticHash;
+    }
+
+    /**
+     * Computes the three hashcode caches of {@link #hashCode()}, {@link #nameHash()} and
+     * {@link #labelAgnosticHash()}.
+     */
+    private void computeHashes() {
+        // Iterate the subterm array, not arity(): the term factory probes hashCode() before it
+        // validates that the operator's arity matches the subterm count, so the two can differ.
+        final int n = subs.size();
+        for (int i = 0; i < n; i++) {
+            if (subs.get(i) instanceof TermImpl t
+                    && (t.hashcode == -1 || t.nameHash == -1 || t.labelAgnosticHash == -1)) {
+                t.computeHashes();
+            }
+        }
+        if (hashcode == -1) {
+            this.hashcode = computeHashCode();
+        }
+        if (nameHash == -1) {
+            int h = 5;
+            h = h * 31 + computeOperatorNameHash(op);
+            h = h * 31 + arity();
+            for (int i = 0; i < n; i++) {
+                h = h * 31 + subs.get(i).nameHash();
+            }
+            if (h == -1) {
+                h = 0;
+            }
+            nameHash = h;
+        }
+        if (labelAgnosticHash == -1) {
+            // like the base computeHashCode() (op, bound vars, program, subterms) but recursing
+            // through labelAgnosticHash and never adding this term's labels, so it is a full,
+            // program-aware structural hash that ignores only term labels. It is computed here
+            // instead of through computeHashCode() because the LabeledTermImpl override of that
+            // method folds the labels in, which would make this hash label-sensitive.
+            // This hash can disappear and be replaced with the normal hashcode once PR 3884 is
+            // merged and the normal hashcode becomes label agnostic
+            int h = 5;
+            h = h * 17 + op.hashCode();
+            h = h * 17 + boundVars().hashCode();
+            h = h * 17 + javaBlock().hashCode();
+            for (int i = 0; i < n; i++) {
+                h = h * 17 + subs.get(i).labelAgnosticHash();
+            }
+            if (h == -1) {
+                h = 0;
+            }
+            labelAgnosticHash = h;
+        }
+    }
+
+    private int computeOperatorNameHash(Operator op) {
+        if (op instanceof ParametricFunctionInstance pfi) {
+            // using just pfi's name would introduce a dependency on its
+            // concrete syntax impacting robustness
+            int h = 7;
+            h = h * 31 + pfi.getBase().name().toString().hashCode();
+            for (final GenericArgument arg : pfi.getArgs()) {
+                h = h * 31 + computeSortNameHash(arg.sort());
+            }
+            return h;
+        } else {
+            return op.name().toString().hashCode();
+        }
+    }
+
+    private int computeSortNameHash(Sort sort) {
+        if (sort instanceof ParametricSortInstance psi) {
+            // using just psi's name would introduce a dependency on its
+            // concrete syntax impacting robustness
+            int h = 11;
+            h = h * 31 + psi.getBase().name().toString().hashCode();
+            for (final GenericArgument arg : psi.getArgs()) {
+                h = h * 31 + computeSortNameHash(arg.sort());
+            }
+            return h;
+        } else {
+            return sort.name().toString().hashCode();
+        }
+    }
+
+    @Override
     public int depth() {
         if (depth == -1) {
             int localDepth = -1;
             for (int i = 0, n = arity(); i < n; i++) {
                 final int subTermDepth = sub(i).depth();
-                if (subTermDepth > depth) {
+                if (subTermDepth > localDepth) {
                     localDepth = subTermDepth;
                 }
             }
@@ -247,24 +351,37 @@ class TermImpl implements JTerm {
     }
 
 
+    /** Reads the two-bit marker at {@code shift}: 0 = not yet computed, else FLAG_FALSE/TRUE. */
+    private int flag(int shift) {
+        return (flags >> shift) & FLAG_MASK;
+    }
+
+    /** Caches the two-bit marker at {@code shift}. */
+    private void setFlag(int shift, boolean value) {
+        flags |= (value ? FLAG_TRUE : FLAG_FALSE) << shift;
+    }
+
     @Override
     public boolean isRigid() {
-        if (rigid == ThreeValuedTruth.UNKNOWN) {
+        int rigid = flag(FLAGS_RIGID_SHIFT);
+        if (rigid == 0) {
+            boolean localIsRigid;
             if (!op.isRigid()) {
-                rigid = ThreeValuedTruth.FALSE;
+                localIsRigid = false;
             } else {
-                ThreeValuedTruth localIsRigid = ThreeValuedTruth.TRUE;
+                localIsRigid = true;
                 for (int i = 0, n = arity(); i < n; i++) {
                     if (!sub(i).isRigid()) {
-                        localIsRigid = ThreeValuedTruth.FALSE;
+                        localIsRigid = false;
                         break;
                     }
                 }
-                rigid = localIsRigid;
             }
+            setFlag(FLAGS_RIGID_SHIFT, localIsRigid);
+            return localIsRigid;
         }
 
-        return rigid == ThreeValuedTruth.TRUE;
+        return rigid == FLAG_TRUE;
     }
 
 
@@ -325,8 +442,7 @@ class TermImpl implements JTerm {
     @Override
     public final int hashCode() {
         if (hashcode == -1) {
-            // compute into local variable first to be thread-safe.
-            this.hashcode = computeHashCode();
+            computeHashes();
         }
         return hashcode;
     }
@@ -424,21 +540,59 @@ class TermImpl implements JTerm {
      */
     @Override
     public boolean containsJavaBlockRecursive() {
-        if (containsJavaBlockRecursive == ThreeValuedTruth.UNKNOWN) {
-            ThreeValuedTruth result = ThreeValuedTruth.FALSE;
-            if (!javaBlock().isEmpty()) {
-                result = ThreeValuedTruth.TRUE;
+        int marker = flag(FLAGS_JAVABLOCK_SHIFT);
+        if (marker == 0) {
+            boolean result = false;
+            if (op instanceof JModality) {
+                // a modality with an empty program still counts: the program is part of the
+                // term, and its JavaBlock still carries position information
+                result = true;
             } else {
                 for (int i = 0, arity = subs.size(); i < arity; i++) {
                     if (subs.get(i).containsJavaBlockRecursive()) {
-                        result = ThreeValuedTruth.TRUE;
+                        result = true;
                         break;
                     }
                 }
             }
-            this.containsJavaBlockRecursive = result;
+            setFlag(FLAGS_JAVABLOCK_SHIFT, result);
+            return result;
         }
-        return containsJavaBlockRecursive == ThreeValuedTruth.TRUE;
+        return marker == FLAG_TRUE;
+    }
+
+    /**
+     * Renaming-invariant hashCode, computed lazily on first use and cached. Used by
+     * {@link RenamingTermProperty} to fast-reject pairs that cannot be equal modulo renaming.
+     */
+    public int hashCodeModRenaming() {
+        if (hashcodeModRenaming == -1) {
+            final int h = RenamingTermProperty.RENAMING_TERM_PROPERTY
+                    .hashCodeModThisProperty(this);
+            hashcodeModRenaming = h == -1 ? 0 : h;
+        }
+        return hashcodeModRenaming;
+    }
+
+    @Override
+    public boolean containsTransformerRecursive() {
+        int marker = flag(FLAGS_TRANSFORMER_SHIFT);
+        if (marker == 0) {
+            boolean result = false;
+            if (op instanceof Transformer) {
+                result = true;
+            } else {
+                for (int i = 0, arity = subs.size(); i < arity; i++) {
+                    if (subs.get(i).containsTransformerRecursive()) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+            setFlag(FLAGS_TRANSFORMER_SHIFT, result);
+            return result;
+        }
+        return marker == FLAG_TRUE;
     }
 
 

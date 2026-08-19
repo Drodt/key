@@ -3,9 +3,11 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.java;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.label.OriginTermLabel.Origin;
@@ -16,20 +18,21 @@ import de.uka.ilkd.key.proof.TermTacletAppIndex;
 import de.uka.ilkd.key.proof.TermTacletAppIndexCacheSet;
 import de.uka.ilkd.key.rule.metaconstruct.arith.Monomial;
 import de.uka.ilkd.key.rule.metaconstruct.arith.Polynomial;
+import de.uka.ilkd.key.strategy.CostReuse;
+import de.uka.ilkd.key.strategy.IfInstantiationCachePool;
 import de.uka.ilkd.key.strategy.feature.AbstractBetaFeature.TermInfo;
 import de.uka.ilkd.key.strategy.feature.AppliedRuleAppsNameCache;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.ClausesGraph;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.Metavariable;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.TriggersSet;
 
-import org.key_project.logic.op.Operator;
 import org.key_project.logic.sort.Sort;
-import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
+import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
 import org.key_project.prover.sequent.PosInOccurrence;
-import org.key_project.prover.strategy.costbased.RuleAppCost;
-import org.key_project.util.LRUCache;
+import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
 
@@ -41,7 +44,7 @@ import org.key_project.util.collection.Pair;
  * <p>
  * This is a redesign of the old static caches which were implemented via final static {@link Map}s
  * like
- * {@code private static final Map<CacheKey, TermTacletAppIndex> termTacletAppIndexCache = new LRUCache<CacheKey, TermTacletAppIndex> ( MAX_TERM_TACLET_APP_INDEX_ENTRIES );}.
+ * {@code private static final Map<CacheKey, TermTacletAppIndex> termTacletAppIndexCache = new ConcurrentLruCache<>(MAX_TERM_TACLET_APP_INDEX_ENTRIES);}.
  * </p>
  * <p>
  * The old idea that memory is reused and shared between multiple {@link Proof}s by static variables
@@ -69,6 +72,17 @@ import org.key_project.util.collection.Pair;
  * proofs.</li>
  * </ul>
  * </p>
+ * <p>
+ * A proof's goals may be worked on by several worker threads at once, so most of these caches are
+ * read and written concurrently. They therefore use {@link ConcurrentLruCache}, which is
+ * thread-safe
+ * and evicts strictly in least-recently-used order. Exact eviction order matters for any cache
+ * whose
+ * value could be recomputed to something different, after an eviction, under a different access
+ * order; for those, approximate or striped eviction was observed to change proofs. Caches whose
+ * value does not depend on access order do not need this. The weak-keyed caches instead stay
+ * wrapped in {@link Collections#synchronizedMap}.
+ * </p>
  *
  * @author Martin Hentschel
  */
@@ -82,7 +96,7 @@ public class ServiceCaches implements SessionCaches {
      * The cache used by {@link TermTacletAppIndexCacheSet} instances.
      */
     private final Map<CacheKey, TermTacletAppIndex> termTacletAppIndexCache =
-        new LRUCache<>(MAX_TERM_TACLET_APP_INDEX_ENTRIES);
+        new ConcurrentLruCache<>(MAX_TERM_TACLET_APP_INDEX_ENTRIES);
 
     /*
      * Table of formulas which could be splitted using the beta rule This is the cache the method
@@ -90,63 +104,83 @@ public class ServiceCaches implements SessionCaches {
      *
      * keys: Term values: TermInfo
      */
-    private final LRUCache<JTerm, TermInfo> betaCandidates = new LRUCache<>(1000);
+    private final Map<JTerm, TermInfo> betaCandidates =
+        new ConcurrentLruCache<>(1000);
 
-    private final LRUCache<PosInOccurrence, RuleAppCost> ifThenElseMalusCache =
-        new LRUCache<>(1000);
 
-    private final LRUCache<Operator, Integer> introductionTimeCache =
-        new LRUCache<>(10000);
+    /**
+     * Per-proof cache for {@code CostReuse}'s feature-locality classification (taclet -> its
+     * reuse-eligibility verdict). Held here, like the other proof-scoped caches, so it is freed
+     * with
+     * the proof and never shared between proofs with different taclet options. Values are opaque to
+     * this class (a {@code CostReuse.Eligibility}, or its ineligible sentinel) to keep this package
+     * independent of the strategy package.
+     */
+    private final Map<Taclet, CostReuse.ConditionalEligibility> costReuseClassificationCache =
+        new ConcurrentHashMap<>();
 
-    private final LRUCache<org.key_project.logic.Term, Monomial> monomialCache =
-        new LRUCache<>(2000);
+    private final Map<org.key_project.logic.Term, Monomial> monomialCache =
+        new ConcurrentLruCache<>(2000);
 
-    private final LRUCache<org.key_project.logic.Term, Polynomial> polynomialCache =
-        new LRUCache<>(2000);
+    private final Map<org.key_project.logic.Term, Polynomial> polynomialCache =
+        new ConcurrentLruCache<>(2000);
 
     /**
      * a <code>HashMap</code> from <code>Term</code> to <code>TriggersSet</code> uses to cache all
      * created TriggersSets
      */
     private final Map<org.key_project.logic.Term, TriggersSet> triggerSetCache =
-        new LRUCache<>(1000);
+        new ConcurrentLruCache<>(1000);
+
+    /**
+     * Per-formula operator-occurrence summary for the quantifier instantiation tie-break (which
+     * operators occur in a sequent formula, and which at proving polarity). A sequent step
+     * replaces few formulas, and the {@link SequentFormula} objects
+     * are immutable and shared across the sequents of a branch, so the summary is memoised per
+     * formula rather than recomputed per sequent. The value is opaque here (an
+     * {@code Instantiation.OccInfo}) to keep this package independent of the strategy package.
+     */
+    private final Map<SequentFormula, Object> formulaOccurrenceCache =
+        new ConcurrentLruCache<>(10000);
 
     /**
      * Map from <code>Term</code>(allTerm) to <code>ClausesGraph</code>
      */
-    private final Map<org.key_project.logic.Term, ClausesGraph> graphCache = new LRUCache<>(1000);
+    private final Map<org.key_project.logic.Term, ClausesGraph> graphCache =
+        new ConcurrentLruCache<>(1000);
 
     /**
      * Cache used by the TermFactory to avoid unnecessary creation of terms
      */
-    private final Map<JTerm, JTerm> termCache = new LRUCache<>(20000);
+    private final Map<JTerm, JTerm> termCache = new ConcurrentLruCache<>(20000);
 
     /**
      * Cache used by TypeComparisonCondition
      */
     private final Map<Sort, Map<Sort, Boolean>> disjointnessCache =
-        new WeakHashMap<>();
+        Collections.synchronizedMap(new WeakHashMap<>());
 
     /**
      * Cache used by HandleArith for caching formatted terms
      */
-    private final LRUCache<JTerm, JTerm> formattedTermCache = new LRUCache<>(5000);
+    private final Map<JTerm, JTerm> formattedTermCache =
+        new ConcurrentLruCache<>(5000);
 
     /**
      * Caches used bu HandleArith to cache proof results
      */
-    private final LRUCache<JTerm, JTerm> provedByArithFstCache = new LRUCache<>(5000);
+    private final Map<JTerm, JTerm> provedByArithFstCache =
+        new ConcurrentLruCache<>(5000);
 
-    private final LRUCache<Pair<JTerm, JTerm>, JTerm> provedByArithSndCache =
-        new LRUCache<>(5000);
+    private final Map<Pair<JTerm, JTerm>, JTerm> provedByArithSndCache =
+        new ConcurrentLruCache<>(5000);
 
     /** Cache used by the exhaustive macro */
     private final Map<Node, PosInOccurrence> exhaustiveMacroCache =
-        new WeakHashMap<>();
+        Collections.synchronizedMap(new WeakHashMap<>());
 
     /** Cache used by the ifinstantiator */
-    private final AssumesInstantiationCachePool<Node> ifInstantiationCache =
-        new AssumesInstantiationCachePool<>();
+    private final IfInstantiationCachePool ifInstantiationCache = new IfInstantiationCachePool();
 
     /** Cache used IfFormulaInstSeq */
     private final AssumesFormulaInstantiationCache assumesFormulaInstantiationCache =
@@ -157,15 +191,16 @@ public class ServiceCaches implements SessionCaches {
         new AppliedRuleAppsNameCache();
 
     /** Cache used by EqualityConstraint to speed up meta variable search */
-    private final LRUCache<org.key_project.logic.Term, ImmutableSet<Metavariable>> mvCache =
-        new LRUCache<>(2000);
+    private final Map<org.key_project.logic.Term, ImmutableSet<Metavariable>> mvCache =
+        new ConcurrentLruCache<>(2000);
 
     /**
      * Cache used by {@link de.uka.ilkd.key.rule.label.OriginTermLabelRefactoring}: the
      * origins of a term and all its subterms. Terms are immutable, so the set never
      * changes for a given term.
      */
-    private final Map<JTerm, Set<Origin>> subtermOriginsCache = new LRUCache<>(20000);
+    private final Map<JTerm, Set<Origin>> subtermOriginsCache =
+        new ConcurrentLruCache<>(20000);
 
 
     /**
@@ -187,23 +222,23 @@ public class ServiceCaches implements SessionCaches {
         return subtermOriginsCache;
     }
 
-    public final LRUCache<JTerm, TermInfo> getBetaCandidates() {
+    public final Map<JTerm, TermInfo> getBetaCandidates() {
         return betaCandidates;
     }
 
-    public final LRUCache<PosInOccurrence, RuleAppCost> getIfThenElseMalusCache() {
-        return ifThenElseMalusCache;
+    public final Map<Taclet, CostReuse.ConditionalEligibility> getCostReuseClassificationCache() {
+        return costReuseClassificationCache;
     }
 
-    public final LRUCache<Operator, Integer> getIntroductionTimeCache() {
-        return introductionTimeCache;
-    }
-
-    public final LRUCache<org.key_project.logic.Term, Monomial> getMonomialCache() {
+    public final Map<org.key_project.logic.Term, Monomial> getMonomialCache() {
         return monomialCache;
     }
 
-    public final LRUCache<org.key_project.logic.Term, Polynomial> getPolynomialCache() {
+    public final Map<SequentFormula, Object> getFormulaOccurrenceCache() {
+        return formulaOccurrenceCache;
+    }
+
+    public final Map<org.key_project.logic.Term, Polynomial> getPolynomialCache() {
         return polynomialCache;
     }
 
@@ -223,15 +258,15 @@ public class ServiceCaches implements SessionCaches {
         return disjointnessCache;
     }
 
-    public final LRUCache<JTerm, JTerm> getFormattedTermCache() {
+    public final Map<JTerm, JTerm> getFormattedTermCache() {
         return formattedTermCache;
     }
 
-    public final LRUCache<JTerm, JTerm> getProvedByArithFstCache() {
+    public final Map<JTerm, JTerm> getProvedByArithFstCache() {
         return provedByArithFstCache;
     }
 
-    public final LRUCache<Pair<JTerm, JTerm>, JTerm> getProvedByArithSndCache() {
+    public final Map<Pair<JTerm, JTerm>, JTerm> getProvedByArithSndCache() {
         return provedByArithSndCache;
     }
 
@@ -239,7 +274,7 @@ public class ServiceCaches implements SessionCaches {
         return exhaustiveMacroCache;
     }
 
-    public final AssumesInstantiationCachePool<Node> getIfInstantiationCache() {
+    public final IfInstantiationCachePool getIfInstantiationCache() {
         return ifInstantiationCache;
     }
 
@@ -251,7 +286,7 @@ public class ServiceCaches implements SessionCaches {
         return appliedRuleAppsNameCache;
     }
 
-    public LRUCache<org.key_project.logic.Term, ImmutableSet<Metavariable>> getMVCache() {
+    public Map<org.key_project.logic.Term, ImmutableSet<Metavariable>> getMVCache() {
         return mvCache;
     }
 

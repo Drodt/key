@@ -39,7 +39,6 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
                 varsNewDependingOn,
                 variableConditions),
             goals, ruleSets, attrs, prefixBuilder.getPrefixMap(), choices, tacletAnnotations);
-        t.setOrigin(origin);
         return t;
     }
 
@@ -61,7 +60,7 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
      * an exception otherwise
      */
     protected void checkBoundInIfAndFind() {
-        final BoundUniquenessChecker ch = new BoundUniquenessChecker(ifSequent());
+        final BoundUniquenessChecker ch = new BoundUniquenessChecker(assumesSequent());
         if (!ch.correct()) {
             throw new TacletBuilderException(this, "A bound SchemaVariable occurs twice in if.");
         }
@@ -80,5 +79,19 @@ public class NoFindTacletBuilder extends TacletBuilder<NoFindTaclet> {
     public NoFindTaclet getTaclet() {
         checkBoundInIfAndFind();
         return getNoFindTaclet();
+    }
+
+    @Override
+    public NoFindTacletBuilder copy() {
+        var rb = new NoFindTacletBuilder();
+        rb.setAnnotations(tacletAnnotations);
+        rb.setAssumesSequent(assumesSeq);
+        rb.setChoices(choices);
+        rb.setDisplayName(attrs.displayName());
+        rb.setName(name);
+        rb.setTacletGoalTemplates(goals);
+        rb.setTrigger(attrs.trigger());
+        rb.setRuleSets(ruleSets);
+        return rb;
     }
 }

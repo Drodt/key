@@ -13,10 +13,10 @@ import de.uka.ilkd.key.java.ast.Label;
 import de.uka.ilkd.key.java.ast.PositionInfo;
 import de.uka.ilkd.key.java.ast.StatementBlock;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
-import de.uka.ilkd.key.java.ast.expression.Expression;
 import de.uka.ilkd.key.java.ast.expression.literal.*;
 import de.uka.ilkd.key.java.ast.expression.literal.BooleanLiteral;
-import de.uka.ilkd.key.java.ast.expression.operator.NotEquals;
+import de.uka.ilkd.key.java.ast.expression.operator.BinaryOperator;
+import de.uka.ilkd.key.java.ast.expression.operator.BinaryOperatorKind;
 import de.uka.ilkd.key.java.ast.statement.*;
 import de.uka.ilkd.key.java.ast.statement.Catch;
 import de.uka.ilkd.key.java.ast.statement.LabeledStatement;
@@ -50,16 +50,13 @@ import org.key_project.logic.op.Function;
 import org.key_project.logic.op.Modality;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
-import org.key_project.util.ExtList;
-import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableArray;
-import org.key_project.util.collection.ImmutableSLList;
-import org.key_project.util.collection.ImmutableSet;
+import org.key_project.util.collection.*;
 
 import com.github.javaparser.ast.key.KeyTransactionStatement;
 import org.jspecify.annotations.NonNull;
 
 import static de.uka.ilkd.key.logic.equality.IrrelevantTermLabelsProperty.IRRELEVANT_TERM_LABELS_PROPERTY;
+import static org.key_project.logic.op.Function.FunctionKind.SKOLEM;
 
 /**
  * This contains various builders used in building formulae and terms for block and loop contracts.
@@ -724,7 +721,7 @@ public final class AuxiliaryContractBuilders {
             for (LocationVariable variable : vars) {
                 final String anonymisationName = newName(prefix + variable.name());
                 final Function anonymisationFunction =
-                    new JFunction(new Name(anonymisationName), variable.sort(), true);
+                    new JFunction(new Name(anonymisationName), variable.sort(), SKOLEM);
                 services.getNamespaces().functions().addSafely(anonymisationFunction);
                 final JTerm elementaryUpdate = elementary(variable, func(anonymisationFunction));
                 result = parallel(result, elementaryUpdate);
@@ -1359,7 +1356,7 @@ public final class AuxiliaryContractBuilders {
             JavaBlock newJavaBlock = getJavaBlock(exceptionParameter);
             JTerm newPost = tb.and(postconditions);
             newPost = AbstractOperationPO.addAdditionalUninterpretedPredicateIfRequired(services,
-                newPost, ImmutableSLList.<LocationVariable>nil()
+                newPost, ImmutableList.<LocationVariable>nil()
                         .prependReverse(terms.remembranceLocalVariables.keySet()),
                 terms.exception);
             if (goal != null) {
@@ -1461,7 +1458,7 @@ public final class AuxiliaryContractBuilders {
                 final String anonymisationName =
                     tb.newName("init_" + ANON_OUT_PREFIX + heap.name());
                 final Function anonymisationFunction =
-                    new JFunction(new Name(anonymisationName), heap.sort(), true);
+                    new JFunction(new Name(anonymisationName), heap.sort(), SKOLEM);
                 services.getNamespaces().functions().addSafely(anonymisationFunction);
                 anonOutHeaps2.put(heap, anonymisationFunction);
             }
@@ -1637,8 +1634,9 @@ public final class AuxiliaryContractBuilders {
                     KeYJavaASTFactory.returnClause(variables.result)));
             }
             ifCascade.add(KeYJavaASTFactory.ifThen(
-                new NotEquals(
-                    new ExtList(new Expression[] { variables.exception, NullLiteral.NULL })),
+                new BinaryOperator(BinaryOperatorKind.NOT_EQUALS,
+                    variables.exception,
+                    NullLiteral.NULL),
                 KeYJavaASTFactory.throwClause(variables.exception)));
             return new StatementBlock(ifCascade.toArray(new Statement[0]));
         }
@@ -1681,7 +1679,7 @@ public final class AuxiliaryContractBuilders {
                 final TermBuilder tb) {
             JTerm post = tb.and(postconditions);
             post = AbstractOperationPO.addAdditionalUninterpretedPredicateIfRequired(services, post,
-                ImmutableSLList.<LocationVariable>nil()
+                ImmutableList.<LocationVariable>nil()
                         .prependReverse(terms.remembranceLocalVariables.keySet()),
                 terms.exception);
             post = TermLabelManager.refactorTerm(termLabelState, services, null, post, rule, goal,
@@ -1689,13 +1687,12 @@ public final class AuxiliaryContractBuilders {
 
             JTerm postNext = tb.and(postconditionsNext);
             postNext = AbstractOperationPO.addAdditionalUninterpretedPredicateIfRequired(services,
-                postNext, ImmutableSLList.<LocationVariable>nil()
+                postNext, ImmutableList.<LocationVariable>nil()
                         .prependReverse(terms.remembranceLocalVariables.keySet()),
                 terms.exception);
             postNext = TermLabelManager.refactorTerm(termLabelState, services, null, postNext, rule,
                 goal, AbstractAuxiliaryContractRule.NEW_POSTCONDITION_TERM_HINT, null);
-            final JTerm[] posts = { post, postNext };
-            return posts;
+            return new JTerm[] { post, postNext };
         }
     }
 }

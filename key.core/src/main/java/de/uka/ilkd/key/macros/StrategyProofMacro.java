@@ -10,11 +10,12 @@ import de.uka.ilkd.key.control.UserInterfaceControl;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
-import de.uka.ilkd.key.prover.impl.ApplyStrategy;
+import de.uka.ilkd.key.prover.impl.AutoProvers;
 import de.uka.ilkd.key.strategy.FocussedRuleApplicationManager;
 import de.uka.ilkd.key.strategy.Strategy;
 
 import org.key_project.prover.engine.GoalChooser;
+import org.key_project.prover.engine.ProofSearchInformation;
 import org.key_project.prover.engine.ProverCore;
 import org.key_project.prover.engine.ProverTaskListener;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -40,6 +41,22 @@ import org.jspecify.annotations.NonNull;
 public abstract class StrategyProofMacro extends AbstractProofMacro {
 
     protected abstract Strategy<Goal> createStrategy(Proof proof, PosInOccurrence posInOcc);
+
+    /**
+     * Whether this macro's run may use the multi-core prover.
+     *
+     * <p>
+     * The strategy returned by {@link #createStrategy} is installed proof-wide, so under the
+     * multi-core prover all workers share the one instance and call it concurrently. Macros whose
+     * strategy keeps cross-goal mutable state (a step counter, a breakpoint flag, discovered merge
+     * points) have inherently sequential semantics: with several workers the outcome would depend
+     * on scheduling, breaking the requirement that the multi-core prover produce the same proof as
+     * the single-threaded one. Such macros override this to return {@code false} and run on the
+     * single-threaded prover.
+     */
+    protected boolean allowParallel() {
+        return true;
+    }
 
     /**
      * {@inheritDoc}
@@ -83,13 +100,18 @@ public abstract class StrategyProofMacro extends AbstractProofMacro {
 
         final GoalChooser goalChooser =
             proof.getInitConfig().getProfile().getSelectedGoalChooserBuilder().create();
-        final ProverCore applyStrategy = new ApplyStrategy(goalChooser);
+        // Route through the central prover selection so the macro runs on the multi-core prover
+        // when it is
+        // enabled, the proof's profile supports it, and the macro's strategy tolerates concurrent
+        // use (see allowParallel()); otherwise the single-threaded ApplyStrategy.
+        final ProverCore applyStrategy =
+            AutoProvers.create(goalChooser, proof.getInitConfig().getProfile(), allowParallel());
         final ImmutableList<Goal> ignoredOpenGoals = setDifference(proof.openGoals(), goals);
 
         //
         // The observer to handle the progress bar
         final ProofMacroListener pml =
-            new ProgressBarListener(goals.size(), getMaxSteps(proof), listener);
+            new ProgressBarListener(1, getMaxSteps(proof), listener);
         applyStrategy.addProverTaskObserver(pml);
         // add a focus manager if there is a focus
         if (posInOcc != null) {
@@ -111,7 +133,11 @@ public abstract class StrategyProofMacro extends AbstractProofMacro {
         try {
             // find the relevant goals
             // and start
-            applyStrategy.start(proof, goals);
+            final ProofSearchInformation<Proof, Goal> result = applyStrategy.start(proof, goals);
+            if (result.isError()) {
+                throw new RuntimeException("Proof search failed: " + result.getException(),
+                    result.getException());
+            }
             synchronized (applyStrategy) { // wait for applyStrategy to finish its last rule
                                            // application
                 if (applyStrategy.hasBeenInterrupted()) { // reraise interrupted exception if

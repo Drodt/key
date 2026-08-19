@@ -4,6 +4,8 @@ lexer grammar KeYLexer;
 {
     import java.util.HashMap;
     import java.util.LinkedHashMap;
+    import org.key_project.util.parsing.LocatableException;
+    import org.key_project.util.parsing.Location;
 }
 @ annotateclass
 { @SuppressWarnings("all") }
@@ -64,6 +66,21 @@ lexer grammar KeYLexer;
           return t;
         }
         return super.nextToken();
+    }
+
+    /**
+     * Called when, while scanning the body of a modality, another modality-opening keyword is
+     * encountered. A modality body is a (schematic) program and must never contain a nested
+     * modality, so this means the current modality's closing {@code \endmodality} (or {@code \>} /
+     * {@code \]}) is missing. Fail the token at its start (the modality opening) -- mirroring the
+     * behaviour at end-of-file -- so the error is reported there instead of running on to the next,
+     * unrelated {@code \endmodality}. (See issue #3867.)
+     */
+    private void unterminatedModality() {
+        throw new org.key_project.util.parsing.UnterminatedModalityException(
+            "Missing '\\endmodality': this modality is not terminated (another modality opening "
+                + "was found before its closing keyword).",
+            _tokenStartLine, _tokenStartCharPositionInLine, getSourceName());
     }
 
 }
@@ -283,10 +300,14 @@ FALSE
    : 'false'
    ;
    // Keywords related to taclets
-   
+
 SAMEUPDATELEVEL
    : '\\sameUpdateLevel'
-   ; // TODO: make default
+   ;
+
+IGNOREUPDATELEVEL
+   : '\\ignoreUpdateLevel'
+   ;
    
 INSEQUENTSTATE
    : '\\inSequentState'
@@ -299,6 +320,14 @@ ANTECEDENTPOLARITY
 SUCCEDENTPOLARITY
    : '\\succedentPolarity'
    ;
+
+GENERATE
+    : '\\generate'
+    ;
+
+GENERATE_EQ
+    : '\\EQ'
+    ;
 
 CLOSEGOAL
    : '\\closegoal'
@@ -590,17 +619,40 @@ PLUS
    : '+'
    ;
 
-GREATER
-   : '>'
+/* Special casing for ">=" and ">>" which need to be parsed as two tokens.
+ * If there is no space between the two characters, we need to check if the next character is '=' or '>'.
+ * If it is, we need to parse ">" as a special token indicating the continuation, it is "GREATER" otherwise.
+ */
+GREATER_CONTD
+   : '>' { ">=".indexOf((char)_input.LA(1)) >= 0 }?
    ;
+
+// The non-special ">" symbol
+GREATER
+    : '>'
+    ;
 
 GREATEREQUAL
-   : '>' '='
-   | '\u2265'
+   : // '>' '=' this is superseded by GREATER_DONTD above
+   '\u2265'
    ;
 
-OPENTYPEPARAMS : '<' '[';
-CLOSETYPEPARAMS : ']' '>';
+// This syntax has been deprecated
+OPENTYPEPARAMS : '<' '[' {
+ Runnable run = () -> {
+				 emit();
+				 throw new LocatableException("Type arguments are given in <...>, the old syntax with <[...]> is no longer supported.",
+					 Location.fromToken(_token)); };
+ run.run();
+};
+
+CLOSETYPEPARAMS : ']' '>' {
+ Runnable run = () -> {
+ 				 emit();
+ 				 throw new LocatableException("Type arguments are given in <...>, the old syntax with <[...]> is no longer supported.",
+ 					 Location.fromToken(_token)); };
+ run.run();
+};
 
 WS
    : [ \t\n\r\u00a0]+ -> channel (HIDDEN)
@@ -626,8 +678,8 @@ LGUILLEMETS
    ;
 
 RGUILLEMETS
-   : '>' '>'
-   | '»'
+   : // '>' '>' superseded by GREATER_DIRECTLY_FOLLOWED_BY GREATERs
+     '»'
    | '›'
    ;
 
@@ -689,6 +741,8 @@ fragment IDCHAR
    | '$'
    ;
 
+MATCH_IDENT: '?' IDENT?;
+
 IDENT
    : ((LETTER | '_' | '#' | '$') (IDCHAR)*)
    ;
@@ -749,7 +803,20 @@ ERROR_CHAR
    : .
    ;
 
+/**
+ * A modality-opening keyword. Inside a modality body (a schematic program) such a keyword can only
+ * mean that the current modality was not terminated; see {@link #unterminatedModality}.
+ */
+fragment MODALITY_OPEN
+   : '\\modality' | '\\diamond_transaction' | '\\box_transaction' | '\\diamond' | '\\box'
+   | '\\throughout_transaction' | '\\throughout' | '\\<' | '\\[[' | '\\['
+   ;
+
 mode modDiamond;
+MODALITYD_NESTED
+   : MODALITY_OPEN { unterminatedModality (); } -> more
+   ;
+
 MODALITYD_END
    : '\\>' -> type (MODALITY) , popMode
    ;
@@ -766,6 +833,14 @@ MODALITYD_COMMENT
    : [\\] [*] -> more , pushMode (modComment)
    ;
 
+MODALITYD_LINE_COMMENT
+   : '//' -> more , pushMode (modLineComment)
+   ;
+
+MODALITYD_BLOCK_COMMENT
+   : '/*' -> more , pushMode (modComment)
+   ;
+
 MODALITYD_ANY
    : . -> more
    ;
@@ -773,6 +848,10 @@ MODALITYD_ANY
 mode modGeneric;
 MODALITYG_END
    : '\\endmodality' -> type (MODALITY) , popMode
+   ;
+
+MODALITYG_NESTED
+   : MODALITY_OPEN { unterminatedModality (); } -> more
    ;
 
 MODALITYG_STRING
@@ -787,6 +866,14 @@ MODALITYG_COMMENT
    : [\\] [*] -> more , pushMode (modComment)
    ;
 
+MODALITYG_LINE_COMMENT
+   : '//' -> more , pushMode (modLineComment)
+   ;
+
+MODALITYG_BLOCK_COMMENT
+   : '/*' -> more , pushMode (modComment)
+   ;
+
 MODALITYG_ANY
    : . -> more
    ;
@@ -794,6 +881,10 @@ MODALITYG_ANY
 mode modBox;
 MODALITYB_END
    : '\\]' -> type (MODALITY) , popMode
+   ;
+
+MODALITYB_NESTED
+   : MODALITY_OPEN { unterminatedModality (); } -> more
    ;
 
 MODALITYB_STRING
@@ -806,6 +897,14 @@ MODALITYB_CHAR
 
 MODALITYB_COMMENT
    : [\\] [*] -> more , pushMode (modComment)
+   ;
+
+MODALITYB_LINE_COMMENT
+   : '//' -> more , pushMode (modLineComment)
+   ;
+
+MODALITYB_BLOCK_COMMENT
+   : '/*' -> more , pushMode (modComment)
    ;
 
 MODALITYB_ANY
@@ -861,6 +960,17 @@ MOD_COMMENT_END
    ;
 
 MOD_COMMENT_ANY
+   : . -> more
+   ;
+
+// Java line comment inside a modality body: consume up to (and including) the end of line so that
+// a modality opening/closing keyword in the comment is not mistaken for real syntax.
+mode modLineComment;
+MOD_LINE_COMMENT_END
+   : ('\n' | EOF) -> more , popMode
+   ;
+
+MOD_LINE_COMMENT_ANY
    : . -> more
    ;
 

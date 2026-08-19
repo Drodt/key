@@ -30,6 +30,8 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.Nullable;
 
+import static org.key_project.logic.op.Function.FunctionKind.SKOLEM;
+
 /**
  * <p>
  * Rule for the application of {@link BlockContract}s.
@@ -167,7 +169,7 @@ public abstract class AbstractBlockContractRule extends AbstractAuxiliaryContrac
                 final String anonymisationName =
                     tb.newName(AuxiliaryContractBuilders.ANON_OUT_PREFIX + variable.name());
                 final Function anonymisationFunction =
-                    new JFunction(new Name(anonymisationName), variable.sort(), true);
+                    new JFunction(new Name(anonymisationName), variable.sort(), SKOLEM);
                 services.getNamespaces().functions().addSafely(anonymisationFunction);
                 result.put(variable, anonymisationFunction);
             }
@@ -275,5 +277,19 @@ public abstract class AbstractBlockContractRule extends AbstractAuxiliaryContrac
             return description
                     + (excVar != null ? "Validity Branch: exceptionVar=" + excVar.name() : "");
         }
+    }
+
+    @Override
+    public @Nullable String getDocumentation() {
+        return """
+                                Like methods, statement blocks can be annotated with contracts. The application of the Block Contract rules then gives rise to subgoals which roughly correspond to those of the Use Operation Contract rule (see there).
+                Three properties have to be shown:
+
+                1. Validity of block contract
+
+                2. Precondition of contract holds
+
+                3. Postcondition holds after block terminates
+                """;
     }
 }

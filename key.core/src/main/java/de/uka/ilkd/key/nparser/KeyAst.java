@@ -7,24 +7,31 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import de.uka.ilkd.key.java.Position;
+import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.logic.ProgramElementName;
+import de.uka.ilkd.key.logic.op.LocationVariable;
 import de.uka.ilkd.key.nparser.builder.BuilderHelpers;
 import de.uka.ilkd.key.nparser.builder.ChoiceFinder;
 import de.uka.ilkd.key.nparser.builder.FindProblemInformation;
 import de.uka.ilkd.key.nparser.builder.IncludeFinder;
-import de.uka.ilkd.key.parser.Location;
 import de.uka.ilkd.key.proof.init.Includes;
 import de.uka.ilkd.key.scripts.ScriptBlock;
 import de.uka.ilkd.key.scripts.ScriptCommandAst;
 import de.uka.ilkd.key.settings.Configuration;
 import de.uka.ilkd.key.settings.ProofSettings;
+import de.uka.ilkd.key.speclang.njml.JmlIO;
 import de.uka.ilkd.key.speclang.njml.JmlParser;
+import de.uka.ilkd.key.speclang.njml.JmlParserBaseVisitor;
 
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.java.StringUtil;
+import org.key_project.util.parsing.Location;
+import org.key_project.util.parsing.Position;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -48,7 +55,7 @@ import org.jspecify.annotations.Nullable;
  */
 public abstract class KeyAst<T extends ParserRuleContext> {
 
-    final @NonNull T ctx;
+    public final @NonNull T ctx;
 
     protected KeyAst(@NonNull T ctx) {
         this.ctx = ctx;
@@ -223,6 +230,72 @@ public abstract class KeyAst<T extends ParserRuleContext> {
         }
     }
 
+    public static class JMLProofScript extends KeyAst<JmlParser.AssertionProofContext> {
+
+        private static class ObtainedVarsVisitor extends JmlParserBaseVisitor<Void> {
+            private ImmutableList<LocationVariable> collectedVars = ImmutableList.of();
+            private final JmlIO io;
+
+            private ObtainedVarsVisitor(JmlIO io) {
+                this.io = io;
+            }
+
+            @Override
+            public Void visitProofCmd(JmlParser.ProofCmdContext ctx) {
+                if (ctx.obtain != null) {
+                    KeYJavaType type = io.translateType(ctx.typespec());
+                    ProgramElementName name = new ProgramElementName(ctx.var.getText());
+                    collectedVars = collectedVars.prepend(new LocationVariable(name, type, true));
+                }
+                return null;
+            }
+        }
+
+        private static class TermCollectionVisitor extends JmlParserBaseVisitor<Void> {
+            private ImmutableList<JmlParser.ExpressionContext> collectedTerms = ImmutableList.of();
+
+            @Override
+            public Void visitExpression(JmlParser.ExpressionContext ctx) {
+                collectedTerms = collectedTerms.prepend(ctx);
+                return null;
+            }
+        }
+
+        private ImmutableList<LocationVariable> obtainedProgramVars;
+
+        public JMLProofScript(JmlParser.@NonNull AssertionProofContext ctx) {
+            super(ctx);
+        }
+
+        public static JMLProofScript fromContext(JmlParser.AssertionProofContext ctx) {
+            if (ctx == null) {
+                return null;
+            } else {
+                return new JMLProofScript(ctx);
+            }
+        }
+
+        public ImmutableList<LocationVariable> getObtainedProgramVars(JmlIO io) {
+            if (obtainedProgramVars == null) {
+                var visitor = new ObtainedVarsVisitor(io);
+                ctx.accept(visitor);
+                obtainedProgramVars = visitor.collectedVars;
+            }
+            return obtainedProgramVars;
+        }
+
+        /**
+         * returns a list of all term parse trees in this proof script.
+         *
+         * Todo: Consider caching the result if this is called very often.
+         */
+        public @NonNull ImmutableList<JmlParser.ExpressionContext> collectTerms() {
+            TermCollectionVisitor visitor = new TermCollectionVisitor();
+            ctx.accept(visitor);
+            return visitor.collectedTerms.reverse();
+        }
+    }
+
 
     public static class Term extends KeyAst<JavaKeYParser.TermContext> {
         Term(JavaKeYParser.TermContext ctx) {
@@ -328,12 +401,14 @@ public abstract class KeyAst<T extends ParserRuleContext> {
             super(ctx);
         }
 
-        public java.io.@Nullable File getJavaSourceLocation() {
+        public Path getJavaSourceLocation() {
             try {
                 JavaKeYParser.String_valueContext value =
                     ctx.programSource(0).oneProgramSource().string_value(0);
                 String v = ParsingFacade.getValueDocumentation(value);
-                return new java.io.File(v);
+                var location = Location.fromToken(ctx.start);
+                var keyFile = Paths.get(location.fileUri());
+                return keyFile.getParent().resolve(v);
             } catch (NullPointerException | IndexOutOfBoundsException e) {
                 {
                     return null;

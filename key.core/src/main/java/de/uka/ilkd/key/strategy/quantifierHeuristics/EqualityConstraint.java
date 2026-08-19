@@ -22,10 +22,8 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.LRUCache;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import static de.uka.ilkd.key.logic.equality.RenamingSourceElementProperty.RENAMING_SOURCE_ELEMENT_PROPERTY;
@@ -42,9 +40,6 @@ import static de.uka.ilkd.key.logic.equality.RenamingSourceElementProperty.RENAM
  */
 @Deprecated
 public class EqualityConstraint implements Constraint {
-
-    /** contains a boolean value */
-    private static final BooleanContainer CONSTRAINTBOOLEANCONTAINER = new BooleanContainer();
 
     /**
      * stores constraint content as a mapping from Metavariable to Term
@@ -71,8 +66,12 @@ public class EqualityConstraint implements Constraint {
 
         var mvCache = services.getCaches().getMVCache();
 
-        if (mvCache.containsKey(t)) {
-            return mvCache.get(t);
+        // Single lookup: the cache never stores null values, so a non-null result unambiguously
+        // means "present". The former containsKey-then-get pair could disagree if the entry was
+        // evicted between the two calls under concurrent access.
+        final ImmutableSet<Metavariable> cached = mvCache.get(t);
+        if (cached != null) {
+            return cached;
         }
 
         ImmutableSet<Metavariable> metaVars = DefaultImmutableSet.nil();
@@ -86,14 +85,9 @@ public class EqualityConstraint implements Constraint {
             metaVars = metaVars.union(metaVars(t.sub(i), services));
         }
 
-        synchronized (mvCache) {
-            final ImmutableSet<Metavariable> result = mvCache.putIfAbsent(t, metaVars);
-            if (result != null) {
-                return result;
-            }
-        }
-
-        return metaVars;
+        // putIfAbsent is atomic on the ConcurrentLruCache; no external synchronization needed.
+        final ImmutableSet<Metavariable> result = mvCache.putIfAbsent(t, metaVars);
+        return result != null ? result : metaVars;
     }
 
     @Override
@@ -211,7 +205,7 @@ public class EqualityConstraint implements Constraint {
      */
     @Override
     public Constraint unify(JTerm t1, JTerm t2, Services services) {
-        return unify(t1, t2, services, CONSTRAINTBOOLEANCONTAINER);
+        return unify(t1, t2, services, new BooleanContainer());
     }
 
     /**
@@ -538,8 +532,8 @@ public class EqualityConstraint implements Constraint {
      *         modified. <code>Constraint.TOP</code> is always returned for ununifiable terms
      */
     private Constraint unifyHelp(JTerm t1, JTerm t2, boolean modifyThis, Services services) {
-        return unifyHelp(t1, t2, ImmutableSLList.nil(),
-            ImmutableSLList.nil(), null, modifyThis, services);
+        return unifyHelp(t1, t2, ImmutableList.nil(),
+            ImmutableList.nil(), null, modifyThis, services);
     }
 
 
@@ -559,9 +553,13 @@ public class EqualityConstraint implements Constraint {
         // MV cycles are impossible if the orders of MV pairs are
         // correct
 
-        if (!t.isRigid()) {
-            return TOP;
-        }
+        // A metavariable may be bound to a ground non-rigid term. This is only trigger
+        // matching: the metavariable stands for a quantifier instance, and instantiating a
+        // quantifier with a non-rigid term (a program value like a pivot index, or a heap) is
+        // sound, the wary substitution at taclet application takes care of modalities. Array
+        // indices such as a split result are non-rigid, and rejecting them here would strand
+        // the instantiation the proof needs. The binding is dropped anyway if it is a
+        // metavariable or contains free variables (below).
 
         // metavariable instantiations must not contain free variables
         if (!t.freeVars().isEmpty() ||
@@ -649,7 +647,7 @@ public class EqualityConstraint implements Constraint {
      */
     @Override
     public Constraint join(Constraint co, Services services) {
-        return join(co, services, CONSTRAINTBOOLEANCONTAINER);
+        return join(co, services, new BooleanContainer());
     }
 
 
@@ -681,40 +679,9 @@ public class EqualityConstraint implements Constraint {
             return co.join(this, services);
         }
 
-        final ECPair cacheKey;
-
-        lookup: synchronized (joinCacheMonitor) {
-            ecPair0.set(this, co);
-            Constraint res = joinCache.get(ecPair0);
-
-            if (res == null) {
-                cacheKey = ecPair0.copy();
-                res = joinCacheOld.get(cacheKey);
-                if (res == null) {
-                    break lookup;
-                }
-                joinCache.put(cacheKey, res);
-            }
-
-            unchanged.setVal(this == res);
-            return res;
-        }
-
         final Constraint res = joinHelp((EqualityConstraint) co, services);
-
         unchanged.setVal(res == this);
-
-        synchronized (joinCacheMonitor) {
-            if (joinCache.size() > 1000) {
-                joinCacheOld.clear();
-                final Map<ECPair, Constraint> t = joinCacheOld;
-                joinCacheOld = joinCache;
-                joinCache = t;
-            }
-
-            joinCache.put(cacheKey, res);
-            return res;
-        }
+        return res;
     }
 
 
@@ -742,8 +709,8 @@ public class EqualityConstraint implements Constraint {
      * @return a boolean that is true iff. adding a mapping (mv,term) would cause a cycle
      */
     private boolean hasCycle(Metavariable mv, JTerm term, Services services) {
-        ImmutableList<Metavariable> body = ImmutableSLList.nil();
-        ImmutableList<JTerm> fringe = ImmutableSLList.nil();
+        ImmutableList<Metavariable> body = ImmutableList.nil();
+        ImmutableList<JTerm> fringe = ImmutableList.nil();
         JTerm checkForCycle = term;
 
         while (true) {
@@ -822,48 +789,6 @@ public class EqualityConstraint implements Constraint {
         return map.toString();
     }
 
-
-    private static final class ECPair {
-        private Constraint first;
-        private Constraint second;
-        private int hash;
-
-        public boolean equals(Object o) {
-            if (!(o instanceof ECPair e)) {
-                return false;
-            }
-            return first == e.first && second == e.second;
-        }
-
-        public void set(Constraint first, Constraint second) {
-            this.first = first;
-            this.second = second;
-            this.hash = first.hashCode() + second.hashCode();
-        }
-
-        public int hashCode() {
-            return hash;
-        }
-
-        public ECPair copy() {
-            return new ECPair(first, second, hash);
-        }
-
-        public ECPair(Constraint first, Constraint second, int hash) {
-            this.first = first;
-            this.second = second;
-            this.hash = hash;
-        }
-    }
-
-    private static final Object joinCacheMonitor = new Object();
-
-    // the methods using these caches seem not to be used anymore otherwise refactor and move it
-    // into ServiceCaches
-    private static Map<ECPair, Constraint> joinCache = new LRUCache<>(0);
-    private static Map<ECPair, Constraint> joinCacheOld = new LRUCache<>(0);
-
-    private static final ECPair ecPair0 = new ECPair(null, null, 0);
 
     @Override
     public int hashCode() {

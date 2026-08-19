@@ -4,7 +4,9 @@
 package de.uka.ilkd.key.gui;
 
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +21,7 @@ import de.uka.ilkd.key.proof.init.Profile;
 import de.uka.ilkd.key.settings.Configuration;
 import de.uka.ilkd.key.settings.PathConfig;
 
+import com.google.common.html.HtmlEscapers;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,8 +76,16 @@ public class RecentFileMenu {
 
         // menu.setEnabled(menu.getItemCount() != 0);
         menu.setIcon(IconFactory.recentFiles(16));
+    }
 
-        loadFrom(PathConfig.getRecentFileStorage());
+    /// Loads entries from the current default configuration folder.
+    /// @see PathConfig.KeyPaths#recentFileStorage
+    public void loadEntries() {
+        if (Files.exists(PathConfig.currentPaths.recentFileStorage)) {
+            loadFrom(PathConfig.currentPaths.recentFileStorage);
+        } else {
+            loadFrom(PathConfig.previousPaths.recentFileStorage);
+        }
     }
 
     private void insertFirstEntry(RecentFileEntry entry) {
@@ -100,19 +111,11 @@ public class RecentFileMenu {
             insertFirstEntry(entry);
 
             // Recalculate unique names
-            final String[] paths =
-                recentFiles.stream().map(RecentFileEntry::getAbsolutePath).toArray(String[]::new);
-            final ShortUniqueFileNames.Name[] names = ShortUniqueFileNames.makeUniqueNames(paths);
-
-            // Set the names
-            for (int i = 0; i < names.length; i++) {
-                var text = names[i].toString();
-                recentFiles.get(i).createMenuItem().getAction().putValue(Action.NAME, text);
-            }
+            computeShortestUniqueFilenames();
         }
     }
 
-    private void addRecentFileNoSave(final String path,
+    void addRecentFileNoSave(final String path,
             @Nullable Profile profile,
             boolean singleJava,
             @Nullable Configuration additionalOption) {
@@ -180,19 +183,38 @@ public class RecentFileMenu {
     /**
      * read the recent files from the given properties file
      */
-    public final void loadFrom(Path filename) {
+    final void loadFrom(Path filename) {
         try {
+            if (!Files.exists(filename)) {
+                return;
+            }
+
             var file = ParsingFacade.parseConfigurationFile(filename);
             List<Configuration> recent = file.asConfigurationList();
             this.recentFiles.clear();
+            this.mostRecentFile = null;
+
+            String tmpFolder = System.getProperty("java.io.tmpdir");
             for (var c : recent) {
                 final var e = new RecentFileEntry(c);
-                if (mostRecentFile != null) {
+
+                // if file not present, and it was stored in the tmp folder,
+                // we allow us to silently ignore it.
+                if (e.path.startsWith(tmpFolder) && !Files.exists(Paths.get(e.path))) {
+                    continue;
+                }
+
+                // The list is stored most-recent-first, so the first entry is the most recent.
+                // (Previously this condition was inverted and overwrote mostRecentFile with every
+                // entry, leaving it null after startup -- issue #3711.)
+                if (mostRecentFile == null) {
                     mostRecentFile = e;
                 }
                 recentFiles.add(e);
                 menu.add(e.createMenuItem());
             }
+
+            computeShortestUniqueFilenames();
         } catch (FileNotFoundException ex) {
             LOGGER.info("Could not read RecentFileList. Did not find file {}", filename);
         } catch (IOException ioe) {
@@ -210,13 +232,44 @@ public class RecentFileMenu {
         return mostRecentFile != null ? mostRecentFile.getAbsolutePath() : null;
     }
 
+    private void computeShortestUniqueFilenames() {
+        var map = new TreeMap<String, String>();
+        var actions = new ArrayList<RecentFileAction>();
+
+        for (var menuComponent : menu.getMenuComponents()) {
+            var action = ((RecentFileAction) ((JMenuItem) menuComponent).getAction());
+            map.put(action.fileEntry.path, action.fileEntry.path);
+            actions.add(action);
+        }
+
+        var seq = map.keySet().stream().toList();
+        var names = ShortUniqueFileNames.makeUniqueNames(seq);
+        for (int i = 0; i < seq.size(); i++) {
+            map.put(seq.get(i), names[i].getName());
+        }
+
+        for (RecentFileAction a : actions) {
+            var p = a.fileEntry.profile;
+            var option = a.fileEntry.additionalOption;
+            a.putValue(Action.NAME, map.get(a.fileEntry.path) +
+                    ((p == null || p.equals("null")) ? "" : " (Profile: %s)".formatted(p)));
+
+            a.putValue(Action.SHORT_DESCRIPTION,
+                "<html>" + HtmlEscapers.htmlEscaper().escape(a.fileEntry.path) +
+                    (option == null ? "" : "<br>" + option)
+                    + "</html>");
+        }
+    }
+
+
     /**
      * write the recent file names to the given properties file. the file will be read (if it
      * exists) and then re-written so no information will be lost.
      */
     public void store(Path filename) {
         List<Configuration> config =
-            recentFiles.stream().map(RecentFileEntry::asConfiguration).toList();
+            recentFiles.stream().map(RecentFileEntry::asConfiguration)
+                    .toList();
         try (var fin = Files.newBufferedWriter(filename)) {
             var writer = new Configuration.ConfigurationWriter(fin);
             writer.printValue(config);
@@ -226,7 +279,11 @@ public class RecentFileMenu {
     }
 
     public void save() {
-        store(PathConfig.getRecentFileStorage());
+        store(PathConfig.currentPaths.recentFileStorage);
+    }
+
+    public List<RecentFileEntry> getEntries() {
+        return this.recentFiles;
     }
 
     public class RecentFileEntry {
@@ -263,7 +320,11 @@ public class RecentFileMenu {
         public Configuration asConfiguration() {
             Configuration config = new Configuration();
             config.set(KEY_PATH, path);
-            config.set(KEY_PROFILE, (Object) profile);
+            // Only store a real profile name; writing a null serializes to the string "null", which
+            // then fails to resolve on reload.
+            if (profile != null) {
+                config.set(KEY_PROFILE, profile);
+            }
             config.set(KEY_LOAD_SINGLE_JAVA, singleJava);
             config.set(KEY_OPTIONS, additionalOption);
             return config;
@@ -278,6 +339,36 @@ public class RecentFileMenu {
                 menuItem = new JMenuItem(new RecentFileAction(this));
             }
             return menuItem;
+        }
+
+        @Override
+        public String toString() {
+            return "RecentFileEntry{" +
+                "additionalOption=" + additionalOption +
+                ", path='" + path + '\'' +
+                ", profile='" + profile + '\'' +
+                ", singleJava=" + singleJava +
+                '}';
+        }
+
+        @Override
+        public final boolean equals(Object o) {
+            if (!(o instanceof RecentFileEntry that))
+                return false;
+
+            return singleJava == that.singleJava
+                    && path.equals(that.path)
+                    && Objects.equals(profile, that.profile)
+                    && Objects.equals(additionalOption, that.additionalOption);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = path.hashCode();
+            result = 31 * result + Objects.hashCode(profile);
+            result = 31 * result + Boolean.hashCode(singleJava);
+            result = 31 * result + Objects.hashCode(additionalOption);
+            return result;
         }
     }
 
@@ -305,15 +396,18 @@ public class RecentFileMenu {
                 }
             } else {
                 String profileName = fileEntry.profile;
-                var selectedProfile =
-                    ServiceLoader.load(DefaultProfileResolver.class)
-                            .stream()
-                            .filter(it -> it.get().getProfileName().equals(profileName))
-                            .findFirst()
-                            .map(it -> it.get().getDefaultProfile());
+                // A missing profile -- null, or the literal string "null" that older recent-file
+                // entries stored for it -- means "use the default profile", not an error.
+                boolean hasProfile = profileName != null && !profileName.equals("null");
+                var selectedProfile = hasProfile
+                        ? ServiceLoader.load(DefaultProfileResolver.class)
+                                .stream()
+                                .filter(it -> it.get().getProfileName().equals(profileName))
+                                .findFirst()
+                                .map(it -> it.get().getDefaultProfile())
+                        : Optional.<Profile>empty();
 
-
-                if (profileName != null && selectedProfile.isEmpty()) {
+                if (hasProfile && selectedProfile.isEmpty()) {
                     JOptionPane.showMessageDialog(mainWindow,
                         "Could not find previous selected profile %s.".formatted(profileName));
                     return;

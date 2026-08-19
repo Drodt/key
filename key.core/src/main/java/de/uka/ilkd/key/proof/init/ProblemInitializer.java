@@ -23,6 +23,7 @@ import de.uka.ilkd.key.logic.NamespaceSet;
 import de.uka.ilkd.key.logic.label.OriginTermLabelFactory;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.logic.sort.GenericSort;
+import de.uka.ilkd.key.nparser.ChoiceInformation;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.JavaModel;
 import de.uka.ilkd.key.proof.Proof;
@@ -293,6 +294,17 @@ public final class ProblemInitializer {
         initConfig.getServices().setJavaModel(
             JavaModel.createJavaModel(javaPath, classPath, bootClassPath, includes,
                 initialFile));
+
+        // Pre-materialise the default execution context (the synthetic __Default__ class) here,
+        // single-threaded, so the matcher never has to register it lazily during proving. Otherwise
+        // the first match of a context-block modality without an explicit execution context would
+        // parse and register __Default__ on the proving path (see
+        // ContextStatementBlock#matchInnerExecutionContext and
+        // JavaInfo#getDefaultExecutionContext),
+        // which races under the parallel prover. Materialising it now keeps the Java type model
+        // fixed once proving starts. Unconditional on purpose: inline-program proofs can need it
+        // even when javaPath is null, and it is a no-op when already created.
+        initConfig.getServices().getJavaInfo().getDefaultExecutionContext();
     }
 
     /**
@@ -381,11 +393,14 @@ public final class ProblemInitializer {
         }
     }
 
-    // what is the purpose of this method?
+    /**
+     * Updates the global settings the taclet options that declared in
+     * {@code optionDeclaration.key}.
+     * A proof created afterwards inherits these settings unless it overwrites it.
+     */
     private InitConfig determineEnvironment(ProofOblInput po, InitConfig initConfig) {
-        // TODO: what does this actually do?
         ProofSettings.DEFAULT_SETTINGS.getChoiceSettings().updateChoices(initConfig.choiceNS(),
-            false);
+            initConfig.getCategory2DefaultChoices(), false);
         return initConfig;
     }
 
@@ -494,7 +509,7 @@ public final class ProblemInitializer {
         var warnings = ic.getProfile()
                 .prepareInitConfig(ic, additionalProfileOptions);
         addWarnings(warnings);
-
+        ic.computeDefaults(new ChoiceInformation());
         return ic;
     }
 
@@ -629,9 +644,8 @@ public final class ProblemInitializer {
             if (type instanceof ClassDeclaration || type instanceof InterfaceDeclaration) {
                 for (Field f : javaInfo.getAllFields((TypeDeclaration) type)) {
                     final ProgramVariable pv = (ProgramVariable) f.getProgramVariable();
-                    if (pv instanceof LocationVariable) {
-                        heapLDT.getFieldSymbolForPV((LocationVariable) pv,
-                            services);
+                    if (pv instanceof LocationVariable lv) {
+                        heapLDT.getFieldSymbolForPV(lv, initConfig.getServices());
                     }
                 }
             }

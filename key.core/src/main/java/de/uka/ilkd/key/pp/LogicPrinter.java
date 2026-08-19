@@ -90,6 +90,9 @@ public class LogicPrinter {
     private QuantifiableVariablePrintMode quantifiableVariablePrintMode =
         QuantifiableVariablePrintMode.NORMAL;
 
+    // Stop printing after maxChar characters; -1 prints whole term independent of size
+    private int maxChar = -1;
+
     private enum QuantifiableVariablePrintMode {
         NORMAL, WITH_OUT_DECLARATION
     }
@@ -157,6 +160,37 @@ public class LogicPrinter {
             NotationInfo.DEFAULT_UNICODE_ENABLED, NotationInfo.DEFAULT_HIDE_PACKAGE_PREFIX);
     }
 
+
+    /**
+     * converts a term to a String
+     *
+     * @param t a term.
+     * @param maxChar number of characters to be printed (-1 = unlimited
+     * @param services the Services class with information about the logic
+     * @return the printed semisequent.
+     */
+    public static String quickPrintTerm(JTerm t, int maxChar, Services services) {
+        LogicPrinter p = quickPrinter(services, NotationInfo.DEFAULT_PRETTY_SYNTAX,
+            NotationInfo.DEFAULT_UNICODE_ENABLED,
+            NotationInfo.DEFAULT_HIDE_PACKAGE_PREFIX);
+        p.setMaxChar(maxChar);
+        p.layouter().beginC();
+        p.printTerm(t);
+        p.layouter().end();
+        final String result = p.result();
+        return result + (result.length() >= maxChar ? "..." : "");
+    }
+
+    /**
+     * sets the maximal number of characters to be printed
+     *
+     * @param maxChar number of characters to be printed (-1 = unlimited)
+     */
+    public void setMaxChar(int maxChar) {
+        this.maxChar = maxChar;
+    }
+
+
     /**
      * Converts a term to a string.
      *
@@ -186,7 +220,11 @@ public class LogicPrinter {
     public static String quickPrintSemisequent(Semisequent s, Services services) {
         var p = quickPrinter(services, NotationInfo.DEFAULT_PRETTY_SYNTAX,
             NotationInfo.DEFAULT_UNICODE_ENABLED, NotationInfo.DEFAULT_HIDE_PACKAGE_PREFIX);
+        // Wrap in an explicit block so the layouter flushes its last pending break; without this
+        // the trailing formula of the semisequent is dropped (issue #243). Mirrors quickPrintTerm.
+        p.layouter().beginC();
         p.printSemisequent(s);
+        p.layouter().end();
         return p.result();
     }
 
@@ -690,7 +728,15 @@ public class LogicPrinter {
             layouter.markEndSub();
             layouter.end();
         } catch (UnbalancedBlocksException e) {
+            reset();
             throw new RuntimeException("Unbalanced blocks in pretty printer", e);
+        } catch (RuntimeException | Error e) {
+            // A failure deep in the recursive term printing (e.g. a NullPointerException) unwinds
+            // past the pending end() calls and leaves the layouter with open blocks. Discard the
+            // dirty layouter so that a subsequently reused printer does not fail with a misleading
+            // UnbalancedBlocksException that masks this root cause.
+            reset();
+            throw e;
         }
     }
 
@@ -731,9 +777,19 @@ public class LogicPrinter {
      * @param seq The Sequent to be pretty-printed
      */
     public void printSequent(Sequent seq) {
-        layouter.beginC(0);
-        printSequentInExistingBlock(seq);
-        layouter.end();
+        try {
+            layouter.beginC(0);
+            printSequentInExistingBlock(seq);
+            layouter.end();
+        } catch (UnbalancedBlocksException e) {
+            reset();
+            throw new RuntimeException("Unbalanced blocks in pretty printer", e);
+        } catch (RuntimeException | Error e) {
+            // See printFilteredSequent: discard the layouter left dirty by a printing failure so a
+            // reused printer cannot later fail with a misleading UnbalancedBlocksException.
+            reset();
+            throw e;
+        }
     }
 
     /**
@@ -742,11 +798,12 @@ public class LogicPrinter {
      * @param semiseq the semisequent to be printed
      */
     public void printSemisequent(Semisequent semiseq) {
-        for (int i = 0; i < semiseq.size(); i++) {
+        int idx = semiseq.size();
+        for (SequentFormula formula : semiseq) {
             layouter.markStartSub();
-            printConstrainedFormula(semiseq.get(i));
+            printConstrainedFormula(formula);
             layouter.markEndSub();
-            if (i != semiseq.size() - 1) {
+            if (--idx != 0) {
                 layouter.print(",").brk();
             }
         }
@@ -788,13 +845,21 @@ public class LogicPrinter {
             layouter.startTerm(0);
             layouter.print(notationInfo.getAbbrevMap().getAbbrev(t));
         } else {
-            if (t.hasLabels() && !getVisibleTermLabels(t).isEmpty() && notationInfo
-                    .getNotation(t.op()).getPriority() < NotationInfo.PRIORITY_ATOM) {
+            // printTerm is the central recursive method (called once per subterm), so the
+            // notation and the visible-label set are looked up once here instead of up to three
+            // times. getVisibleTermLabels is only consulted when the term actually has labels,
+            // preserving the previous short-circuit (its SequentViewLogicPrinter override
+            // allocates and filters on every call).
+            final Notation notation = notationInfo.getNotation(t.op());
+            final boolean parens = t.hasLabels() && !getVisibleTermLabels(t).isEmpty()
+                    && notation.getPriority() < NotationInfo.PRIORITY_ATOM;
+            if (parens) {
                 layouter.print("(");
             }
-            notationInfo.getNotation(t.op()).print(t, this);
-            if (t.hasLabels() && !getVisibleTermLabels(t).isEmpty() && notationInfo
-                    .getNotation(t.op()).getPriority() < NotationInfo.PRIORITY_ATOM) {
+            if (maxChar == -1 || layouter.backend().count() < maxChar) {
+                notation.print(t, this);
+            }
+            if (parens) {
                 layouter.print(")");
             }
         }
@@ -960,14 +1025,14 @@ public class LogicPrinter {
                 layouter.markEndKeyword();
             }
             if (t.op() instanceof ParametricFunctionInstance pfi) {
-                layouter.print("<[");
+                layouter.print("<");
                 for (int i = 0; i < pfi.getArgs().size(); ++i) {
                     var arg = pfi.getArgs().get(i);
                     if (i > 0)
                         layouter.print(", ");
                     printSort(arg.sort());
                 }
-                layouter.print("]>");
+                layouter.print(">");
             }
             if (!t.boundVars().isEmpty()) {
                 layouter.print("{").beginC(0);
@@ -1122,7 +1187,7 @@ public class LogicPrinter {
     }
 
     /*
-     * Print a term of the form: seqGet<[T]>(Seq, int).
+     * Print a term of the form: seqGet<T>(Seq, int).
      */
     public void printSeqGet(JTerm t) {
         if (notationInfo.isPrettySyntax()) {
@@ -1288,21 +1353,15 @@ public class LogicPrinter {
     }
 
     public void printSingleton(JTerm t) {
-        assert t.arity() == 2;
-        layouter.startTerm(2);
-        layouter.print("{(").beginC(0);
+        assert t.arity() == 1;
+        layouter.startTerm(1);
+        layouter.print("{").beginC(0);
 
         layouter.markStartSub();
         printTerm(t.sub(0));
         layouter.markEndSub();
 
-        layouter.print(",").brk(1, 0);
-
-        layouter.markStartSub();
-        printTerm(t.sub(1));
-        layouter.markEndSub();
-
-        layouter.print(")}").end();
+        layouter.print("}").end();
     }
 
     public void printSeqSingleton(JTerm t, String lDelimiter, String rDelimiter) {
@@ -1315,29 +1374,34 @@ public class LogicPrinter {
         layouter.print(rDelimiter).end();
     }
 
-    public void printElementOf(JTerm t) {
-        assert t.arity() == 3;
-        layouter.startTerm(3);
+    public void printPair(JTerm t) {
+        assert t.arity() == 2;
+        layouter.startTerm(2);
+        layouter.print("(");
+        layouter.markStartSub();
+        printTerm(t.sub(0));
+        layouter.markEndSub();
+        layouter.print(", ");
+        layouter.markStartSub();
+        printTerm(t.sub(1));
+        layouter.markEndSub();
+        layouter.print(")");
+    }
 
-        layouter.print("(").beginC(0);
+    public void printElementOf(JTerm t) {
+        assert t.arity() == 2;
+        layouter.startTerm(2);
 
         layouter.markStartSub();
         printTerm(t.sub(0));
         layouter.markEndSub();
 
-        layouter.print(",").brk(1, 0);
-
-        layouter.markStartSub();
-        printTerm(t.sub(1));
-        layouter.markEndSub();
-
-        layouter.print(")").end();
         layouter.print(" ");
         layouter.keyWord("\\in");
         layouter.print(" ");
 
         layouter.markStartSub();
-        printTerm(t.sub(2));
+        printTerm(t.sub(1));
         layouter.markEndSub();
     }
 
@@ -1347,26 +1411,17 @@ public class LogicPrinter {
             return;
         }
 
-        assert t.arity() == 3;
-        layouter.startTerm(3);
-
-        layouter.print("(").beginC(0);
+        assert t.arity() == 2;
+        layouter.startTerm(2);
 
         layouter.markStartSub();
         printTerm(t.sub(0));
         layouter.markEndSub();
 
-        layouter.print(",").brk(1, 0);
-
-        layouter.markStartSub();
-        printTerm(t.sub(1));
-        layouter.markEndSub();
-
-        layouter.print(")").end();
         layouter.print(symbol);
 
         layouter.markStartSub();
-        printTerm(t.sub(2));
+        printTerm(t.sub(1));
         layouter.markEndSub();
     }
 

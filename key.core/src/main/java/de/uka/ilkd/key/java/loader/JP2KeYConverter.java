@@ -16,14 +16,11 @@ import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.ast.ccatch.*;
 import de.uka.ilkd.key.java.ast.declaration.*;
 import de.uka.ilkd.key.java.ast.declaration.TypeDeclaration;
-import de.uka.ilkd.key.java.ast.declaration.modifier.*;
-import de.uka.ilkd.key.java.ast.expression.ArrayInitializer;
+import de.uka.ilkd.key.java.ast.expression.*;
+import de.uka.ilkd.key.java.ast.expression.BinaryAssignment.BinaryAssignmentKind;
 import de.uka.ilkd.key.java.ast.expression.Expression;
-import de.uka.ilkd.key.java.ast.expression.ParenthesizedExpression;
-import de.uka.ilkd.key.java.ast.expression.PassiveExpression;
 import de.uka.ilkd.key.java.ast.expression.literal.*;
 import de.uka.ilkd.key.java.ast.expression.operator.*;
-import de.uka.ilkd.key.java.ast.expression.operator.adt.*;
 import de.uka.ilkd.key.java.ast.reference.*;
 import de.uka.ilkd.key.java.ast.statement.*;
 import de.uka.ilkd.key.java.transformations.ConstantExpressionEvaluator;
@@ -36,7 +33,7 @@ import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.VariableNamer;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.logic.sort.ProgramSVSort;
-import de.uka.ilkd.key.parser.Location;
+import de.uka.ilkd.key.nparser.KeyAst;
 import de.uka.ilkd.key.parser.ParserException;
 import de.uka.ilkd.key.rule.metaconstruct.*;
 import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLAssertStatement;
@@ -44,6 +41,7 @@ import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLConstruct;
 import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLLoopSpec;
 import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLMergePointDecl;
 
+import org.key_project.logic.MetaSpace;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.op.sv.OperatorSV;
@@ -51,7 +49,9 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.parsing.Position;
 
+import com.github.javaparser.Range;
 import com.github.javaparser.ast.*;
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.*;
@@ -69,6 +69,7 @@ import com.github.javaparser.ast.type.*;
 import com.github.javaparser.ast.visitor.GenericVisitorAdapter;
 import com.github.javaparser.ast.visitor.Visitable;
 import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
 import com.github.javaparser.resolution.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.resolution.types.ResolvedType;
@@ -82,6 +83,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.github.javaparser.ast.Modifier.DefaultKeyword.*;
+import static de.uka.ilkd.key.java.ast.declaration.Modifier.createModifierList;
+import static de.uka.ilkd.key.java.ast.expression.UnaryAssignment.UnaryAssignmentKind.*;
+import static de.uka.ilkd.key.java.ast.expression.operator.LogicFunctionalOperator.LogicFunction.*;
+import static de.uka.ilkd.key.java.ast.expression.operator.UnaryOperatorKind.NEGATIVE;
 import static java.lang.String.format;
 
 /**
@@ -100,8 +105,10 @@ public record JP2KeYConverter(Services services, Namespace<SchemaVariable> schem
             // Install the symbolSolver if the node has none.
             block.getSymbolResolver();
         } catch (IllegalStateException ignore) {
-            var symbolSolver = services.getJavaService().getProgramFactory().getSymbolSolver();
-            var compUnit = block.findCompilationUnit();
+            JavaSymbolSolver symbolSolver =
+                services.getJavaService().getProgramFactory().getSymbolSolver();
+            Optional<com.github.javaparser.ast.CompilationUnit> compUnit =
+                block.findCompilationUnit();
             compUnit.ifPresent(it -> it.setData(Node.SYMBOL_RESOLVER_KEY, symbolSolver));
         }
         return block.accept(new JP2KeYVisitor(services, schemaVariables), null);
@@ -160,14 +167,14 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             throw new IllegalArgumentException(
                 "Creating a program element name from a string that identifies a schema variable");
         }
-        var c = createComments(n);
+        List<Comment> c = createComments(n);
         return new ProgramElementName(n.asString(), c.toArray(Comment[]::new));
     }
 
     @Override
     public Object visit(ArrayAccessExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Expression expr = accept(n.getIndex());
         Expression prefix = accept(n.getName());
         // TODO weigl how to express (new int[0])[0] in Java-KeY-AST?
@@ -176,8 +183,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ArrayCreationExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         TypeReference type = accept(n.getElementType());
         // TODO javaparser how should int[5][4][][] be encoded in the key ast?
         ArrayInitializer ai;
@@ -191,18 +198,19 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         }
 
         int dimensions = n.getLevels().size();
-        var rtype = n.calculateResolvedType();
+        ResolvedType rtype = n.calculateResolvedType();
         return new NewArray(pi, c, children, type, getKeYJavaType(rtype), dimensions, ai);
     }
 
     private ArrayInitializer visitArrayInitializerExpr(ArrayInitializerExpr n, KeYJavaType type) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        var list = new ArrayList<Expression>(n.getValues().size());
-        for (var node : n.getValues()) {
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        ArrayList<Expression> list = new ArrayList<Expression>(n.getValues().size());
+        for (com.github.javaparser.ast.expr.Expression node : n.getValues()) {
             Expression expr;
             if (node instanceof ArrayInitializerExpr) {
-                var array = ((de.uka.ilkd.key.java.ast.abstraction.ArrayType) type.getJavaType());
+                de.uka.ilkd.key.java.ast.abstraction.ArrayType array =
+                    ((de.uka.ilkd.key.java.ast.abstraction.ArrayType) type.getJavaType());
                 expr = visitArrayInitializerExpr((ArrayInitializerExpr) node,
                     array.getBaseType().getKeYJavaType());
             } else {
@@ -210,7 +218,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             }
             list.add(expr);
         }
-        var children = new ImmutableArray<>(list);
+        ImmutableArray<Expression> children = new ImmutableArray<>(list);
         return new ArrayInitializer(pi, c, children, type);
     }
 
@@ -225,90 +233,92 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     public Object visit(AssignExpr n, Void arg) {
         Expression target = accept(n.getTarget());
         Expression expr = accept(n.getValue());
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        return switch (n.getOperator()) {
-            case ASSIGN -> new CopyAssignment(pi, c, target, expr);
-            case PLUS -> new PlusAssignment(pi, c, target, expr);
-            case MINUS -> new MinusAssignment(pi, c, target, expr);
-            case MULTIPLY -> new TimesAssignment(pi, c, target, expr);
-            case DIVIDE -> new DivideAssignment(pi, c, target, expr);
-            case BINARY_AND -> new BinaryAndAssignment(pi, c, target, expr);
-            case BINARY_OR -> new BinaryOrAssignment(pi, c, target, expr);
-            case XOR -> new BinaryXOrAssignment(pi, c, target, expr);
-            case REMAINDER -> new ModuloAssignment(pi, c, target, expr);
-            case LEFT_SHIFT -> new ShiftLeftAssignment(pi, c, target, expr);
-            case SIGNED_RIGHT_SHIFT -> new ShiftRightAssignment(pi, c, target, expr);
-            case UNSIGNED_RIGHT_SHIFT -> new UnsignedShiftRightAssignment(pi, c, target, expr);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        var op = switch (n.getOperator()) {
+            case ASSIGN -> BinaryAssignmentKind.COPY;
+            case PLUS -> BinaryAssignmentKind.PLUS;
+            case MINUS -> BinaryAssignmentKind.MINUS;
+            case MULTIPLY -> BinaryAssignmentKind.TIMES;
+            case DIVIDE -> BinaryAssignmentKind.DIVIDE;
+            case BINARY_AND -> BinaryAssignmentKind.BINARY_AND;
+            case BINARY_OR -> BinaryAssignmentKind.BINARY_OR;
+            case XOR -> BinaryAssignmentKind.BINARY_XOR;
+            case REMAINDER -> BinaryAssignmentKind.MODULO;
+            case LEFT_SHIFT -> BinaryAssignmentKind.SHIFT_LEFT;
+            case SIGNED_RIGHT_SHIFT -> BinaryAssignmentKind.SHIFT_RIGHT;
+            case UNSIGNED_RIGHT_SHIFT -> BinaryAssignmentKind.UNSIGNED_SHIFT_RIGHT;
         };
+        return new BinaryAssignment(pi, c, op, target, expr);
     }
 
     @Override
     public Object visit(BinaryExpr n, Void arg) {
-        var lhs = (Expression) n.getLeft().accept(this, arg);
-        var rhs = (Expression) n.getRight().accept(this, arg);
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        return switch (n.getOperator()) {
-            case OR -> new LogicalOr(pi, c, lhs, rhs);
-            case AND -> new LogicalAnd(pi, c, lhs, rhs);
-            case BINARY_OR -> new BinaryOr(pi, c, lhs, rhs);
-            case BINARY_AND -> new BinaryAnd(pi, c, lhs, rhs);
-            case XOR -> new BinaryXOr(pi, c, lhs, rhs);
-            case EQUALS -> new Equals(pi, c, lhs, rhs);
-            case NOT_EQUALS -> new NotEquals(pi, c, lhs, rhs);
-            case LESS -> new LessThan(pi, c, lhs, rhs);
-            case GREATER -> new GreaterThan(pi, c, lhs, rhs);
-            case LESS_EQUALS -> new LessOrEquals(pi, c, lhs, rhs);
-            case GREATER_EQUALS -> new GreaterOrEquals(pi, c, lhs, rhs);
-            case LEFT_SHIFT -> new ShiftLeft(pi, c, lhs, rhs);
-            case SIGNED_RIGHT_SHIFT -> new ShiftRight(pi, c, lhs, rhs);
-            case UNSIGNED_RIGHT_SHIFT -> new UnsignedShiftRight(pi, c, lhs, rhs);
-            case PLUS -> new Plus(pi, c, lhs, rhs);
-            case MINUS -> new Minus(pi, c, lhs, rhs);
-            case MULTIPLY -> new Times(pi, c, lhs, rhs);
-            case DIVIDE -> new Divide(pi, c, lhs, rhs);
-            case REMAINDER -> new Modulo(pi, c, lhs, rhs);
+        Expression lhs = (Expression) n.getLeft().accept(this, arg);
+        Expression rhs = (Expression) n.getRight().accept(this, arg);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        var op = switch (n.getOperator()) {
+            case OR -> BinaryOperatorKind.LOGICAL_OR;
+            case AND -> BinaryOperatorKind.LOGICAL_AND;
+            case BINARY_OR -> BinaryOperatorKind.BINARY_OR;
+            case BINARY_AND -> BinaryOperatorKind.BINARY_AND;
+            case XOR -> BinaryOperatorKind.BINARY_XOR;
+            case EQUALS -> BinaryOperatorKind.EQUALS;
+            case NOT_EQUALS -> BinaryOperatorKind.NOT_EQUALS;
+            case LESS -> BinaryOperatorKind.LESS_THAN;
+            case GREATER -> BinaryOperatorKind.GREATER_THAN;
+            case LESS_EQUALS -> BinaryOperatorKind.LESS_OR_EQUALS;
+            case GREATER_EQUALS -> BinaryOperatorKind.GREATER_OR_EQUALS;
+            case LEFT_SHIFT -> BinaryOperatorKind.SHIFT_LEFT;
+            case SIGNED_RIGHT_SHIFT -> BinaryOperatorKind.SHIFT_RIGHT;
+            case UNSIGNED_RIGHT_SHIFT -> BinaryOperatorKind.UNSIGNED_SHIFT_RIGHT;
+            case PLUS -> BinaryOperatorKind.PLUS;
+            case MINUS -> BinaryOperatorKind.MINUS;
+            case MULTIPLY -> BinaryOperatorKind.TIMES;
+            case DIVIDE -> BinaryOperatorKind.DIVIDE;
+            case REMAINDER -> BinaryOperatorKind.MODULO;
         };
+        return new BinaryOperator(pi, c, op, lhs, rhs);
     }
 
     @Override
     public Object visit(BlockStmt n, Void arg) {
         ImmutableArray<Statement> body = map(n.getStatements());
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new StatementBlock(pi, c, body, getSpec(n));
     }
 
     @Override
     public Object visit(BooleanLiteralExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new BooleanLiteral(pi, c, n.getValue());
     }
 
     @Override
     public Object visit(BreakStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        var name = simpleNameToLabel(n.getLabel());
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        Label name = simpleNameToLabel(n.getLabel());
         return new Break(pi, c, name);
     }
 
     @Override
     public Object visit(CastExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         TypeReference type = requireTypeReference(n.getType());
         return new TypeCast(pi, c, accept(n.getExpression()), type);
     }
 
     @Override
     public Object visit(CatchClause n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         if (n instanceof KeyCatchClauseSV sv) {
-            var v = lookupSchemaVariable(new Name(sv.getSchemaVar()));
+            SchemaVariable v = lookupSchemaVariable(new Name(sv.getSchemaVar()));
             if (!(v instanceof ProgramSV)) {
                 reportError(n, "Catch");
             }
@@ -321,18 +331,18 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(CharLiteralExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new CharLiteral(pi, c, n.getValue().charAt(0));
     }
 
     @Override
     public Object visit(ClassOrInterfaceDeclaration n, Void arg) {
-        final var ref = new ReferenceTypeImpl(n.resolve());
-        var kjt = createOrCachedKeyJavaType(ref);
+        final ReferenceTypeImpl ref = new ReferenceTypeImpl(n.resolve());
+        KeYJavaType kjt = createOrCachedKeyJavaType(ref);
 
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         ProgramElementName name = createProgramElementName(n.getName());
         ProgramElementName fullName = new ProgramElementName(n.getFullyQualifiedName().get());
         boolean isLibrary = mapping.isParsingLibraries();
@@ -363,7 +373,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     }
 
     private KeYJavaType createOrCachedKeyJavaType(ReferenceTypeImpl ref) {
-        var kjt = getCachedKeYJavaType(ref);
+        KeYJavaType kjt = getCachedKeYJavaType(ref);
         if (kjt != null) {
             return kjt;
         }
@@ -382,7 +392,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     private boolean parentIsInterface(@NonNull Node n) {
         if (n.getParentNode().isPresent()) {
-            var parent = n.getParentNode().get();
+            Node parent = n.getParentNode().get();
             if (parent instanceof ClassOrInterfaceDeclaration) {
                 return ((ClassOrInterfaceDeclaration) parent).isInterface();
             }
@@ -395,13 +405,13 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         if (node.getRange().isEmpty()) {
             return PositionInfo.UNDEFINED;
         }
-        var r = node.getRange().get();
+        Range r = node.getRange().get();
 
         URI uri = node.findCompilationUnit()
                 .flatMap(com.github.javaparser.ast.CompilationUnit::getStorage)
                 .map(it -> it.getPath().toUri()).orElse(null);
-        Position startPos = Position.fromJPPosition(r.begin);
-        Position endPos = Position.fromJPPosition(r.end);
+        Position startPos = JavaSourceLocations.positionFromJP(r.begin);
+        Position endPos = JavaSourceLocations.positionFromJP(r.end);
         return new PositionInfo(startPos, endPos, uri);
     }
 
@@ -414,7 +424,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         final var name = n.getNameAsString();
         if (name.startsWith("\\")) {
             JavaInfo ji = services.getJavaInfo();
-            var type = ji.getPrimitiveKeYJavaType(name);
+            KeYJavaType type = ji.getPrimitiveKeYJavaType(name);
             if (type == null) {
                 return reportError(n, "Unresolved KeY type");
             }
@@ -433,7 +443,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     }
 
     private static List<Comment> createComments(Node n) {
-        var comments = new ArrayList<Comment>();
+        ArrayList<Comment> comments = new ArrayList<Comment>();
         // if (n.containsData(JMLCommentTransformer.BEFORE_COMMENTS)) {
         // comments.addAll(n.getData(JMLCommentTransformer.BEFORE_COMMENTS).stream()
         // .map(c -> new Comment(c.asString(), createPositionInfo(c))).toList());
@@ -447,9 +457,9 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @SuppressWarnings("unchecked")
     private <T> ImmutableArray<T> map(NodeList<? extends Visitable> nodes) {
-        var list = new ArrayList<T>(nodes.size());
+        ArrayList<T> list = new ArrayList<T>(nodes.size());
         for (Node node : nodes) {
-            var res = node.accept(this, null);
+            Object res = node.accept(this, null);
             list.add((T) Objects.requireNonNull(res));
         }
         return new ImmutableArray<>(list);
@@ -457,7 +467,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @SuppressWarnings("unchecked")
     private <T> ImmutableArray<T> flatMap(NodeList<? extends Visitable> nodes) {
-        var seq = nodes.stream()
+        List<T> seq = nodes.stream()
                 .flatMap(it -> ((List<T>) Objects.requireNonNull(it.accept(this, null))).stream())
                 .collect(Collectors.toList());
         return new ImmutableArray<>(seq);
@@ -470,8 +480,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ConditionalExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new Conditional(pi, c,
             accept(n.getCondition()),
             accept(n.getThenExpr()),
@@ -480,25 +490,26 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ConstructorDeclaration n, Void arg) {
-        var isInInterface = parentIsInterface(n);
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        boolean isInInterface = parentIsInterface(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         ImmutableArray<TypeReference> exc = map(n.getThrownExceptions());
         Throws thr = exc.isEmpty() ? null : new Throws(null, null, exc);
-        final var body = n.body();
-        var cd = new de.uka.ilkd.key.java.ast.declaration.ConstructorDeclaration(pi, c,
-            map(n.getModifiers()),
-            null,
-            null,
-            createProgramElementName(n.getName()),
-            map(n.getParameters()),
-            thr,
-            body != null ? accept(body) : new StatementBlock(), isInInterface,
-            getSpec(n));
+        final BlockStmt body = n.body();
+        de.uka.ilkd.key.java.ast.declaration.ConstructorDeclaration cd =
+            new de.uka.ilkd.key.java.ast.declaration.ConstructorDeclaration(pi, c,
+                map(n.getModifiers()),
+                null,
+                null,
+                createProgramElementName(n.getName()),
+                map(n.getParameters()),
+                thr,
+                body != null ? accept(body) : new StatementBlock(), isInInterface,
+                getSpec(n));
 
-        var clazz = getContainingClass(n);
+        ClassOrInterfaceDeclaration clazz = getContainingClass(n);
         try {
-            var containing = clazz.resolve();
+            ResolvedReferenceTypeDeclaration containing = clazz.resolve();
 
             final HeapLDT heapLDT = typeConverter.getTypeConverter().getHeapLDT();
             Sort heapSort = heapLDT == null ? JavaDLTheory.ANY : heapLDT.targetSort();
@@ -506,7 +517,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             // store container type as member when visiting type declaration.
             final KeYJavaType containerKJT =
                 getCachedKeYJavaType(new ReferenceTypeImpl(containing));
-            var method =
+            ProgramMethod method =
                 new ProgramMethod(cd, containerKJT, KeYJavaType.VOID_TYPE, PositionInfo.UNDEFINED,
                     heapSort, heapLDT == null ? 1 : heapLDT.getAllHeaps().size() - 1);
             return addToMapping(n, method);
@@ -518,8 +529,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ContinueStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Label name = simpleNameToLabel(n.getLabel());
         return new Continue(pi, c, name);
     }
@@ -529,7 +540,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             return null;
         }
 
-        var str = name.asString();
+        String str = name.asString();
         if (str.startsWith("#")) {
             return (Label) lookupSchemaVariable(str, name);
         }
@@ -552,10 +563,10 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(DoStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        var guard = accept(n.getCondition());
-        var body = accept(n.getBody());
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        Object guard = accept(n.getCondition());
+        Object body = accept(n.getBody());
         List<TextualJMLConstruct> loopSpecs = new ArrayList<>();
         loopSpecs.addAll(getLoopSpec(n)); // loop invariants
         loopSpecs.addAll(getSpec(n)); // loop contracts
@@ -565,15 +576,15 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(DoubleLiteralExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new DoubleLiteral(pi, c, n.getValue());
     }
 
     @Override
     public Object visit(EmptyStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         /*
          * if (n.containsData(JMLTransformer.KEY_CONSTRUCT)) {
          * var construct = n.getData(JMLTransformer.KEY_CONSTRUCT);
@@ -594,17 +605,17 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(EnclosedExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        var expr = accept(n.getInner());
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        Object expr = accept(n.getInner());
         return new ParenthesizedExpression(pi, c, (Expression) expr);
     }
 
 
     @Override
     public Object visit(ExplicitConstructorInvocationStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         ImmutableArray<Expression> args = map(n.getArguments());
         return n.isThis() ? new ThisConstructorReference(args, pi, c)
                 : new SuperConstructorReference(args, pi, c);
@@ -612,6 +623,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ExpressionStmt n, Void arg) {
+
         return accept(n.getExpression());
     }
 
@@ -631,30 +643,30 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(FieldAccessExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         if (n.getNameAsString().startsWith("#")) {
-            var scope = (ReferencePrefix) n.getScope().accept(this, arg);
-            var name = lookupSchemaVariable(n.getName());
+            ReferencePrefix scope = (ReferencePrefix) n.getScope().accept(this, arg);
+            SchemaVariable name = lookupSchemaVariable(n.getName());
             return new SchematicFieldReference(pi, c, name, scope);
         }
         if ("length".equals(n.getName().getId())) {
             // Handle .length access of sequences
             // TODO: Move this to KeYJavaParser project once its aware of logical types
-            var ty = n.scope().calculateResolvedType();
+            ResolvedType ty = n.scope().calculateResolvedType();
             if (ty instanceof ReferenceTypeImpl rti && rti.getTypeDeclaration().isPresent() &&
                     rti.getTypeDeclaration().get() instanceof ResolvedLogicalType rlt
                     && rlt.getKeYJavaType().getSort() == services.getTypeConverter().getSeqLDT()
                             .targetSort()) {
-                var child = (Expression) n.scope().accept(this, null);
-                return new SeqLength(pi, c, child);
+                Expression child = (Expression) n.scope().accept(this, null);
+                return new LogicFunctionalOperator(pi, c, SeqLength, child);
             }
         }
         try {
             ResolvedValueDeclaration target = n.resolve();
-            var rtype = n.calculateResolvedType();
+            ResolvedType rtype = n.calculateResolvedType();
 
-            var descriptor = "L%s/%s;".formatted(
+            String descriptor = "L%s/%s;".formatted(
                 n.getScope().toString().replace(".", "/"),
                 n.getNameAsString());
 
@@ -690,8 +702,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
             final VariableDeclarator varDecl = variableCandidates.getFirst();
 
-            var isModel = fldDecl.hasModifier(JML_MODEL);
-            var isGhost = fldDecl.hasModifier(JML_GHOST);
+            boolean isModel = fldDecl.hasModifier(JML_MODEL);
+            boolean isGhost = fldDecl.hasModifier(JML_GHOST);
 
             final FullVariableDeclarator decl = new FullVariableDeclarator(varDecl,
                 varDecl.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null),
@@ -708,20 +720,20 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         } catch (UnsolvedSymbolException e) {
             try {
                 ResolvedType type = n.calculateResolvedType();
-                var keyType = getKeYJavaType(type);
+                KeYJavaType keyType = getKeYJavaType(type);
                 return new TypeRef(keyType);
             } catch (UnsolvedSymbolException e1) {
                 throw new ParserException("Cannot resolve '" + n + "'. No variable, field, or type "
                     + "with this name is in scope here (check for typos).",
-                    Location.fromNode(n));
+                    JavaSourceLocations.locationFromNode(n));
             }
         }
     }
 
     @Override
     public Object visit(TypeExpr n, Void arg) {
-        var rt = n.calculateResolvedType();
-        var kjt = getKeYJavaType(rt);
+        ResolvedType rt = n.calculateResolvedType();
+        KeYJavaType kjt = getKeYJavaType(rt);
         return new TypeRef(kjt);
     }
 
@@ -749,18 +761,18 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeYMarkerStatement n, Void arg) {
-        var pi = createPositionInfo(n);
+        PositionInfo pi = createPositionInfo(n);
         return switch (n.getKind()) {
             case MarkerStatementHelper.KIND_ASSERT -> {
-                var construct = n.getData(MarkerStatementHelper.KEY_EXPR);
+                TextualJMLAssertStatement construct = n.getData(MarkerStatementHelper.KEY_ASSERT);
                 yield new JmlAssert(TextualJMLAssertStatement.Kind.ASSERT, construct, pi);
             }
             case MarkerStatementHelper.KIND_ASSUME -> {
-                var construct = n.getData(MarkerStatementHelper.KEY_EXPR);
+                TextualJMLAssertStatement construct = n.getData(MarkerStatementHelper.KEY_ASSERT);
                 yield new JmlAssert(TextualJMLAssertStatement.Kind.ASSUME, construct, pi);
             }
             case MarkerStatementHelper.KIND_SET -> {
-                var context = n.getData(MarkerStatementHelper.KEY_ASSIGN);
+                KeyAst.SetStatementContext context = n.getData(MarkerStatementHelper.KEY_ASSIGN);
                 yield new SetStatement(context, pi);
             }
 
@@ -780,32 +792,33 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(FieldDeclaration n, Void arg) {
-        var existing = mapping.nodeToKeY(n);
+        ProgramElement existing = mapping.nodeToKeY(n);
         if (existing != null) {
             return existing;
         }
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        var isInInterface = parentIsInterface(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        boolean isInInterface = parentIsInterface(n);
         ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modArray =
             map(n.getModifiers());
         TypeReference type = requireTypeReference(n.getVariables().get(0).getType());
-        var varsList = new ArrayList<FieldSpecification>(n.getVariables().size());
+        ArrayList<FieldSpecification> varsList =
+            new ArrayList<FieldSpecification>(n.getVariables().size());
         for (VariableDeclarator v : n.getVariables()) {
             boolean isInstance = n.hasModifier(JML_INSTANCE);
             boolean isStatic = n.hasModifier(STATIC) || (isInInterface && !isInstance);
             boolean isFinal = n.hasModifier(FINAL) || (isInInterface && !isInstance);
             boolean isModel = n.hasModifier(JML_MODEL);
             boolean isGhost = n.hasModifier(JML_GHOST);
-            var decl = new FullVariableDeclarator(v,
+            FullVariableDeclarator decl = new FullVariableDeclarator(v,
                 v.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null), isFinal, isStatic,
                 isModel, isGhost);
-            final var fs = visitFieldSpecification(decl);
+            final FieldSpecification fs = visitFieldSpecification(decl);
             varsList.add(fs);
             mapping.put(v, fs);
         }
-        var fieldSpecs = new ImmutableArray<>(varsList);
-        final var decl =
+        ImmutableArray<FieldSpecification> fieldSpecs = new ImmutableArray<>(varsList);
+        final de.uka.ilkd.key.java.ast.declaration.FieldDeclaration decl =
             new de.uka.ilkd.key.java.ast.declaration.FieldDeclaration(pi, c, modArray, type,
                 isInInterface, fieldSpecs);
         return addToMapping(n, decl);
@@ -813,8 +826,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ForEachStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         LocalVariableDeclaration decl = accept(n.getVariable());
         ILoopInit init = new LoopInit(new LoopInitializer[] { decl });
         Guard guard = new Guard(null, null, accept(n.getIterable()));
@@ -826,8 +839,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ForStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         ImmutableArray<LoopInitializer> inits = map(n.getInitialization());
         ImmutableArray<Expression> updates = map(n.getUpdate());
         Object guard = accepto(n.getCompare());
@@ -884,8 +897,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(IfStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Statement t = accept(n.getThenStmt());
         Statement e = accepto(n.getElseStmt());
         return new If(pi, c, accept(n.getCondition()),
@@ -895,28 +908,29 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(InitializerDeclaration n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         StatementBlock body = accept(n.getBody());
-        var mods =
-            n.isStatic() ? new de.uka.ilkd.key.java.ast.declaration.Modifier[] { new Static() }
-                    : new de.uka.ilkd.key.java.ast.declaration.Modifier[0];
+        de.uka.ilkd.key.java.ast.declaration.Modifier[] mods =
+            n.isStatic()
+                    ? createModifierList(ModifierKind.STATIC)
+                    : createModifierList();
         return new ClassInitializer(mods, body, pi, c);
     }
 
     @Override
     public Object visit(InstanceOfExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Expression lhs = accept(n.getExpression());
-        var type = requireTypeReference(n.getType());
+        TypeReference type = requireTypeReference(n.getType());
         return new Instanceof(pi, c, lhs, type);
     }
 
     @Override
     public Object visit(IntegerLiteralExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new IntLiteral(pi, c, n.getValue());
     }
 
@@ -928,22 +942,22 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         } else {
             id = createProgramElementName(n.getLabel());
         }
-        var stmt = accept(n.getStatement());
+        Object stmt = accept(n.getStatement());
         return new LabeledStatement(id, (Statement) stmt,
             createPositionInfo(n));
     }
 
     @Override
     public Object visit(LongLiteralExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new LongLiteral(pi, c, n.getValue());
     }
 
     @Override
     public Object visit(MethodCallExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         if (n.getNameAsString().startsWith("\\")) {
             return handleSpecialFunctionInvocation(n, n.getNameAsString(), n.getArguments());
         }
@@ -961,30 +975,31 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(MethodDeclaration n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
 
         ImmutableArray<TypeReference> t = map(n.getThrownExceptions());
-        var thr = t.isEmpty() ? null : new Throws(null, null, t);
-        var isInInterface = parentIsInterface(n);
+        Throws thr = t.isEmpty() ? null : new Throws(null, null, t);
+        boolean isInInterface = parentIsInterface(n);
         TypeReference returnType = requireTypeReference(n.getType());
 
-        var md = new de.uka.ilkd.key.java.ast.declaration.MethodDeclaration(
-            pi, c, map(n.getModifiers()),
-            returnType,
-            null,
-            createProgramElementName(n.getName()),
-            map(n.getParameters()),
-            thr,
-            accepto(n.getBody()),
-            isInInterface, ImmutableList.fromList(getSpec(n)));
+        de.uka.ilkd.key.java.ast.declaration.MethodDeclaration md =
+            new de.uka.ilkd.key.java.ast.declaration.MethodDeclaration(
+                pi, c, map(n.getModifiers()),
+                returnType,
+                null,
+                createProgramElementName(n.getName()),
+                map(n.getParameters()),
+                thr,
+                accepto(n.getBody()),
+                isInInterface, ImmutableList.fromList(getSpec(n)));
 
-        var containing = getContainingClass(n).resolve();
+        ResolvedReferenceTypeDeclaration containing = getContainingClass(n).resolve();
         final HeapLDT heapLDT = typeConverter.getTypeConverter().getHeapLDT();
         Sort heapSort = heapLDT == null ? JavaDLTheory.ANY : heapLDT.targetSort();
         final KeYJavaType containerType = getKeYJavaType(new ReferenceTypeImpl(containing));
         // may be null for a void method
-        var method = new ProgramMethod(md, containerType, returnType.getKeYJavaType(), pi,
+        ProgramMethod method = new ProgramMethod(md, containerType, returnType.getKeYJavaType(), pi,
             heapSort, heapLDT == null ? 1 : heapLDT.getAllHeaps().size() - 1);
         return addToMapping(n, method);
     }
@@ -1010,12 +1025,12 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         } catch (UnsolvedSymbolException e) {
             try {
                 ResolvedType type = n.calculateResolvedType();
-                var keyType = getKeYJavaType(type);
+                KeYJavaType keyType = getKeYJavaType(type);
                 return new TypeRef(keyType);
             } catch (UnsolvedSymbolException e1) {
                 throw new ParserException("Cannot resolve '" + n + "'. No variable, field, or type "
                     + "with this name is in scope here (check for typos).",
-                    Location.fromNode(n));
+                    JavaSourceLocations.locationFromNode(n));
             }
         }
 
@@ -1023,17 +1038,18 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             return reportUnsupportedElement(n);
         }
 
-        var ast = target.toAst().get();
+        Node ast = target.toAst().get();
         // Make sure the field is already converted
-        var tmp = (VariableDeclaration) mapping.nodeToKeY(ast);
+        VariableDeclaration tmp = (VariableDeclaration) mapping.nodeToKeY(ast);
         VariableDeclaration other = tmp == null ? accept(ast) : tmp;
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         if (target instanceof JavaParserFieldDeclaration) {
             // Field declarations can have multiple variables
-            var decl = ((JavaParserFieldDeclaration) target).getVariableDeclarator();
-            var keyDecl = (VariableSpecification) Objects.requireNonNull(mapping.nodeToKeY(decl));
-            var pv = (ProgramVariable) keyDecl.getProgramVariable();
+            VariableDeclarator decl = ((JavaParserFieldDeclaration) target).getVariableDeclarator();
+            VariableSpecification keyDecl =
+                (VariableSpecification) Objects.requireNonNull(mapping.nodeToKeY(decl));
+            ProgramVariable pv = (ProgramVariable) keyDecl.getProgramVariable();
             if (pv.isMember()) {
                 // TODO javaparser prefix null? should we add default this?
                 return new FieldReference(pi, c, pv, null);
@@ -1043,8 +1059,10 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         }
         if (target instanceof JavaParserVariableDeclaration) {
             // Variable declarations can have multiple variables
-            var decl = ((JavaParserVariableDeclaration) target).getVariableDeclarator();
-            var keyDecl = (VariableSpecification) Objects.requireNonNull(mapping.nodeToKeY(decl));
+            VariableDeclarator decl =
+                ((JavaParserVariableDeclaration) target).getVariableDeclarator();
+            VariableSpecification keyDecl =
+                (VariableSpecification) Objects.requireNonNull(mapping.nodeToKeY(decl));
             return keyDecl.getProgramVariable();
         }
         if (other.getVariables().size() == 1) {
@@ -1070,15 +1088,15 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(NullLiteralExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new NullLiteral(pi, c);
     }
 
     @Override
     public Object visit(ObjectCreationExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         ImmutableArray<Expression> args = map(n.getArguments());
         TypeReference type = requireTypeReference(n.getType());
 
@@ -1100,20 +1118,20 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         }
 
         mapping.registerPackageName(n.getName().asString());
-        var ref = translatePackageReference(n.getName());
+        PackageReference ref = translatePackageReference(n.getName());
         return new PackageSpecification(ref);
     }
 
     private ReferencePrefix translatePackageReference(
             com.github.javaparser.ast.expr.Expression name) {
         if (name.isFieldAccessExpr()) {
-            var fa = name.asFieldAccessExpr();
-            var pen = createProgramElementName(fa.getName());
-            var inner = translatePackageReference(fa.getScope());
+            FieldAccessExpr fa = name.asFieldAccessExpr();
+            ProgramElementName pen = createProgramElementName(fa.getName());
+            ReferencePrefix inner = translatePackageReference(fa.getScope());
             return new PackageReference(pen, inner);
         } else if (name.isNameExpr()) {
-            var n = name.asNameExpr();
-            var pen = createProgramElementName(n.getName());
+            NameExpr n = name.asNameExpr();
+            ProgramElementName pen = createProgramElementName(n.getName());
             return new PackageReference(pen, null);
         }
         throw new IllegalArgumentException("Unexpected expression type: " + name.getClass());
@@ -1122,15 +1140,17 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     @NonNull
     private PackageReference translatePackageReference(Name name) {
         // Translate recursively since PackageReference and Name are ordered differently
-        var pen = new ProgramElementName(name.getIdentifier(),
+        ProgramElementName pen = new ProgramElementName(name.getIdentifier(),
             createComments(name).toArray(Comment[]::new));
-        var inner = name.getQualifier().map(this::translatePackageReference).orElse(null);
+        PackageReference inner =
+            name.getQualifier().map(this::translatePackageReference).orElse(null);
         return new PackageReference(pen, inner);
     }
 
     private static ReferencePrefix convertScopeToReferencePrefix(ClassOrInterfaceType scope) {
-        var name = scope.getName();
-        var inner = scope.getScope().map(JP2KeYVisitor::convertScopeToReferencePrefix).orElse(null);
+        SimpleName name = scope.getName();
+        ReferencePrefix inner =
+            scope.getScope().map(JP2KeYVisitor::convertScopeToReferencePrefix).orElse(null);
         return new PackageReference(createProgramElementName(name), inner);
     }
 
@@ -1140,42 +1160,43 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         }
         ReferencePrefix prefix =
             type.getScope().map(JP2KeYVisitor::convertScopeToReferencePrefix).orElse(null);
-        var name = createProgramElementName(type.getName());
-        var resolvedType = getKeYJavaType(type.resolve());
+        ProgramElementName name = createProgramElementName(type.getName());
+        KeYJavaType resolvedType = getKeYJavaType(type.resolve());
         return new TypeRef(name, 0, prefix, resolvedType);
     }
 
     private ParameterDeclaration visitNoMap(Parameter n) {
         ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
             map(n.getModifiers());
-        var va = n.isVarArgs();
+        boolean va = n.isVarArgs();
         // Var arg expects an array type later on but JP gives us "normal" type
         TypeReference type;
         if (va) {
-            var at = new ArrayType(n.getType());
+            ArrayType at = new ArrayType(n.getType());
             at.setParentNode(n);
             type = accept(at);
         } else {
             type = accept(n.getType());
         }
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         IProgramVariable pv;
         if (n.getName().toString().startsWith("#")) {
             pv = (IProgramVariable) lookupSchemaVariable(n.getName());
         } else {
-            var name = VariableNamer.parseName(n.getName().asString());
+            ProgramElementName name = VariableNamer.parseName(n.getName().asString());
             pv = new LocationVariable(name, type.getKeYJavaType(), n.isFinal());
         }
-        var spec = new VariableSpecification(pi, c, null, pv, 0, type.getKeYJavaType());
-        var isInInterface = parentIsInterface(n);
+        VariableSpecification spec =
+            new VariableSpecification(pi, c, null, pv, 0, type.getKeYJavaType());
+        boolean isInInterface = parentIsInterface(n);
         return new ParameterDeclaration(new ImmutableArray<>(spec), pi, c, modifiers,
             type, isInInterface, va);
     }
 
     @Override
     public Object visit(Parameter n, Void arg) {
-        var param = visitNoMap(n);
+        ParameterDeclaration param = visitNoMap(n);
         return addToMapping(n, param);
     }
 
@@ -1226,8 +1247,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ReturnStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Expression expr = accepto(n.getExpression());
         return new Return(expr, pi, c);
     }
@@ -1239,15 +1260,15 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(StringLiteralExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new StringLiteral(pi, c, '"' + n.getValue() + '"');
     }
 
     @Override
     public Object visit(SuperExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         // TODO
         ReferencePrefix path = null;
         return new SuperReference(path, pi, c);
@@ -1255,16 +1276,16 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(SwitchEntry n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         ImmutableArray<Statement> body = map(n.getStatements());
         if (n.getLabels().isEmpty()) {
             // Default branch
             return List.of(new Default(body, pi, c));
         } else {
             // TODO javaparser we currently multiply the branches
-            var result = new ArrayList<Case>(n.getLabels().size());
-            for (var label : n.getLabels()) {
+            ArrayList<Case> result = new ArrayList<Case>(n.getLabels().size());
+            for (com.github.javaparser.ast.expr.Expression label : n.getLabels()) {
                 Expression expr = accept(label);
                 result.add(new Case(expr, body, pi, c));
             }
@@ -1274,8 +1295,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(SwitchStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Expression expr = accept(n.getSelector());
         ImmutableArray<Branch> branches = flatMap(n.getEntries());
         return new Switch(pi, c, expr, branches);
@@ -1283,8 +1304,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(SynchronizedStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new SynchronizedBlock(pi, c, accept(n.getExpression()), accept(n.getBody()), null,
             0);
     }
@@ -1293,7 +1314,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     public Object visit(ThisExpr n, Void arg) {
         ReferencePrefix prefix = null;
         if (n.typeName() != null) {
-            var ty = typeConverter.getKeYJavaType(n.typeName().asString());
+            KeYJavaType ty = typeConverter.getKeYJavaType(n.typeName().asString());
             prefix = new TypeRef(ty);
         }
         return new ThisReference(createPositionInfo(n), createComments(n), prefix);
@@ -1301,22 +1322,22 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ThrowStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Expression expr = accept(n.getExpression());
         return new Throw(expr, pi, c);
     }
 
     @Override
     public Object visit(TryStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         StatementBlock body = accept(n.getTryBlock());
         ImmutableArray<Branch> branches = map(n.getCatchClauses());
         if (n.getFinallyBlock().isPresent()) {
             StatementBlock block = accept(n.getFinallyBlock().get());
-            var fin = new Finally(block);
-            var list = branches.toList();
+            Finally fin = new Finally(block);
+            List<Branch> list = branches.toList();
             list.add(fin);
             branches = new ImmutableArray<>(list);
         }
@@ -1326,12 +1347,12 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(UnaryExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         if (n.getOperator() == UnaryExpr.Operator.MINUS) {
-            var expr = n.getExpression();
+            com.github.javaparser.ast.expr.Expression expr = n.getExpression();
             if (expr instanceof IntegerLiteralExpr lit) {
-                var num = lit.asNumber();
+                Number num = lit.asNumber();
                 if (num instanceof Long) {
                     if (-num.longValue() != (long) Integer.MIN_VALUE) {
                         return reportUnsupportedElement(n);
@@ -1340,18 +1361,22 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
                 }
                 return new IntLiteral(pi, c, -num.intValue());
             }
-            return new Negative(pi, c, accept(expr));
+            return new UnaryOperator(pi, c, NEGATIVE, accept(expr));
         }
+
         Expression child = accept(n.getExpression());
+
         return switch (n.getOperator()) {
-            case PLUS -> new Positive(pi, c, child);
-            case MINUS -> throw new IllegalStateException();
-            case PREFIX_INCREMENT -> new PreIncrement(pi, c, child);
-            case PREFIX_DECREMENT -> new PreDecrement(pi, c, child);
-            case LOGICAL_COMPLEMENT -> new LogicalNot(pi, c, child);
-            case BITWISE_COMPLEMENT -> new BinaryNot(pi, c, child);
-            case POSTFIX_INCREMENT -> new PostIncrement(pi, c, child);
-            case POSTFIX_DECREMENT -> new PostDecrement(pi, c, child);
+            case PLUS -> new UnaryOperator(pi, c, UnaryOperatorKind.POSITIVE, child);
+            case MINUS -> new UnaryOperator(pi, c, NEGATIVE, child);
+            case LOGICAL_COMPLEMENT ->
+                new UnaryOperator(pi, c, UnaryOperatorKind.LOGICAL_NOT, child);
+            case BITWISE_COMPLEMENT ->
+                new UnaryOperator(pi, c, UnaryOperatorKind.BINARY_NOT, child);
+            case PREFIX_INCREMENT -> new UnaryAssignment(pi, c, PRE_INCREMENT, child);
+            case PREFIX_DECREMENT -> new UnaryAssignment(pi, c, PRE_DECREMENT, child);
+            case POSTFIX_INCREMENT -> new UnaryAssignment(pi, c, POST_INCREMENT, child);
+            case POSTFIX_DECREMENT -> new UnaryAssignment(pi, c, POST_DECREMENT, child);
         };
     }
 
@@ -1362,21 +1387,22 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(VariableDeclarationExpr n, Void arg) {
-        var existing = mapping.nodeToKeY(n);
+        ProgramElement existing = mapping.nodeToKeY(n);
         if (existing != null) {
             return existing;
         }
         TypeReference type = requireTypeReference(n.getVariable(0).getType());
-        var varsList = new ArrayList<VariableSpecification>(n.getVariables().size());
+        ArrayList<VariableSpecification> varsList =
+            new ArrayList<VariableSpecification>(n.getVariables().size());
         for (VariableDeclarator v : n.getVariables()) {
             varsList.add(visitVariableSpecification(type, v, n));
         }
-        var vars = new ImmutableArray<>(varsList);
+        ImmutableArray<VariableSpecification> vars = new ImmutableArray<>(varsList);
         ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
             map(n.getModifiers());
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        var isInInterface = parentIsInterface(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        boolean isInInterface = parentIsInterface(n);
         return addToMapping(n,
             new LocalVariableDeclaration(pi, c, modifiers, type, isInInterface, vars));
     }
@@ -1385,15 +1411,15 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     private VariableSpecification visitVariableSpecification(TypeReference type,
             VariableDeclarator v,
             NodeWithModifiers<?> modifiers) {
-        var pi = createPositionInfo(v);
-        var c = createComments(v);
+        PositionInfo pi = createPositionInfo(v);
+        List<Comment> c = createComments(v);
         Expression init = accepto(v.getInitializer());
         IProgramVariable pv;
         KeYJavaType kjt = type.getKeYJavaType();
         if (v.getNameAsString().startsWith("#")) {
             pv = (IProgramVariable) lookupSchemaVariable(v.getNameAsString(), v);
         } else {
-            var name = VariableNamer.parseName(v.getNameAsString());
+            ProgramElementName name = VariableNamer.parseName(v.getNameAsString());
             pv = new LocationVariable(name, kjt, modifiers.hasModifier(JML_GHOST),
                 modifiers.hasModifier(FINAL));
         }
@@ -1414,7 +1440,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             return new DoubleLiteral(lit.asDoubleLiteralExpr().getValue());
         } else if (lit.isIntegerLiteralExpr()) {
             // TODO javaparser there are only int literals in jp, not byte short int
-            var value = lit.asIntegerLiteralExpr().getValue();
+            String value = lit.asIntegerLiteralExpr().getValue();
             // TODO weigl 1L is a javaparser int literal?
             if (value.endsWith("L") || value.endsWith("l")) {
                 return new LongLiteral(value);
@@ -1446,11 +1472,11 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             return null;
         }
 
-        var init = spec.decl.getInitializer();
+        Optional<com.github.javaparser.ast.expr.Expression> init = spec.decl.getInitializer();
 
         if (init.isPresent()) {
             try {
-                var expr = evaluator.evaluate(init.get());
+                com.github.javaparser.ast.expr.Expression expr = evaluator.evaluate(init.get());
                 if (expr.isLiteralExpr()) {
                     return getLiteralFor(expr.asLiteralExpr());
                 }
@@ -1470,12 +1496,12 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         if (pv != null) {
             return pv;
         }
-        var spec = decl.decl;
-        var varSpec = mapping.nodeToKeY(spec);
+        VariableDeclarator spec = decl.decl;
+        ProgramElement varSpec = mapping.nodeToKeY(spec);
         if (varSpec == null) {
-            var t = spec.getType().resolve();
-            var classNode = findContainingClass(spec).orElseThrow();
-            var classType = new ReferenceTypeImpl(classNode.resolve());
+            ResolvedType t = spec.getType().resolve();
+            ClassOrInterfaceDeclaration classNode = findContainingClass(spec).orElseThrow();
+            ReferenceTypeImpl classType = new ReferenceTypeImpl(classNode.resolve());
             final ProgramElementName pen =
                 new ProgramElementName(spec.getName().asString(),
                     classNode.getFullyQualifiedName().orElseThrow());
@@ -1514,11 +1540,11 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     }
 
     private FieldSpecification visitFieldSpecification(FullVariableDeclarator v) {
-        var pi = createPositionInfo(v.decl);
-        var c = createComments(v.decl);
+        PositionInfo pi = createPositionInfo(v.decl);
+        List<Comment> c = createComments(v.decl);
         Expression init = accepto(v.decl.getInitializer());
-        var type = getKeYJavaType(v.decl.getType().resolve());
-        var pv = getProgramVariableForFieldSpecification(v);
+        KeYJavaType type = getKeYJavaType(v.decl.getType().resolve());
+        ProgramVariable pv = getProgramVariableForFieldSpecification(v);
         return new FieldSpecification(pi, c, init, pv, 0, type);
     }
 
@@ -1535,8 +1561,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(WhileStmt n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         Guard guard = new Guard((Expression) accept(n.getCondition()));
         Statement body = accept(n.getBody());
         List<TextualJMLConstruct> loopSpecs = new ArrayList<>();
@@ -1547,8 +1573,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ImportDeclaration n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
 
         if (n.isStatic()) {
             return reportUnsupportedElement(n);
@@ -1556,7 +1582,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
         if (n.isAsterisk()) {
             // TODO javaparser Class.* works as well
-            var ref = translatePackageReference(n.getName());
+            PackageReference ref = translatePackageReference(n.getName());
             return new Import(ref, pi, c);
         } else {
             // TODO: is the lookup correct? Seems to work in small examples ...
@@ -1569,79 +1595,35 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(Modifier n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
-        var k = n.getKeyword();
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
+        Modifier.Keyword k = n.getKeyword();
 
         if (!(k instanceof Modifier.DefaultKeyword)) {
             reportUnsupportedElement(n);
             return null;
         }
 
-        return switch ((Modifier.DefaultKeyword) k) {
-            case PUBLIC -> new Public(pi, c);
-            case PROTECTED -> new Protected(pi, c);
-            case PRIVATE -> new Private(pi, c);
-            case ABSTRACT -> new Abstract(pi, c);
-            case STATIC -> new Static(pi, c);
-            case FINAL -> new Final(pi, c);
-            case TRANSIENT -> new Transient(pi, c);
-            case VOLATILE -> new Volatile(pi, c);
-            case SYNCHRONIZED -> new Synchronized(pi, c);
-            case NATIVE -> new Native(pi, c);
-            case STRICTFP -> new StrictFp(pi, c);
-            case TRANSITIVE -> new Modifiers.TRANSITIVE(pi, c);
-            case SEALED -> new Modifiers.SEALED(pi, c);
-            case NON_SEALED -> new Modifiers.NON_SEALED(pi, c);
-            case JML_PACKAGE -> new Modifiers.JML_PACKAGE(pi, c);
-            case JML_PURE -> new Modifiers.JML_PURE(pi, c);
-            case JML_STRICTLY_PURE -> new Modifiers.JML_STRICTLY_PURE(pi, c);
-            case JML_HELPER -> new Modifiers.JML_HELPER(pi, c);
-            case JML_INSTANCE -> new Modifiers.JML_INSTANCE(pi, c);
-            case JML_NULLABLE_BY_DEFAULT -> new Modifiers.JML_NULLABLE_BY_DEFAULT(pi, c);
-            case JML_NON_NULL -> new Modifiers.JML_NON_NULL(pi, c);
-            case JML_NULLABLE -> new Modifiers.JML_NULLABLE(pi, c);
-            case JML_GHOST -> new Ghost(pi, c);
-            case JML_MODEL -> new Model(pi, c);
-            case JML_TWO_STATE -> new TwoState(pi, c);
-            case JML_SPEC_PUBLIC -> new Modifiers.JML_SPEC_PUBLIC(pi, c);
-            case JML_SPEC_PACKAGE -> new Modifiers.JML_SPEC_PACKAGE(pi, c);
-            case JML_SPEC_PROTECTED -> new Modifiers.JML_SPEC_PROTECTED(pi, c);
-            case JML_SPEC_PRIVATE -> new Modifiers.JML_SPEC_PRIVATE(pi, c);
-            case JML_NO_STATE -> new NoState(pi, c);
-            case JML_NON_NULL_BY_DEFAULT -> new Modifiers.JML_NON_NULL_BY_DEFAULT(pi, c);
-            case JML_NON_NULL_ELEMENTS -> new Modifiers.JML_NON_NULL_ELEMENTS(pi, c);
-            case JML_UNPARSABLE_MODIFIERS -> new Modifiers.JML_UNPARSABLE_MODIFIERS(pi, c);
-            case JML_CODE_BIGINT_MATH -> new Modifiers.JML_CODE_BIGINT_MATH(pi, c);
-            case JML_CODE_JAVA_MATH -> new Modifiers.JML_CODE_JAVA_MATH(pi, c);
-            case JML_CODE_SAFE_MATH -> new Modifiers.JML_CODE_SAFE_MATH(pi, c);
-            case JML_SPEC_BIGINT_MATH -> new Modifiers.JML_SPEC_BIGINT_MATH(pi, c);
-            case JML_SPEC_JAVA_MATH -> new Modifiers.JML_SPEC_JAVA_MATH(pi, c);
-            case JML_SPEC_SAFE_MATH -> new Modifiers.JML_SPEC_SAFE_MATH(pi, c);
-            case JML_CODE -> new Modifiers.JML_CODE(pi, c);
-            case JML_OT_PEER -> new Modifiers.JML_OT_PEER(pi, c);
-            case JML_OT_REP -> new Modifiers.JML_OT_REP(pi, c);
-            case JML_OT_READ_ONLY -> new Modifiers.JML_OT_READ_ONLY(pi, c);
-            case DEFAULT -> new Modifiers.DEFAULT(pi, c);
-            default -> {
-                reportUnsupportedElement(n);
-                yield null;
-            }
-        };
+        var kind = ModifierKind.valueOf(
+            ((Modifier.DefaultKeyword) k).name());
+        if (kind == null) {
+            reportUnsupportedElement(n);
+        }
+        return new de.uka.ilkd.key.java.ast.declaration.Modifier(pi, c, kind);
     }
 
 
     // region ccatch
     @Override
     public Object visit(KeyCcatchBreak n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         CcatchNonstandardParameterDeclaration param;
         if (n.getLabel().isPresent()) {
             if (n.getLabel().get().asString().equals("*")) {
                 param = new CcatchBreakWildcardParameterDeclaration(pi, c);
             } else {
-                var label = nameToLabel(n.getLabel());
+                Label label = nameToLabel(n.getLabel());
                 param = new CcatchBreakLabelParameterDeclaration(pi, c, label);
             }
         } else {
@@ -1653,14 +1635,14 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeyCcatchContinue n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         CcatchNonstandardParameterDeclaration param;
         if (n.getLabel().isPresent()) {
             if (n.getLabel().get().asString().equals("*")) {
                 param = new CcatchContinueWildcardParameterDeclaration(pi, c);
             } else {
-                var label = nameToLabel(n.getLabel());
+                Label label = nameToLabel(n.getLabel());
                 param = new CcatchContinueLabelParameterDeclaration(pi, c, label);
             }
         } else {
@@ -1672,8 +1654,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeyCcatchParameter n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         // reportUnsupportedElement(n);
         TypeReference typeRef = (TypeReference) n.getParameter().get().getType().accept(this, arg);
 
@@ -1694,9 +1676,13 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         return new Ccatch(pi, c, parameter, null, body);
     }
 
+    public MetaSpace docSpace() {
+        return services.getNamespaces().docs();
+    }
+
     @Override
     public Object visit(KeyCcatchReturn n, Void arg) {
-        var pi = createPositionInfo(n);
+        PositionInfo pi = createPositionInfo(n);
         var c = createComments(n);
         CcatchNonstandardParameterDeclaration param;
         if (n.getParameter().isPresent()) {
@@ -1724,11 +1710,11 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     public Object handleSpecialFunctionInvocation(Node n, String name,
             NodeList<com.github.javaparser.ast.expr.Expression> arguments) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
 
         final var PREFIX = "\\dl_DEFAULT_VALUE_";
-        final var DEFVALUE = "@defaultValue(";
+        final String DEFVALUE = "@defaultValue(";
 
         if (name.startsWith(PREFIX)) { // handle default value resolution
             String sortName = name.substring(PREFIX.length()).trim();
@@ -1738,13 +1724,13 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
                     "Requested to find the default value of an unknown sort '%s'.", sortName));
             }
 
-            var doc = sort.getDocumentation();
-
+            String doc = services.getNamespaces().docs().findDocumentation(sort);
+            String origin = services.getNamespaces().docs().findOrigin(sort);
             if (doc == null) {
                 return reportError(n,
                     format("Requested to find the default value for the sort '%s', " +
                         "which does not have a documentary comment. The sort is defined at %s. ",
-                        sortName, sort.getOrigin()));
+                        sortName, origin));
             }
 
             int pos = doc.indexOf(DEFVALUE);
@@ -1756,7 +1742,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
                     return reportError(n,
                         format(
                             "Forgotten closing parenthesis on @defaultValue annotation for sort '%s' in '%s'",
-                            sortName, sort.getOrigin()));
+                            sortName, origin));
                 }
 
                 // set this as the function name, as the user had written \dl_XXX
@@ -1772,34 +1758,40 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
         ImmutableArray<Expression> args = map(arguments);
 
-        return switch (name) {
-            case "\\all_objects" -> new AllObjects(pi, c, args.get(0));
-            case "\\all_fields" -> new AllFields(pi, c, args.get(0));
-            case "\\intersect" -> new Intersect(pi, c, args.get(0), args.get(1));
-            case "\\set_union" -> new SetUnion(pi, c, args.get(0), args.get(1));
-            case "\\singleton" -> new Singleton(pi, c, args.get(0));
-            case "\\set_minus" -> new SetMinus(pi, c, args.get(0), args.get(1));
-            case "\\seq_sub" -> new SeqSub(pi, c, args.get(0), args.get(1), args.get(2));
-            case "\\seq_reverse" -> new SeqReverse(pi, c, args.get(0));
-            case "\\seq_singleton" -> new SeqSingleton(pi, c, args.get(0));
-            case "\\seq_length" -> new SeqLength(pi, c, args.get(0));
-            case "\\indexOf" -> new SeqIndexOf(pi, c, args.get(0), args.get(1));
-            case "\\seq_concat" -> new SeqConcat(pi, c, args.get(0), args.get(1));
-            case "\\seq_get" -> new SeqGet(pi, c, args.get(0), args.get(1));
-            case "\\seq_upd" -> new SeqPut(pi, c, args.get(0), args.get(1), args.get(2));
-            default -> {
-                Function named =
-                    services.getNamespaces().functions()
-                            .lookup(new org.key_project.logic.Name(name));
-                if (named == null) {
-
-                    yield reportError(n, format(
-                        "In an embedded DL expression, %s is not a known DL function name.", name));
-                }
-                yield new DLEmbeddedExpression(pi, c, (JFunction) named, new ImmutableArray<>());
-
-            }
+        var fn = switch (name) {
+            case "\\all_objects" -> AllObjects;
+            case "\\all_fields" -> AllFields;
+            case "\\intersect" -> Intersect;
+            case "\\set_union" -> SetUnion;
+            case "\\singleton" -> Singleton;
+            case "\\set_minus" -> SetMinus;
+            case "\\seq_sub" -> SeqSub;
+            case "\\seq_reverse" -> SeqReverse;
+            case "\\seq_singleton" -> SeqSingleton;
+            case "\\seq_length" -> SeqLength;
+            case "\\indexOf" -> SeqIndexOf;
+            case "\\seq_concat" -> SeqConcat;
+            case "\\seq_get" -> SeqGet;
+            case "\\seq_upd" -> SeqPut;
+            default -> null;
         };
+
+        if (fn != null) {
+            return new LogicFunctionalOperator(pi, c, fn, args);
+        }
+
+        if (name.startsWith("\\dl_")) {
+            name = name.substring(4);
+        }
+
+        Function named =
+            services.getNamespaces().functions()
+                    .lookup(new org.key_project.logic.Name(name));
+        if (named == null) {
+            return reportError(n, format(
+                "In an embedded DL expression, %s is not a known DL function name.", name));
+        }
+        return new DLEmbeddedExpression(pi, c, (JFunction) named, args);
     }
 
     private ImmutableArray<Expression> map(
@@ -1810,7 +1802,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeyExecStatement n, Void arg) {
-        var pi = createPositionInfo(n);
+        PositionInfo pi = createPositionInfo(n);
         var c = createComments(n);
         StatementBlock body = accept(n.getExecBlock());
         ImmutableArray<Branch> branches = map(n.getBranches());
@@ -1819,8 +1811,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeyExecutionContext n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         TypeReference classContext = requireTypeReference(n.getContext());
         ReferencePrefix runtimeInstance = accepto(n.getInstance());
         IProgramMethod methodContext =
@@ -1834,8 +1826,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeyLoopScopeBlock n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         StatementBlock body = accept(n.getBlock());
         IProgramVariable indexPV = accept(n.getIndexPV());
         return new LoopScopeBlock(pi, c, indexPV, body, null, 0);
@@ -1844,22 +1836,22 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     @Override
     public Object visit(KeyMergePointStatement n, Void arg) {
         var pi = createPositionInfo(n);
-        var c = createComments(n);
+        List<Comment> c = createComments(n);
         IProgramVariable expr = accept(n.getExpr());
         return new MergePointStatement(pi, c, null, expr);
     }
 
     @Override
     public Object visit(KeyMethodBodyStatement n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
 
         MethodReference methodReference = accept(n.getExpr());
         TypeReference bodySource = requireTypeReference(n.getSource());
         IProgramVariable resultVar =
             n.getName().map(it -> {
                 // Get a PV where possible, then try SV
-                var pv = services.getNamespaces().programVariables()
+                IProgramVariable pv = services.getNamespaces().programVariables()
                         .lookup(new org.key_project.logic.Name(it.getIdentifier()));
                 if (pv != null)
                     return pv;
@@ -1870,8 +1862,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeyMethodCallStatement n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         IProgramVariable resultVar = accepto(n.getName());
         StatementBlock body = accept(n.getBlock());
         IExecutionContext execContext = accept(n.getContext());
@@ -1888,21 +1880,21 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             KeYJavaType context) {
         final String name = sig.getName().asString();
         final ImmutableArray<TypeReference> params = map(sig.getParamTypes());
-        var paramTypes = params.stream().map(TypeReference::getKeYJavaType).toList();
+        List<KeYJavaType> paramTypes = params.stream().map(TypeReference::getKeYJavaType).toList();
         return services.getJavaInfo().getProgramMethod(type, name, paramTypes, context);
     }
 
     @Override
     public Object visit(KeyTransactionStatement n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         return new TransactionStatement(pi, c, n.getType());
     }
 
     @Override
     public Object visit(KeyContextStatementBlock n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         IExecutionContext execContext;
         if (n.getContext().isPresent()) {
             execContext = accepto(n.getContext());
@@ -1911,9 +1903,9 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             if (n.getTr().isEmpty() || n.getSignature().isEmpty()) {
                 return reportError(n, "No context type or method signature given");
             }
-            var signature = n.getSignature().get();
-            var execPi = createPositionInfo(signature);
-            var execC = createComments(signature);
+            KeyMethodSignatureSV signature = n.getSignature().get();
+            PositionInfo execPi = createPositionInfo(signature);
+            List<Comment> execC = createComments(signature);
             TypeReference classContext = requireTypeReference(n.getTr().get());
             ReferencePrefix runtimeInstance = accepto(n.getExpression());
             IProgramMethod methodContext = accept(signature);
@@ -1994,7 +1986,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
                 ProgramSV execSV = null;
                 ProgramSV returnSV = null;
                 for (int i = 0; i < labels.size(); i++) {
-                    final var sv = (OperatorSV) labels.get(i);
+                    final OperatorSV sv = (OperatorSV) labels.get(i);
                     if (sv.sort() == ProgramSVSort.VARIABLE) {
                         returnSV = (ProgramSV) sv;
                     }
@@ -2033,8 +2025,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(KeyPassiveExpression n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         // TODO javaparser weigl remove after fix of
         // https://github.com/wadoon/key-javaparser/issues/2
         n.getExpr().setParentNode(n);
@@ -2069,8 +2061,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(ClassExpr n, Void arg) {
-        var pi = createPositionInfo(n);
-        var c = createComments(n);
+        PositionInfo pi = createPositionInfo(n);
+        List<Comment> c = createComments(n);
         TypeReference rt = accept(n.getType());
         return new MetaClassReference(pi, c, rt);
     }

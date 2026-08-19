@@ -9,7 +9,7 @@ import java.util.function.UnaryOperator;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
-import de.uka.ilkd.key.java.ast.declaration.modifier.VisibilityModifier;
+import de.uka.ilkd.key.java.ast.declaration.ModifierKind;
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.TermServices;
@@ -22,7 +22,6 @@ import de.uka.ilkd.key.speclang.jml.JMLInfoExtractor;
 import org.key_project.logic.Name;
 import org.key_project.logic.op.Function;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /**
  * A contract for checking the well-definedness of a specification for a method or model field.
@@ -185,7 +184,7 @@ public final class MethodWellDefinedness extends WellDefinednessCheck {
      * @return a list of schema variables
      */
     private ImmutableList<JOperatorSV> paramsSV() {
-        ImmutableList<JOperatorSV> paramsSV = ImmutableSLList.nil();
+        ImmutableList<JOperatorSV> paramsSV = ImmutableList.nil();
         for (var pv : getOrigVars().params) {
             paramsSV = paramsSV.append(
                 SchemaVariableFactory.createTermSV(pv.name(), pv.getKeYJavaType().getSort()));
@@ -216,7 +215,7 @@ public final class MethodWellDefinedness extends WellDefinednessCheck {
         if (hasMby()) {
             final JTerm mbyAtPre = TB.func(mbyAtPreFunc);
             assert params != null;
-            ImmutableList<LocationVariable> paramVars = ImmutableSLList.nil();
+            ImmutableList<LocationVariable> paramVars = ImmutableList.nil();
             for (var pv : params) {
                 paramVars = paramVars.append(pv);
             }
@@ -468,7 +467,7 @@ public final class MethodWellDefinedness extends WellDefinednessCheck {
     }
 
     @Override
-    public VisibilityModifier getVisibility() {
+    public ModifierKind getVisibility() {
         return contract.getVisibility();
     }
 

@@ -28,11 +28,9 @@ import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 /**
  * abstract taclet builder class to be inherited from taclet builders specialised for their concrete
@@ -46,24 +44,23 @@ public abstract class TacletBuilder<T extends Taclet> {
 
     protected Name name = NONAME;
     protected Sequent assumesSeq = JavaDLSequentKit.getInstance().getEmptySequent();
-    protected ImmutableList<NewVarcond> varsNew = ImmutableSLList.nil();
-    protected ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
-    protected ImmutableList<NewDependingOn> varsNewDependingOn = ImmutableSLList.nil();
+    protected ImmutableList<NewVarcond> varsNew = ImmutableList.nil();
+    protected ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableList.nil();
+    protected ImmutableList<NewDependingOn> varsNewDependingOn = ImmutableList.nil();
     protected ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> goals =
-        ImmutableSLList.nil();
-    protected ImmutableList<RuleSet> ruleSets = ImmutableSLList.nil();
+        ImmutableList.nil();
+    protected ImmutableList<RuleSet> ruleSets = ImmutableList.nil();
     protected TacletAttributes attrs = new TacletAttributes(NONAME.toString(), null);
 
     /**
      * List of additional generic conditions on the instantiations of schema variables.
      */
     protected ImmutableList<VariableCondition> variableConditions =
-        ImmutableSLList.nil();
+        ImmutableList.nil();
     protected HashMap<TacletGoalTemplate, ChoiceExpr> goal2Choices = null;
     protected ChoiceExpr choices = ChoiceExpr.TRUE;
     protected ImmutableSet<TacletAnnotation> tacletAnnotations =
         DefaultImmutableSet.nil();
-    protected String origin;
 
     public void setAnnotations(ImmutableSet<TacletAnnotation> tacletAnnotations) {
         this.tacletAnnotations = tacletAnnotations;
@@ -277,7 +274,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         ruleSets = rs;
     }
 
-    public Sequent ifSequent() {
+    public Sequent assumesSequent() {
         return assumesSeq;
     }
 
@@ -305,6 +302,8 @@ public abstract class TacletBuilder<T extends Taclet> {
      */
     public abstract T getTaclet();
 
+    public abstract TacletBuilder<T> copy();
+
     public T getTacletWithoutInactiveGoalTemplates(Set<Choice> active) {
         if (goal2Choices == null || goals.isEmpty()) {
             return getTaclet();
@@ -326,21 +325,7 @@ public abstract class TacletBuilder<T extends Taclet> {
         }
     }
 
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
-    public void setHelpText(@Nullable Object accept) {
-        // throw new RuntimeException("To be implemented");
-    }
-
     public static class TacletBuilderException extends IllegalArgumentException {
-
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = -6710383705714015291L;
         private final Name tacletname;
         private final String errorMessage;
 

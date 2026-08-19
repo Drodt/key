@@ -20,10 +20,16 @@ firstTouch/09-Quicktour/README.txt
 firstTouch/10-SITA/README.txt
 firstTouch/11-StateMerging/README.txt
 
-# Java Features
-Java/Records/README.txt
-Java/TextBlockLiterals/README.txt
+# FM 2024 Tutorial
+heap/FM2024Tutorial/BinarySearch/README.txt
+heap/FM2024Tutorial/ArrayList/README.txt
 
+# Java Features
+Java/MultiCatch/README.txt
+Java/Records/README.txt
+Java/Records+CompactConstructor/README.txt
+Java/TextBlockLiterals/README.txt
+Java/TryWithResources/README.txt
 
 # The KeY Book (note: the comments here are only for maintainability, if you want to move an entry to a different section, look into the individual txt file!)
 ## Chapter 15 - Using the KeY Prover

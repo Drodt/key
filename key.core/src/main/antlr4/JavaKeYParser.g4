@@ -8,9 +8,14 @@ import KeYParser;
 @members {
 private SyntaxErrorReporter errorReporter = new SyntaxErrorReporter(getClass());
 public SyntaxErrorReporter getErrorReporter() { return errorReporter;}
+public boolean allowMatchId = false; // used in proof script parsing
 }
 
 options { tokenVocab=JavaKeYLexer; } // use tokens from STLexer.g4
+
+problem
+   : (PROBLEM LBRACE (t = termorseq) RBRACE | CHOOSECONTRACT (chooseContract = string_value SEMI)? | PROOFOBLIGATION (proofObligation = cvalue)? SEMI?) proofScriptEntry?
+   ;
 
 decls
 :
@@ -85,6 +90,7 @@ literals:
   | floatnum
   | string_literal
   | emptyset
+//  | LPAREN {allowMatchId=true;} (term | seq) {allowMatchId=false;} RPAREN
 ;
 
 //labeled_term: a=parallel_term (LGUILLEMETS labels=label RGUILLEMETS)?;
@@ -106,7 +112,7 @@ brace_suffix:
   | LBRACKET indexTerm=term (DOTRANGE rangeTo=term)? RBRACKET #bracket_access_indexrange
 ;
 primitive_labeled_term:
-  primitive_term ( LGUILLEMETS labels= label RGUILLEMETS )?;
+  primitive_term ( LGUILLEMETS labels= label (RGUILLEMETS | GREATER_CONTD GREATER))?;
 
 /*
 weigl, 2021-03-12:
@@ -312,3 +318,10 @@ classPaths
 ;
 
 programSource: JAVASOURCE result=oneProgramSource SEMI;
+
+simple_ident
+   :
+     id = IDENT
+   | /*{allowMatchId}?*/ id=MATCH_IDENT
+   ;
+

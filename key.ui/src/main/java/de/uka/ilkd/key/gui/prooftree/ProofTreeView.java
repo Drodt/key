@@ -95,6 +95,12 @@ public class ProofTreeView extends JPanel implements TabPanel {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProofTreeView.class);
 
     /**
+     * Number of modified subtrees changed by one automatic run {@link GUIProofTreeProofListener}
+     * which if exceeded cause the whole tree to be updated (not just the affected subtrees).
+     */
+    private static final int MAX_PARTIAL_TREE_UPDATES = 16;
+
+    /**
      * Whether to expand oss nodes when using expand all
      */
     private boolean expandOSSNodes = false;
@@ -642,6 +648,7 @@ public class ProofTreeView extends JPanel implements TabPanel {
             delegateModel = memorizedState.model;
             delegateModel.addTreeModelListener(proofTreeSearchPanel);
             delegateModel.register();
+            dropSelectionSilently();
             delegateView.setModel(delegateModel);
             expansionState =
                 new ProofTreeExpansionState(delegateView, memorizedState.expansionState);
@@ -690,11 +697,26 @@ public class ProofTreeView extends JPanel implements TabPanel {
             }
         } else {
             delegateModel = null;
+            dropSelectionSilently();
             delegateView
                     .setModel(new DefaultTreeModel(new DefaultMutableTreeNode("No proof loaded.")));
             expansionState = null;
         }
         proofTreeSearchPanel.reset();
+    }
+
+    /**
+     * Drops the current selection without firing selection events. {@code JTree.setModel} clears
+     * the selection, which makes the tree UI measure -- and thereby render -- the previously
+     * selected paths. Those nodes belong to the outgoing model, whose proof may already have been
+     * disposed while this tab was hidden (the view deliberately stops listening then), so touching
+     * them fails. Swapping in a fresh selection model forgets the stale paths without ever
+     * rendering them.
+     */
+    private void dropSelectionSilently() {
+        final TreeSelectionModel freshSelection = new DefaultTreeSelectionModel();
+        freshSelection.setSelectionMode(delegateView.getSelectionModel().getSelectionMode());
+        delegateView.setSelectionModel(freshSelection);
     }
 
     public void removeProofs(Proof[] ps) {
@@ -739,6 +761,15 @@ public class ProofTreeView extends JPanel implements TabPanel {
         delegateView.getSelectionModel().setSelectionPath(tp);
         delegateView.scrollPathToVisible(tp);
         delegateView.validate();
+        // scrollPathToVisible scrolls the viewport via its (blit) scroll mode; together with
+        // validate() - which only re-lays-out, it does not repaint - this can leave stale pixels
+        // behind: ghost or horizontally shifted rows that clear only once the scrollbar is dragged
+        // by hand. This is most visible after auto mode, when the tree caught up with many nodes at
+        // once. Repaint the viewport so the final state is drawn correctly.
+        Container viewport = delegateView.getParent();
+        if (viewport != null) {
+            viewport.repaint();
+        }
         treeSelectionListener.ignoreChange = false;
     }
 
@@ -1042,6 +1073,13 @@ public class ProofTreeView extends JPanel implements TabPanel {
                 LOGGER.debug("delegateModel is null");
                 return;
             }
+            if (e.getSource() != proof) {
+                // Auto mode on a proof this view does not display, e.g. an auxiliary side proof
+                // of the information-flow macros (see #3713). Overwriting modifiedSubtrees with
+                // the foreign proof's goals would feed its nodes into the displayed proof's tree
+                // model in autoModeStopped.
+                return;
+            }
 
             // save goals on which the prover may work
             modifiedSubtrees = e.getSource().openGoals().map(Goal::node);
@@ -1063,8 +1101,21 @@ public class ProofTreeView extends JPanel implements TabPanel {
             delegateView.removeTreeSelectionListener(treeSelectionListener);
             setProof(mediator.getSelectedProof());
             if (modifiedSubtrees != null) {
+                final List<Node> changed = new ArrayList<>();
                 for (final Node n : modifiedSubtrees) {
-                    if (proof.openGoals().filter(g -> g.node() == n).isEmpty()) {
+                    // skip nodes of other proofs: the displayed proof may have changed since the
+                    // subtrees were recorded in autoModeStarted (see #3713)
+                    if (n.proof() == proof
+                            && proof.openGoals().filter(g -> g.node() == n).isEmpty()) {
+                        changed.add(n);
+                    }
+                }
+                if (changed.size() > MAX_PARTIAL_TREE_UPDATES) {
+                    // update whole tree
+                    delegateModel.updateTree(null);
+                } else {
+                    // update only affected subtrees
+                    for (final Node n : changed) {
                         delegateModel.updateTree(n);
                     }
                 }
@@ -1239,38 +1290,52 @@ public class ProofTreeView extends JPanel implements TabPanel {
             if (node.isClosed()) {
                 // all goals below this node are closed
                 style.icon = IconFactory.provedFolderIcon(iconHeight);
-            } else {
-                // Find leaf goal for node and check whether this is a linked goal.
+            } else if (hasLinkedGoalBelow(node.getNode())) {
+                // Some open goal below this branch is linked -> linked-folder icon.
+                // (DS: marks a "folder" as linked if it has at least one linked child.)
+                style.icon = IconFactory.linkedFolderIcon(iconHeight);
+            }
+        }
 
-                // DS: This marks all "folder" nodes as linked that have
-                // at least one linked child. Check whether this is
-                // an acceptable behavior.
-                class FindGoalVisitor implements ProofVisitor {
-                    private boolean isLinked = false;
-
-                    public boolean isLinked() {
-                        return this.isLinked;
-                    }
-
-                    @Override
-                    public void visit(Proof proof, Node visitedNode) {
-                        Goal g;
-                        if ((g = proof.getOpenGoal(visitedNode)) != null && g.isLinked()) {
-                            this.isLinked = true;
-                        }
-                    }
-                }
-                FindGoalVisitor v = new FindGoalVisitor();
-                proof.breadthFirstSearch(node.getNode(), v);
-                if (v.isLinked()) {
-                    style.icon = IconFactory.linkedFolderIcon(iconHeight);
+        /**
+         * Whether some open goal below {@code branchRoot} is linked (controls the linked-folder
+         * icon).
+         *
+         * <p>
+         * Stock KeY answered this with a breadth-first search over the branch's <em>entire
+         * subtree</em>, calling the linear-scan {@link Proof#getOpenGoal(Node)} on every visited
+         * node -- i.e. O(subtree x openGoals) per branch, re-run on every repaint. On large proofs
+         * that turned tree painting into billions of operations and made the GUI sluggish. Instead
+         * we iterate the proof's open goals (far fewer than a big subtree) and only walk ancestors
+         * for the linked ones; the {@code isLinked()} pre-check short-circuits entirely in the
+         * common case where no goal is linked.
+         */
+        private boolean hasLinkedGoalBelow(Node branchRoot) {
+            for (final Goal g : proof.openGoals()) {
+                if (g.isLinked() && isSelfOrAncestor(branchRoot, g.node())) {
+                    return true;
                 }
             }
+            return false;
+        }
+
+        /**
+         * Whether {@code ancestor} equals {@code descendant} or is one of its transitive parents.
+         */
+        private static boolean isSelfOrAncestor(Node ancestor, Node descendant) {
+            for (Node n = descendant; n != null; n = n.parent()) {
+                if (n == ancestor) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private void renderLeaf(Style style, GUIAbstractTreeNode node) {
             Node leaf = node.getNode();
-            Goal goal = proof.getOpenGoal(leaf);
+            // getOpenGoal is a linear scan of all open goals; a closed leaf has none, so skip it
+            // there (equivalent result) instead of scanning on every closed leaf we paint.
+            Goal goal = leaf.isClosed() ? null : proof.getOpenGoal(leaf);
             String toolTipText;
 
             if (goal == null || leaf.isClosed()) {
@@ -1424,7 +1489,7 @@ public class ProofTreeView extends JPanel implements TabPanel {
                 setBorder(BorderFactory.createLineBorder(style.border));
             } else {
                 // set default
-                setBorder(BorderFactory.createLineBorder(UIManager.getColor("Panel.background")));
+                setBorder(null);
             }
 
             setFont(getFont().deriveFont(Font.PLAIN));

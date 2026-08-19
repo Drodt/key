@@ -24,21 +24,15 @@ public class TmTextTest {
     }
 
     @Test
-    public void truncateFirstLine() {
-        assertEquals("abc", TmText.truncateFirstLine("abc", 10), "short text is unchanged");
-        assertEquals("abc", TmText.truncateFirstLine("abc", 3), "length exactly at the limit");
-        assertEquals("abc …", TmText.truncateFirstLine("abcd", 3), "longer than the limit");
-        assertEquals("ab", TmText.truncateFirstLine("ab\nlong second line", 10),
-            "only the first line is considered");
-        assertEquals("", TmText.truncateFirstLine(null, 5));
-    }
-
-    @Test
     public void collapseToLine() {
         assertEquals("a b c", TmText.collapseToLine("a\nb\nc", 80), "newlines become spaces");
         assertEquals("abc", TmText.collapseToLine("abc", 3), "length exactly at the limit");
         assertEquals("a b …", TmText.collapseToLine("a\nb\nc", 3),
             "flattened first, then truncated by character count");
+        assertEquals("a & b", TmText.collapseToLine("a\n        &   b", 80),
+            "wrapped-formula indentation collapses to a single space");
+        assertEquals("x", TmText.collapseToLine("\n  x\n  ", 80),
+            "leading and trailing whitespace is trimmed");
         assertEquals("", TmText.collapseToLine(null, 5));
     }
 
@@ -71,4 +65,15 @@ public class TmTextTest {
         assertEquals(6, TmText.offsetOf(s, 2, 4), "end of the second line");
         assertEquals(6, TmText.offsetOf(s, 9, 1), "a line past the end clamps to the length");
     }
+
+    @Test
+    public void lineCount() {
+        assertEquals(1, TmText.lineCount(null));
+        assertEquals(1, TmText.lineCount(""));
+        assertEquals(1, TmText.lineCount("one line"));
+        assertEquals(2, TmText.lineCount("a\nb"));
+        assertEquals(3, TmText.lineCount("a\nb\nc"));
+        assertEquals(3, TmText.lineCount("a\nb\n"), "a trailing newline still bounds a third line");
+    }
+
 }

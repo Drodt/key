@@ -297,6 +297,9 @@ public final class NotationInfo {
             PRIORITY_ARITH_STRONG, PRIORITY_BELOW_ARITH_STRONG));
         tbl.put(doubleLDT.getNeg(), new Notation.Prefix("-", PRIORITY_BOTTOM, PRIORITY_ATOM));
 
+        final RealLDT realLDT = services.getTypeConverter().getRealLDT();
+        tbl.put(realLDT.getRealNumberSymbol(), new Notation.RealLiteral());
+
 
         // heap operators
         final HeapLDT heapLDT = services.getTypeConverter().getHeapLDT();
@@ -319,6 +322,8 @@ public final class NotationInfo {
 
         // set operators
         final LocSetLDT setLDT = services.getTypeConverter().getLocSetLDT();
+        tbl.put(((ParametricFunctionInstance) setLDT.getPair()).getBase(),
+            new Notation.PairNotation());
         tbl.put(setLDT.getSingleton(), new Notation.SingletonNotation());
         tbl.put(setLDT.getUnion(),
             new Notation.Infix("\\cup", PRIORITY_ATOM, PRIORITY_TOP, PRIORITY_TOP));

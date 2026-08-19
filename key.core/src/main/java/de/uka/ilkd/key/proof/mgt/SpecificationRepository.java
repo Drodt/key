@@ -14,8 +14,7 @@ import de.uka.ilkd.key.java.ast.Statement;
 import de.uka.ilkd.key.java.ast.StatementBlock;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.ast.declaration.ClassDeclaration;
-import de.uka.ilkd.key.java.ast.declaration.modifier.Private;
-import de.uka.ilkd.key.java.ast.declaration.modifier.VisibilityModifier;
+import de.uka.ilkd.key.java.ast.declaration.ModifierKind;
 import de.uka.ilkd.key.java.ast.statement.LoopStatement;
 import de.uka.ilkd.key.java.ast.statement.MergePointStatement;
 import de.uka.ilkd.key.logic.*;
@@ -78,20 +77,24 @@ public class SpecificationRepository {
     private final Map<KeYJavaType, ImmutableSet<InitiallyClause>> initiallyClauses =
         new LinkedHashMap<>();
     private final Map<ProofOblInput, ImmutableSet<Proof>> proofs = new LinkedHashMap<>();
+    // Thread-safe: these spec maps are mutated by meta-construct transforms (e.g. IntroAtPreDefsOp)
+    // during the parallel prover's lock-free computeRuleApp phase; a plain map corrupts under
+    // concurrent put. synchronizedMap keeps insertion order (so proof digests stay deterministic)
+    // while making individual get/put/remove atomic.
     private final Map<Pair<LoopStatement, Integer>, LoopSpecification> loopInvs =
-        new LinkedHashMap<>();
+        Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<BlockContractKey, ImmutableSet<BlockContract>> blockContracts =
-        new LinkedHashMap<>();
+        Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<LoopContractKey, ImmutableSet<LoopContract>> loopContracts =
-        new LinkedHashMap<>();
+        Collections.synchronizedMap(new LinkedHashMap<>());
 
     /**
      * A map which relates each loop statement its starting line number and set of loop contracts.
      */
     private final Map<Pair<LoopStatement, Integer>, ImmutableSet<LoopContract>> loopContractsOnLoops =
-        new LinkedHashMap<>();
+        Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<MergePointStatement, ImmutableSet<MergeContract>> mergeContracts =
-        new LinkedHashMap<>();
+        Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<IObserverFunction, IObserverFunction> unlimitedToLimited =
         new LinkedHashMap<>();
     private final Map<IObserverFunction, IObserverFunction> limitedToUnlimited =
@@ -164,9 +167,10 @@ public class SpecificationRepository {
         tacletBuilder.setFind(limitedTerm);
         tacletBuilder.addTacletGoalTemplate(
             new RewriteTacletGoalTemplate(JavaDLSequentKit.getInstance().getEmptySequent(),
-                ImmutableSLList.nil(), unlimitedTerm));
+                ImmutableList.nil(), unlimitedTerm));
         tacletBuilder.setName(
             MiscTools.toValidTacletName("unlimit " + getUniqueNameForObserver(unlimited)));
+        // tacletBuilder.addRuleSet(new RuleSet(new Name("unlimitObserver")));
         return tacletBuilder.getTaclet();
     }
 
@@ -190,9 +194,9 @@ public class SpecificationRepository {
         tacletBuilder.setFind(tb.func(unlimited, subs));
         final SequentFormula cf = new SequentFormula(tb.equals(limitedTerm, unlimitedTerm));
         final Sequent addedSeq =
-            JavaDLSequentKit.createAnteSequent(ImmutableSLList.singleton(cf));
+            JavaDLSequentKit.createAnteSequent(ImmutableList.singleton(cf));
         tacletBuilder.addTacletGoalTemplate(new RewriteTacletGoalTemplate(addedSeq,
-            ImmutableSLList.nil(), tb.func(unlimited, subs)));
+            ImmutableList.nil(), tb.func(unlimited, subs)));
         tacletBuilder.setApplicationRestriction(
             new ApplicationRestriction(ApplicationRestriction.IN_SEQUENT_STATE));
         tacletBuilder.setName(
@@ -259,7 +263,7 @@ public class SpecificationRepository {
 
     private ImmutableSet<Pair<KeYJavaType, IObserverFunction>> getOverridingMethods(KeYJavaType kjt,
             IProgramMethod pm) {
-        ImmutableList<Pair<KeYJavaType, IObserverFunction>> result = ImmutableSLList.nil();
+        ImmutableList<Pair<KeYJavaType, IObserverFunction>> result = ImmutableList.nil();
 
         // static methods and constructors are not overriden
         if (pm.isConstructor() || pm.isStatic()) {
@@ -530,6 +534,18 @@ public class SpecificationRepository {
     // public interface
     // -------------------------------------------------------------------------
 
+    // Thread-safety: a single SpecificationRepository is shared by all parallel-prover workers of a
+    // proof. Most maps above are populated once during problem loading and then only read, so
+    // concurrent reads of them are safe. The maps that are still *mutated during proving* --
+    // loopInvs
+    // (loop-invariant rules and the loop-elimination transforms register specs), the lazy
+    // allClassAxiomsCache, the limited/unlimited observer maps, and the block/loop-contract maps --
+    // are guarded by this object's monitor: every method that reads or writes one of them is
+    // synchronized (a coarse lock). The monitor is reentrant, which is required because several of
+    // these methods call one another (e.g. getClassAxioms recurses into enclosing classes,
+    // addBlockContract reads getBlockContracts, copyLoopInvariant reads then writes). Lock ordering
+    // is one-way (this monitor -> JavaInfo's cache lock via the services), so no deadlock arises.
+
     /**
      * Applies the specified operator to every contract in this repository.
      *
@@ -537,7 +553,7 @@ public class SpecificationRepository {
      * @param services services.
      * @see SpecificationElement#map(UnaryOperator, Services)
      */
-    public void map(UnaryOperator<JTerm> op, Services services) {
+    public synchronized void map(UnaryOperator<JTerm> op, Services services) {
         mapValueSets(contracts, op, services);
         mapValueSets(operationContracts, op, services);
         mapValueSets(invs, op, services);
@@ -763,7 +779,7 @@ public class SpecificationRepository {
             addClassAxiom(new PartialInvAxiom(inv, true, services));
         }
         // inherit non-private, non-static invariants
-        if (!inv.isStatic() && VisibilityModifier.allowsInheritance(inv.getVisibility())) {
+        if (!inv.isStatic() && ModifierKind.allowsInheritance(inv.getVisibility())) {
             final ImmutableList<KeYJavaType> subs = services.getJavaInfo().getAllSubtypes(kjt);
             for (KeYJavaType sub : subs) {
                 ClassInvariant subInv = inv.setKJT(sub);
@@ -791,7 +807,7 @@ public class SpecificationRepository {
         for (KeYJavaType kjt : initiallyClauses.keySet()) {
             for (InitiallyClause inv : initiallyClauses.get(kjt)) {
                 createContractsFromInitiallyClause(inv, kjt);
-                if (VisibilityModifier.allowsInheritance(inv.getVisibility())) {
+                if (ModifierKind.allowsInheritance(inv.getVisibility())) {
                     final ImmutableList<KeYJavaType> subs =
                         services.getJavaInfo().getAllSubtypes(kjt);
                     for (KeYJavaType sub : subs) {
@@ -832,7 +848,7 @@ public class SpecificationRepository {
      * Returns all class axioms visible in the passed class, including the axioms induced by
      * invariant declarations.
      */
-    public ImmutableSet<ClassAxiom> getClassAxioms(KeYJavaType selfKjt) {
+    public synchronized ImmutableSet<ClassAxiom> getClassAxioms(KeYJavaType selfKjt) {
         ImmutableSet<ClassAxiom> result = allClassAxiomsCache.get(selfKjt);
         if (result == null) {
             // get visible registered axioms of other classes
@@ -895,23 +911,27 @@ public class SpecificationRepository {
 
                 final ClassAxiom invRepresentsAxiom =
                     new RepresentsAxiom("Class invariant axiom for " + kjt.getFullName(), invSymbol,
-                        kjt, new Private(), null, invDef, selfVar, ImmutableSLList.nil(), null);
+                        kjt, ModifierKind.PRIVATE, null, invDef, selfVar,
+                        ImmutableList.nil(), null);
                 result = result.add(invRepresentsAxiom);
 
                 final ClassAxiom staticInvRepresentsAxiom = new RepresentsAxiom(
                     "Static class invariant axiom for " + kjt.getFullName(), staticInvSymbol, kjt,
-                    new Private(), null, staticInvDef, null, ImmutableSLList.nil(), null);
+                    ModifierKind.PRIVATE, null, staticInvDef, null, ImmutableList.nil(),
+                    null);
                 result = result.add(staticInvRepresentsAxiom);
 
                 final ClassAxiom invFreeRepresentsAxiom = new RepresentsAxiom(
                     "Free class invariant axiom for " + kjt.getFullName(), freeInvSymbol, kjt,
-                    new Private(), null, freeInvDef, selfVar, ImmutableSLList.nil(), null);
+                    ModifierKind.PRIVATE, null, freeInvDef, selfVar, ImmutableList.nil(),
+                    null);
                 result = result.add(invFreeRepresentsAxiom);
 
                 final ClassAxiom staticFreeInvRepresentsAxiom = new RepresentsAxiom(
                     "Free static class invariant axiom for " + kjt.getFullName(),
-                    freeStaticInvSymbol, kjt, new Private(), null, freeStaticInvDef, null,
-                    ImmutableSLList.nil(), null);
+                    freeStaticInvSymbol, kjt, ModifierKind.PRIVATE, null, freeStaticInvDef,
+                    null,
+                    ImmutableList.nil(), null);
                 result = result.add(staticFreeInvRepresentsAxiom);
 
             }
@@ -965,7 +985,7 @@ public class SpecificationRepository {
                     // We need to construct an inheritance chain of contracts
                     // starting at the bottom
                     ImmutableList<FunctionalOperationContract> lookupContracts =
-                        ImmutableSLList.nil();
+                        ImmutableList.nil();
                     ImmutableSet<FunctionalOperationContract> cs = getOperationContracts(kjt, pm);
                     List<KeYJavaType> superTypes =
                         services.getJavaInfo().getAllSupertypes(kjt);
@@ -987,7 +1007,7 @@ public class SpecificationRepository {
                         if (representsFromContract != null) {
                             // TODO Wojtek: I do not understand the visibility
                             // issues of model fields/methods.
-                            // VisibilityModifier visibility = pm.isPrivate() ?
+                            // Modifier visibility = pm.isPrivate() ?
                             // new Private() :
                             // (pm.isProtected() ? new Protected() :
                             // (pm.isPublic() ? new Public() : null));
@@ -995,7 +1015,8 @@ public class SpecificationRepository {
                                 new RepresentsAxiom(
                                     "Definition axiom for " + pm.getName() + " in "
                                         + kjt.getFullName(),
-                                    pm, kjt, new Private(), preContract, representsFromContract,
+                                    pm, kjt, ModifierKind.PRIVATE, preContract,
+                                    representsFromContract,
                                     selfVar, paramVars, atPreVars);
                             result = result.add(modelMethodRepresentsAxiom);
                             break;
@@ -1022,7 +1043,8 @@ public class SpecificationRepository {
                             final ClassAxiom modelMethodContractAxiom = new ContractAxiom(
                                 "Contract axiom for " + pm.getName() + " in " + kjt.getFullName(),
                                 pm,
-                                kjt, new Private(), preFromContract, freePreFromContract,
+                                kjt, ModifierKind.PRIVATE, preFromContract,
+                                freePreFromContract,
                                 postFromContract, freePostFromContract, mbyFromContract, atPreVars,
                                 selfVar, resultVar, paramVars);
                             result = result.add(modelMethodContractAxiom);
@@ -1032,6 +1054,20 @@ public class SpecificationRepository {
             }
         }
         return result;
+    }
+
+    /**
+     * Returns the class axioms declared in (registered for) the given type. This is the group among
+     * which a {@link de.uka.ilkd.key.speclang.ClassAxiomImpl}'s taclet name must be unique; order
+     * is
+     * not significant.
+     *
+     * @param kjt the type
+     * @return the axioms registered for {@code kjt}, or the empty set if none
+     */
+    public synchronized ImmutableSet<ClassAxiom> getClassAxiomsForType(KeYJavaType kjt) {
+        final ImmutableSet<ClassAxiom> own = axioms.get(kjt);
+        return own == null ? DefaultImmutableSet.nil() : own;
     }
 
     /**
@@ -1053,7 +1089,7 @@ public class SpecificationRepository {
                 axioms.put(kjt, currentAxioms.add(ax));
             }
             // inherit represents clauses to subclasses and conjoin together
-            if (VisibilityModifier.allowsInheritance(ax.getVisibility())) {
+            if (ModifierKind.allowsInheritance(ax.getVisibility())) {
                 final ImmutableList<KeYJavaType> subs = services.getJavaInfo().getAllSubtypes(kjt);
                 for (KeYJavaType sub : subs) {
                     RepresentsAxiom subAx = ((RepresentsAxiom) ax).setKJT(sub);
@@ -1243,7 +1279,7 @@ public class SpecificationRepository {
     /**
      * Returns the registered loop invariant for the passed loop, or null.
      */
-    public LoopSpecification getLoopSpec(LoopStatement loop) {
+    public synchronized LoopSpecification getLoopSpec(LoopStatement loop) {
         final int line = loop.getStartPosition().line();
         Pair<LoopStatement, Integer> l = new Pair<>(loop, line);
         LoopSpecification inv = loopInvs.get(l);
@@ -1262,7 +1298,7 @@ public class SpecificationRepository {
      * @param from the loop with the original contract
      * @param to the loop for which the contract is to be copied
      */
-    public void copyLoopInvariant(LoopStatement from, LoopStatement to) {
+    public synchronized void copyLoopInvariant(LoopStatement from, LoopStatement to) {
         LoopSpecification inv = getLoopSpec(from);
         if (inv != null) {
             inv = inv.setLoop(to);
@@ -1274,7 +1310,7 @@ public class SpecificationRepository {
      * Registers the passed loop invariant, possibly overwriting an older registration for the same
      * loop.
      */
-    public void addLoopInvariant(final LoopSpecification inv) {
+    public synchronized void addLoopInvariant(final LoopSpecification inv) {
         final LoopStatement loop = inv.getLoop();
         final int line = loop.getStartPosition().line();
         Pair<LoopStatement, Integer> l = new Pair<>(loop, line);
@@ -1291,7 +1327,7 @@ public class SpecificationRepository {
      * @param block a block.
      * @return all block contracts for the specified block.
      */
-    public ImmutableSet<BlockContract> getBlockContracts(StatementBlock block) {
+    public synchronized ImmutableSet<BlockContract> getBlockContracts(StatementBlock block) {
         var b =
             new BlockContractKey(block, block.getParentClass(), block.getStartPosition().line());
         final ImmutableSet<BlockContract> contracts = blockContracts.get(b);
@@ -1308,7 +1344,7 @@ public class SpecificationRepository {
      * @param block a block.
      * @return all loop contracts for the specified block.
      */
-    public ImmutableSet<LoopContract> getLoopContracts(StatementBlock block) {
+    public synchronized ImmutableSet<LoopContract> getLoopContracts(StatementBlock block) {
         var b = new LoopContractKey(block, block.getParentClass(), block.getStartPosition().line());
         final ImmutableSet<LoopContract> contracts = loopContracts.get(b);
         if (contracts == null) {
@@ -1324,7 +1360,7 @@ public class SpecificationRepository {
      * @param loop a loop.
      * @return all loop contracts for the specified loop.
      */
-    public ImmutableSet<LoopContract> getLoopContracts(LoopStatement loop) {
+    public synchronized ImmutableSet<LoopContract> getLoopContracts(LoopStatement loop) {
         final Pair<LoopStatement, Integer> b = new Pair<>(loop, loop.getStartPosition().line());
         final ImmutableSet<LoopContract> contracts = loopContractsOnLoops.get(b);
         if (contracts == null) {
@@ -1411,7 +1447,8 @@ public class SpecificationRepository {
      * @param addFunctionalContract whether or not to add a new {@link FunctionalBlockContract}
      *        based on {@code contract}.
      */
-    public void addBlockContract(final BlockContract contract, boolean addFunctionalContract) {
+    public synchronized void addBlockContract(final BlockContract contract,
+            boolean addFunctionalContract) {
         final StatementBlock block = contract.getBlock();
         var b =
             new BlockContractKey(block, block.getParentClass(), block.getStartPosition().line());
@@ -1433,7 +1470,7 @@ public class SpecificationRepository {
      *
      * @param contract the {@code BlockContract} to remove.
      */
-    public void removeBlockContract(final BlockContract contract) {
+    public synchronized void removeBlockContract(final BlockContract contract) {
         final StatementBlock block = contract.getBlock();
         var b =
             new BlockContractKey(block, block.getParentClass(), block.getStartPosition().line());
@@ -1457,7 +1494,8 @@ public class SpecificationRepository {
      * @param addFunctionalContract whether or not to add a new {@link FunctionalLoopContract} based
      *        on {@code contract}.
      */
-    public void addLoopContract(final LoopContract contract, boolean addFunctionalContract) {
+    public synchronized void addLoopContract(final LoopContract contract,
+            boolean addFunctionalContract) {
         if (contract.isOnBlock()) {
             final StatementBlock block = contract.getBlock();
             var b =
@@ -1490,7 +1528,7 @@ public class SpecificationRepository {
      *
      * @param contract the {@code LoopContract} to remove.
      */
-    public void removeLoopContract(final LoopContract contract) {
+    public synchronized void removeLoopContract(final LoopContract contract) {
         if (contract.isOnBlock()) {
             final StatementBlock block = contract.getBlock();
             var b =
@@ -1513,7 +1551,11 @@ public class SpecificationRepository {
      */
     public void addMergeContract(final MergeContract mc) {
         final MergePointStatement mps = mc.getMergePointStatement();
-        mergeContracts.put(mps, getMergeContracts(mps).add(mc));
+        // compute() keeps the read-modify-write atomic on the synchronized map, like the
+        // loop-contract registrations above; a plain get-then-put could lose a concurrent
+        // registration.
+        mergeContracts.compute(mps,
+            (k, set) -> (set == null ? DefaultImmutableSet.<MergeContract>nil() : set).add(mc));
     }
 
     /**
@@ -1549,7 +1591,8 @@ public class SpecificationRepository {
         }
     }
 
-    public Pair<IObserverFunction, ImmutableSet<Taclet>> limitObs(IObserverFunction obs) {
+    public synchronized Pair<IObserverFunction, ImmutableSet<Taclet>> limitObs(
+            IObserverFunction obs) {
         assert limitedToUnlimited.get(obs) == null : " observer is already limited: " + obs;
         // TODO Was the exact class match "obs.getClass() !=
         // ObserverFunction.class" correctly converted into IProtramMethod?
@@ -1584,7 +1627,7 @@ public class SpecificationRepository {
         return new Pair<>(Objects.requireNonNull(limited), Objects.requireNonNull(taclets));
     }
 
-    public IObserverFunction unlimitObs(IObserverFunction obs) {
+    public synchronized IObserverFunction unlimitObs(IObserverFunction obs) {
         IObserverFunction result = limitedToUnlimited.get(obs);
         if (result == null) {
             result = obs;
@@ -1594,7 +1637,10 @@ public class SpecificationRepository {
 
 
     // region Support SetStatement and JmlAssert
-    private final Map<Statement, JmlStatementSpec> statementMap = new IdentityHashMap<>();
+    // Thread-safe (see the spec maps above): JmlAssert/SetStatement specs are read+rewritten by
+    // IntroAtPreDefsOp during the parallel prover's lock-free phase. Identity semantics are kept.
+    private final Map<Statement, JmlStatementSpec> statementMap =
+        Collections.synchronizedMap(new IdentityHashMap<>());
 
     public @Nullable JmlStatementSpec getStatementSpec(Statement statement) {
         return statementMap.get(statement);
@@ -1617,11 +1663,13 @@ public class SpecificationRepository {
      * list of terms, in
      * an immutable fasion. Updates require to create instances.
      * <p>
-     * <b>Note:</b> There is a immutability hole in {@link ProgramVariableCollection} due to mutable
+     * <b>Note:</b> There is an immutability hole in {@link ProgramVariableCollection} due to
+     * mutable
      * {@link Map}
      * <p>
      * For {@link de.uka.ilkd.key.java.ast.statement.JmlAssert} this is the formula behind the
-     * assert.
+     * assert
+     * (Potientially also containing the formulas within the optional proof).
      * For {@link de.uka.ilkd.key.java.ast.statement.SetStatement} this is the target and the value
      * terms.
      * You may want to use the index constant for accessing them:
@@ -1648,7 +1696,7 @@ public class SpecificationRepository {
         }
 
         /**
-         * Retrieve a term with a update to the given {@code self} term.
+         * Retrieve a term with an update to the given {@code self} term.
          *
          * @param services the corresponding services instance
          * @param self a term which describes the {@code self} object aka. this on the current

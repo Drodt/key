@@ -16,8 +16,10 @@ import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.ClashFreeSubst.VariableCollectVisitor;
 import de.uka.ilkd.key.logic.op.*;
+import de.uka.ilkd.key.logic.op.JFunction;
 import de.uka.ilkd.key.logic.sort.GenericSort;
 import de.uka.ilkd.key.logic.sort.ProgramSVSort;
+import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.VariableNameProposer;
 import de.uka.ilkd.key.rule.inst.GenericSortCondition;
 import de.uka.ilkd.key.rule.inst.GenericSortException;
@@ -26,6 +28,7 @@ import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.*;
 import org.key_project.logic.op.Function;
+import org.key_project.logic.op.Function.FunctionKind;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
@@ -39,6 +42,8 @@ import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import static org.key_project.logic.op.Function.FunctionKind.*;
 
 /**
  * A TacletApp object contains information required for a concrete application. These information
@@ -526,7 +531,7 @@ public abstract class TacletApp implements RuleApp {
             }
         }
 
-        if (!app.complete()) {
+        if (!app.completeExceptSkolemConstants()) {
             return null;
         }
         return app;
@@ -537,7 +542,7 @@ public abstract class TacletApp implements RuleApp {
         final TermBuilder tb = services.getTermBuilder();
 
         TacletApp app = this;
-        ImmutableList<String> proposals = ImmutableSLList.nil();
+        ImmutableList<String> proposals = ImmutableList.nil();
 
         for (final SchemaVariable variable : uninstantiatedVars()) {
             if (!(variable instanceof JOperatorSV operatorSv)) {
@@ -578,20 +583,12 @@ public abstract class TacletApp implements RuleApp {
                 } while (nameclash);
             } else if (operatorSv instanceof SkolemTermSV) {
                 // if the sort of the schema variable is generic,
-                // ensure that it is instantiated
+                // ensure that it is instantiated; the constant itself is created when the
+                // rule is applied, see createSkolemConstants
                 app = forceGenericSortInstantiation(app, operatorSv, services);
                 if (app == null) {
                     return null;
                 }
-
-                String proposal =
-                    VariableNameProposer.DEFAULT.getProposal(app, operatorSv, services, null,
-                        proposals);
-
-                proposals = proposals.append(proposal);
-
-                app = app.createSkolemConstant(proposal, operatorSv, true, services);
-
             } else if (operatorSv instanceof VariableSV) {
                 // if the sort of the schema variable is generic,
                 // ensure that it is instantiated
@@ -702,15 +699,20 @@ public abstract class TacletApp implements RuleApp {
      * @param services the Services class allowing access to the type model
      */
     public TacletApp createSkolemConstant(String instantiation, JOperatorSV sv,
-            boolean interesting, Services services) {
-        return createSkolemConstant(instantiation, sv, getRealSort(sv, services), interesting,
-            services);
+            boolean interesting, Goal goal) {
+        return createSkolemConstant(instantiation, sv,
+            getRealSort(sv, goal.getOverlayServices()), interesting, goal);
     }
 
     public TacletApp createSkolemConstant(String instantiation, SchemaVariable sv, Sort sort,
-            boolean interesting, Services services) {
+            boolean interesting, Goal goal) {
+        final FunctionKind kind =
+            sv instanceof SkolemTermSV skolemSV && skolemSV.isDefinitional()
+                    ? DEFINITIONAL_SKOLEM
+                    : SKOLEM;
         final Function c =
-            new JFunction(new Name(instantiation), sort, true, new Sort[0]);
+            new JFunction(new Name(instantiation), sort, kind, goal.appliedRuleApps().size());
+        final Services services = goal.getOverlayServices();
         return addInstantiation(sv, services.getTermBuilder().func(c), interesting, services);
     }
 
@@ -742,6 +744,45 @@ public abstract class TacletApp implements RuleApp {
                 && uninstantiatedVars().isEmpty()
                 && uninstantiatedGenericSorts().isEmpty()
                 && assumesInstantionsComplete();
+    }
+
+    /**
+     * Whether this application can be applied: like {@link #complete()}, except skolem term
+     * schema variables, whose constants {@link #createSkolemConstants(Goal)} creates when the
+     * rule is applied.
+     */
+    public final boolean completeExceptSkolemConstants() {
+        if (posInOccurrence() == null && !(taclet instanceof NoFindTaclet)) {
+            return false;
+        }
+        if (!uninstantiatedGenericSorts().isEmpty() || !assumesInstantionsComplete()) {
+            return false;
+        }
+        for (final SchemaVariable sv : uninstantiatedVars()) {
+            if (!(sv instanceof SkolemTermSV)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Creates the skolem constants of the still uninstantiated skolem term schema variables.
+     * Called when the rule is applied, on the goal it is applied to, so every constant records
+     * the point of its introduction.
+     */
+    public TacletApp createSkolemConstants(Goal goal) {
+        TacletApp app = this;
+        ImmutableList<String> proposals = ImmutableList.nil();
+        for (final SchemaVariable sv : uninstantiatedVars()) {
+            if (sv instanceof SkolemTermSV skolemSV) {
+                final String proposal = VariableNameProposer.DEFAULT.getProposal(app, skolemSV,
+                    goal.getOverlayServices(), null, proposals);
+                proposals = proposals.append(proposal);
+                app = app.createSkolemConstant(proposal, skolemSV, true, goal);
+            }
+        }
+        return app;
     }
 
     /**
@@ -849,7 +890,7 @@ public abstract class TacletApp implements RuleApp {
             // (LG 2022-02-07) Apparently findIfFormulaInstantiations() might return null
             // instantiations that should actually be nil().
             // So we replace null with nil() here as a bugfix.
-            p_list = ImmutableSLList.nil();
+            p_list = ImmutableList.nil();
         }
         assert ifInstsCorrectSize(p_list) && assumesFormulaInstantiations == null
                 : "If instantiations list has wrong size "
@@ -879,7 +920,7 @@ public abstract class TacletApp implements RuleApp {
             "The if formulas have already been instantiated");
 
         if (taclet().assumesSequent().isEmpty()) {
-            return ImmutableSLList.<TacletApp>nil().prepend(this);
+            return ImmutableList.<TacletApp>singleton(this);
         }
 
         return findIfFormulaInstantiationsHelp(
@@ -887,7 +928,7 @@ public abstract class TacletApp implements RuleApp {
             createSemisequentList(taclet().assumesSequent().antecedent()),
             AssumesFormulaInstSeq.createList(seq, false, services),
             AssumesFormulaInstSeq.createList(seq, true, services),
-            ImmutableSLList.nil(), matchConditions(), services);
+            ImmutableList.nil(), matchConditions(), services);
     }
 
     /**
@@ -920,9 +961,9 @@ public abstract class TacletApp implements RuleApp {
                 // All formulas have been matched, collect the results
                 TacletApp res = setAllInstantiations(matchCond, instAlreadyMatched, services);
                 if (res != null) {
-                    return ImmutableSLList.<TacletApp>nil().prepend(res);
+                    return ImmutableList.<TacletApp>singleton(res);
                 }
-                return ImmutableSLList.nil();
+                return ImmutableList.nil();
             } else {
                 // Change from succedent to antecedent
                 ruleSuccTail = ruleAntecTail;
@@ -938,7 +979,7 @@ public abstract class TacletApp implements RuleApp {
 
         // For each matching formula call the method again to match
         // the remaining terms
-        ImmutableList<TacletApp> res = ImmutableSLList.nil();
+        ImmutableList<TacletApp> res = ImmutableList.nil();
         Iterator<MatchResultInfo> itMC = mr.matchConditions().iterator();
         ruleSuccTail = ruleSuccTail.tail();
         for (final AssumesFormulaInstantiation instantiationCandidate : mr.candidates()) {
@@ -952,7 +993,7 @@ public abstract class TacletApp implements RuleApp {
 
     private ImmutableList<SequentFormula> createSemisequentList(
             Semisequent p_ss) {
-        ImmutableList<SequentFormula> res = ImmutableSLList.nil();
+        ImmutableList<SequentFormula> res = ImmutableList.nil();
 
         for (SequentFormula p_s : p_ss) {
             res = res.prepend(p_s);

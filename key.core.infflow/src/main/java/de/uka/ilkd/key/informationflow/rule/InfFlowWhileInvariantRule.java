@@ -40,11 +40,12 @@ import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
 
 import org.jspecify.annotations.NullMarked;
+
+import static org.key_project.logic.op.Function.FunctionKind.SKOLEM;
 
 @NullMarked
 public class InfFlowWhileInvariantRule extends WhileInvariantRule {
@@ -178,7 +179,7 @@ public class InfFlowWhileInvariantRule extends WhileInvariantRule {
         HeapLDT heapLDT = services.getTypeConverter().getHeapLDT();
         Name heapAtPreName = new Name(tb.newName(baseHeap + "_Before_LOOP"));
         final Function heapAtPreFunc =
-            new JFunction(heapAtPreName, heapLDT.targetSort(), true);
+            new JFunction(heapAtPreName, heapLDT.targetSort(), SKOLEM);
         services.getNamespaces().functions().addSafely(heapAtPreFunc);
         final JTerm heapAtPre = tb.func(heapAtPreFunc);
 
@@ -298,7 +299,7 @@ public class InfFlowWhileInvariantRule extends WhileInvariantRule {
             return varTerms;
         }
         final TermBuilder tb = services.getTermBuilder();
-        ImmutableList<JTerm> localOuts = ImmutableSLList.nil();
+        ImmutableList<JTerm> localOuts = ImmutableList.nil();
         for (final JTerm varTerm : varTerms) {
             assert varTerm.op() instanceof LocationVariable;
 
@@ -320,7 +321,7 @@ public class InfFlowWhileInvariantRule extends WhileInvariantRule {
             return varTerms;
         }
         final TermBuilder tb = services.getTermBuilder();
-        ImmutableList<JTerm> localOuts = ImmutableSLList.nil();
+        ImmutableList<JTerm> localOuts = ImmutableList.nil();
         for (final JTerm varTerm : varTerms) {
             assert varTerm.op() instanceof LocationVariable;
 

@@ -4,9 +4,11 @@
 package de.uka.ilkd.key.rule.match.vm.instructions;
 
 import de.uka.ilkd.key.java.ast.JavaProgramElement;
+import de.uka.ilkd.key.logic.GenericArgument;
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.logic.sort.GenericSort;
+import de.uka.ilkd.key.logic.sort.ParametricSortInstance;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.QuantifiableVariable;
@@ -17,10 +19,26 @@ import org.key_project.prover.rules.matcher.vm.instruction.GotoNextInstruction;
 import org.key_project.prover.rules.matcher.vm.instruction.GotoNextSiblingInstruction;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchIdentityInstruction;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
-import org.key_project.prover.rules.matcher.vm.instruction.VMInstruction;
 import org.key_project.util.collection.ImmutableArray;
 
-/** Class encoding the instructions of the matching vm */
+/**
+ * The factory for the Java-DL match instructions: static creation methods for every instruction
+ * kind used when a find pattern's matcher is built (schema variables by kind, term labels,
+ * programs, bound-variable binding, cursor moves, and the generic identity / node-kind checks from
+ * the framework). Both back-ends obtain their instructions here: the interpreter emits them into
+ * its instruction stream, the compiled matcher applies element-based ones directly.
+ * <p>
+ * Note for authors of new instructions: the proof-search queue indexes waiting rule applications
+ * by the operator families their {@code \assumes} formulas could match. The families are stated
+ * by the match heads themselves
+ * ({@link org.key_project.prover.rules.matcher.compiler.MatchHead#topOperatorDescriptor()}, an
+ * abstract method, so a new head cannot omit the decision) and, for the operators of concrete
+ * terms, by {@link de.uka.ilkd.key.rule.match.vm.JavaMatchPlanBuilder#matchFamilyOf}. An
+ * instruction that accepts more than one operator in a position, like
+ * {@link #getSimilarParametricFunctionInstruction}, belongs to a head whose descriptor names the
+ * family, and {@code matchFamilyOf} must agree with it (pinned by
+ * {@code QueueRuleApplicationManagerWakeKeyTest}).
+ */
 public final class JavaDLMatchVMInstructionSet {
 
     public static GotoNextInstruction gotoNextInstruction() {
@@ -63,10 +81,6 @@ public final class JavaDLMatchVMInstructionSet {
         return new BindVariablesInstruction(boundVars);
     }
 
-    public static VMInstruction unbindVariables(ImmutableArray<QuantifiableVariable> boundVars) {
-        return new UnbindVariablesInstruction();
-    }
-
     /**
      * returns the instruction for the specified variable
      *
@@ -92,6 +106,16 @@ public final class JavaDLMatchVMInstructionSet {
     public static SimilarParametricFunctionInstruction getSimilarParametricFunctionInstruction(
             ParametricFunctionInstance psi) {
         return new SimilarParametricFunctionInstruction(psi);
+    }
+
+    public static MatchInstruction getMatchInstructionForSortArgument(GenericArgument arg) {
+        // ensures that dispatch does not happen in matching code
+        return switch (arg.sort()) {
+            case GenericSort gs -> new MatchGenericSortInstruction(gs);
+            case ParametricSortInstance psi when psi.containsGenericSort() ->
+                new MatchParametricSortInstruction(psi);
+            default -> new MatchBySortIdentityInstruction(arg.sort());
+        };
     }
 
     public static MatchIdentityInstruction getMatchIdentityInstruction(

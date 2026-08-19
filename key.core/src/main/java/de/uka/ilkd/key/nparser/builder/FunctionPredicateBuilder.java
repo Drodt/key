@@ -82,6 +82,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             Name name = new Name(constructorContext.name.getText());
             Sort[] args = new Sort[constructorContext.sortId().size()];
             var argNames = constructorContext.argName;
+            var doc = processDocumentation(constructorContext.doc);
             for (int i = 0; i < args.length; i++) {
                 Sort argSort = accept(constructorContext.sortId(i));
                 args[i] = argSort;
@@ -105,18 +106,15 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                                 || !alreadyDefinedFn.argSorts().equals(ImmutableList.of(sort)))) {
                     // The condition checks whether there is already a function with the same name
                     // but different signature. This is necessarily true if there is a globally
-                    // defined function
-                    // of the same name and may or may not be true if there is another constructor
-                    // argument of the
-                    // same name.
+                    // defined function of the same name and may or may not be true if there
+                    // is another constructor argument of the same name.
                     semanticError(argNames.get(i), "Name already in namespace: %s" +
                         ". Identifiers in datatype definitions must be unique (also wrt. global functions).",
                         argName);
                 }
                 if (genericParams == null) {
                     Function fn =
-                        new JFunction(new Name(argName), argSort, new Sort[] { sort }, null,
-                            false, false);
+                        new JFunction(new Name(argName), argSort, new Sort[] { sort }, null, false);
                     dtFnNamespace.add(fn);
                 } else {
                     var fn = new ParametricFunctionDecl(new Name(argName), genericParams,
@@ -125,12 +123,14 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                 }
             }
             if (genericParams == null) {
-                var fn = new JFunction(name, sort, args, null, true, false);
+                var fn = new JFunction(name, sort, args, null, true);
                 functions().addSafely(fn);
+                docsSpace().setDocumentation(fn, doc);
             } else {
                 var fn = new ParametricFunctionDecl(name, genericParams, new ImmutableArray<>(args),
                     sort, null, true, true, false);
                 namespaces().parametricFunctions().add(fn);
+                docsSpace().setDocumentation(fn, doc);
             }
         }
         if (genericParams != null) {
@@ -146,6 +146,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
         String pred_name = accept(ctx.funcpred_name());
         List<GenericParameter> params = ctx.formal_sort_param_decls() == null ? null
                 : visitFormal_sort_param_decls(ctx.formal_sort_param_decls());
+        String doc = processDocumentation(ctx.doc);
         List<Boolean> whereToBind = accept(ctx.where_to_bind());
         List<Sort> argSorts = accept(ctx.arg_sorts());
         if (whereToBind != null && whereToBind.size() != argSorts.size()) {
@@ -182,6 +183,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
 
         if (lookup(p.name()) == null) {
             functions().add(p);
+            docsSpace().setDocumentation(p, doc);
         } else {
             // weigl: agreement on KaKeY meeting: this should be an error.
             semanticError(ctx, "Predicate '" + p.name() + "' is already defined!");

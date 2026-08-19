@@ -14,6 +14,7 @@ import java.util.zip.ZipFile;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.nparser.JavaKeYLexer;
 import de.uka.ilkd.key.nparser.KeyAst.ProofScript;
+import de.uka.ilkd.key.nparser.ParsingFacade;
 import de.uka.ilkd.key.nparser.ProofScriptEntry;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
@@ -30,6 +31,7 @@ import de.uka.ilkd.key.settings.Configuration;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
 import de.uka.ilkd.key.speclang.Contract;
 import de.uka.ilkd.key.speclang.SLEnvInput;
+import de.uka.ilkd.key.speclang.njml.JmlFacade;
 import de.uka.ilkd.key.strategy.Strategy;
 import de.uka.ilkd.key.strategy.StrategyProperties;
 
@@ -66,36 +68,6 @@ public abstract class AbstractProblemLoader {
     private boolean loadSingleJavaFile = false;
     private @Nullable Configuration additionalProfileOptions;
 
-    public static class ReplayResult {
-
-        private final Node node;
-        private final List<Throwable> errors;
-        private final String status;
-
-        public ReplayResult(String status, List<Throwable> errors, Node node) {
-            this.status = status;
-            this.errors = errors;
-            this.node = node;
-        }
-
-        public Node getNode() {
-            return node;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public List<Throwable> getErrorList() {
-            return errors;
-        }
-
-        public boolean hasErrors() {
-            return errors != null && !errors.isEmpty();
-        }
-
-    }
-
     /**
      * The file or folder to load.
      */
@@ -130,6 +102,13 @@ public abstract class AbstractProblemLoader {
      * The {@link Profile} to use for new {@link Proof}s.
      */
     private @Nullable Profile profileOfNewProofs;
+
+    /**
+     * {@code true} {@link #profileOfNewProofs} will be used as {@link Profile} of new proofs,
+     * {@code false} the {@link Profile} specified by the problem file will be used for new proofs
+     * (with the default profile as fallback if the file specifies none).
+     */
+    private boolean forceNewProfileOfNewProofs;
 
     /**
      * {@code true} to call {@link ProblemLoaderControl#selectProofObligation(InitConfig)} if no
@@ -221,6 +200,7 @@ public abstract class AbstractProblemLoader {
         this.bootClassPath = bootClassPath;
         this.control = control;
         setProfileOfNewProofs(profileOfNewProofs);
+        this.forceNewProfileOfNewProofs = forceNewProfileOfNewProofs;
         this.askUiToSelectAProofObligationIfNotDefinedByLoadedFile =
             askUiToSelectAProofObligationIfNotDefinedByLoadedFile;
         this.poPropertiesToForce = poPropertiesToForce;
@@ -339,6 +319,11 @@ public abstract class AbstractProblemLoader {
             }
         } finally {
             control.loadingFinished(this, poContainer, proofList, result);
+            // parsing is done; release the ANTLR DFA caches so they are not retained during the
+            // (long) proof search. They are a pure cache and rebuild transparently on the next
+            // parse.
+            ParsingFacade.clearParserCaches();
+            JmlFacade.clearCaches();
         }
     }
 
@@ -510,11 +495,11 @@ public abstract class AbstractProblemLoader {
             Path unzippedProof = tmpDir.resolve(proofFilename);
 
             return new KeYUserProblemFile(unzippedProof.toString(), unzippedProof,
-                fileRepo, control, profileOfNewProofs, false);
+                fileRepo, control, enforcedProfile(), false);
         } else if (filename.endsWith(".key") || filename.endsWith(".proof")
                 || filename.endsWith(".proof.gz")) {
             // KeY problem specification or saved proof
-            return new KeYUserProblemFile(filename, file, fileRepo, control, profileOfNewProofs,
+            return new KeYUserProblemFile(filename, file, fileRepo, control, enforcedProfile(),
                 filename.endsWith(".proof.gz"));
         } else if (Files.isDirectory(file)) {
             // directory containing java sources, probably enriched
@@ -534,13 +519,25 @@ public abstract class AbstractProblemLoader {
     }
 
     /**
+     * Returns the {@link Profile} that overrides any profile declaration of the loaded file, or
+     * {@code null} if the file's own {@code \profile} declaration should be respected (see #3713:
+     * unconditionally passing {@link #profileOfNewProofs} made the GUI ignore the
+     * {@code \profile "java-infflow"} declaration of information flow problem files).
+     *
+     * @return the enforced {@link Profile} or {@code null}
+     */
+    private @Nullable Profile enforcedProfile() {
+        return forceNewProfileOfNewProofs ? profileOfNewProofs : null;
+    }
+
+    /**
      * Instantiates the {@link ProblemInitializer} to use.
      *
      * @param fileRepo the FileRepo used to ensure consistency between proof and source code
      * @return The {@link ProblemInitializer} to use.
      */
     protected ProblemInitializer createProblemInitializer(FileRepo fileRepo) {
-        Profile profile = profileOfNewProofs != null ? profileOfNewProofs : envInput.getProfile();
+        Profile profile = enforcedProfile() != null ? profileOfNewProofs : envInput.getProfile();
         ProblemInitializer pi = new ProblemInitializer(control, new Services(profile), control);
         pi.setAdditionalProfileOptions(additionalProfileOptions);
         pi.setFileRepo(fileRepo);
@@ -839,6 +836,10 @@ public abstract class AbstractProblemLoader {
         this.proofFilename = proofFilename;
     }
 
+    public void forceNewProfileOfNewProofs(boolean forceNewProfileOfNewProofs) {
+        this.forceNewProfileOfNewProofs = forceNewProfileOfNewProofs;
+    }
+
     public boolean isLoadSingleJavaFile() {
         return loadSingleJavaFile;
     }
@@ -861,4 +862,35 @@ public abstract class AbstractProblemLoader {
         return additionalProfileOptions;
     }
 
+
+
+    public static class ReplayResult {
+
+        private final Node node;
+        private final List<Throwable> errors;
+        private final String status;
+
+        public ReplayResult(String status, List<Throwable> errors, Node node) {
+            this.status = status;
+            this.errors = errors;
+            this.node = node;
+        }
+
+        public Node getNode() {
+            return node;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public List<Throwable> getErrorList() {
+            return errors;
+        }
+
+        public boolean hasErrors() {
+            return errors != null && !errors.isEmpty();
+        }
+
+    }
 }

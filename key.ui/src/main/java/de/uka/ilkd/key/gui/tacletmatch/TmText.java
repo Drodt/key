@@ -24,20 +24,14 @@ final class TmText {
     }
 
     /**
-     * the first line of {@code s}, truncated to {@code limit} characters with an ellipsis appended
-     * when it was longer.
-     */
-    static String truncateFirstLine(String s, int limit) {
-        String line = firstLine(s);
-        return line.length() > limit ? line.substring(0, limit) + " …" : line;
-    }
-
-    /**
-     * {@code s} flattened to a single line (newlines become spaces), truncated to {@code limit}
-     * characters with an ellipsis appended when it was longer.
+     * {@code s} flattened to a single line and truncated to {@code limit} characters with an
+     * ellipsis appended when it was longer. Every run of whitespace (the newlines and the alignment
+     * indentation the pretty-printer inserts when it wraps a term) collapses to a single space, so
+     * a
+     * multi-line formula reads as one continuous line instead of a stub followed by blank gaps.
      */
     static String collapseToLine(String s, int limit) {
-        String oneLine = (s == null ? "" : s).replace('\n', ' ');
+        String oneLine = (s == null ? "" : s).replaceAll("\\s+", " ").trim();
         return oneLine.length() > limit ? oneLine.substring(0, limit) + " …" : oneLine;
     }
 
@@ -46,6 +40,20 @@ final class TmText {
         String esc = (s == null ? "" : s).replace("&", "&amp;").replace("<", "&lt;")
                 .replace(">", "&gt;").replace("\n", "<br>");
         return "<html><div style='width:480px'>" + esc + "</div></html>";
+    }
+
+    /** the number of lines in {@code s} (newline count + 1; {@code 1} for {@code null}/empty). */
+    static int lineCount(String s) {
+        if (s == null || s.isEmpty()) {
+            return 1;
+        }
+        int lines = 1;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '\n') {
+                lines++;
+            }
+        }
+        return lines;
     }
 
     /**

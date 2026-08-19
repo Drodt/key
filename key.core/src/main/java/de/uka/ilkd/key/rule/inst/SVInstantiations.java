@@ -29,7 +29,6 @@ import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableMapEntry;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -82,10 +81,13 @@ public class SVInstantiations
     /** additional conditions for the generic sorts */
     private final ImmutableList<GenericSortCondition> genericSortConditions;
 
+    private ContextStatementBlockInstantiation contextInstantiationCache;
+    private boolean contextInstantiationCached;
+
     /** creates a new SVInstantiations object with an empty map */
     private SVInstantiations() {
-        genericSortConditions = ImmutableSLList.nil();
-        updateContext = ImmutableSLList.nil();
+        genericSortConditions = ImmutableList.nil();
+        updateContext = ImmutableList.nil();
         map = DefaultImmutableMap.nilMap();
         interesting = DefaultImmutableMap.nilMap();
     }
@@ -381,8 +383,7 @@ public class SVInstantiations
      * @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
      *         stored
      */
-    public JTerm getTermInstantiation(SchemaVariable sv, ExecutionContext ec,
-            LogicServices services) {
+    public JTerm getTermInstantiation(SchemaVariable sv, LogicServices services) {
         final Object inst = getInstantiation(sv);
         if (inst == null) {
             return null;
@@ -390,7 +391,7 @@ public class SVInstantiations
             return term;
         } else if (inst instanceof ProgramElement) {
             return ((Services) services).getTypeConverter()
-                    .convertToLogicElement((ProgramElement) inst, ec);
+                    .convertToLogicElement((ProgramElement) inst, getExecutionContext());
         } else {
             throw CONVERT_INSTANTIATION_EXCEPTION;
         }
@@ -424,7 +425,7 @@ public class SVInstantiations
             // avoid unnecessary creation of SVInstantiations
             return this;
         }
-        return new SVInstantiations(map, interesting(), ImmutableSLList.nil(),
+        return new SVInstantiations(map, interesting(), ImmutableList.nil(),
             getGenericSortInstantiations(), getGenericSortConditions());
     }
 
@@ -432,8 +433,13 @@ public class SVInstantiations
      * returns the instantiation entry for the context "schema variable" or null if non such exists
      */
     public ContextStatementBlockInstantiation getContextInstantiation() {
-        final InstantiationEntry<?> entry = getInstantiationEntry(CONTEXTSV);
-        return entry == null ? null : (ContextStatementBlockInstantiation) entry.getInstantiation();
+        if (!contextInstantiationCached) {
+            final InstantiationEntry<?> entry = getInstantiationEntry(CONTEXTSV);
+            contextInstantiationCache = entry == null ? null
+                    : (ContextStatementBlockInstantiation) entry.getInstantiation();
+            contextInstantiationCached = true;
+        }
+        return contextInstantiationCache;
     }
 
     /**

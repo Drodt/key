@@ -43,6 +43,9 @@ public class HeapSimplificationMacro extends AbstractPropositionalExpansionMacro
         "selectCreatedOfStore", "selectCreatedOfCreate", "selectCreatedOfAnon",
         "selectCreatedOfMemset",
 
+        "selectOfStoreSameLoc", "selectOfCreateReduce", "simplifySelectOfStoreDiffFields",
+        "simplifySelectOfStoreDiffObjects",
+
         "dismissNonSelectedField", "dismissNonSelectedFieldEQ", "replaceKnownSelect",
         "dropEffectlessStores", "memsetEmpty", "selectCreatedOfAnonAsFormula",
 
@@ -71,7 +74,7 @@ public class HeapSimplificationMacro extends AbstractPropositionalExpansionMacro
 
         "allFieldsEq", "subsetSingletonLeft", "subsetSingletonLeftEQ", "subsetSingletonRight",
         "subsetSingletonRightEQ", "subsetUnionLeft", "subsetUnionLeftEQ",
-        "subsetOfIntersectWithItSelfEQ1", "subsetOfIntersectWithItSelfEQ2", "allFieldsSubsetOf",
+        "subsetOfIntersectWithItSelf1EQ", "subsetOfIntersectWithItSelf2EQ", "allFieldsSubsetOf",
         "disjointAllFields", "disjointAllObjects", "disjointInfiniteUnion",
         "disjointInfiniteUnion_2", "intersectAllFieldsFreshLocs", "disjointWithSingleton1",
         "disjointWithSingleton2", "sortsDisjointModuloNull",

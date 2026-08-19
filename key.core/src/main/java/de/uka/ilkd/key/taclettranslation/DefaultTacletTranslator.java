@@ -22,7 +22,6 @@ import org.key_project.prover.rules.ApplicationRestriction;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /**
  * Translates a rewrite taclet to a formula.
@@ -30,11 +29,8 @@ import org.key_project.util.collection.ImmutableSLList;
  *
  */
 public class DefaultTacletTranslator extends AbstractSkeletonGenerator {
-
-
     static private final int ANTE = 0;
     static private final int SUCC = 1;
-
 
     private enum TacletSections {
         REPLACE, ADD, ASSUM, FIND;
@@ -43,7 +39,6 @@ public class DefaultTacletTranslator extends AbstractSkeletonGenerator {
             return services.getTermBuilder().ff();
         }
     }
-
 
     /**
      * Translates the replace and add pattern of a goal template to: find=replace->add <br>
@@ -147,8 +142,6 @@ public class DefaultTacletTranslator extends AbstractSkeletonGenerator {
      */
     @Override
     public JTerm translate(Taclet taclet, TermServices services) throws IllegalTacletException {
-
-
         TermBuilder tb = services.getTermBuilder();
 
         // the standard translation of the patterns.
@@ -164,25 +157,20 @@ public class DefaultTacletTranslator extends AbstractSkeletonGenerator {
         }
 
         // translate the replace and add patterns of the taclet.
-        ImmutableList<JTerm> list = ImmutableSLList.nil();
+        ImmutableList<JTerm> list = ImmutableList.nil();
 
         for (TacletGoalTemplate template : taclet.goalTemplates()) {
-
             if (taclet instanceof AntecTaclet) {
                 list = list.append(translateReplaceAndAddSequent(template, ANTE, services));
-
             } else if (taclet instanceof SuccTaclet) {
                 list = list.append(translateReplaceAndAddSequent(template, SUCC, services));
-
             } else if (taclet instanceof RewriteTaclet rwTaclet) {
                 if (rwTaclet.find().sort().equals(JavaDLTheory.FORMULA)) {
                     int polarity = getPolarity(rwTaclet);
                     list = list.append(
                         translateReplaceAndAddFormula(template, find, polarity, services));
-
                 } else {
                     list = list.append(translateReplaceAndAddTerm(template, find, services));
-
                 }
             } else if (taclet instanceof NoFindTaclet) {
                 list = list.append(translateReplaceAndAddSequent(template, SUCC, services));
@@ -196,7 +184,6 @@ public class DefaultTacletTranslator extends AbstractSkeletonGenerator {
                 assum = TacletSections.ASSUM.getDefaultValue(services);
             }
         }
-
 
         if (taclet instanceof AntecTaclet || taclet instanceof SuccTaclet) {
             if (taclet instanceof AntecTaclet) {

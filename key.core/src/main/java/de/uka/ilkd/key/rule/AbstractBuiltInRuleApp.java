@@ -17,7 +17,6 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
@@ -38,7 +37,7 @@ public abstract class AbstractBuiltInRuleApp<T extends BuiltInRule> implements I
             @Nullable ImmutableList<PosInOccurrence> ifInsts) {
         this.builtInRule = rule;
         this.pio = pio;
-        this.ifInsts = (ifInsts == null ? ImmutableSLList.nil() : ifInsts);
+        this.ifInsts = (ifInsts == null ? ImmutableList.nil() : ifInsts);
     }
 
     protected AbstractBuiltInRuleApp(T rule, @Nullable PosInOccurrence pio) {

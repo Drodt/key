@@ -8,17 +8,16 @@ import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.TypeConverter;
 import de.uka.ilkd.key.java.ast.SourceElement;
 import de.uka.ilkd.key.java.ast.StatementBlock;
+import de.uka.ilkd.key.java.ast.expression.Assignment;
+import de.uka.ilkd.key.java.ast.expression.BinaryAssignment;
 import de.uka.ilkd.key.java.ast.expression.Expression;
-import de.uka.ilkd.key.java.ast.expression.operator.CopyAssignment;
 import de.uka.ilkd.key.java.ast.reference.*;
-import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.JavaBlock;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.TermServices;
 import de.uka.ilkd.key.logic.label.TermLabelManager;
 import de.uka.ilkd.key.logic.label.TermLabelState;
-import de.uka.ilkd.key.logic.op.*;
 import de.uka.ilkd.key.logic.op.IObserverFunction;
 import de.uka.ilkd.key.logic.op.JModality;
 import de.uka.ilkd.key.logic.op.LocationVariable;
@@ -67,10 +66,15 @@ public final class ObserverToUpdateRule implements BuiltInRule {
     private static final Name NAME = new Name("Observer to update");
 
     /**
-     * caching matching results
+     * caching matching results; thread-local because {@code instantiate} is called from the
+     * applicability check (no rule app available) and this rule INSTANCE is shared via the taclet
+     * base -- a plain static cache raced across concurrent workers. Confining it to the worker
+     * thread
+     * keeps the optimization (applicability + apply run on the same worker).
      */
-    private static JTerm lastFocusTerm;
-    private static Union<Instantiation, ModelFieldInstantiation> lastInstantiation;
+    private static final ThreadLocal<JTerm> lastFocusTerm = new ThreadLocal<>();
+    private static final ThreadLocal<Union<Instantiation, ModelFieldInstantiation>> lastInstantiation =
+        new ThreadLocal<>();
 
     // -------------------------------------------------------------------------
     // constructors
@@ -181,13 +185,14 @@ public final class ObserverToUpdateRule implements BuiltInRule {
             result = goal.split(2);
             contGoal = result.tail().head();
             nullGoal = result.head();
-            nullGoal.setBranchLabel("Null reference (" + inst.receiver + " = null)");
+            final var recv = inst.receiver;
+            nullGoal.setBranchLabel(() -> "Null reference (" + recv + " = null)");
         } else {
             result = goal.split(1);
             contGoal = result.head();
             nullGoal = null;
         }
-        contGoal.setBranchLabel("Assignment");
+        contGoal.setBranchLabel("CopyAssignment");
 
         // ---- create "Null Reference" branch
         if (nullGoal != null) {
@@ -197,7 +202,7 @@ public final class ObserverToUpdateRule implements BuiltInRule {
                 ruleApp.posInOccurrence());
         }
 
-        // ---- create "Assignment" cont branch
+        // ---- create "CopyAssignment" cont branch
         final JavaBlock jb = inst.modality.javaBlock();
         StatementBlock postSB = UseOperationContractRule.replaceStatement(jb, new StatementBlock());
         JavaBlock postJavaBlock = JavaBlock.createJavaBlock(postSB);
@@ -244,13 +249,14 @@ public final class ObserverToUpdateRule implements BuiltInRule {
             result = goal.split(2);
             contGoal = result.tail().head();
             nullGoal = result.head();
-            nullGoal.setBranchLabel("Null reference (" + inst.actualSelf() + " = null)");
+            final var self = inst.actualSelf();
+            nullGoal.setBranchLabel(() -> "Null reference (" + self + " = null)");
         } else {
             result = goal.split(1);
             contGoal = result.head();
             nullGoal = null;
         }
-        contGoal.setBranchLabel("Assignment");
+        contGoal.setBranchLabel("CopyAssignment");
 
         // ---- create "Null Reference" branch
         if (nullGoal != null) {
@@ -259,7 +265,7 @@ public final class ObserverToUpdateRule implements BuiltInRule {
                 ruleApp.posInOccurrence());
         }
 
-        // ---- create "Assignment" cont branch
+        // ---- create "CopyAssignment" cont branch
         StatementBlock postSB = UseOperationContractRule.replaceStatement(jb, new StatementBlock());
         JavaBlock postJavaBlock = JavaBlock.createJavaBlock(postSB);
         JModality modality = JModality.getModality(inst.modality().kind(), postJavaBlock);
@@ -350,7 +356,8 @@ public final class ObserverToUpdateRule implements BuiltInRule {
 
         // active statement must be reading model field
         final SourceElement activeStatement = JavaTools.getActiveStatement(mainFml.javaBlock());
-        if (!(activeStatement instanceof CopyAssignment ca)) {
+        if (!(activeStatement instanceof Assignment ca
+                && ca.getKind() == BinaryAssignment.BinaryAssignmentKind.COPY)) {
             return null;
         }
 
@@ -402,27 +409,25 @@ public final class ObserverToUpdateRule implements BuiltInRule {
 
     private static Union<Instantiation, ModelFieldInstantiation> instantiate(JTerm focusTerm,
             Services services) {
-        // result cached?
-        if (focusTerm == lastFocusTerm) {
-            return lastInstantiation;
+        // result cached (per worker thread)?
+        if (focusTerm == lastFocusTerm.get()) {
+            return lastInstantiation.get();
         }
 
         // compute
+        final Union<Instantiation, ModelFieldInstantiation> result;
         Instantiation inst = UseOperationContractRule.computeInstantiation(focusTerm, services);
         if (inst != null) {
-            lastInstantiation = Union.fromFirst(inst);
+            result = Union.fromFirst(inst);
         } else {
             ModelFieldInstantiation mfInst = matchModelField(focusTerm, services);
-            if (mfInst != null) {
-                lastInstantiation = Union.fromSecond(mfInst);
-            } else {
-                lastInstantiation = null;
-            }
+            result = mfInst != null ? Union.fromSecond(mfInst) : null;
         }
 
         // cache and return
-        lastFocusTerm = focusTerm;
-        return lastInstantiation;
+        lastFocusTerm.set(focusTerm);
+        lastInstantiation.set(result);
+        return result;
     }
     // endregion
 

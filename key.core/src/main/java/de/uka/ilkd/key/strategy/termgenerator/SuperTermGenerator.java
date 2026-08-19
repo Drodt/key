@@ -20,13 +20,23 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.SortedOperator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
+import org.key_project.prover.strategy.costbased.feature.WeakStableCost;
 import org.key_project.prover.strategy.costbased.termfeature.TermFeature;
 import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.util.collection.ImmutableArray;
 
+/**
+ * Generates the terms upward a given (usually the find-)position and
+ * allows to iterate over those in order to check e.g. whether the
+ * position is below an update or quantifier.
+ *
+ * As it only looks upwards, the computed cost is weak stable
+ */
+@WeakStableCost
 public abstract class SuperTermGenerator implements TermGenerator<Goal> {
 
     private final TermFeature cond;
@@ -42,16 +52,18 @@ public abstract class SuperTermGenerator implements TermGenerator<Goal> {
                     PosInOccurrence focus, MutableState mState) {
                 return new UpwardsIterator(focus, mState, services);
             }
+
         };
     }
 
     public static TermGenerator<Goal> upwardsWithIndex(TermFeature cond, final Services services) {
-        return new SuperTermWithIndexGenerator(cond) {
+        return new SuperTermWithIndexGenerator(cond, services) {
             @Override
             protected Iterator<Term> createIterator(
                     PosInOccurrence focus, MutableState mState) {
                 return new UpwardsIterator(focus, mState, services);
             }
+
         };
     }
 
@@ -73,29 +85,22 @@ public abstract class SuperTermGenerator implements TermGenerator<Goal> {
         return !(cond.compute(t, mState, services) instanceof TopRuleAppCost);
     }
 
+    @WeakStableCost
     abstract static class SuperTermWithIndexGenerator extends SuperTermGenerator {
-        private Services services;
-        private Operator binFunc;
+        private final Services services;
+        private final Operator binFunc;
 
-        protected SuperTermWithIndexGenerator(TermFeature cond) {
+        protected SuperTermWithIndexGenerator(TermFeature cond, Services services) {
             super(cond);
+            this.services = services;
+            final IntegerLDT numbers = services.getTypeConverter().getIntegerLDT();
+            this.binFunc = new SuperTermGeneratedOp(numbers);
         }
 
         @Override
         public Iterator<Term> generate(RuleApp app,
                 PosInOccurrence pos, Goal goal,
                 MutableState mState) {
-            if (services == null) {
-                services = goal.proof().getServices();
-                final IntegerLDT numbers = services.getTypeConverter().getIntegerLDT();
-
-                binFunc = new SuperTermGeneratedOp(numbers);
-
-                // binFunc = new Function
-                // ( new Name ( "SuperTermGenerated" ), Sort.ANY,
-                // new Sort[] { Sort.ANY, numbers.getNumberSymbol ().sort () } );
-            }
-
             return createIterator(pos, mState);
         }
 
@@ -173,28 +178,38 @@ public abstract class SuperTermGenerator implements TermGenerator<Goal> {
     }
 
     class UpwardsIterator implements Iterator<Term> {
-        private PosInOccurrence currentPos;
+        private final Term[] ancestors;
+        private final int[] childIndices;
+        private int next;
         private final MutableState mState;
         private final Services services;
 
         private UpwardsIterator(PosInOccurrence startPos, MutableState mState, Services services) {
-            this.currentPos = startPos;
             this.mState = mState;
             this.services = services;
+            final int depth = startPos.depth();
+            this.ancestors = new Term[depth];
+            this.childIndices = new int[depth];
+            final PIOPathIterator it = startPos.iterator();
+            int i = depth;
+            while (it.next() != -1) {
+                i--;
+                ancestors[i] = it.getSubTerm();
+                childIndices[i] = it.getChild();
+            }
         }
 
         @Override
         public boolean hasNext() {
-            return currentPos != null && !currentPos.isTopLevel();
+            return next < ancestors.length;
         }
 
         @Override
         public Term next() {
-            final int child = currentPos.getIndex();
-            currentPos = currentPos.up();
-            final Term res = generateOneTerm(currentPos.subTerm(), child);
+            final Term res = generateOneTerm(ancestors[next], childIndices[next]);
+            next++;
             if (!generateFurther(res, mState, services)) {
-                currentPos = null;
+                next = ancestors.length;
             }
             return res;
         }

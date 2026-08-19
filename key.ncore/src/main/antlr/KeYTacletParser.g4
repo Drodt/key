@@ -2,9 +2,8 @@ parser grammar KeYTacletParser;
 
 import KeYSequentParser;
 
-options { tokenVocab = KeYLexer; }
 taclet
-   : doc = DOC_COMMENT? (LEMMA)? name = IDENT (choices_ = option_list)? LBRACE (form = term | (SCHEMAVAR one_schema_var_decl SEMI)* (ASSUMES LPAREN assumesSeq = seq RPAREN)? (FIND LPAREN find = termorseq RPAREN (SAMEUPDATELEVEL | INSEQUENTSTATE | ANTECEDENTPOLARITY | SUCCEDENTPOLARITY)*)? (VARCOND LPAREN varexplist RPAREN)* goalspecs modifiers) RBRACE
+   : doc = DOC_COMMENT? (LEMMA)? name = IDENT (choices_ = option_list)? LBRACE (form = term | (SCHEMAVAR one_schema_var_decl SEMI)* (ASSUMES LPAREN assumesSeq = seq RPAREN)? (FIND LPAREN find = termorseq RPAREN (IGNOREUPDATELEVEL | SAMEUPDATELEVEL | INSEQUENTSTATE | ANTECEDENTPOLARITY | SUCCEDENTPOLARITY)*)? (VARCOND LPAREN varexplist RPAREN)* goalspecs modifiers) RBRACE
    ;
 
 option_list
@@ -111,10 +110,22 @@ triggers
    ;
 
 modifiers
-   : (rs = rulesets | NONINTERACTIVE | DISPLAYNAME dname = string_value | HELPTEXT htext = string_value | triggers)*
+   : (rs = rulesets | NONINTERACTIVE | DISPLAYNAME dname = string_value | HELPTEXT htext = string_value | triggers | generate)*
    ;
    //TODO Split
-   
+
+generate
+    : GENERATE LPAREN generator (COMMA generator)* RPAREN
+    ;
+
+generator
+    : eqGenerator
+    ;
+
+eqGenerator
+    : GENERATE_EQ LPAREN term (COLON (ruleset (COMMA ruleset)*))? RPAREN
+    ;
+
 one_schema_var_decl
    : MODALOPERATOR one_schema_modal_op_decl
    | PROGRAM (schema_modifiers)? id = simple_ident (LBRACKET nameString = simple_ident EQUALS parameter = simple_ident_dots RBRACKET)? ids = simple_ident_comma_list

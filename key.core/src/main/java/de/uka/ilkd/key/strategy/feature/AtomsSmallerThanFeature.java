@@ -12,13 +12,24 @@ import org.key_project.logic.op.Function;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 
 
 /**
  * Feature that returns zero iff each variable/atom of one monomial is smaller than all variables of
- * a second monomial
+ * a second monomial.
+ *
+ * <p>
+ * The value is determined by the compared instantiation terms alone: the atom ordering consists
+ * of the number-literal distinction, the term-only {@link de.uka.ilkd.key.logic.LexPathOrdering},
+ * and the introduction time of definitional skolem symbols, which is a constant of the symbol
+ * (see {@link AbstractMonomialSmallerThanFeature#introductionTime}). Hence {@link StableCost} --
+ * the same classification, for the same reason, as {@link MonomialsSmallerThanFeature}, which
+ * orders whole monomials by the same ingredients.
+ * </p>
  */
+@StableCost
 public class AtomsSmallerThanFeature extends AbstractMonomialSmallerThanFeature {
 
     private final ProjectionToTerm<Goal> left, right;
@@ -61,7 +72,7 @@ public class AtomsSmallerThanFeature extends AbstractMonomialSmallerThanFeature 
             }
         }
 
-        final int v = introductionTime(t2.op(), goal) - introductionTime(t1.op(), goal);
+        final int v = introductionTime(t2.op()) - introductionTime(t1.op());
         if (v < 0) {
             return true;
         }

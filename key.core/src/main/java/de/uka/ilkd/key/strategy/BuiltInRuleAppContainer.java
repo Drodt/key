@@ -8,14 +8,11 @@ import de.uka.ilkd.key.rule.BuiltInRule;
 import de.uka.ilkd.key.rule.IBuiltInRuleApp;
 
 import org.key_project.prover.indexing.FormulaTag;
-import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 
 /**
@@ -39,7 +36,7 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // constructors
     // -------------------------------------------------------------------------
 
-    public BuiltInRuleAppContainer(IBuiltInRuleApp bir,
+    private BuiltInRuleAppContainer(IBuiltInRuleApp bir,
             PosInOccurrence pio, RuleAppCost cost,
             Goal goal) {
         super(bir, cost);
@@ -102,31 +99,49 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     static RuleAppContainer createAppContainer(IBuiltInRuleApp bir,
             PosInOccurrence pio,
             Goal goal) {
-        final RuleAppCost cost = goal.getGoalStrategy().computeCost(bir, pio, goal);
+        final RuleAppCost cost =
+            withAge(goal.getGoalStrategy().computeCost(bir, pio, goal), goal);
         return new BuiltInRuleAppContainer(bir, pio, cost, goal);
     }
 
+    /**
+     * Create container for RuleApp.
+     *
+     * @return container for the currently applicable BuiltInRuleApp, the cost may be an instance of
+     *         <code>TopRuleAppCost</code>.
+     */
+    static ImmutableList<RuleAppContainer> createInitialAppContainers(
+            ImmutableList<IBuiltInRuleApp> birs, PosInOccurrence pio,
+            Goal goal) {
+        ImmutableList<RuleAppContainer> result = ImmutableList.nil();
+
+        for (IBuiltInRuleApp bir : birs) {
+            result = result.prepend(createAppContainer(bir, pio, goal));
+        }
+
+        return result;
+    }
+
+
 
     @Override
-    public ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
-        var goal = (Goal) p_goal;
+    public ImmutableList<RuleAppContainer> createFurtherApps(Goal goal) {
         if (!isStillApplicable(goal)) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
 
         final PosInOccurrence pio = getPosInOccurrence(goal);
 
         RuleAppContainer container = createAppContainer(bir, pio, goal);
         if (container.getCost() instanceof TopRuleAppCost) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
-        return ImmutableSLList.<RuleAppContainer>nil().prepend(container);
+        return ImmutableList.<RuleAppContainer>singleton(container);
     }
 
 
     @Override
-    public RuleApp completeRuleApp(ProofGoal<?> p_goal) {
-        var goal = (Goal) p_goal;
+    public RuleApp completeRuleApp(Goal goal) {
         if (!isStillApplicable(goal)) {
             return null;
         }

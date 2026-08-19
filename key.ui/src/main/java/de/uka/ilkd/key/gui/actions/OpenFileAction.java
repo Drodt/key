@@ -30,6 +30,8 @@ public class OpenFileAction extends MainWindowAction {
     public void actionPerformed(ActionEvent e) {
         KeYFileChooser fc = new KeYFileChooser(lastSelectedPath);
         fc.setDialogTitle("Select file to load proof or problem");
+        fc.setSelectedFile(KeYFileChooser.getFileChooser("Select file to load proof or problem")
+                .getSelectedFile());
         KeYFileChooserLoadingOptions options = fc.addLoadingOptions();
         fc.addBookmarkPanel();
         fc.prepare();
@@ -67,6 +69,7 @@ public class OpenFileAction extends MainWindowAction {
             var selectedProfile = options.getSelectedProfile();
             var additionalProfileOptions = options.getAdditionalProfileOptions();
             mainWindow.loadProblem(file, pl -> {
+                pl.forceNewProfileOfNewProofs(selectedProfile != null);
                 pl.setProfileOfNewProofs(selectedProfile);
                 pl.setAdditionalProfileOptions(additionalProfileOptions);
                 pl.setLoadSingleJavaFile(options.isOnlyLoadSingleJavaFile());

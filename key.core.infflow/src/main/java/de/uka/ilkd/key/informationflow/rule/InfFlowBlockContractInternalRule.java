@@ -49,10 +49,11 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.Nullable;
+
+import static org.key_project.logic.op.Function.FunctionKind.SKOLEM;
 
 /**
  * <p>
@@ -85,16 +86,6 @@ public class InfFlowBlockContractInternalRule extends BlockContractInternalRule 
      */
     private static final Name NAME = new Name("InfFlow Block Contract (Internal)");
 
-    /**
-     * @see #getLastFocusTerm()
-     */
-    private JTerm lastFocusTerm;
-
-    /**
-     * @see #getLastInstantiation()
-     */
-    private Instantiation lastInstantiation;
-
     private InfFlowBlockContractInternalRule() {
         super();
     }
@@ -126,33 +117,12 @@ public class InfFlowBlockContractInternalRule extends BlockContractInternalRule 
             final JTerm contextUpdate,
             final JTerm remembranceUpdate, final ImmutableSet<LocationVariable> localOutVariables,
             final GoalsConfigurator configurator, final Services services) {
-        final ImmutableList<Goal> result = goal.split(3);
-        return result;
-    }
-
-    @Override
-    public JTerm getLastFocusTerm() {
-        return lastFocusTerm;
-    }
-
-    @Override
-    protected void setLastFocusTerm(JTerm lastFocusTerm) {
-        this.lastFocusTerm = lastFocusTerm;
-    }
-
-    @Override
-    public Instantiation getLastInstantiation() {
-        return lastInstantiation;
+        return goal.split(3);
     }
 
     @Override
     public Name name() {
         return NAME;
-    }
-
-    @Override
-    protected void setLastInstantiation(Instantiation lastInstantiation) {
-        this.lastInstantiation = lastInstantiation;
     }
 
     /**
@@ -336,7 +306,7 @@ public class InfFlowBlockContractInternalRule extends BlockContractInternalRule 
 
         final JTerm heapAtPre = tb.var(variables.remembranceHeaps.get(baseHeap));
         final Name heapAtPostName = new Name(tb.newName("heap_After_BLOCK"));
-        final JTerm heapAtPost = tb.func(new JFunction(heapAtPostName, heapAtPre.sort(), true));
+        final JTerm heapAtPost = tb.func(new JFunction(heapAtPostName, heapAtPre.sort(), SKOLEM));
         final JTerm selfAtPre = hasSelf ? tb.var(variables.self) : tb.NULL();
         final JTerm selfAtPost = hasSelf ? buildAfterVar(selfAtPre, "BLOCK", services) : tb.NULL();
 
@@ -422,7 +392,7 @@ public class InfFlowBlockContractInternalRule extends BlockContractInternalRule 
             return varTerms;
         }
         final TermBuilder tb = services.getTermBuilder();
-        ImmutableList<JTerm> renamedLocalOuts = ImmutableSLList.nil();
+        ImmutableList<JTerm> renamedLocalOuts = ImmutableList.nil();
         for (JTerm varTerm : varTerms) {
             assert varTerm.op() instanceof LocationVariable;
 
@@ -444,7 +414,7 @@ public class InfFlowBlockContractInternalRule extends BlockContractInternalRule 
             return varTerms;
         }
         final TermBuilder tb = services.getTermBuilder();
-        ImmutableList<JTerm> renamedLocalOuts = ImmutableSLList.nil();
+        ImmutableList<JTerm> renamedLocalOuts = ImmutableList.nil();
         for (JTerm varTerm : varTerms) {
             assert varTerm.op() instanceof LocationVariable;
 

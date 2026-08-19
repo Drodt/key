@@ -1,3 +1,5 @@
+description = "Pattern Matchern New core KeY theorem prover"
+
 repositories {
     mavenCentral()
 }
@@ -5,7 +7,7 @@ repositories {
 dependencies {
     api project(':key.util')
     api project(':key.ncore')
-    implementation('org.jspecify:jspecify:1.0.0')
+    implementation(libs.jspecify)
 }
 
 checkerFramework {

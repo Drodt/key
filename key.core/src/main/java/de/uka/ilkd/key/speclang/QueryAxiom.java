@@ -10,8 +10,7 @@ import java.util.function.UnaryOperator;
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.ast.StatementBlock;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
-import de.uka.ilkd.key.java.ast.declaration.modifier.Private;
-import de.uka.ilkd.key.java.ast.declaration.modifier.VisibilityModifier;
+import de.uka.ilkd.key.java.ast.declaration.ModifierKind;
 import de.uka.ilkd.key.java.ast.statement.MethodBodyStatement;
 import de.uka.ilkd.key.ldt.HeapLDT;
 import de.uka.ilkd.key.logic.*;
@@ -34,7 +33,6 @@ import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
 
@@ -108,8 +106,8 @@ public final class QueryAxiom extends ClassAxiom {
 
 
     @Override
-    public VisibilityModifier getVisibility() {
-        return new Private();
+    public ModifierKind getVisibility() {
+        return ModifierKind.PRIVATE;
     }
 
 
@@ -171,7 +169,7 @@ public final class QueryAxiom extends ClassAxiom {
             tb.equals(tb.var(skolemSV), tb.var(resultProgSV)));
 
         // create java block
-        final ImmutableList<KeYJavaType> sig = ImmutableSLList.<KeYJavaType>nil()
+        final ImmutableList<KeYJavaType> sig = ImmutableList.<KeYJavaType>nil()
                 .append(target.getParamTypes().toArray(new KeYJavaType[target.getNumParams()]));
         // get real implementation of program method
         final IProgramMethod targetImpl =
@@ -189,7 +187,7 @@ public final class QueryAxiom extends ClassAxiom {
             final JTerm ifFormula = tb.exactInstance(kjt.getSort(), tb.var(selfSV));
             final SequentFormula ifCf = new SequentFormula(ifFormula);
             final ImmutableList<SequentFormula> antecedent =
-                ImmutableSLList.singleton(ifCf);
+                ImmutableList.singleton(ifCf);
             ifSeq = JavaDLSequentKit.createAnteSequent(antecedent);
         }
 
@@ -218,7 +216,7 @@ public final class QueryAxiom extends ClassAxiom {
             tb.apply(update, tb.prog(JModality.JavaModalityKind.BOX, jb, post), null);
         final SequentFormula addedCf = new SequentFormula(addedFormula);
         final Sequent addedSeq =
-            JavaDLSequentKit.createAnteSequent(ImmutableSLList.singleton(addedCf));
+            JavaDLSequentKit.createAnteSequent(ImmutableList.singleton(addedCf));
 
         // build taclet
         final RewriteTacletBuilder<RewriteTaclet> tacletBuilder =
@@ -240,7 +238,7 @@ public final class QueryAxiom extends ClassAxiom {
         tacletBuilder.setApplicationRestriction(
             new ApplicationRestriction(ApplicationRestriction.SAME_UPDATE_LEVEL));
         tacletBuilder.addTacletGoalTemplate(
-            new RewriteTacletGoalTemplate(addedSeq, ImmutableSLList.nil(), replacewith));
+            new RewriteTacletGoalTemplate(addedSeq, ImmutableList.nil(), replacewith));
         tacletBuilder.setName(MiscTools.toValidTacletName(name));
         tacletBuilder.addRuleSet(new RuleSet(new Name("query_axiom")));
         // Originally used to be "simplify"

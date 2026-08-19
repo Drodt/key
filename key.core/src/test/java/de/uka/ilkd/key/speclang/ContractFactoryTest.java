@@ -21,7 +21,6 @@ import de.uka.ilkd.key.speclang.translation.SLTranslationException;
 import de.uka.ilkd.key.util.HelperClassForTests;
 
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -91,7 +90,7 @@ public class ContractFactoryTest {
                 @  signals_only RuntimeException;
                 @*/""";
         JTerm woLabels = calculateCombinedModifiableWOLabels(contract);
-        assertEquals("empty", woLabels.toString());
+        assertEquals("empty<Pair<java.lang.Object,Field>>", woLabels.toString());
     }
 
     /**
@@ -118,7 +117,7 @@ public class ContractFactoryTest {
                 @  signals_only RuntimeException;
                 @*/""";
         JTerm woLabels = calculateCombinedModifiableWOLabels(contract);
-        assertEquals("empty<<impl>>", woLabels.toString());
+        assertEquals("empty<Pair<java.lang.Object,Field>><<impl>>", woLabels.toString());
     }
 
     /**
@@ -145,9 +144,10 @@ public class ContractFactoryTest {
                 @  signals_only RuntimeException;
                 @*/""";
         JTerm woLabels = calculateCombinedModifiableWOLabels(contract);
-        assertEquals("intersect(if-then-else(equals(a,Z(5(#))),empty,allLocs),"
-            + "if-then-else(not(equals(a,Z(5(#)))),singleton(self,testPackage.TestClass::#l),"
-            + "allLocs))",
+        assertEquals(
+            "intersect<Pair<java.lang.Object,Field>>(if-then-else(equals(a,Z(5(#))),empty<Pair<java.lang.Object,Field>>,allLocs),"
+                + "if-then-else(not(equals(a,Z(5(#)))),singleton<Pair<java.lang.Object,Field>>(pair<java.lang.Object,Field>(self,testPackage.TestClass::#l)),"
+                + "allLocs))",
             woLabels.toString());
     }
 
@@ -167,7 +167,7 @@ public class ContractFactoryTest {
         JMLSpecFactory jsf = new JMLSpecFactory(services);
         ImmutableList<TextualJMLConstruct> constructs = preParser.parseClassLevel(contractStr);
 
-        ImmutableList<KeYJavaType> signature = ImmutableSLList.nil();
+        ImmutableList<KeYJavaType> signature = ImmutableList.nil();
         signature = signature.append(javaInfo.getKeYJavaType(PrimitiveType.JAVA_INT));
         IProgramMethod pm = javaInfo.getProgramMethod(testClassType, "m", signature, testClassType);
 

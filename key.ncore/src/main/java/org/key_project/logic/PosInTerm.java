@@ -11,10 +11,16 @@ import org.jspecify.annotations.Nullable;
 public class PosInTerm {
     private static final PosInTerm TOP_LEVEL = new PosInTerm();
 
-    // to save memory, we use 16bit integers (unsigned) instead of 32bit
+    // to save memory, the path entries use 16bit integers (unsigned) instead of 32bit
     private final char[] positions;
     private final char size;
-    private volatile char hash = (char) -1;
+    /**
+     * Cached hash, full 32 bit wide. A 16-bit hash (as the path entries use) has only 65536
+     * values, far fewer than the positions occurring in one large formula, so position-keyed
+     * hash maps degenerated into collision chains (treeified buckets, equals-heavy lookups).
+     * The wider field costs no memory: the object's 8-byte alignment padding absorbs it.
+     */
+    private volatile int hash = -1;
     private volatile boolean copy;
 
     public PosInTerm(int[] path) {
@@ -82,6 +88,13 @@ public class PosInTerm {
                 : new PosInTerm(positions, (char) positions.length, true);
     }
 
+    public PosInTerm prepend(char index) {
+        var newPositions = new char[size + 1];
+        System.arraycopy(positions, 0, newPositions, 1, size);
+        newPositions[0] = index;
+        return new PosInTerm(newPositions, (char) (size + 1), false);
+    }
+
     /// returns the instance representing the top level position
     ///
     /// @return the top level position
@@ -128,6 +141,25 @@ public class PosInTerm {
             return this;
         }
         return new PosInTerm(positions, (char) n, true);
+    }
+
+
+    /// returns the position of the suffix of length <code>n</code>
+    /// @param n the length of the suffix
+    /// @return the suffix of this position of length <code>n</code>
+    /// @throws IndexOutOfBoundsException if <code>n</code> is greater than the depth of this
+    /// position
+    public PosInTerm lastN(int n) {
+        if (n > size) {
+            throw new IndexOutOfBoundsException("Position is shorter than " + n);
+        } else if (n == 0) {
+            return getTopLevel();
+        } else if (n == size) {
+            return this;
+        }
+        final char[] newPositions = new char[n];
+        System.arraycopy(positions, size - n, newPositions, 0, n);
+        return new PosInTerm(newPositions, (char) n, false);
     }
 
     /// returns the position for the <code>i</code>-th subterm of the subterm described by this
@@ -199,12 +231,12 @@ public class PosInTerm {
     }
 
     public int hashCode() {
-        if (hash == (char) -1) {
-            char localHash = 13;
+        if (hash == -1) {
+            int localHash = 13;
             for (int i = 0; i < size; i++) {
-                localHash = (char) (13 * localHash + positions[i]);
+                localHash = 13 * localHash + positions[i];
             }
-            localHash = (localHash == (char) -1) ? 0 : localHash;
+            localHash = (localHash == -1) ? 0 : localHash;
             hash = localHash;
         }
         return hash;
@@ -237,7 +269,7 @@ public class PosInTerm {
     ///
     /// @param it the iterator
     /// @return the String with the list of integers
-    public String integerList(IntIterator it) {
+    public static String integerList(IntIterator it) {
         final StringBuilder list = new StringBuilder("[");
         while (it.hasNext()) {
             list.append(it.next());

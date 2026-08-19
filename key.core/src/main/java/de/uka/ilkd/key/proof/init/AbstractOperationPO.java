@@ -14,8 +14,9 @@ import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.ast.declaration.Modifier;
 import de.uka.ilkd.key.java.ast.declaration.ParameterDeclaration;
 import de.uka.ilkd.key.java.ast.declaration.VariableSpecification;
+import de.uka.ilkd.key.java.ast.expression.Assignment;
+import de.uka.ilkd.key.java.ast.expression.BinaryAssignment;
 import de.uka.ilkd.key.java.ast.expression.literal.NullLiteral;
-import de.uka.ilkd.key.java.ast.expression.operator.CopyAssignment;
 import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.java.ast.statement.*;
 import de.uka.ilkd.key.java.ast.statement.Try;
@@ -36,11 +37,12 @@ import org.key_project.logic.Name;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import com.github.javaparser.ast.key.KeyTransactionStatement;
 import org.jspecify.annotations.Nullable;
+
+import static de.uka.ilkd.key.java.ast.expression.BinaryAssignment.BinaryAssignmentKind.COPY;
 
 /**
  * <p>
@@ -779,7 +781,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
             JTerm exceptionVar, String name, Services services) {
         // Create parameters for predicate
         // SETAccumulate(HeapSort, MethodParameter1Sort, ... MethodParameterNSort)
-        ImmutableList<JTerm> arguments = ImmutableSLList.nil(); // tb.var(paramVars);
+        ImmutableList<JTerm> arguments = ImmutableList.nil(); // tb.var(paramVars);
         // Method parameters
         for (LocationVariable formalParam : formalParamVars) {
             arguments = arguments.prepend(tb.var(formalParam));
@@ -906,11 +908,11 @@ public abstract class AbstractOperationPO extends AbstractPO {
             sb2 = tryBlock;
         } else {
             // create try statement
-            final CopyAssignment nullStat = new CopyAssignment(exceptionVar, NullLiteral.NULL);
+            final Assignment nullStat = new BinaryAssignment(COPY, exceptionVar, NullLiteral.NULL);
             final VariableSpecification eSpec = new VariableSpecification(eVar);
             final ParameterDeclaration excDecl =
                 new ParameterDeclaration(new Modifier[0], excTypeRef, eSpec, false);
-            final CopyAssignment assignStat = new CopyAssignment(exceptionVar, eVar);
+            final Assignment assignStat = new BinaryAssignment(COPY, exceptionVar, eVar);
             final Catch catchStat =
                 new Catch(excDecl, catchBlock == null ? new StatementBlock(assignStat)
                         : new StatementBlock(assignStat, catchBlock));
@@ -1005,7 +1007,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
     private ImmutableList<LocationVariable> createFormalParamVars(
             final ImmutableList<LocationVariable> paramVars, final Services proofServices) {
         // create arguments from formal parameters for method call
-        ImmutableList<LocationVariable> formalParamVars = ImmutableSLList.nil();
+        ImmutableList<LocationVariable> formalParamVars = ImmutableList.nil();
         for (final LocationVariable paramVar : paramVars) {
             if (isCopyOfMethodArgumentsUsed()) {
                 ProgramElementName pen = new ProgramElementName("_" + paramVar.name());
@@ -1023,7 +1025,7 @@ public abstract class AbstractOperationPO extends AbstractPO {
     private ImmutableList<FunctionalOperationContract> collectLookupContracts(
             final IProgramMethod pm, final Services proofServices) {
         ImmutableList<FunctionalOperationContract> lookupContracts =
-            ImmutableSLList.nil();
+            ImmutableList.nil();
         ImmutableSet<FunctionalOperationContract> cs = proofServices.getSpecificationRepository()
                 .getOperationContracts(getCalleeKeYJavaType(), pm);
         for (KeYJavaType superType : proofServices.getJavaInfo()
