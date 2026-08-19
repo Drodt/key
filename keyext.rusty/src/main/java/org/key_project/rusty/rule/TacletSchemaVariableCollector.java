@@ -21,7 +21,6 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -32,14 +31,14 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
     private SVInstantiations instantiations = SVInstantiations.EMPTY_SVINSTANTIATIONS;
 
     public TacletSchemaVariableCollector() {
-        varList = ImmutableSLList.nil();
+        varList = ImmutableList.nil();
     }
 
 
     /// @param svInsts the SVInstantiations that have been already found (needed by unwind loop
     /// constructs to determine which labels are needed)
     public TacletSchemaVariableCollector(SVInstantiations svInsts) {
-        varList = ImmutableSLList.nil();
+        varList = ImmutableList.nil();
         instantiations = svInsts;
     }
 

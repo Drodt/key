@@ -4,6 +4,8 @@
 package org.key_project.rusty.logic;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 import org.key_project.logic.Name;
@@ -28,7 +30,6 @@ import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.strategy.quantifierHeuristics.Metavariable;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 public class TermBuilder {
     private final TermFactory tf;
@@ -68,8 +69,9 @@ public class TermBuilder {
         if (decl == null) {
             return term;
         }
-        ImmutableList<GenericArgument> args = ImmutableSLList.singleton(new SortArg(sort));
-        ParametricFunctionInstance castFn = ParametricFunctionInstance.get(decl, args);
+        List<GenericArgument> args = List.of(new SortArg(sort));
+        ParametricFunctionInstance castFn =
+            ParametricFunctionInstance.get(decl, ImmutableList.fromList(args));
         return tf.createTerm(castFn, term);
     }
 
@@ -98,7 +100,7 @@ public class TermBuilder {
     }
 
     public ImmutableList<Term> var(ProgramVariable... vs) {
-        ImmutableList<Term> result = ImmutableSLList.nil();
+        ImmutableList<Term> result = ImmutableList.nil();
         for (ProgramVariable v : vs) {
             result = result.append(var(v));
         }
@@ -106,7 +108,7 @@ public class TermBuilder {
     }
 
     public ImmutableList<Term> var(Iterable<? extends ProgramVariable> vs) {
-        ImmutableList<Term> result = ImmutableSLList.nil();
+        ImmutableList<Term> result = ImmutableList.nil();
         for (ProgramVariable v : vs) {
             result = result.append(var(v));
         }
@@ -354,7 +356,7 @@ public class TermBuilder {
     }
 
     public Term parallel(Iterable<Term> lhss, Iterable<Term> values) {
-        ImmutableList<Term> updates = ImmutableSLList.nil();
+        ImmutableList<Term> updates = ImmutableList.nil();
         Iterator<Term> lhssIt = lhss.iterator();
         Iterator<Term> rhssIt = values.iterator();
         while (lhssIt.hasNext()) {
@@ -379,7 +381,7 @@ public class TermBuilder {
     }
 
     public ImmutableList<Term> apply(Term update, ImmutableList<Term> targets) {
-        ImmutableList<Term> result = ImmutableSLList.nil();
+        ImmutableList<Term> result = ImmutableList.nil();
         for (Term target : targets) {
             result = result.append(apply(update, target));
         }
@@ -410,7 +412,7 @@ public class TermBuilder {
         if (updates.length == 0) {
             return target;
         } else {
-            ImmutableList<Term> updateList = ImmutableSLList.<Term>nil().append(updates).tail();
+            ImmutableList<Term> updateList = ImmutableList.fromArray(updates).tail();
             return apply(updates[0], applySequential(updateList, target));
         }
     }
@@ -655,7 +657,7 @@ public class TermBuilder {
 
     /// Creates program variables for the parameters. Take care to register them in the namespaces!
     public ImmutableList<ProgramVariable> paramVars(ProgramFunction fn, boolean makeNamesUnique) {
-        ImmutableList<ProgramVariable> result = ImmutableSLList.nil();
+        ImmutableList<ProgramVariable> result = ImmutableList.nil();
         for (int i = fn.getNumParams() - 1; i >= 0; i--) {
             final KeYRustyType paramTy = fn.getParamType(i);
             var pat = ((FunctionParamPattern) fn.getFunction().getParam(i)).pattern();
@@ -708,16 +710,16 @@ public class TermBuilder {
         if (terms.length == 0) {
             return func(services.getNamespaces().functions().lookup("unit"));
         }
-        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
-        for (int i = terms.length - 1; i >= 0; i--) {
-            args = args.prepend(new SortArg(terms[i].sort()));
+        List<GenericArgument> args = new LinkedList<>();
+        for (Term term : terms) {
+            args.add(new SortArg(term.sort()));
         }
         // TODO: add ldt for tuples
         var pfd = services.getNamespaces().parametricFunctions().lookup("tpl" + terms.length);
         if (pfd == null) {
             throw new UnsupportedOperationException("Unsupported tuple length: " + terms.length);
         }
-        return func(ParametricFunctionInstance.get(pfd, args), terms);
+        return func(ParametricFunctionInstance.get(pfd, ImmutableList.fromList(args)), terms);
     }
 
     public Term array(Term initialArray, Term[] terms) {

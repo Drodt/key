@@ -21,7 +21,6 @@ import org.key_project.rusty.rule.UseOperationContractRule;
 import org.key_project.rusty.strategy.ModularRustyDLStrategyFactory;
 import org.key_project.rusty.strategy.StrategyFactory;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -66,7 +65,7 @@ public class RustProfile implements Profile {
     }
 
     protected ImmutableList<BuiltInRule> initBuiltInRules() {
-        return ImmutableSLList.<BuiltInRule>nil().prepend(UseOperationContractRule.INSTANCE);
+        return ImmutableList.singleton(UseOperationContractRule.INSTANCE);
     }
 
     @Override

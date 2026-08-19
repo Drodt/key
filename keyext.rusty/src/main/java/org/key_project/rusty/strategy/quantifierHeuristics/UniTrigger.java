@@ -8,7 +8,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
-import org.key_project.util.LRUCache;
+import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
@@ -22,8 +22,8 @@ class UniTrigger implements Trigger {
     private final boolean onlyUnify;
     private final boolean isElementOfMultitrigger;
 
-    private final LRUCache<Term, ImmutableSet<Substitution>> matchResults =
-        new LRUCache<>(1000);
+    private final ConcurrentLruCache<Term, ImmutableSet<Substitution>> matchResults =
+        new ConcurrentLruCache<>(1000);
 
     UniTrigger(Term trigger, ImmutableSet<LogicVariable> uqvs, boolean isUnify,
             boolean isElementOfMultitrigger, TriggersSet triggerSetThisBelongsTo) {
@@ -123,8 +123,8 @@ class UniTrigger implements Trigger {
     private static boolean containsLoop(
             ImmutableMap<@NonNull LogicVariable, Term> varMap,
             LogicVariable var) {
-        ImmutableList<QuantifiableVariable> body = ImmutableSLList.nil();
-        ImmutableList<Term> fringe = ImmutableSLList.nil();
+        ImmutableList<QuantifiableVariable> body = ImmutableList.nil();
+        ImmutableList<Term> fringe = ImmutableList.nil();
         Term checkForCycle = varMap.get(var);
 
         if (checkForCycle.op() == var) {

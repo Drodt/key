@@ -13,7 +13,7 @@ import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.op.sv.SkolemTermSV;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.TacletApp;
-import org.key_project.util.LRUCache;
+import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -33,7 +33,7 @@ public abstract class AbstractMonomialSmallerThanFeature extends SmallerThanFeat
             return -1;
         }
 
-        final LRUCache<@NonNull Operator, @NonNull Integer> introductionTimeCache =
+        final ConcurrentLruCache<@NonNull Operator, @NonNull Integer> introductionTimeCache =
             goal.proof().getServices().getCaches().getIntroductionTimeCache();
         Integer res;
 

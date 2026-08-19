@@ -24,7 +24,6 @@ import org.key_project.rusty.proof.ProgVarReplacer;
 import org.key_project.rusty.rule.inst.GenericSortCondition;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -132,7 +131,7 @@ public abstract class TacletExecutor extends
     protected void applyAddProgVars(ImmutableSet<org.key_project.logic.op.sv.SchemaVariable> pvs,
             SequentChangeInfo currentSequent, Goal goal, PosInOccurrence posOfFind,
             Services services, MatchConditions matchCond) {
-        ImmutableList<RenamingTable> renamings = ImmutableSLList.nil();
+        ImmutableList<RenamingTable> renamings = ImmutableList.nil();
         for (final SchemaVariable sv : pvs) {
             final var instObj = matchCond.getInstantiations().getInstantiation(sv);
             final var inst = instObj instanceof BindingPattern bp ? bp.pv()

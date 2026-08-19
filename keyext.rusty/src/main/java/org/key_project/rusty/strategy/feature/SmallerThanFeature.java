@@ -9,7 +9,6 @@ import org.key_project.rusty.logic.LexPathOrdering;
 import org.key_project.rusty.logic.TermOrdering;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Abstract superclass for features comparing terms (in particular polynomials or monomials) using
 /// the term ordering
@@ -44,7 +43,7 @@ public abstract class SmallerThanFeature extends BinaryTacletAppFeature {
     }
 
     protected abstract static class Collector {
-        private ImmutableList<Term> terms = ImmutableSLList.nil();
+        private ImmutableList<Term> terms = ImmutableList.nil();
 
         protected void addTerm(Term mon) {
             terms = terms.prepend(mon);

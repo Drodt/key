@@ -22,7 +22,6 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
 import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Try to rewrite a monomial (term) <code>source</code> so that it becomes a multiple of another
 /// monomial <code>target</code>, using the integer equations of the antecedent. The output of the
@@ -66,14 +65,14 @@ public class MultiplesModEquationsGenerator implements TermGenerator<Goal> {
         final List<CofactorPolynomial> cofactorPolys = extractPolys(goal, services);
 
         if (cofactorPolys.isEmpty()) {
-            return ImmutableSLList.<Term>nil().iterator();
+            return ImmutableList.<Term>nil().iterator();
         }
 
         return computeMultiples(sourceM, targetM, cofactorPolys, services).iterator();
     }
 
     private Iterator<Term> toIterator(Term quotient) {
-        return ImmutableSLList.<Term>nil().prepend(quotient).iterator();
+        return ImmutableList.<Term>nil().prepend(quotient).iterator();
     }
 
     /// Compute multiples of <code>targetM</code> that are congruent to <code>sourceM</code> modulo
@@ -83,7 +82,7 @@ public class MultiplesModEquationsGenerator implements TermGenerator<Goal> {
     /// This method will change the object <code>cofactorPolys</code>.
     private ImmutableList<Term> computeMultiples(Monomial sourceM, Monomial targetM,
             List<CofactorPolynomial> cofactorPolys, Services services) {
-        ImmutableList<Term> res = ImmutableSLList.nil();
+        ImmutableList<Term> res = ImmutableList.nil();
 
         final List<CofactorItem> cofactorMonos = new ArrayList<>();
         cofactorMonos.add(new CofactorMonomial(targetM, Polynomial.ONE));

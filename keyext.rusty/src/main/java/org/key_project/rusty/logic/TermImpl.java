@@ -12,7 +12,12 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.op.LogicVariable;
+import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.op.RModality;
+import org.key_project.rusty.logic.sort.GenericArgument;
+import org.key_project.rusty.logic.sort.ParametricSortInstance;
+import org.key_project.rusty.logic.sort.SortArg;
+import org.key_project.rusty.logic.sort.TermArg;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableArray;
@@ -48,6 +53,12 @@ public class TermImpl implements Term {
 
     /// Cached [#hashCode()] value.
     private int hashcode = -1;
+
+    /// Cached [#nameHash()] value. `-1` = not yet computed.
+    private int nameHash = -1;
+
+    /// Cached [#labelAgnosticHash()] value. `-1` = not yet computed.
+    private int labelAgnosticHash = -1;
 
     private int maxDebruijnIndex = -1;
 
@@ -300,19 +311,134 @@ public class TermImpl implements Term {
     }
 
     @Override
+    public int nameHash() {
+        if (nameHash == -1) {
+            computeHashes();
+        }
+        return nameHash;
+    }
+
+    @Override
+    public int labelAgnosticHash() {
+        if (labelAgnosticHash == -1) {
+            computeHashes();
+        }
+        return labelAgnosticHash;
+    }
+
+    /**
+     * Performs the actual computation of the hashcode and can be overwritten by subclasses if
+     * necessary
+     */
+    protected int computeHashCode() {
+        int hashcode = 5;
+        hashcode = hashcode * 17 + op().hashCode();
+        hashcode = hashcode * 17 + subs().hashCode();
+        hashcode = hashcode * 17 + boundVars().hashCode();
+        if (op instanceof RModality rm)
+            hashcode = hashcode * 17 + rm.programBlock().hashCode();
+
+        if (hashcode == -1) {
+            hashcode = 0;
+        }
+        return hashcode;
+    }
+
+    /**
+     * Computes the three hashcode caches of {@link #hashCode()}, {@link #nameHash()} and
+     * {@link #labelAgnosticHash()}.
+     */
+    private void computeHashes() {
+        // Iterate the subterm array, not arity(): the term factory probes hashCode() before it
+        // validates that the operator's arity matches the subterm count, so the two can differ.
+        final int n = subs.size();
+        for (int i = 0; i < n; i++) {
+            if (subs.get(i) instanceof TermImpl t
+                    && (t.hashcode == -1 || t.nameHash == -1 || t.labelAgnosticHash == -1)) {
+                t.computeHashes();
+            }
+        }
+        if (hashcode == -1) {
+            this.hashcode = computeHashCode();
+        }
+        if (nameHash == -1) {
+            int h = 5;
+            h = h * 31 + computeOperatorNameHash(op);
+            h = h * 31 + arity();
+            for (int i = 0; i < n; i++) {
+                h = h * 31 + subs.get(i).nameHash();
+            }
+            if (h == -1) {
+                h = 0;
+            }
+            nameHash = h;
+        }
+        if (labelAgnosticHash == -1) {
+            // like the base computeHashCode() (op, bound vars, program, subterms) but recursing
+            // through labelAgnosticHash and never adding this term's labels, so it is a full,
+            // program-aware structural hash that ignores only term labels. It is computed here
+            // instead of through computeHashCode() because the LabeledTermImpl override of that
+            // method folds the labels in, which would make this hash label-sensitive.
+            // This hash can disappear and be replaced with the normal hashcode once PR 3884 is
+            // merged and the normal hashcode becomes label agnostic
+            int h = 5;
+            h = h * 17 + op.hashCode();
+            h = h * 17 + boundVars().hashCode();
+            if (op instanceof RModality rm) {
+                h = h * 17 + rm.programBlock().hashCode();
+            }
+            for (int i = 0; i < n; i++) {
+                h = h * 17 + subs.get(i).labelAgnosticHash();
+            }
+            if (h == -1) {
+                h = 0;
+            }
+            labelAgnosticHash = h;
+        }
+    }
+
+    private int computeOperatorNameHash(Operator op) {
+        if (op instanceof ParametricFunctionInstance pfi) {
+            // using just pfi's name would introduce a dependency on its
+            // concrete syntax impacting robustness
+            int h = 7;
+            h = h * 31 + pfi.getBase().name().toString().hashCode();
+            for (final GenericArgument arg : pfi.getArgs()) {
+                if (arg instanceof SortArg(Sort sort1))
+                    h = h * 31 + computeSortNameHash(sort1);
+                else if (arg instanceof TermArg(Term term))
+                    h = h * 31 + term.nameHash();
+            }
+            return h;
+        } else {
+            return op.name().toString().hashCode();
+        }
+    }
+
+    private int computeSortNameHash(Sort sort) {
+        if (sort instanceof ParametricSortInstance psi) {
+            // using just psi's name would introduce a dependency on its
+            // concrete syntax impacting robustness
+            int h = 11;
+            h = h * 31 + psi.getBase().name().toString().hashCode();
+            for (final GenericArgument arg : psi.getArgs()) {
+                if (arg instanceof SortArg(Sort sort1))
+                    h = h * 31 + computeSortNameHash(sort1);
+                else if (arg instanceof TermArg(Term term))
+                    h = h * 31 + term.nameHash();
+            }
+            return h;
+        } else {
+            return sort.name().toString().hashCode();
+        }
+    }
+
+    @Override
     public final int hashCode() {
-        if (hashcode != -1) {
-            return hashcode;
+        if (hashcode == -1) {
+            computeHashes();
         }
-        int hash = 5;
-        hash = hash * 17 + op().hashCode();
-        hash = hash * 17 + subs().hashCode();
-        hash = hash * 17 + boundVars().hashCode();
-        if (hash == -1) {
-            hash = 0;
-        }
-        this.hashcode = hash;
-        return hash;
+        return hashcode;
     }
 
     // TODO(DD): Rework this into an interface

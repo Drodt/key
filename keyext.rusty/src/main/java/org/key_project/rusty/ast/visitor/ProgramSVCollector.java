@@ -7,11 +7,10 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// This visitor is used to collect all appearing SchemaVariables in a java program
 public class ProgramSVCollector extends RustyASTWalker {
-    private ImmutableList<SchemaVariable> result = ImmutableSLList.nil();
+    private ImmutableList<SchemaVariable> result = ImmutableList.nil();
 
     /// the instantiations needed for unwind loop constructs
     private SVInstantiations instantiations = SVInstantiations.EMPTY_SVINSTANTIATIONS;

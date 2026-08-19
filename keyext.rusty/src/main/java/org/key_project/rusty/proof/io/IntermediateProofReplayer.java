@@ -303,7 +303,7 @@ public class IntermediateProofReplayer {
         ourApp = constructInsts(ourApp, currGoal, currInterm.getInsts(), services);
 
         ImmutableList<AssumesFormulaInstantiation> assumesFormulaList =
-            ImmutableSLList.nil();
+            ImmutableList.nil();
         for (String assumesFormulaStr : currInterm.getAssumesSeqFormulaList()) {
             assumesFormulaList =
                 assumesFormulaList
@@ -388,7 +388,7 @@ public class IntermediateProofReplayer {
 
         // Load ifInsts, if applicable
         if (currInterm.getBuiltInIfInsts() != null) {
-            builtinIfInsts = ImmutableSLList.nil();
+            builtinIfInsts = ImmutableList.nil();
             for (final Pair<Integer, PosInTerm> ifInstP : currInterm.getBuiltInIfInsts()) {
                 final int currIfInstFormula = ifInstP.first;
                 final PosInTerm currIfInstPosInTerm = ifInstP.second;
@@ -609,7 +609,7 @@ public class IntermediateProofReplayer {
             final RustyProgramElement pe = app.getProgramElement(value, psv, services);
             result = app.addCheckedInstantiation(sv, pe, services, true);
         } else if (sv instanceof SkolemTermSV skolemSv) {
-            result = app.createSkolemConstant(value, skolemSv, true, services);
+            result = app.createSkolemConstant(value, skolemSv, true, targetGoal);
         } else if (sv instanceof ModalOperatorSV msv) {
             result = app.addInstantiation(
                 app.instantiations().add(msv, RModality.RustyModalityKind.getKind(value), services),

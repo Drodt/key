@@ -17,7 +17,7 @@ import org.key_project.rusty.parser.ParsingFacade;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.settings.Configuration;
 import org.key_project.rusty.util.parsing.BuildingException;
-import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.nullness.qual.KeyFor;
 import org.jspecify.annotations.Nullable;
@@ -50,16 +50,6 @@ public class ProblemFinder extends ExpressionBuilder {
     /// @throws BuildingException if the
     @Override
     public @Nullable Term visitProblem(KeYRustyParser.ProblemContext ctx) {
-        if (ctx.CHOOSECONTRACT() != null) {
-            if (ctx.chooseContract != null) {
-                // TODO
-                chooseContract = ""; // ParsingFacade.getValueDocumentation(ctx.chooseContract);
-            }
-            // .replace("\\\\:", ":");
-            else {
-                chooseContract = "";
-            }
-        }
         if (ctx.PROOFOBLIGATION() != null) {
             var obl = ctx.proofObligation;
             if (obl instanceof KeYRustyParser.CstringContext stringContext) {
@@ -99,7 +89,7 @@ public class ProblemFinder extends ExpressionBuilder {
             return s;
         if (obj instanceof Term t)
             return RustySequentKit
-                    .createSuccSequent(ImmutableSLList.singleton(new SequentFormula(t)));
+                    .createSuccSequent(ImmutableList.singleton(new SequentFormula(t)));
         return null;
     }
 

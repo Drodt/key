@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TieBreakComparatorPropertyTest {
 
     private static int cmp(Term a, Term b) {
-        return RuleAppContainer.compareByName(a, b);
+        return TacletAppContainer.compareByName(a, b);
     }
 
     private static JTerm t(TermFactory tf, Function f, JTerm... subs) {
@@ -157,8 +157,8 @@ public class TieBreakComparatorPropertyTest {
             for (int j = 0; j < terms.size(); j++) {
                 final Term a = terms.get(i);
                 final Term b = copies.get(j);
-                final int full = RuleAppContainer.compareFormulasByName(a, b);
-                final int back = RuleAppContainer.compareFormulasByName(b, a);
+                final int full = TacletAppContainer.compareFormulasByName(a, b);
+                final int back = TacletAppContainer.compareFormulasByName(b, a);
                 assertEquals(Integer.signum(full), -Integer.signum(back),
                     "antisymmetry violated for [" + a + "] vs [" + b + "]");
                 if (full == 0) {
@@ -195,7 +195,7 @@ public class TieBreakComparatorPropertyTest {
         assertEquals(plain.labelAgnosticHash(), labeled.labelAgnosticHash(),
             "labelAgnosticHash must ignore labels");
         assertEquals(0, cmp(plain, labeled), "the walk must ignore labels");
-        assertEquals(0, RuleAppContainer.compareFormulasByName(plain, labeled),
+        assertEquals(0, TacletAppContainer.compareFormulasByName(plain, labeled),
             "the production comparator must ignore labels");
     }
 

@@ -61,8 +61,8 @@ public class SVInstantiations
 
     /// creates a new SVInstantions object with an empty map
     private SVInstantiations() {
-        genericSortConditions = ImmutableSLList.nil();
-        updateContext = ImmutableSLList.nil();
+        genericSortConditions = ImmutableList.nil();
+        updateContext = ImmutableList.nil();
         map = DefaultImmutableMap.nilMap();
         interesting = DefaultImmutableMap.nilMap();
     }
@@ -309,7 +309,7 @@ public class SVInstantiations
             // avoid unnecessary creation of SVInstantiations
             return this;
         }
-        return new SVInstantiations(map, interesting(), ImmutableSLList.nil(),
+        return new SVInstantiations(map, interesting(), ImmutableList.nil(),
             getGenericSortInstantiations(), getGenericSortConditions());
     }
 
@@ -374,7 +374,7 @@ public class SVInstantiations
     }
 
     private ImmutableList<Term> getUpdates(SVInstantiations other) {
-        ImmutableList<Term> updates = ImmutableSLList.nil();
+        ImmutableList<Term> updates = ImmutableList.nil();
 
         if (other.getUpdateContext().isEmpty()) {
             updates = getUpdateContext();

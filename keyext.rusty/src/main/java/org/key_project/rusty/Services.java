@@ -4,9 +4,7 @@
 package org.key_project.rusty;
 
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Objects;
+import java.util.*;
 
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
@@ -31,7 +29,6 @@ import org.key_project.rusty.proof.*;
 import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.SpecificationRepository;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -232,15 +229,15 @@ public class Services implements LogicServices, ProofServices {
             for (int i = subs.length - 1; i >= 0; i--) {
                 subs[i] = convertToLogicElement(c.params().get(i), services);
             }
-            ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+            List<GenericArgument> args = new LinkedList<>();
             if (type instanceof ForeignFnType fft) {
-                for (int i = fft.getArgs().size() - 1; i >= 0; i--) {
-                    args = args.prepend(fft.getArgs().get(i).sortArg(services));
+                for (int i = 0; i < fft.getArgs().size(); i++) {
+                    args.add(fft.getArgs().get(i).sortArg(services));
                 }
             } else {
                 throw new UnsupportedOperationException("TODO: generics for non-foreign functions");
             }
-            var fn = ParametricFunctionInstance.get(pfn, args);
+            var fn = ParametricFunctionInstance.get(pfn, ImmutableList.fromList(args));
             return tb.func(fn, subs);
         }
         if (pe instanceof PathExpr p && p.path().res() instanceof ResDef(Def def)

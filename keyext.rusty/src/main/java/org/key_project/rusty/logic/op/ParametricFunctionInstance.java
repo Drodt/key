@@ -14,7 +14,6 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -45,7 +44,7 @@ public class ParametricFunctionInstance extends RFunction {
             ImmutableList<GenericArgument> args, ImmutableArray<Sort> argSorts, Sort sort) {
         super(makeName(base, args), sort, argSorts, base.getWhereToBind(), base.isUnique(),
             base.isRigid(),
-            base.isSkolemConstant());
+            base.isSkolemConstant() ? FunctionKind.SKOLEM : FunctionKind.ORDINARY, UNRECORDED);
         this.base = base;
         this.args = args;
     }
@@ -97,7 +96,7 @@ public class ParametricFunctionInstance extends RFunction {
             return arg == null ? gs : ((SortArg) arg).sort();
         } else if (sort instanceof ParametricSortInstance psi) {
             var base = psi.getBase();
-            ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+            ImmutableList<GenericArgument> args = ImmutableList.nil();
             for (int i = psi.getArgs().size() - 1; i >= 0; i--) {
                 var psiArg = psi.getArgs().get(i);
                 if (psiArg instanceof SortArg(Sort s)) {

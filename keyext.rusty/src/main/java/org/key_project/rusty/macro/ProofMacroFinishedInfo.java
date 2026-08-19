@@ -14,7 +14,6 @@ import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.Statistics;
 import org.key_project.rusty.prover.impl.DefaultTaskFinishedInfo;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -35,7 +34,7 @@ public class ProofMacroFinishedInfo extends DefaultTaskFinishedInfo {
 
     ProofMacroFinishedInfo(ProofMacro macro, Goal goal, Proof proof, long time, int appliedRules,
             int closedGoals) {
-        this(macro, ImmutableSLList.<Goal>nil().prepend(goal), proof, time, appliedRules,
+        this(macro, ImmutableList.singleton(goal), proof, time, appliedRules,
             closedGoals);
     }
 
@@ -112,13 +111,13 @@ public class ProofMacroFinishedInfo extends DefaultTaskFinishedInfo {
     public ImmutableList<Goal> getGoals() {
         final Object result = getResult();
         if (result == null) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         } else {
             return (ImmutableList<Goal>) result;
         }
     }
 
     public static ProofMacroFinishedInfo getDefaultInfo(ProofMacro macro, Proof proof) {
-        return new ProofMacroFinishedInfo(macro, ImmutableSLList.nil(), proof);
+        return new ProofMacroFinishedInfo(macro, ImmutableList.nil(), proof);
     }
 }

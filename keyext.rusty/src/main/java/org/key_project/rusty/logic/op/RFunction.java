@@ -16,11 +16,13 @@ import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.Nullable;
 
+import static org.key_project.logic.op.Function.FunctionKind.ORDINARY;
+
 public class RFunction extends Function {
     public RFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
             @Nullable ImmutableArray<Boolean> whereToBind, boolean unique, boolean isRigid,
-            boolean isSkolemConstant) {
-        super(name, argSorts, sort, whereToBind, isRigid, unique, isSkolemConstant);
+            FunctionKind kind, int introductionTime) {
+        super(name, argSorts, sort, whereToBind, isRigid, unique, kind, introductionTime);
 
         assert sort != RustyDLTheory.UPDATE;
         assert !(unique && sort == RustyDLTheory.FORMULA);
@@ -28,13 +30,14 @@ public class RFunction extends Function {
 
     public RFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
             @Nullable ImmutableArray<Boolean> whereToBind, boolean unique) {
-        this(name, sort, argSorts, whereToBind, unique, true, false);
+        this(name, sort, argSorts, whereToBind, unique, true, ORDINARY, UNRECORDED);
     }
 
     public RFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
             @Nullable ImmutableArray<Boolean> whereToBind, boolean unique,
-            boolean isSkolemConstant) {
-        this(name, sort, argSorts, whereToBind, unique, true, isSkolemConstant);
+            FunctionKind kind,
+            int introductionTime) {
+        this(name, sort, argSorts, whereToBind, unique, true, kind, introductionTime);
     }
 
     public RFunction(Name name, Sort sort, Sort[] argSorts, Boolean @Nullable [] whereToBind,
@@ -45,14 +48,15 @@ public class RFunction extends Function {
 
     public RFunction(Name name, Sort sort, Sort[] argSorts, Boolean @Nullable [] whereToBind,
             boolean unique,
-            boolean isSkolemConstant) {
+            FunctionKind kind,
+            int introductionTime) {
         this(name, sort, new ImmutableArray<>(argSorts),
             whereToBind == null ? null : new ImmutableArray<>(whereToBind), unique,
-            isSkolemConstant);
+            kind, introductionTime);
     }
 
     RFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts, boolean isRigid) {
-        this(name, sort, argSorts, null, false, isRigid, false);
+        this(name, sort, argSorts, null, false, isRigid, ORDINARY, UNRECORDED);
     }
 
     public RFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts) {
@@ -63,16 +67,18 @@ public class RFunction extends Function {
         this(name, sort, argSorts, null, false);
     }
 
-    public RFunction(Name name, Sort sort, boolean isSkolemConstant, Sort... argSorts) {
-        this(name, sort, argSorts, null, false, isSkolemConstant);
+    public RFunction(Name name, Sort sort, FunctionKind kind,
+            int introductionTime, Sort... argSorts) {
+        this(name, sort, argSorts, null, false, kind, introductionTime);
     }
 
     public RFunction(Name name, Sort sort) {
         this(name, sort, new ImmutableArray<>(), null, false);
     }
 
-    public RFunction(Name name, Sort sort, boolean isSkolemConstant) {
-        this(name, sort, new ImmutableArray<>(), null, false, true, isSkolemConstant);
+    public RFunction(Name name, Sort sort, FunctionKind kind,
+            int introductionTime) {
+        this(name, sort, new ImmutableArray<>(), null, false, true, kind, introductionTime);
     }
 
     /// In addition to the arity checks of the base operator, validates that every argument's sort

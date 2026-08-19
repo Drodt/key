@@ -10,7 +10,6 @@ import org.key_project.rusty.logic.*;
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 public class BuiltInRuleAppIndex {
     private final BuiltInRuleIndex index;
@@ -22,7 +21,7 @@ public class BuiltInRuleAppIndex {
 
     /// returns a list of built-in rules application applicable for the given goal and position
     public ImmutableList<IBuiltInRuleApp> getBuiltInRule(Goal goal, PosInOccurrence pos) {
-        ImmutableList<IBuiltInRuleApp> result = ImmutableSLList.nil();
+        ImmutableList<IBuiltInRuleApp> result = ImmutableList.nil();
 
         ImmutableList<BuiltInRule> rules = index.rules();
         while (!rules.isEmpty()) {
@@ -79,7 +78,7 @@ public class BuiltInRuleAppIndex {
     private void scanSimplificationRule(ImmutableList<BuiltInRule> rules, Goal goal, boolean antec,
             SequentFormula cfma, NewRuleListener listener) {
         final PosInOccurrence pos = new PosInOccurrence(cfma, PosInTerm.getTopLevel(), antec);
-        ImmutableList<BuiltInRule> subrules = ImmutableSLList.nil();
+        ImmutableList<BuiltInRule> subrules = ImmutableList.nil();
         while (!rules.isEmpty()) {
             final BuiltInRule rule = rules.head();
             rules = rules.tail();

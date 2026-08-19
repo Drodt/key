@@ -112,10 +112,10 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
                 } else {
                     // at the moment instantiations with more than one
                     // missing taclet variable not supported
-                    return ImmutableSLList.<org.key_project.logic.Term>nil().iterator();
+                    return ImmutableList.<org.key_project.logic.Term>nil().iterator();
                 }
             } else {
-                return ImmutableSLList.<org.key_project.logic.Term>nil().iterator();
+                return ImmutableList.<org.key_project.logic.Term>nil().iterator();
             }
 
         } else {
@@ -201,7 +201,7 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
     private ImmutableList<Term> instantiateConditions(Services services, TacletApp app,
             final Term middle) {
         ImmutableList<Term> conditions;
-        conditions = ImmutableSLList.nil();
+        conditions = ImmutableList.nil();
         for (var singleAvoidCond : app.taclet().getTrigger().avoidConditions()) {
             conditions =
                 conditions.append(

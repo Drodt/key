@@ -8,10 +8,12 @@ import de.uka.ilkd.key.rule.BuiltInRule;
 import de.uka.ilkd.key.rule.IBuiltInRuleApp;
 
 import org.key_project.prover.indexing.FormulaTag;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
+import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 
 
@@ -36,7 +38,7 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // constructors
     // -------------------------------------------------------------------------
 
-    private BuiltInRuleAppContainer(IBuiltInRuleApp bir,
+    public BuiltInRuleAppContainer(IBuiltInRuleApp bir,
             PosInOccurrence pio, RuleAppCost cost,
             Goal goal) {
         super(bir, cost);
@@ -125,7 +127,8 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
 
 
     @Override
-    public ImmutableList<RuleAppContainer> createFurtherApps(Goal goal) {
+    public ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
+        var goal = (Goal) p_goal;
         if (!isStillApplicable(goal)) {
             return ImmutableList.nil();
         }
@@ -136,12 +139,13 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         if (container.getCost() instanceof TopRuleAppCost) {
             return ImmutableList.nil();
         }
-        return ImmutableList.<RuleAppContainer>singleton(container);
+        return ImmutableList.singleton(container);
     }
 
 
     @Override
-    public RuleApp completeRuleApp(Goal goal) {
+    public RuleApp completeRuleApp(ProofGoal<?> p_goal) {
+        var goal = (Goal) p_goal;
         if (!isStillApplicable(goal)) {
             return null;
         }

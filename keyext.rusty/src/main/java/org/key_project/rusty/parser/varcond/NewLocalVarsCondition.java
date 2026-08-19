@@ -22,7 +22,6 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// For the loop scope rule, if a local program variable that may be altered by the loop body
 /// appears
@@ -69,8 +68,8 @@ public class NewLocalVarsCondition implements VariableCondition {
 
         var vars = MiscTools.getLocalOuts(body, services);
         List<LetStatement> decls = new ArrayList<>(vars.size());
-        ImmutableList<Term> updatesBefore = ImmutableSLList.nil();
-        ImmutableList<Term> updateFrames = ImmutableSLList.nil();
+        ImmutableList<Term> updatesBefore = ImmutableList.nil();
+        ImmutableList<Term> updateFrames = ImmutableList.nil();
         var tb = services.getTermBuilder();
 
         for (var v : vars) {

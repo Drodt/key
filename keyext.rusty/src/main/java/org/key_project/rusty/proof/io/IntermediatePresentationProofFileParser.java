@@ -12,7 +12,6 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.io.intermediate.*;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.Pair;
 
 public class IntermediatePresentationProofFileParser implements IProofFileParser {
@@ -133,7 +132,7 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
             // }
             case NEW_NAMES -> {
                 final String[] newNames = str.split(",");
-                ruleInfo.currNewNames = ImmutableSLList.nil();
+                ruleInfo.currNewNames = ImmutableList.nil();
                 for (String newName : newNames) {
                     ruleInfo.currNewNames = ruleInfo.currNewNames.append(new Name(newName));
                 }
@@ -286,8 +285,8 @@ public class IntermediatePresentationProofFileParser implements IProofFileParser
     private static class TacletInformation extends RuleInformation {
         /* + Taclet Information */
         protected LinkedList<String> loadedInsts = null;
-        protected ImmutableList<String> assumesSeqFormulaList = ImmutableSLList.nil();
-        protected ImmutableList<String> ifDirectFormulaList = ImmutableSLList.nil();
+        protected ImmutableList<String> assumesSeqFormulaList = ImmutableList.nil();
+        protected ImmutableList<String> ifDirectFormulaList = ImmutableList.nil();
 
         public TacletInformation(String ruleName) {
             super(ruleName);

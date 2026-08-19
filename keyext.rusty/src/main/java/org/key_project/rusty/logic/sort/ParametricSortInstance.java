@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.sort;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
@@ -16,7 +14,6 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -134,32 +131,31 @@ public class ParametricSortInstance extends AbstractSort implements SyntaxElemen
 
     public Sort resolveSort(SchemaVariable sv, SyntaxElement instCandidate,
             SVInstantiations instMap) {
-        ImmutableList<GenericArgument> newArgs = ImmutableSLList.nil();
-        for (int i = args.size() - 1; i >= 0; i--) {
+        List<GenericArgument> newArgs = new LinkedList<>();
+        for (int i = 0; i < args.size(); i++) {
             GenericArgument arg = args.get(i);
             if (arg instanceof SortArg sa) {
                 if (sa.sort() instanceof ParametricSortInstance psi) {
-                    newArgs =
-                        newArgs.prepend(new SortArg(psi.resolveSort(sv, instCandidate, instMap)));
+                    newArgs.add(new SortArg(psi.resolveSort(sv, instCandidate, instMap)));
                 } else if (sa.sort() instanceof GenericSort gs) {
-                    newArgs = newArgs.prepend(
+                    newArgs.add(
                         new SortArg(instMap.getGenericSortInstantiations().getInstantiation(gs)));
                 } else {
-                    newArgs = newArgs.prepend(arg);
+                    newArgs.add(arg);
                 }
             } else if (arg instanceof TermArg ta) {
                 if (ta.term().op() instanceof SchemaVariable tsv) {
                     var inst =
                         tsv == sv ? (Term) instCandidate : (Term) instMap.getInstantiation(tsv);
-                    newArgs = newArgs.prepend(new TermArg(inst));
+                    newArgs.add(new TermArg(inst));
                 } else {
-                    newArgs = newArgs.prepend(arg);
+                    newArgs.add(arg);
                 }
             } else {
                 throw new RuntimeException("Unrecognized argument type: " + arg.getClass());
             }
         }
-        return get(base, newArgs);
+        return get(base, ImmutableList.fromList(newArgs));
     }
 
     @Override

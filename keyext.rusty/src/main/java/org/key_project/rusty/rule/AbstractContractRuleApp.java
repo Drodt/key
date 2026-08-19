@@ -10,7 +10,6 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.mgt.SpecificationRepository;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 public abstract class AbstractContractRuleApp extends AbstractBuiltInRuleApp {
     protected final Contract instantiation;
@@ -20,7 +19,7 @@ public abstract class AbstractContractRuleApp extends AbstractBuiltInRuleApp {
     }
 
     protected AbstractContractRuleApp(BuiltInRule rule, PosInOccurrence pio, Contract contract) {
-        this(rule, pio, ImmutableSLList.nil(), contract);
+        this(rule, pio, ImmutableList.nil(), contract);
     }
 
     protected AbstractContractRuleApp(BuiltInRule rule, PosInOccurrence pio,

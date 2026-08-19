@@ -20,7 +20,7 @@ import org.key_project.rusty.strategy.feature.AbstractBetaFeature.TermInfo;
 import org.key_project.rusty.strategy.feature.AppliedRuleAppsNameCache;
 import org.key_project.rusty.strategy.quantifierHeuristics.Metavariable;
 import org.key_project.rusty.strategy.quantifierHeuristics.TriggersSet;
-import org.key_project.util.LRUCache;
+import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
 
@@ -61,7 +61,8 @@ import org.jspecify.annotations.NonNull;
 ///
 /// @author Martin Hentschel
 public class ServiceCaches implements SessionCaches {
-    private final LRUCache<@NonNull Term, @NonNull Monomial> monomialCache = new LRUCache<>(2000);
+    private final ConcurrentLruCache<@NonNull Term, @NonNull Monomial> monomialCache =
+        new ConcurrentLruCache<>(2000);
 
     /// applied rule apps name cache
     private final AppliedRuleAppsNameCache appliedRuleAppsNameCache =
@@ -76,38 +77,40 @@ public class ServiceCaches implements SessionCaches {
 
     /// The cache used by [TermTacletAppIndexCacheSet] instances.
     private final Map<CacheKey, TermTacletAppIndex> termTacletAppIndexCache =
-        new LRUCache<>(MAX_TERM_TACLET_APP_INDEX_ENTRIES);
+        new ConcurrentLruCache<>(MAX_TERM_TACLET_APP_INDEX_ENTRIES);
 
     /// Caches used by HandleArith to cache proof results
-    private final LRUCache<@NonNull Term, @NonNull Term> provedByArithFstCache =
-        new LRUCache<>(5000);
-    private final LRUCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> provedByArithSndCache =
-        new LRUCache<>(5000);
+    private final ConcurrentLruCache<@NonNull Term, @NonNull Term> provedByArithFstCache =
+        new ConcurrentLruCache<>(5000);
+    private final ConcurrentLruCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> provedByArithSndCache =
+        new ConcurrentLruCache<>(5000);
 
-    private final LRUCache<@NonNull Term, @NonNull Polynomial> polynomialCache =
-        new LRUCache<>(2000);
-    private LRUCache<@NonNull Term, @NonNull ImmutableSet<@NonNull Metavariable>> mvCache =
-        new LRUCache<>(2000);
+    private final ConcurrentLruCache<@NonNull Term, @NonNull Polynomial> polynomialCache =
+        new ConcurrentLruCache<>(2000);
+    private ConcurrentLruCache<@NonNull Term, @NonNull ImmutableSet<@NonNull Metavariable>> mvCache =
+        new ConcurrentLruCache<>(2000);
     private final AssumesInstantiationCachePool<Node> assumesInstantiationCache =
         new AssumesInstantiationCachePool<>();
 
     // private final LRUCache<Term, Polynomial> polynomialCache = new LRUCache<>(2000);
 
-    public final LRUCache<@NonNull Term, @NonNull Monomial> getMonomialCache() {
+    public final ConcurrentLruCache<@NonNull Term, @NonNull Monomial> getMonomialCache() {
         return monomialCache;
     }
 
-    private final LRUCache<@NonNull Term, @NonNull Term> formattedTermCache = new LRUCache<>(5000);
+    private final ConcurrentLruCache<@NonNull Term, @NonNull Term> formattedTermCache =
+        new ConcurrentLruCache<>(5000);
 
-    private final LRUCache<@NonNull Term, @NonNull TermInfo> betaCandidates = new LRUCache<>(1000);
+    private final ConcurrentLruCache<@NonNull Term, @NonNull TermInfo> betaCandidates =
+        new ConcurrentLruCache<>(1000);
 
-    private final LRUCache<@NonNull Operator, @NonNull Integer> introductionTimeCache =
-        new LRUCache<>(10000);
+    private final ConcurrentLruCache<@NonNull Operator, @NonNull Integer> introductionTimeCache =
+        new ConcurrentLruCache<>(10000);
 
     /// a <code>HashMap</code> from <code>Term</code> to <code>TriggersSet</code> uses to cache all
     /// created TriggersSets
     private final Map<Term, TriggersSet> triggerSetCache =
-        new LRUCache<>(1000);
+        new ConcurrentLruCache<>(1000);
 
     @Override
     public AssumesFormulaInstantiationCache getAssumesFormulaInstantiationCache() {
@@ -118,27 +121,27 @@ public class ServiceCaches implements SessionCaches {
         return appliedRuleAppsNameCache;
     }
 
-    public LRUCache<@NonNull Term, @NonNull Term> getProvedByArithFstCache() {
+    public ConcurrentLruCache<@NonNull Term, @NonNull Term> getProvedByArithFstCache() {
         return provedByArithFstCache;
     }
 
-    public LRUCache<@NonNull Term, @NonNull Polynomial> getPolynomialCache() {
+    public ConcurrentLruCache<@NonNull Term, @NonNull Polynomial> getPolynomialCache() {
         return polynomialCache;
     }
 
-    public LRUCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> getProvedByArithSndCache() {
+    public ConcurrentLruCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> getProvedByArithSndCache() {
         return provedByArithSndCache;
     }
 
-    public LRUCache<@NonNull Term, @NonNull Term> getFormattedTermCache() {
+    public ConcurrentLruCache<@NonNull Term, @NonNull Term> getFormattedTermCache() {
         return formattedTermCache;
     }
 
-    public final LRUCache<@NonNull Term, @NonNull TermInfo> getBetaCandidates() {
+    public final ConcurrentLruCache<@NonNull Term, @NonNull TermInfo> getBetaCandidates() {
         return betaCandidates;
     }
 
-    public LRUCache<@NonNull Operator, @NonNull Integer> getIntroductionTimeCache() {
+    public ConcurrentLruCache<@NonNull Operator, @NonNull Integer> getIntroductionTimeCache() {
         return introductionTimeCache;
     }
 
@@ -146,7 +149,7 @@ public class ServiceCaches implements SessionCaches {
         return triggerSetCache;
     }
 
-    public LRUCache<@NonNull Term, @NonNull ImmutableSet<@NonNull Metavariable>> getMVCache() {
+    public ConcurrentLruCache<@NonNull Term, @NonNull ImmutableSet<@NonNull Metavariable>> getMVCache() {
         return mvCache;
     }
 

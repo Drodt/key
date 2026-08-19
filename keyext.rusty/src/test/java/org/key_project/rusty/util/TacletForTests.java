@@ -18,7 +18,7 @@ import org.key_project.rusty.proof.init.*;
 import org.key_project.rusty.proof.io.KeYFileForTests;
 import org.key_project.rusty.proof.io.RuleSourceFactory;
 import org.key_project.rusty.rule.NoPosTacletApp;
-import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -50,7 +50,7 @@ public class TacletForTests {
         // library (HACK)
         public RuleCollection getStandardRules() {
             return new RuleCollection(RuleSourceFactory.fromDefaultLocation(LDT_FILE),
-                ImmutableSLList.nil());
+                ImmutableList.nil());
         }
     };
 

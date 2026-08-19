@@ -20,7 +20,6 @@ import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Provides a basic implementation of [ProofControl].
 ///
@@ -127,7 +126,7 @@ public abstract class AbstractProofControl implements ProofControl {
             return filterTaclet(focusedGoal,
                 focusedGoal.ruleAppIndex().getFindTaclet(pos), pos);
         }
-        return ImmutableSLList.nil();
+        return ImmutableList.nil();
     }
 
     @Override
@@ -137,12 +136,12 @@ public abstract class AbstractProofControl implements ProofControl {
                 focusedGoal.ruleAppIndex().getRewriteTaclet(pos), pos);
         }
 
-        return ImmutableSLList.nil();
+        return ImmutableList.nil();
     }
 
     @Override
     public ImmutableList<BuiltInRule> getBuiltInRule(Goal focusedGoal, PosInOccurrence pos) {
-        ImmutableList<BuiltInRule> rules = ImmutableSLList.nil();
+        ImmutableList<BuiltInRule> rules = ImmutableList.nil();
 
         for (RuleApp ruleApp : focusedGoal.ruleAppIndex()
                 .getBuiltInRules(focusedGoal, pos)) {
@@ -160,7 +159,7 @@ public abstract class AbstractProofControl implements ProofControl {
             ImmutableList<NoPosTacletApp> tacletInstances,
             PosInOccurrence pos) {
         HashSet<Taclet> applicableRules = new HashSet<>();
-        ImmutableList<TacletApp> result = ImmutableSLList.nil();
+        ImmutableList<TacletApp> result = ImmutableList.nil();
         for (NoPosTacletApp app : tacletInstances) {
             if (isMinimizeInteraction()) {
                 ImmutableList<TacletApp> ifCandidates = app.findIfFormulaInstantiations(

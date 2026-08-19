@@ -7,17 +7,16 @@ import java.util.Objects;
 
 import org.key_project.logic.Name;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
 public class NameRecorder {
-    private ImmutableList<Name> pre = ImmutableSLList.nil();
+    private ImmutableList<Name> pre = ImmutableList.nil();
 
-    private ImmutableList<Name> post = ImmutableSLList.nil();
+    private ImmutableList<Name> post = ImmutableList.nil();
 
     public void setProposals(ImmutableList<Name> proposals) {
-        pre = Objects.requireNonNullElseGet(proposals, ImmutableSLList::nil);
+        pre = Objects.requireNonNullElseGet(proposals, ImmutableList::nil);
     }
 
     /// Get the name proposals added using [#addProposal(Name)].

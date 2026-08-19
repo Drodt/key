@@ -32,13 +32,6 @@ public class FindProblemInformation extends AbstractBuilder<Object> {
 
     @Override
     public Object visitProblem(KeYRustyParser.ProblemContext ctx) {
-        if (ctx.CHOOSECONTRACT() != null) {
-            if (ctx.chooseContract != null) {
-                information.setChooseContract(accept(ctx.chooseContract));
-            } else {
-                information.setChooseContract("");
-            }
-        }
         if (ctx.PROOFOBLIGATION() != null) {
             if (ctx.proofObligation != null) {
                 information.setProofObligation(accept(ctx.proofObligation));

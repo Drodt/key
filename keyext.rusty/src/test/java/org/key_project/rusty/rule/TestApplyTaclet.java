@@ -21,7 +21,6 @@ import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.util.TacletForTests;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,10 +53,10 @@ public class TestApplyTaclet {
 
     private static ImmutableList<SequentFormula> parseTermForSemisequent(String t) {
         if ("".equals(t)) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
         SequentFormula cf0 = new SequentFormula(TacletForTests.parseTerm(t));
-        return ImmutableSLList.singleton(cf0);
+        return ImmutableList.singleton(cf0);
     }
 
 
@@ -495,7 +494,7 @@ public class TestApplyTaclet {
 
         assertEquals(4, rApplist.size(), "Expected four rule applications.");
 
-        ImmutableList<TacletApp> appList = ImmutableSLList.nil();
+        ImmutableList<TacletApp> appList = ImmutableList.nil();
         for (TacletApp aRApplist : rApplist) {
             appList =
                 appList.prepend(aRApplist.findIfFormulaInstantiations(goal.sequent(), services));
@@ -526,7 +525,7 @@ public class TestApplyTaclet {
 
         assertEquals(3, rApplist.size(), "Expected three rule applications.");
 
-        ImmutableList<TacletApp> appList = ImmutableSLList.nil();
+        ImmutableList<TacletApp> appList = ImmutableList.nil();
         Iterator<TacletApp> appIt = rApplist.iterator();
         while (appIt.hasNext()) {
             appList =
@@ -537,7 +536,7 @@ public class TestApplyTaclet {
 
         Term ifterm = TacletForTests.parseTerm("{i:=0}(f(cnst)=f(f(cnst)))");
         org.key_project.prover.sequent.SequentFormula ifformula = new SequentFormula(ifterm);
-        ImmutableList<AssumesFormulaInstantiation> ifInsts = ImmutableSLList
+        ImmutableList<AssumesFormulaInstantiation> ifInsts = ImmutableList
                 .<AssumesFormulaInstantiation>nil()
                 .prepend(new AssumesFormulaInstDirect(ifformula));
         appIt = rApplist.iterator();

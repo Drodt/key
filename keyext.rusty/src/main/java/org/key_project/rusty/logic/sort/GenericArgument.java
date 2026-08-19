@@ -3,13 +3,15 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.sort;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 public interface GenericArgument extends SyntaxElement {
     default GenericArgument instantiateParamArg(SVInstantiations svInst, Services services) {
@@ -17,13 +19,14 @@ public interface GenericArgument extends SyntaxElement {
             if (sa.sort() instanceof GenericSort gs) {
                 return new SortArg(svInst.getGenericSortInstantiations().getRealSort(gs, services));
             } else if (sa.sort() instanceof ParametricSortInstance psi) {
-                ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+                List<GenericArgument> args = new LinkedList<>();
 
                 for (int i = psi.getArgs().size() - 1; i >= 0; i--) {
-                    args = args.prepend(psi.getArgs().get(i).instantiateParamArg(svInst, services));
+                    args.add(psi.getArgs().get(i).instantiateParamArg(svInst, services));
                 }
 
-                return new SortArg(ParametricSortInstance.get(psi.getBase(), args));
+                return new SortArg(
+                    ParametricSortInstance.get(psi.getBase(), ImmutableList.fromList(args)));
             } else {
                 return sa;
             }

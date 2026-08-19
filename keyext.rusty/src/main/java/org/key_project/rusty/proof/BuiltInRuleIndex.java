@@ -5,7 +5,6 @@ package org.key_project.rusty.proof;
 
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Index for managing built-in rules such as integer decision or update simplification rule.
 public class BuiltInRuleIndex implements java.io.Serializable {
@@ -13,7 +12,7 @@ public class BuiltInRuleIndex implements java.io.Serializable {
     ///
     private static final long serialVersionUID = -4399004272449882750L;
     /// list of available built-in rules
-    private ImmutableList<BuiltInRule> rules = ImmutableSLList.nil();
+    private ImmutableList<BuiltInRule> rules = ImmutableList.nil();
 
     /// constructs empty rule index
     public BuiltInRuleIndex() {

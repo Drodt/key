@@ -22,7 +22,6 @@ import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// This class implements custom instantiation of if-formulas.
 public class AssumesInstantiator {
@@ -32,7 +31,7 @@ public class AssumesInstantiator {
     private ImmutableArray<AssumesFormulaInstantiation> allAntecFormulas;
     private ImmutableArray<AssumesFormulaInstantiation> allSuccFormulas;
 
-    private ImmutableList<NoPosTacletApp> results = ImmutableSLList.nil();
+    private ImmutableList<NoPosTacletApp> results = ImmutableList.nil();
 
     private final TacletAppContainer tacletAppContainer;
 
@@ -74,7 +73,7 @@ public class AssumesInstantiator {
                 //// with the
                 //// last
                 //// formula
-                assumesSequent.antecedent().asList().reverse(), ImmutableSLList.nil(),
+                assumesSequent.antecedent().asList().reverse(), ImmutableList.nil(),
                 tacletAppContainer.getTacletApp().matchConditions(), false);
         }
     }

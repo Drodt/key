@@ -4,7 +4,6 @@
 package org.key_project.rusty.proof;
 
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -14,7 +13,7 @@ public final class ProofTreeEvent {
     private final Proof source;
     private @Nullable Node node;
     private @Nullable Goal goal;
-    private ImmutableList<Goal> goals = ImmutableSLList.nil();
+    private ImmutableList<Goal> goals = ImmutableList.nil();
 
     /// Create ProofTreeEvent for an event that happens at the specified node.
     public ProofTreeEvent(Proof source, Node node) {

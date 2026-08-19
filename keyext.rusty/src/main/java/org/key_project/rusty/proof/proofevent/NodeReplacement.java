@@ -9,7 +9,6 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.prover.sequent.*;
 import org.key_project.rusty.proof.Node;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Information about a node replacing its parent after a rule application, currently giving
 /// information about added and removed formulas
@@ -155,7 +154,7 @@ public final class NodeReplacement {
 
     private void removeNodeChanges(SequentFormula p_cf, boolean p_inAntec) {
         Iterator<NodeChange> it = changes.iterator();
-        changes = ImmutableSLList.nil();
+        changes = ImmutableList.nil();
         NodeChange oldNC;
         PosInOccurrence oldPio;
 
@@ -180,7 +179,7 @@ public final class NodeReplacement {
     /// @return Modifications that have been made to node
     public Iterator<NodeChange> getNodeChanges() {
         if (changes == null) {
-            changes = ImmutableSLList.nil();
+            changes = ImmutableList.nil();
             addNodeChanges();
         }
         return changes.iterator();

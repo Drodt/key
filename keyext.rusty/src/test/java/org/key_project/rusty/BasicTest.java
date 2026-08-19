@@ -19,7 +19,6 @@ import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.util.TacletForTests;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,10 +30,10 @@ public class BasicTest {
 
     private static ImmutableList<SequentFormula> parseTermForSemisequent(String t) {
         if ("".equals(t)) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
         SequentFormula cf0 = new SequentFormula(TacletForTests.parseTerm(t));
-        return ImmutableSLList.singleton(cf0);
+        return ImmutableList.singleton(cf0);
     }
 
     private static Goal createGoal(Node n, TacletIndex tacletIndex) {
@@ -53,7 +52,7 @@ public class BasicTest {
         tacletIndex.add(rule);
         var oldGoals = proof.openGoals();
         var goal = createGoal(oldGoals.get(index).getNode(), tacletIndex);
-        ImmutableList<Goal> newGoals = ImmutableSLList.nil();
+        ImmutableList<Goal> newGoals = ImmutableList.nil();
         for (int i = 0; i < oldGoals.size(); ++i) {
             if (i == index)
                 newGoals = newGoals.append(goal);
@@ -319,7 +318,7 @@ public class BasicTest {
         System.out.println(t);
 
         Sequent s =
-            RustySequentKit.createSuccSequent(ImmutableSLList.singleton(new SequentFormula(t)));
+            RustySequentKit.createSuccSequent(ImmutableList.singleton(new SequentFormula(t)));
         Proof p = new Proof("FirstProof", TacletForTests.initConfig());
         p.setRoot(new Node(p, s));
 

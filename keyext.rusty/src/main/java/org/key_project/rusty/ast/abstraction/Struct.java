@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.ast.abstraction;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.key_project.logic.Name;
@@ -14,7 +16,6 @@ import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -27,12 +28,12 @@ public record Struct(Name name, ImmutableArray<Field> fields,
     public @Nullable Sort getSort(Services services) {
         if (parametricSortDecl == null)
             return services.getNamespaces().sorts().lookup(name);
-        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+        List<GenericArgument> args = new LinkedList<>();
         assert this.args != null;
-        for (int i = this.args.size() - 1; i >= 0; i--) {
-            args = args.prepend(this.args.get(i).sortArg(services));
+        for (int i = 0; i < this.args.size(); i++) {
+            args.add(this.args.get(i).sortArg(services));
         }
-        return ParametricSortInstance.get(parametricSortDecl, args);
+        return ParametricSortInstance.get(parametricSortDecl, ImmutableList.fromList(args));
     }
 
     @Override

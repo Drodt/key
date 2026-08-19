@@ -29,7 +29,6 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.strategy.QueueRuleApplicationManager;
 import org.key_project.rusty.strategy.Strategy;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -40,7 +39,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /// The namespaces local to this goal. This may evolve over time.
     private NamespaceSet localNamespaces;
     /// list of all applied rule applications at this branch
-    private ImmutableList<RuleApp> appliedRuleApps = ImmutableSLList.nil();
+    private ImmutableList<RuleApp> appliedRuleApps = ImmutableList.nil();
 
     private final RuleAppIndex ruleAppIndex;
 
@@ -60,7 +59,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             Services services) {
         this.node = n;
         this.ruleAppIndex = new RuleAppIndex(tacletIndex, builtInRuleAppIndex, this, services);
-        appliedRuleApps = ImmutableSLList.nil();
+        appliedRuleApps = ImmutableList.nil();
         localNamespaces =
             node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
         tagManager = new FormulaTagManager(this);
@@ -186,7 +185,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /// @param n number of goals to create
     /// @return the list of new created goals.
     public ImmutableList<Goal> split(int n) {
-        ImmutableList<Goal> goalList = ImmutableSLList.nil();
+        ImmutableList<Goal> goalList = ImmutableList.nil();
 
         final Node parent = node; // has to be stored because the node
         // of this goal will be replaced

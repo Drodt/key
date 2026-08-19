@@ -517,7 +517,8 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
 
     public abstract @NonNull Taclet setName(@NonNull String s);
 
-    StringBuffer toStringAttribs(StringBuffer sb) {
+    @Override
+    protected @NonNull StringBuffer toStringAttribs(StringBuffer sb) {
         // if (noninteractive()) sb = sb.append(" \\noninteractive");
         sb.append("\nChoices: ").append(choices);
         return sb;

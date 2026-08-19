@@ -42,7 +42,7 @@ public class NodeChangeJournal implements GoalListener {
      * listeners
      */
     public RuleAppInfo getRuleAppInfo(RuleApp p_ruleApp) {
-        ImmutableList<NodeReplacement> nrs = ImmutableSLList.nil();
+        ImmutableList<NodeReplacement> nrs = ImmutableList.nil();
 
         for (final ImmutableMapEntry<@NonNull Node, NodeChangesHolder> entry : changes) {
             final Node newNode = entry.key();

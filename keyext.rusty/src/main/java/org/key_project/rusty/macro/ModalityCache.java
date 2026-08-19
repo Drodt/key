@@ -9,14 +9,14 @@ import org.key_project.logic.Term;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.logic.op.RModality;
-import org.key_project.util.LRUCache;
+import org.key_project.util.ConcurrentLruCache;
 
 /// Caches whether a Term contains a modality operation.
 ///
 /// @author Julian Wiesler
 public class ModalityCache {
     /// the cache
-    private final Map<Term, Boolean> termCache = new LRUCache<>(2000);
+    private final Map<Term, Boolean> termCache = new ConcurrentLruCache<>(2000);
 
     /// a single element cache for the sequent
     /// -> Caching more than one sequent did not help since the autopilot rarely revisits nodes

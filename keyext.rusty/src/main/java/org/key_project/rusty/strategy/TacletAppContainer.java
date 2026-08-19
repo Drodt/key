@@ -24,7 +24,6 @@ import org.key_project.rusty.rule.NoFindTaclet;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 /// Instances of this class are immutable
@@ -77,16 +76,16 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         if (!isStillApplicable(goal)
                 || (getTacletApp().assumesInstantionsComplete()
                         && !assumesFormulasStillValid(goal))) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
 
         final TacletAppContainer newCont = createContainer(goal);
         if (newCont.getCost() instanceof TopRuleAppCost) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
 
         ImmutableList<RuleAppContainer> res =
-            ImmutableSLList.<RuleAppContainer>nil().prepend(newCont);
+            ImmutableList.singleton(newCont);
 
         if (getTacletApp().assumesInstantionsComplete()) {
             res = addInstances(getTacletApp(), res, goal);
@@ -182,7 +181,7 @@ public abstract class TacletAppContainer extends RuleAppContainer {
             costs.add(p_goal.getGoalStrategy().computeCost(app, p_pio, p_goal));
         }
 
-        ImmutableList<RuleAppContainer> result = ImmutableSLList.nil();
+        ImmutableList<RuleAppContainer> result = ImmutableList.nil();
         for (RuleAppCost cost : costs) {
             final TacletAppContainer container =
                 createContainer(p_app.head(), p_pio, p_goal, cost, true);

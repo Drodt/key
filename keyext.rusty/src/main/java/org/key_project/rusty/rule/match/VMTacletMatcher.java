@@ -23,7 +23,6 @@ import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.match.instructions.MatchSchemaVariableInstruction;
 import org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
 
@@ -199,14 +198,14 @@ public class VMTacletMatcher implements TacletMatcher {
         MatchConditions matchCond = (MatchConditions) p_matchCond;
 
         ImmutableList<AssumesFormulaInstantiation> resFormulas =
-            ImmutableSLList.nil();
+            ImmutableList.nil();
         ImmutableList<MatchResultInfo> resMC =
-            ImmutableSLList.nil();
+            ImmutableList.nil();
 
         final boolean updateContextPresent =
             !matchCond.getInstantiations().getUpdateContext().isEmpty();
         ImmutableList<Term> context =
-            ImmutableSLList.nil();
+            ImmutableList.nil();
 
         if (updateContextPresent) {
             context = matchCond.getInstantiations().getUpdateContext();
@@ -285,7 +284,7 @@ public class VMTacletMatcher implements TacletMatcher {
             assert itIfSequent.hasNext()
                     : "toMatch and assumes sequent must have same number of elements";
             newMC = matchAssumes(
-                ImmutableSLList.<AssumesFormulaInstantiation>nil().prepend(candidateInst),
+                ImmutableList.<AssumesFormulaInstantiation>nil().prepend(candidateInst),
                 itIfSequent.next().formula(), p_matchCond, p_services).matchConditions();
 
             if (newMC.isEmpty()) {

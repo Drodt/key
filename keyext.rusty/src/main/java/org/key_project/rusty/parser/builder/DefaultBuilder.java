@@ -5,6 +5,7 @@ package org.key_project.rusty.parser.builder;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -26,7 +27,6 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.jspecify.annotations.NonNull;
@@ -268,8 +268,8 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
             semanticError(ctx, "Expected %d sort arguments, got only %d",
                 params.size(), ctx.formal_sort_arg().size());
         }
-        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
-        for (int i = params.size() - 1; i >= 0; i--) {
+        List<GenericArgument> args = new LinkedList<>();
+        for (int i = 0; i < params.size(); i++) {
             var expectConst = params.get(i) instanceof ConstParam;
             var arg = ctx.formal_sort_arg(i);
             var isConst = arg.CONST() != null;
@@ -299,13 +299,13 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
                     semanticError(arg, "Constant %s is sort %s, which does not extend %s", c,
                         c.sort(), expectedSort);
                 }
-                args = args.prepend(new TermArg(c));
+                args.add(new TermArg(c));
             } else {
                 var sort = visitSortId(arg.sortId());
-                args = args.prepend(new SortArg(sort));
+                args.add(new SortArg(sort));
             }
         }
-        return args;
+        return ImmutableList.fromList(args);
     }
 
     public KeYRustyType visitTypemapping(KeYRustyParser.TypemappingContext ctx) {

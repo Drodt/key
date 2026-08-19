@@ -131,7 +131,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         previousMinimum = null;
         parking = new ParkedBases();
         if (goal != null) {
-            goal.proof().getServices().getCaches().getIfInstantiationCache().releaseAll();
+            goal.proof().getServices().getCaches().getAssumesInstantiationCachePool().releaseAll();
         }
         clearNextRuleApp();
     }

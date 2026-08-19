@@ -16,7 +16,6 @@ import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.util.TacletForTests;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,10 +36,10 @@ class TestNonDuplicateAppFeature {
 
     /// Root sequent `==> A -> B, B -> A` (two distinct succedent formulas).
     private static Sequent twoImplications() {
-        ImmutableList<SequentFormula> succ = ImmutableSLList.<SequentFormula>nil()
+        ImmutableList<SequentFormula> succ = ImmutableList.<SequentFormula>nil()
                 .append(new SequentFormula(TacletForTests.parseTerm("A -> B")))
                 .append(new SequentFormula(TacletForTests.parseTerm("B -> A")));
-        return RustySequentKit.createSequent(ImmutableSLList.nil(), succ);
+        return RustySequentKit.createSequent(ImmutableList.nil(), succ);
     }
 
     private static Goal goalFor(Node n, TacletIndex idx) {
@@ -113,7 +112,7 @@ class TestNonDuplicateAppFeature {
         Proof proof = new Proof("TestNonDuplicateAppFeature", TacletForTests.initConfig());
         SequentFormula conj = new SequentFormula(TacletForTests.parseTerm("(A -> B) & (A -> B)"));
         Node root = new Node(proof,
-            RustySequentKit.createSequent(ImmutableSLList.nil(), ImmutableSLList.singleton(conj)));
+            RustySequentKit.createSequent(ImmutableList.nil(), ImmutableList.singleton(conj)));
         proof.setRoot(root);
 
         TacletIndex idx = new TacletIndex();

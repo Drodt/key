@@ -13,7 +13,6 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.logic.TermFactory;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Replaces operators in a term by other operators with the same signature, or subterms of the term
 /// by other terms with the same sort. Does not replace in rusty blocks.
@@ -151,7 +150,7 @@ public class OpReplacer {
     /// @param terms the terms in which to perform the replacement.
     /// @return the list of transformed terms.
     public ImmutableList<Term> replace(ImmutableList<Term> terms) {
-        ImmutableList<Term> result = ImmutableSLList.nil();
+        ImmutableList<Term> result = ImmutableList.nil();
         for (final Term term : terms) {
             result = result.append(replace(term));
         }

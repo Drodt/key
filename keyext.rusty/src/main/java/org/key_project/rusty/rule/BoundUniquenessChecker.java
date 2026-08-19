@@ -12,7 +12,6 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// The bound uniqueness checker ensures that schemavariables can be bound at most once in the
 /// <tt>\find</tt> and <tt>\assumes</tt> part of a taclet. The justification for this restriction is
@@ -24,7 +23,7 @@ public class BoundUniquenessChecker {
 
     private final HashSet<QuantifiableVariable> boundVars =
         new LinkedHashSet<>();
-    private ImmutableList<Term> terms = ImmutableSLList.nil();
+    private ImmutableList<Term> terms = ImmutableList.nil();
 
     public BoundUniquenessChecker(org.key_project.prover.sequent.Sequent seq) {
         addAll(seq);

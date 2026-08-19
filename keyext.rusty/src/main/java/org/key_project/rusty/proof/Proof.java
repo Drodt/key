@@ -22,7 +22,6 @@ import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.rusty.strategy.Strategy;
 import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -47,12 +46,12 @@ public class Proof implements ProofObject<Goal>, Named {
         Collections.synchronizedList(new ArrayList<>(10));
 
     /// list with the open goals of the proof
-    private ImmutableList<Goal> openGoals = ImmutableSLList.nil();
+    private ImmutableList<Goal> openGoals = ImmutableList.nil();
 
     /// list with the closed goals of the proof, needed to make pruning in closed branches possible.
     /// If the list needs too much memory, pruning can be disabled via the command line option
     /// "--no-pruning-closed". In this case the list will not be filled.
-    private ImmutableList<Goal> closedGoals = ImmutableSLList.nil();
+    private ImmutableList<Goal> closedGoals = ImmutableList.nil();
 
     /// the logic configuration for this proof, i.e., logic signature, rules etc.
     private InitConfig initConfig;
@@ -108,7 +107,7 @@ public class Proof implements ProofObject<Goal>, Named {
     public Proof(String name, Term problem, String header, InitConfig initConfig) {
         this(name,
             RustySequentKit
-                    .createSuccSequent(ImmutableSLList.singleton(new SequentFormula(problem))),
+                    .createSuccSequent(ImmutableList.singleton(new SequentFormula(problem))),
             initConfig.createTacletIndex(),
             initConfig.createBuiltInRuleIndex(),
             initConfig);
@@ -433,7 +432,7 @@ public class Proof implements ProofObject<Goal>, Named {
     /// @author mulbrich
     /// @see Goal#isAutomatic()
     private ImmutableList<Goal> filterEnabledGoals(ImmutableList<Goal> goals) {
-        ImmutableList<Goal> enabledGoals = ImmutableSLList.nil();
+        ImmutableList<Goal> enabledGoals = ImmutableList.nil();
         for (Goal g : goals) {
             if (g.isAutomatic()) {
                 enabledGoals = enabledGoals.prepend(g);
@@ -478,7 +477,7 @@ public class Proof implements ProofObject<Goal>, Named {
     /// @param fromGoals the list of goals from which to select
     /// @return the goals below node that are contained in <code>fromGoals</code>
     private static ImmutableList<Goal> getGoalsBelow(Node node, ImmutableList<Goal> fromGoals) {
-        ImmutableList<Goal> result = ImmutableSLList.nil();
+        ImmutableList<Goal> result = ImmutableList.nil();
         List<Node> leaves = node.getLeaves();
         for (final Goal goal : fromGoals) {
             // if list contains node, remove it to make the list faster later
@@ -597,7 +596,7 @@ public class Proof implements ProofObject<Goal>, Named {
     }
 
     void removeOpenGoals(Collection<Node> toBeRemoved) {
-        ImmutableList<Goal> newGoalList = ImmutableSLList.nil();
+        ImmutableList<Goal> newGoalList = ImmutableList.nil();
         for (Goal openGoal : openGoals()) {
             if (!toBeRemoved.contains(openGoal.getNode())) {
                 newGoalList = newGoalList.append(openGoal);
@@ -612,7 +611,7 @@ public class Proof implements ProofObject<Goal>, Named {
     ///
     /// @param toBeRemoved the goals to remove
     void removeClosedGoals(Collection<Node> toBeRemoved) {
-        ImmutableList<Goal> newGoalList = ImmutableSLList.nil();
+        ImmutableList<Goal> newGoalList = ImmutableList.nil();
         for (Goal closedGoal : closedGoals) {
             if (!toBeRemoved.contains(closedGoal.getNode())) {
                 newGoalList = newGoalList.prepend(closedGoal);
@@ -674,7 +673,7 @@ public class Proof implements ProofObject<Goal>, Named {
 
     /// fires the event that new goals have been added to the list of goals
     protected void fireProofGoalsAdded(Goal goal) {
-        fireProofGoalsAdded(ImmutableSLList.<Goal>nil().prepend(goal));
+        fireProofGoalsAdded(ImmutableList.singleton(goal));
     }
 
     /// fires the event that the proof has been restructured

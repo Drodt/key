@@ -12,9 +12,8 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.LexPathOrdering;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
-import org.key_project.util.LRUCache;
+import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Class for analysing and modifying monomial expressions over the integers
 public class Monomial {
@@ -26,10 +25,11 @@ public class Monomial {
         this.coefficient = coefficient;
     }
 
-    public static final Monomial ONE = new Monomial(ImmutableSLList.nil(), BigInteger.ONE);
+    public static final Monomial ONE = new Monomial(ImmutableList.nil(), BigInteger.ONE);
 
     public static Monomial create(Term monoTerm, Services services) {
-        final LRUCache<Term, Monomial> monomialCache = services.getCaches().getMonomialCache();
+        final ConcurrentLruCache<Term, Monomial> monomialCache =
+            services.getCaches().getMonomialCache();
         Monomial res;
 
         synchronized (monomialCache) {
@@ -117,7 +117,7 @@ public class Monomial {
         final BigInteger c = this.coefficient;
 
         if (a.signum() == 0 || c.signum() == 0) {
-            return new Monomial(ImmutableSLList.nil(), BigInteger.ZERO);
+            return new Monomial(ImmutableList.nil(), BigInteger.ZERO);
         }
 
         return new Monomial(difference(m.parts, this.parts), LexPathOrdering.divide(a, c));
@@ -214,7 +214,7 @@ public class Monomial {
 
     private static class Analyser {
         public BigInteger coeff = BigInteger.ONE;
-        public ImmutableList<Term> parts = ImmutableSLList.nil();
+        public ImmutableList<Term> parts = ImmutableList.nil();
         private final Services services;
         private final Operator numbers, mul;
 

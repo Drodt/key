@@ -10,7 +10,7 @@ import java.util.Objects;
 import org.key_project.rusty.proof.ProofAggregate;
 import org.key_project.rusty.proof.init.*;
 import org.key_project.rusty.proof.io.RuleSourceFactory;
-import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.helper.FindResources;
 
 import org.jspecify.annotations.Nullable;
@@ -26,7 +26,7 @@ public class TestHelper {
         @Override
         public RuleCollection getStandardRules() {
             return new RuleCollection(RuleSourceFactory.fromDefaultLocation(LDT_FILE),
-                ImmutableSLList.nil());
+                ImmutableList.nil());
         }
     };
 

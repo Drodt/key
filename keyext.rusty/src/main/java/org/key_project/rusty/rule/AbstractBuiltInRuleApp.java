@@ -13,7 +13,6 @@ import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.strategy.BuiltInRuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -28,7 +27,7 @@ public abstract class AbstractBuiltInRuleApp implements IBuiltInRuleApp {
             ImmutableList<PosInOccurrence> ifInsts) {
         this.builtInRule = rule;
         this.pio = pio;
-        this.ifInsts = (ifInsts == null ? ImmutableSLList.nil() : ifInsts);
+        this.ifInsts = (ifInsts == null ? ImmutableList.nil() : ifInsts);
     }
 
     protected AbstractBuiltInRuleApp(BuiltInRule rule, PosInOccurrence pio) {

@@ -14,7 +14,7 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.SubstOp;
 import org.key_project.rusty.logic.op.WarySubstOp;
 import org.key_project.rusty.util.TacletForTests;
-import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.collection.ImmutableList;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -70,7 +70,7 @@ public class WarySubstAndShadowingTest {
         Term lvX = tb.var(LogicVariable.create(1, u32));
         Term iTerm = tb.var(i);
         RustyBlock emptyBlock =
-            new RustyBlock(new BlockExpression(ImmutableSLList.nil(), null));
+            new RustyBlock(new BlockExpression(ImmutableList.nil(), null));
         Term body = tb.dia(emptyBlock, tb.equals(lvX, iTerm)); // \<{}\>(x = i)
         Term substTerm = tb.subst(WarySubstOp.SUBST, x, iTerm, body);
 

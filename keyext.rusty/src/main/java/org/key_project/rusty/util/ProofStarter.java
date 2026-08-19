@@ -25,7 +25,6 @@ import org.key_project.rusty.strategy.Strategy;
 import org.key_project.rusty.strategy.StrategyFactory;
 import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -191,7 +190,7 @@ public class ProofStarter {
         public UserProvidedInput(Term formula, ProofEnvironment env) {
             this(
                 RustySequentKit.createSuccSequent(
-                    ImmutableSLList.<SequentFormula>nil().prepend(new SequentFormula(formula))),
+                    ImmutableList.singleton(new SequentFormula(formula))),
                 env);
         }
 

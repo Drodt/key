@@ -27,7 +27,6 @@ import org.key_project.rusty.rule.NewVarcond;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -39,24 +38,24 @@ public abstract class TacletBuilder<T extends Taclet> {
 
     protected Name name = NONAME;
     protected Sequent assumesSeq = RustySequentKit.getInstance().getEmptySequent();
-    protected ImmutableList<NewVarcond> varsNew = ImmutableSLList.nil();
-    protected final ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
-    protected ImmutableList<@NonNull SchemaVariable> noFreeVarIns = ImmutableSLList.nil();
+    protected ImmutableList<NewVarcond> varsNew = ImmutableList.nil();
+    protected final ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableList.nil();
+    protected ImmutableList<@NonNull SchemaVariable> noFreeVarIns = ImmutableList.nil();
     protected ImmutableList<NewDependingOn> varsNewDependingOn =
-        ImmutableSLList.nil();
+        ImmutableList.nil();
     protected ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> goals =
-        ImmutableSLList.nil();
+        ImmutableList.nil();
     protected TacletAttributes attrs = new TacletAttributes(NONAME.toString(), null);
 
     /// List of additional generic conditions on the instantiations of schema variables.
     protected ImmutableList<org.key_project.prover.rules.VariableCondition> variableConditions =
-        ImmutableSLList.nil();
+        ImmutableList.nil();
     protected HashMap<TacletGoalTemplate, ChoiceExpr> goal2Choices = null;
     protected ChoiceExpr choices = ChoiceExpr.TRUE;
     protected ImmutableSet<TacletAnnotation> tacletAnnotations =
         DefaultImmutableSet.nil();
 
-    protected ImmutableList<RuleSet> ruleSets = ImmutableSLList.nil();
+    protected ImmutableList<RuleSet> ruleSets = ImmutableList.nil();
 
     public void setAnnotations(ImmutableSet<TacletAnnotation> tacletAnnotations) {
         this.tacletAnnotations = tacletAnnotations;

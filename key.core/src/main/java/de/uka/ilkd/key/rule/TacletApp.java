@@ -24,6 +24,8 @@ import de.uka.ilkd.key.proof.VariableNameProposer;
 import de.uka.ilkd.key.rule.inst.GenericSortCondition;
 import de.uka.ilkd.key.rule.inst.GenericSortException;
 import de.uka.ilkd.key.rule.inst.SVInstantiations.UpdateLabelPair;
+import de.uka.ilkd.key.strategy.BuiltInRuleAppContainer;
+import de.uka.ilkd.key.strategy.TacletAppContainer;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.*;
@@ -1295,6 +1297,12 @@ public abstract class TacletApp implements RuleApp {
     @Override
     public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
             ProofGoal<G> goal, boolean initial) {
+        if (this instanceof NoPosTacletApp npa)
+            return TacletAppContainer.createAppContainers(npa, pos, (Goal) goal);
+        if (this instanceof IBuiltInRuleApp ba) {
+            return BuiltInRuleAppContainer.createAppContainer(ba, pos,
+                goal);
+        }
         throw new UnsupportedOperationException("Not supported for taclet app " + getClass());
     }
 }

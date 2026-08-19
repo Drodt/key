@@ -63,7 +63,7 @@ class Instantiation {
     }
 
     private static ImmutableSet<Term> sequentToTerms(Sequent seq) {
-        ImmutableList<Term> res = ImmutableSLList.nil();
+        ImmutableList<Term> res = ImmutableList.nil();
         for (final SequentFormula cf : seq) {
             res = res.prepend(cf.formula());
         }
@@ -110,7 +110,7 @@ class Instantiation {
     /// @return all literals in antesequent, and all negation of literal in succedent
     private ImmutableSet<Term> initAssertLiterals(Sequent seq,
             Services services) {
-        ImmutableList<Term> assertLits = ImmutableSLList.nil();
+        ImmutableList<Term> assertLits = ImmutableList.nil();
         for (final SequentFormula cf : seq.antecedent()) {
             final Term atom = cf.formula();
             final var op = atom.op();

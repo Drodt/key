@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.rule;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Stack;
+import java.util.*;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
@@ -31,7 +29,6 @@ import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// visitor for <t> execPostOrder </t> of [Term]. Called with that method
 /// on a term, the visitor builds a new term replacing SchemaVariables with their instantiations
@@ -300,13 +297,13 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     }
 
     private Operator handleParametricFunction(ParametricFunctionInstance pfi) {
-        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+        List<GenericArgument> args = new LinkedList<>();
 
         for (int i = pfi.getArgs().size() - 1; i >= 0; i--) {
-            args = args.prepend(pfi.getArgs().get(i).instantiateParamArg(svInst, services));
+            args.add(pfi.getArgs().get(i).instantiateParamArg(svInst, services));
         }
 
-        return ParametricFunctionInstance.get(pfi.getBase(), args);
+        return ParametricFunctionInstance.get(pfi.getBase(), ImmutableList.fromList(args));
     }
 
     private ElementaryUpdate instantiateElementaryUpdate(ElementaryUpdate op) {

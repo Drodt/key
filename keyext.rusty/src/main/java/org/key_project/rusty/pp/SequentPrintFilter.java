@@ -5,7 +5,6 @@ package org.key_project.rusty.pp;
 
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 
 /// Filter a given sequent to prepare it for the SequentPrinter class by adjusting constraints,
@@ -15,10 +14,10 @@ public abstract class SequentPrintFilter {
     org.key_project.prover.sequent.Sequent originalSequent;
 
     /// the antecedent of the filtered formula
-    ImmutableList<SequentPrintFilterEntry> antec = ImmutableSLList.nil();
+    ImmutableList<SequentPrintFilterEntry> antec = ImmutableList.nil();
 
     /// the antecedent of the filtered formula
-    ImmutableList<SequentPrintFilterEntry> succ = ImmutableSLList.nil();
+    ImmutableList<SequentPrintFilterEntry> succ = ImmutableList.nil();
 
     /// @return the original sequent
     public org.key_project.prover.sequent.Sequent getOriginalSequent() {
@@ -57,13 +56,13 @@ public abstract class SequentPrintFilter {
     /// converts the complete original sequent into antecedent/succendent lists of print filter
     /// entries.
     protected void filterIdentity() {
-        antec = ImmutableSLList.nil();
+        antec = ImmutableList.nil();
         for (var sf : originalSequent.antecedent()) {
             antec = antec.append(
                 new IdentitySequentPrintFilter.IdentityFilterEntry(sf));
         }
 
-        succ = ImmutableSLList.nil();
+        succ = ImmutableList.nil();
         for (var sf : originalSequent.succedent()) {
             succ = succ.append(
                 new IdentitySequentPrintFilter.IdentityFilterEntry(sf));

@@ -25,6 +25,7 @@ import org.key_project.logic.op.Modality;
 import org.key_project.prover.rules.matcher.compiler.PatternKeySource;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;

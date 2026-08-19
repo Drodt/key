@@ -51,7 +51,6 @@ import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -928,8 +927,8 @@ public class HirConverter {
                     yield new Enum(name, new ImmutableArray<>(variants), sort);
                 }
                 var sortDecl = getSortDecl(name, genSortParams);
-                ImmutableList<GenericArgument> genArgs = ImmutableSLList.nil();
-                for (var i = sortDecl.getParameters().size() - 1; i >= 0; i--) {
+                List<GenericArgument> genArgs = new LinkedList<>();
+                for (var i = 0; i < sortDecl.getParameters().size(); i++) {
                     GenericArgument arg;
                     GenericParameter genericParameter = sortDecl.getParameters().get(i);
                     if (genericParameter instanceof GenericSortParam(GenericSort gs)) {
@@ -940,9 +939,9 @@ public class HirConverter {
                         Term term = services.getTermBuilder().func(f);
                         arg = new TermArg(term);
                     }
-                    genArgs = genArgs.prepend(arg);
+                    genArgs.add(arg);
                 }
-                var sort = ParametricSortInstance.get(sortDecl, genArgs);
+                var sort = ParametricSortInstance.get(sortDecl, ImmutableList.fromList(genArgs));
                 var variants = new GenericVariant[def.variants().size()];
                 for (var e : def.variants().entrySet()) {
                     VariantDef value = e.getValue();
@@ -986,7 +985,7 @@ public class HirConverter {
             ImmutableArray<GenericParam> params) {
         if (params.isEmpty())
             return null;
-        ImmutableList<GenericParameter> sortParams = ImmutableSLList.nil();
+        ImmutableList<GenericParameter> sortParams = ImmutableList.nil();
         for (int i = params.size() - 1; i >= 0; i--) {
             sortParams = sortParams.prepend(params.get(i).toSortParam(services));
         }

@@ -16,7 +16,6 @@ import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.rusty.settings.StrategySettings;
 import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -81,7 +80,7 @@ public class ApplyStrategy extends DefaultProver<@NonNull Proof, Goal> {
     @Override
     public synchronized @NonNull ApplyStrategyInfo<@NonNull Proof, Goal> start(Proof proof,
             Goal goal) {
-        return start(proof, ImmutableSLList.<Goal>nil().prepend(goal));
+        return start(proof, ImmutableList.singleton(goal));
     }
 
     @Override
@@ -124,7 +123,7 @@ public class ApplyStrategy extends DefaultProver<@NonNull Proof, Goal> {
         final GoalChooser<@NonNull Proof, Goal> goalChooser = getGoalChooserForProof(proof);
         proof = null;
         if (goalChooser != null) {
-            goalChooser.init(null, ImmutableSLList.nil());
+            goalChooser.init(null, ImmutableList.nil());
         }
     }
 

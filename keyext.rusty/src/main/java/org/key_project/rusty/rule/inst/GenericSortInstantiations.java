@@ -4,10 +4,7 @@
 package org.key_project.rusty.rule.inst;
 
 import java.io.Serial;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Term;
@@ -45,7 +42,7 @@ public final class GenericSortInstantiations {
             Iterator<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> p_instantiations,
             ImmutableList<GenericSortCondition> p_conditions, LogicServices services) {
 
-        ImmutableList<GenericSort> sorts = ImmutableSLList.nil();
+        ImmutableList<GenericSort> sorts = ImmutableList.nil();
         ImmutableList<GenericSortCondition> c;
 
         final Iterator<GenericSortCondition> it;
@@ -153,7 +150,7 @@ public final class GenericSortInstantiations {
     /// saying
     /// anything about further generic sorts)
     public ImmutableList<GenericSortCondition> toConditions() {
-        ImmutableList<GenericSortCondition> res = ImmutableSLList.nil();
+        ImmutableList<GenericSortCondition> res = ImmutableList.nil();
 
 
         for (final ImmutableMapEntry<GenericSort, Sort> entry : insts) {
@@ -179,7 +176,7 @@ public final class GenericSortInstantiations {
                 throw new GenericSortException("Generic sort is not yet instantiated", null);
             }
         } else if (p_s instanceof ParametricSortInstance psi && psi.containsGenericSort()) {
-            ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+            List<GenericArgument> args = new LinkedList<>();
             for (int i = psi.getArgs().size() - 1; i >= 0; --i) {
                 GenericArgument oa = psi.getArgs().get(i);
                 if (oa instanceof SortArg(Sort sort)) {
@@ -188,12 +185,12 @@ public final class GenericSortInstantiations {
                         throw new GenericSortException("Generic sort is not yet instantiated",
                             null);
                     }
-                    args = args.prepend(new SortArg(realSort));
+                    args.add(new SortArg(realSort));
                 } else {
-                    args = args.prepend(oa);
+                    args.add(oa);
                 }
             }
-            var inst = ParametricSortInstance.get(psi.getBase(), args);
+            var inst = ParametricSortInstance.get(psi.getBase(), ImmutableList.fromList(args));
             if (inst.containsGenericSort())
                 throw new GenericSortException("Generic sort is not yet instantiated", null);
             p_s = inst;
@@ -205,7 +202,7 @@ public final class GenericSortInstantiations {
     /// exception thrown if no solution exists
     private final static GenericSortException UNSATISFIABLE_SORT_CONSTRAINTS =
         new GenericSortException("Conditions for generic sorts could not be solved: ",
-            ImmutableSLList.nil());
+            ImmutableList.nil());
 
     /// Really solve the conditions given
     ///
@@ -224,7 +221,7 @@ public final class GenericSortInstantiations {
         ImmutableList<GenericSort> topologicalSorts = topology(p_sorts);
 
         res = solveHelp(topologicalSorts, DefaultImmutableMap.nilMap(),
-            p_conditions, ImmutableSLList.nil(), services);
+            p_conditions, ImmutableList.nil(), services);
 
 
         if (res == null) {
@@ -266,9 +263,9 @@ public final class GenericSortInstantiations {
 
         // Find the sorts "gs" has to be a supersort of and the
         // identity conditions
-        ImmutableList<Sort> subsorts = ImmutableSLList.nil();
+        ImmutableList<Sort> subsorts = ImmutableList.nil();
         ImmutableList<GenericSortCondition> idConditions =
-            ImmutableSLList.nil();
+            ImmutableList.nil();
 
         // subsorts given by the conditions (could be made faster
         // by using a hash map for storing the conditions)
@@ -355,7 +352,7 @@ public final class GenericSortInstantiations {
                 }
             }
 
-            return ImmutableSLList.<Sort>nil().prepend(chosen);
+            return ImmutableList.singleton(chosen);
         } else {
             // if a list of possible instantiations of the generic
             // sort has been given, use it
@@ -370,7 +367,7 @@ public final class GenericSortInstantiations {
 
     private static ImmutableList<Sort> toList(ImmutableSet<Sort> p_set) {
         ImmutableList<Sort> res;
-        res = ImmutableSLList.nil();
+        res = ImmutableList.nil();
         for (Sort sort : p_set) {
             res = res.prepend(sort);
         }
@@ -411,7 +408,7 @@ public final class GenericSortInstantiations {
         }
 
         Iterator<GenericSort> it = topology(p_remainingSorts).iterator();
-        p_remainingSorts = ImmutableSLList.nil();
+        p_remainingSorts = ImmutableList.nil();
 
         // reverse the order of the sorts, to start with the most
         // general one
@@ -503,7 +500,7 @@ public final class GenericSortInstantiations {
     ///
     /// @return sorted sorts
     private static ImmutableList<GenericSort> topology(ImmutableList<GenericSort> p_sorts) {
-        ImmutableList<GenericSort> res = ImmutableSLList.nil();
+        ImmutableList<GenericSort> res = ImmutableList.nil();
         Iterator<GenericSort> it;
         GenericSort curMax;
         GenericSort tMax;
@@ -519,7 +516,7 @@ public final class GenericSortInstantiations {
                 continue;
             }
 
-            tList = ImmutableSLList.nil();
+            tList = ImmutableList.nil();
 
             while (it.hasNext()) {
                 tMax = it.next();
@@ -589,16 +586,16 @@ public final class GenericSortInstantiations {
     /// Find all minimal elements of the given set <code>p_inside</code>
     private static ImmutableList<Sort> findMinimalElements(Set<Sort> p_inside) {
         if (p_inside.size() == 1) {
-            return ImmutableSLList.<Sort>nil().prepend(p_inside.iterator().next());
+            return ImmutableList.singleton(p_inside.iterator().next());
         }
 
-        ImmutableList<Sort> res = ImmutableSLList.nil();
+        ImmutableList<Sort> res = ImmutableList.nil();
         final Iterator<Sort> it = p_inside.iterator();
 
         mainloop: while (it.hasNext()) {
             final Sort sort = it.next();
 
-            ImmutableList<Sort> res2 = ImmutableSLList.nil();
+            ImmutableList<Sort> res2 = ImmutableList.nil();
             for (Sort oldMinimal : res) {
                 if (oldMinimal.extendsTrans(sort)) {
                     continue mainloop;

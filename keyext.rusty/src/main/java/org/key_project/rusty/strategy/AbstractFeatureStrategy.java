@@ -29,7 +29,6 @@ import org.key_project.rusty.strategy.feature.instantiator.SVInstantiationCP;
 import org.key_project.rusty.strategy.termProjection.TermBuffer;
 import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -47,7 +46,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
     }
 
     protected TacletFilter getFilterFor(String[] p_names) {
-        ImmutableList<RuleSet> heur = ImmutableSLList.nil();
+        ImmutableList<RuleSet> heur = ImmutableList.nil();
         for (int i = 0; i != p_names.length; ++i) {
             heur = heur.prepend(getHeuristic(p_names[i]));
         }

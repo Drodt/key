@@ -7,6 +7,7 @@ plugins {
 
 group = 'org.key_project'
 version = '0.1.0'
+description = 'KeY for Rust'
 
 configurations { antlr4 }
 
@@ -22,6 +23,7 @@ dependencies {
     api "org.antlr:antlr4-runtime:4.13.2"
     api(project(':key.ncore'))
     api(project(':key.ncore.calculus'))
+    api(project(':key.ncore.matcher'))
     api(project(':key.util'))
 
     implementation('info.picocli:picocli:4.7.7')

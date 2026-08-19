@@ -30,7 +30,6 @@ import org.key_project.rusty.rule.tacletbuilder.TacletBuilder;
 import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -43,7 +42,7 @@ public class InitConfig {
 
     private ProofSettings settings;
 
-    private ImmutableList<Taclet> taclets = ImmutableSLList.nil();
+    private ImmutableList<Taclet> taclets = ImmutableList.nil();
 
     /// maps categories to their default choice (both represented as Strings), which is used if no
     /// other choice is specified in the problem file
@@ -128,7 +127,7 @@ public class InitConfig {
             c2DC.remove(c.category());
         }
 
-        ImmutableList<Choice> category2DefaultChoiceList = ImmutableSLList.nil();
+        ImmutableList<Choice> category2DefaultChoiceList = ImmutableList.nil();
         for (final String s : c2DC.values()) {
             final Choice c = choiceNS().lookup(new Name(s));
             if (c != null) {
@@ -161,7 +160,7 @@ public class InitConfig {
     }
 
     public void setTaclets(Collection<Taclet> tacs) {
-        taclets = ImmutableSLList.nil();
+        taclets = ImmutableList.nil();
         addTaclets(tacs);
     }
 
@@ -180,7 +179,7 @@ public class InitConfig {
     /// returns the built-in rules of this initial configuration
     public ImmutableList<BuiltInRule> builtInRules() {
         Profile profile = getProfile();
-        return (profile == null ? ImmutableSLList.nil()
+        return (profile == null ? ImmutableList.nil()
                 : profile.getStandardRules().standardBuiltInRules());
     }
 

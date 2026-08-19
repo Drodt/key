@@ -14,7 +14,6 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// Instances of this class are immutable
 public class BuiltInRuleAppContainer extends RuleAppContainer {
@@ -93,16 +92,16 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     public ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
         var goal = (Goal) p_goal;
         if (!isStillApplicable(goal)) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
 
         final PosInOccurrence pio = getPosInOccurrence(goal);
 
         RuleAppContainer container = createAppContainer(bir, pio, goal);
         if (container.getCost() instanceof TopRuleAppCost) {
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         }
-        return ImmutableSLList.<RuleAppContainer>nil().prepend(container);
+        return ImmutableList.singleton(container);
     }
 
     @Override

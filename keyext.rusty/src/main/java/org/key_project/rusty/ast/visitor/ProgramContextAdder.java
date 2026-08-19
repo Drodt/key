@@ -15,7 +15,6 @@ import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.rule.inst.ContextBlockExpressionInstantiation;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -80,7 +79,7 @@ public class ProgramContextAdder {
             if (replacement instanceof BlockExpression be)
                 return be;
             if (replacement instanceof Expr e)
-                return new BlockExpression(ImmutableSLList.nil(), e);
+                return new BlockExpression(ImmutableList.nil(), e);
         }
         var body = wrapper.getStatements().tail();
         body = body.prepend(wrapExprIfNecessary(replacement));
@@ -125,7 +124,7 @@ public class ProgramContextAdder {
                 return new BlockExpression(putIn.getStatements(), putIn.getValue());
             }
 
-            ImmutableList<Statement> body = ImmutableSLList.nil();
+            ImmutableList<Statement> body = ImmutableList.nil();
 
             for (int i = 0; i < childrenToAdd; i++) {
                 if (i < putInLength) {
@@ -186,7 +185,7 @@ public class ProgramContextAdder {
             if (replacement instanceof GhostBlockExpression ge)
                 return ge;
             if (replacement instanceof Expr e)
-                return new GhostBlockExpression(ImmutableSLList.nil(), e);
+                return new GhostBlockExpression(ImmutableList.nil(), e);
         }
         var body = wrapper.getStatements().tail();
         body = body.prepend(wrapExprIfNecessary(replacement));

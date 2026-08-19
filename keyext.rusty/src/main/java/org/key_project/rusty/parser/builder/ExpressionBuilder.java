@@ -32,7 +32,6 @@ import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.util.parsing.BuildingException;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.java.StringUtil;
 
@@ -584,7 +583,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         if (head != null && ss != null) {
             // A sequent with only head in the antecedent.
             return RustySequentKit
-                    .createSequent(ImmutableSLList.singleton(new SequentFormula(head)), ss);
+                    .createSequent(ImmutableList.singleton(new SequentFormula(head)), ss);
         }
         if (head != null && s != null) {
             // A sequent. Prepend head to the antecedent.
@@ -593,7 +592,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             return RustySequentKit.createSequent(newAnt, s.succedent().asList());
         }
         if (ss != null) {
-            return RustySequentKit.createSequent(ImmutableSLList.nil(), ss);
+            return RustySequentKit.createSequent(ImmutableList.nil(), ss);
         }
         assert (false);
         return null;
@@ -603,7 +602,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     public ImmutableList<SequentFormula> visitSemisequent(KeYRustyParser.SemisequentContext ctx) {
         ImmutableList<SequentFormula> ss = accept(ctx.ss);
         if (ss == null) {
-            ss = ImmutableSLList.nil();
+            ss = ImmutableList.nil();
         }
         Term head = accept(ctx.term());
         if (head != null) {

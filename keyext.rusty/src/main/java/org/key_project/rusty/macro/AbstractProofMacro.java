@@ -11,7 +11,6 @@ import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.settings.ProofSettings;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 public abstract class AbstractProofMacro implements ProofMacro {
     /// {@inheritDoc}
@@ -66,7 +65,7 @@ public abstract class AbstractProofMacro implements ProofMacro {
     private static ImmutableList<Goal> getGoals(Node node) {
         if (node == null) {
             // can happen during initialization
-            return ImmutableSLList.nil();
+            return ImmutableList.nil();
         } else {
             return node.proof().getSubtreeEnabledGoals(node);
         }

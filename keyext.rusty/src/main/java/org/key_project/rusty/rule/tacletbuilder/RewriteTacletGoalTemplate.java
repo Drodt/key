@@ -9,7 +9,6 @@ import org.key_project.prover.rules.Taclet;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
@@ -38,7 +37,7 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
 
 
     public RewriteTacletGoalTemplate(Term replacewith) {
-        this(RustySequentKit.getInstance().getEmptySequent(), ImmutableSLList.nil(), replacewith);
+        this(RustySequentKit.getInstance().getEmptySequent(), ImmutableList.nil(), replacewith);
     }
 
 

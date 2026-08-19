@@ -58,7 +58,7 @@ public class CreateLocalAnonUpdate extends AbstractTermTransformer {
     private static Function anonConstForPV(ProgramVariable pv, Services services) {
         final TermBuilder tb = services.getTermBuilder();
         final var name = new Name(tb.newName(pv.name().toString()));
-        final var fn = new RFunction(name, pv.sort(), true);
+        final var fn = new RFunction(name, pv.sort(), Function.FunctionKind.SKOLEM, -1);
         services.getNamespaces().functions().addSafely(fn);
 
         return fn;

@@ -31,7 +31,6 @@ import org.key_project.rusty.parsing.RustySchemaParser;
 import org.key_project.rusty.rule.metaconstruct.ExpandFnBody;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -548,13 +547,13 @@ public class SchemaConverter {
         var stmtsCtx = ctx.stmts();
 
         if (stmtsCtx == null)
-            return new BlockExpression(ImmutableSLList.nil(), null);
+            return new BlockExpression(ImmutableList.nil(), null);
 
         var stmts = stmtsCtx.stmt().stream().map(this::convertStmt)
                 .collect(ImmutableList.collector());
         if (!stmts.isEmpty()) {
             var last = stmts.get(stmts.size() - 1);
-            ImmutableList<Statement> firstStmts = ImmutableSLList.nil();
+            ImmutableList<Statement> firstStmts = ImmutableList.nil();
             for (int i = 0; i < stmts.size() - 1; i++) {
                 firstStmts = firstStmts.append(stmts.get(i));
             }
@@ -592,13 +591,13 @@ public class SchemaConverter {
         var stmtsCtx = ctx.stmts();
 
         if (stmtsCtx == null)
-            return new ContextBlockExpression(ImmutableSLList.nil(), null);
+            return new ContextBlockExpression(ImmutableList.nil(), null);
 
         ImmutableList<Statement> stmts = stmtsCtx.stmt().stream().map(this::convertStmt)
                 .collect(ImmutableList.collector());
         if (!stmts.isEmpty()) {
             var last = stmts.get(stmts.size() - 1);
-            ImmutableList<Statement> firstStmts = ImmutableSLList.nil();
+            ImmutableList<Statement> firstStmts = ImmutableList.nil();
             for (int i = 0; i < stmts.size() - 1; i++) {
                 firstStmts = firstStmts.append(stmts.get(i));
             }

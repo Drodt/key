@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.op;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 import org.key_project.rusty.ast.Def;
@@ -17,7 +19,6 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -81,16 +82,16 @@ public class ProgramFunction extends ObserverFunction implements RustyProgramEle
     }
 
     public static ImmutableList<ProgramVariable> collectParameters(Function function) {
-        ImmutableList<ProgramVariable> params = ImmutableSLList.nil();
+        List<ProgramVariable> params = new LinkedList<>();
         for (int i = function.params().size() - 1; i >= 0; --i) {
             var param = function.params().get(i);
             if (param instanceof FunctionParamPattern fp
                     && fp.pattern() instanceof BindingPattern bp) {
-                params = params.prepend(bp.pv());
+                params.add(bp.pv());
             } else {
                 throw new RuntimeException("Expected PV param");
             }
         }
-        return params;
+        return ImmutableList.fromList(params);
     }
 }

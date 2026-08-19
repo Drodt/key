@@ -19,7 +19,7 @@ import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
-import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.collection.ImmutableList;
 
 /// Term generator for inferring the range of values that a variable can have from a given
 /// non-linear
@@ -82,14 +82,14 @@ public class RootsGenerator implements TermGenerator<Goal> {
     }
 
     private Iterator<Term> emptyIterator() {
-        return ImmutableSLList.<Term>nil().iterator();
+        return ImmutableList.<Term>nil().iterator();
     }
 
     private Iterator<Term> toIterator(Term res) {
         if (res.equals(tb.ff())) {
             return emptyIterator();
         }
-        return ImmutableSLList.<Term>nil().prepend(res).iterator();
+        return ImmutableList.singleton(res).iterator();
     }
 
     private Term breakDownEq(Term var, BigInteger lit, int pow) {

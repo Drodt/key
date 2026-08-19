@@ -13,7 +13,6 @@ import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.prover.impl.ApplyStrategy;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 /// The Class TryCloseMacro tries to close goals. Goals are either closed or left untouched.
 /// This uses the code provided by Michael Kirsten in `InteractiveProver$AutoWorker`.
@@ -136,7 +135,7 @@ public class TryCloseMacro extends AbstractProofMacro {
                 int maxSteps = numberSteps > 0 ? numberSteps
                         : proof.getSettings().getStrategySettings().getMaxSteps();
                 final ProofSearchInformation<Proof, Goal> result = applyStrategy.start(proof,
-                    ImmutableSLList.<Goal>nil().prepend(goal), maxSteps, -1, false);
+                    ImmutableList.singleton(goal), maxSteps, -1, false);
                 // final Goal closedGoal;
 
                 // retreat if not closed

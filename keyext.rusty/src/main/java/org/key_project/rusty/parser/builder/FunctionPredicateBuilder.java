@@ -92,7 +92,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                     if (genericParameters == null) {
                         Function fn =
                             new RFunction(new Name(argName), argSort, new Sort[] { sort }, null,
-                                false, false);
+                                false);
                         dtFnNamespace.add(fn);
                     } else {
                         ParametricFunctionDecl fn = new ParametricFunctionDecl(new Name(argName),
@@ -102,7 +102,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                     }
                 }
                 if (genericParameters == null) {
-                    Function function = new RFunction(name, sort, args, null, true, false);
+                    Function function = new RFunction(name, sort, args, null, true);
                     namespaces().functions().parent().addSafely(function);
                 } else {
                     ParametricFunctionDecl fn =
@@ -151,7 +151,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                 new ImmutableArray<>(argSorts.toArray(new Sort[0])),
                 whereToBind == null ? null
                         : new ImmutableArray<>(whereToBind.toArray(new Boolean[0])),
-                false, rigid, false);
+                false, rigid, Function.FunctionKind.ORDINARY, -1);
 
             if (lookup(p.name()) == null) {
                 functions().parent().add(p);
@@ -216,7 +216,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                             : new ImmutableArray<>(whereToBind.toArray(new Boolean[0]));
                 if (genericParameters == null)
                     f = new RFunction(name, retSort, new ImmutableArray<>(sortsArray),
-                        whereToBind1, unique, rigid, false);
+                        whereToBind1, unique, rigid, Function.FunctionKind.ORDINARY, -1);
                 else {
                     var d = new ParametricFunctionDecl(name,
                         ImmutableList.fromList(genericParameters), new ImmutableArray<>(sortsArray),

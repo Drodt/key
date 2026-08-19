@@ -27,7 +27,6 @@ import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 public class TacletIndex {
@@ -43,7 +42,7 @@ public class TacletIndex {
     protected HashMap<Object, ImmutableList<NoPosTacletApp>> succList = new LinkedHashMap<>();
 
     /// contains NoFind-Taclets
-    protected ImmutableList<NoPosTacletApp> noFindList = ImmutableSLList.nil();
+    protected ImmutableList<NoPosTacletApp> noFindList = ImmutableList.nil();
 
     /// keeps track of no pos taclet apps with partial instantiations
     protected HashSet<NoPosTacletApp> partialInstantiatedRuleApps = new LinkedHashSet<>();
@@ -57,7 +56,7 @@ public class TacletIndex {
         rwList = new LinkedHashMap<>();
         antecList = new LinkedHashMap<>();
         succList = new LinkedHashMap<>();
-        noFindList = ImmutableSLList.nil();
+        noFindList = ImmutableList.nil();
         addTaclets(toNoPosTacletApp(taclets));
     }
 
@@ -83,7 +82,7 @@ public class TacletIndex {
     }
 
     public static ImmutableSet<NoPosTacletApp> toNoPosTacletApp(Iterable<Taclet> rule) {
-        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+        ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
         for (Taclet t : rule) {
             result = result.prepend(NoPosTacletApp.createNoPosTacletApp(t));
         }
@@ -168,7 +167,7 @@ public class TacletIndex {
         Object indexObj = getIndexObj((FindTaclet) tacletApp.taclet());
         ImmutableList<NoPosTacletApp> opList = map.get(indexObj);
         if (opList == null) {
-            opList = ImmutableSLList.<NoPosTacletApp>nil().prepend(tacletApp);
+            opList = ImmutableList.<NoPosTacletApp>nil().prepend(tacletApp);
         } else {
             opList = opList.prepend(tacletApp);
         }
@@ -233,7 +232,7 @@ public class TacletIndex {
     protected ImmutableList<NoPosTacletApp> matchTaclets(
             ImmutableList<NoPosTacletApp> tacletApps,
             final PosInOccurrence pos, final Services services) {
-        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+        ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
         if (tacletApps == null) {
             return result;
         }
@@ -340,7 +339,7 @@ public class TacletIndex {
     private ImmutableList<NoPosTacletApp> getRustyTacletList(
             HashMap<Object, ImmutableList<NoPosTacletApp>> map, RustyProgramElement pe,
             PrefixOccurrences prefixOccurrences) {
-        ImmutableList<NoPosTacletApp> res = ImmutableSLList.nil();
+        ImmutableList<NoPosTacletApp> res = ImmutableList.nil();
         if (pe instanceof PossibleProgramPrefix pre && pre.isPrefix()) {
             int next = prefixOccurrences.occurred(pe);
             if (next < pe.getChildCount()) {
@@ -359,7 +358,7 @@ public class TacletIndex {
     private ImmutableList<NoPosTacletApp> getListHelp(
             final HashMap<Object, ImmutableList<NoPosTacletApp>> map, final Term term,
             final boolean ignoreUpdates, final PrefixOccurrences prefixOccurrences) {
-        ImmutableList<NoPosTacletApp> res = ImmutableSLList.nil();
+        ImmutableList<NoPosTacletApp> res = ImmutableList.nil();
         final Operator op = term.op();
 
         if (op instanceof RModality mod && mod.programBlock().program().getChildCount() != 0) {
@@ -429,7 +428,7 @@ public class TacletIndex {
     ///
     /// @return list with all partial instantiated NoPosTacletApps
     public ImmutableList<NoPosTacletApp> getPartialInstantiatedApps() {
-        ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+        ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
         for (NoPosTacletApp partialInstantiatedRuleApp : partialInstantiatedRuleApps) {
             result = result.prepend(partialInstantiatedRuleApp);
         }
@@ -530,7 +529,7 @@ public class TacletIndex {
         /// @param map a map to select from
         public ImmutableList<NoPosTacletApp> getList(
                 HashMap<Object, ImmutableList<NoPosTacletApp>> map) {
-            ImmutableList<NoPosTacletApp> result = ImmutableSLList.nil();
+            ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
             for (int i = 0; i < PREFIXTYPES; i++) {
                 if (occurred[i]) {
                     ImmutableList<NoPosTacletApp> inMap = map.get(prefixClasses[i]);

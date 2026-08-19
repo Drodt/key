@@ -218,7 +218,7 @@ public class DeclarationBuilder extends DefaultBuilder {
 
     @Override
     public Object visitRuleset_decls(KeYRustyParser.Ruleset_declsContext ctx) {
-        for (String id : this.<String>mapOf(ctx.simple_ident())) {
+        for (String id : this.<String>mapOf(ctx.simple_ident_with_doc())) {
             Name name = new Name(id);
             var h = new RuleSet(name);
             if (ruleSets().lookup(name) == null) {

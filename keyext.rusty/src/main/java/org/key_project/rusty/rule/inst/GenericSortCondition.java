@@ -12,7 +12,6 @@ import org.key_project.rusty.logic.sort.GenericSort;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 
 
 public abstract class GenericSortCondition {
@@ -73,7 +72,7 @@ public abstract class GenericSortCondition {
         if (!(s1 instanceof ParametricSortInstance ps1) || ps1.getBase() != psi.getBase()) {
             return null;
         }
-        ImmutableList<GenericSortCondition> conds = ImmutableSLList.nil();
+        ImmutableList<GenericSortCondition> conds = ImmutableList.nil();
         for (int i = psi.getArgs().size() - 1; i >= 0; i--) {
             var a0 = psi.getArgs().get(i);
             var a1 = ps1.getArgs().get(i);

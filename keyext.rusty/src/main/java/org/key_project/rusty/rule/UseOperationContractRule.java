@@ -28,7 +28,6 @@ import org.key_project.rusty.rule.inst.ContextBlockExpressionInstantiation;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -137,7 +136,7 @@ public final class UseOperationContractRule implements BuiltInRule {
     }
 
     private static ImmutableList<Term> getActualParams(Call call, Services services) {
-        ImmutableList<Term> result = ImmutableSLList.nil();
+        ImmutableList<Term> result = ImmutableList.nil();
         for (var expr : call.params()) {
             Term actualParam = services.convertToLogicElement(expr);
             result = result.append(actualParam);

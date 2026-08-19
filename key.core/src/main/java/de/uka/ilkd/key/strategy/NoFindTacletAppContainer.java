@@ -12,19 +12,15 @@ import org.key_project.prover.strategy.costbased.RuleAppCost;
  * Instances of this class are immutable
  */
 public class NoFindTacletAppContainer extends TacletAppContainer {
-
-    NoFindTacletAppContainer(NoPosTacletApp p_app, RuleAppCost p_ageFreeCost,
+    public NoFindTacletAppContainer(NoPosTacletApp p_app, RuleAppCost p_ageFreeCost,
             boolean p_ageFreeCostIsRegular, RuleAppCost p_cost, long p_age) {
         super(p_app, p_ageFreeCost, p_ageFreeCostIsRegular, p_cost, p_age);
     }
 
-    /**
-     * @return true iff the stored rule app is applicable for the given sequent, i.e. always true
-     *         since NoFindTaclets are not bound to a find-position (if-formulas are not considered)
-     */
+    /// @return true iff the stored rule app is applicable for the given sequent, i.e. always true
+    /// since `NoFindTaclet`s are not bound to a find-position (assumes-formulas are not considered)
     @Override
     protected boolean isStillApplicable(Goal p_goal) {
         return true;
     }
-
 }

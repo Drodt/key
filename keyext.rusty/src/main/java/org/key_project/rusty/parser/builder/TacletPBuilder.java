@@ -160,8 +160,8 @@ public class TacletPBuilder extends ExpressionBuilder {
                 createTacletBuilderFor(null, ApplicationRestriction.NONE, ctx);
             currentTBuilder.push(b);
             Sequent addSeq = RustySequentKit
-                    .createAnteSequent(ImmutableSLList.singleton(new SequentFormula(form)));
-            ImmutableList<Taclet> noTaclets = ImmutableSLList.nil();
+                    .createAnteSequent(ImmutableList.singleton(new SequentFormula(form)));
+            ImmutableList<Taclet> noTaclets = ImmutableList.nil();
             DefaultImmutableSet<SchemaVariable> noSV = DefaultImmutableSet.nil();
             addGoalTemplate(null, null, addSeq, noTaclets, noSV, null, ctx);
             b.setName(new Name(name));
@@ -333,9 +333,9 @@ public class TacletPBuilder extends ExpressionBuilder {
             for (int i = 0; i < args.length; i++) {
                 args[i] = variables.get(context.argName.get(i).getText());
             }
-            Sequent addedSeq = RustySequentKit.createAnteSequent(ImmutableSLList
+            Sequent addedSeq = RustySequentKit.createAnteSequent(ImmutableList
                     .singleton(new SequentFormula(tb.equals(tb.var(phi), tb.func(func, args)))));
-            TacletGoalTemplate goal = new TacletGoalTemplate(addedSeq, ImmutableSLList.nil());
+            TacletGoalTemplate goal = new TacletGoalTemplate(addedSeq, ImmutableList.nil());
             goal.setName("#" + phi.name() + " = " + context.name.getText());
             b.addTacletGoalTemplate(goal);
         }
@@ -436,7 +436,7 @@ public class TacletPBuilder extends ExpressionBuilder {
 
         tacletBuilder.setFind(tb.func(function, tb.var(x)));
         tacletBuilder.setassumesSequent(RustySequentKit.createAnteSequent(
-            ImmutableSLList
+            ImmutableList
                     .singleton(new SequentFormula(tb.equals(tb.var(x), tb.func(consFn, args))))));
         tacletBuilder.addTacletGoalTemplate(new RewriteTacletGoalTemplate(tb.var(res)));
         tacletBuilder.setApplicationRestriction(
@@ -463,8 +463,8 @@ public class TacletPBuilder extends ExpressionBuilder {
 
         var use = tb.all(qvar, tb.var(phi));
         var useCase = new TacletGoalTemplate(
-            RustySequentKit.createAnteSequent(ImmutableSLList.singleton(new SequentFormula(use))),
-            ImmutableSLList.nil());
+            RustySequentKit.createAnteSequent(ImmutableList.singleton(new SequentFormula(use))),
+            ImmutableList.nil());
         useCase.setName("Use case of " + ctx.name.getText());
         cases.add(useCase);
 
@@ -479,8 +479,8 @@ public class TacletPBuilder extends ExpressionBuilder {
         var constr = createQuantifiedFormula(it, qvar, var, sort);
         var goal = new TacletGoalTemplate(
             RustySequentKit
-                    .createSuccSequent(ImmutableSLList.singleton(new SequentFormula(constr))),
-            ImmutableSLList.nil());
+                    .createSuccSequent(ImmutableList.singleton(new SequentFormula(constr))),
+            ImmutableList.nil());
         goal.setName(it.getText());
         return goal;
     }
@@ -506,8 +506,8 @@ public class TacletPBuilder extends ExpressionBuilder {
 
         var goal = new TacletGoalTemplate(
             RustySequentKit
-                    .createAnteSequent(ImmutableSLList.singleton(new SequentFormula(axiom))),
-            ImmutableSLList.nil());
+                    .createAnteSequent(ImmutableList.singleton(new SequentFormula(axiom))),
+            ImmutableList.nil());
         tacletBuilder.addTacletGoalTemplate(goal);
 
         tacletBuilder.setDisplayName("axiom_for_" + sort.name());
@@ -785,7 +785,7 @@ public class TacletPBuilder extends ExpressionBuilder {
         String name = accept(ctx.string_value());
 
         Sequent addSeq = RustySequentKit.getInstance().getEmptySequent();
-        ImmutableSLList<Taclet> addRList = ImmutableSLList.nil();
+        ImmutableList<Taclet> addRList = ImmutableList.nil();
         DefaultImmutableSet<SchemaVariable> addpv = DefaultImmutableSet.nil();
 
         @Nullable

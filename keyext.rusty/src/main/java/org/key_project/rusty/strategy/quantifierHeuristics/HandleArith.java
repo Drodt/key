@@ -13,7 +13,7 @@ import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
-import org.key_project.util.LRUCache;
+import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.Pair;
 
 import org.jspecify.annotations.NonNull;
@@ -29,7 +29,7 @@ public class HandleArith {
     /// @return <code>trueT</code> if form is proved to true, <code>falseT</code> if false, and
     /// <code>problem</code> if it can't be proved.
     public static Term provedByArith(Term problem, Services services) {
-        final LRUCache<@NonNull Term, @NonNull Term> provedByArithCache =
+        final ConcurrentLruCache<@NonNull Term, @NonNull Term> provedByArithCache =
             services.getCaches().getProvedByArithFstCache();
         Term result;
         synchronized (provedByArithCache) {
@@ -67,7 +67,7 @@ public class HandleArith {
     }
 
 
-    private static void putInTermCache(final LRUCache<Term, Term> provedByArithCache,
+    private static void putInTermCache(final ConcurrentLruCache<Term, Term> provedByArithCache,
             final Term key, final Term value) {
         synchronized (provedByArithCache) {
             provedByArithCache.put(key, value);
@@ -114,7 +114,7 @@ public class HandleArith {
     /// @return trueT if true, falseT if false, and atom if it can't be proven;
     public static Term provedByArith(Term problem, Term axiom, Services services) {
         final Pair<@NonNull Term, @NonNull Term> key = new Pair<>(problem, axiom);
-        final LRUCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> provedByArithCache =
+        final ConcurrentLruCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> provedByArithCache =
             services.getCaches().getProvedByArithSndCache();
         Term result;
         synchronized (provedByArithCache) {
@@ -173,7 +173,7 @@ public class HandleArith {
     /// @return falseT if <code>term</code>'s operator is not >= or <=
     private static Term formatArithTerm(final Term problem, TermBuilder tb, IntLDT ig,
             ServiceCaches caches) {
-        final LRUCache<@NonNull Term, @NonNull Term> formattedTermCache =
+        final ConcurrentLruCache<@NonNull Term, @NonNull Term> formattedTermCache =
             caches.getFormattedTermCache();
         Term pro;
         synchronized (formattedTermCache) {

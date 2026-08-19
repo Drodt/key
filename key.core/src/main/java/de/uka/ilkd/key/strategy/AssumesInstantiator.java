@@ -43,7 +43,8 @@ public class AssumesInstantiator {
         this.goal = goal;
         this.tacletAppContainer = tacletAppContainer;
         this.assumesInstCache =
-            goal.proof().getServices().getCaches().getIfInstantiationCache().getCache(goal.node());
+            goal.proof().getServices().getCaches().getAssumesInstantiationCachePool()
+                    .getCache(goal.node());
     }
 
     private void addResult(NoPosTacletApp app) {

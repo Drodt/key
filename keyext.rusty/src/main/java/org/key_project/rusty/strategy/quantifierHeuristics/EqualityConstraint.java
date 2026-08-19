@@ -19,10 +19,9 @@ import org.key_project.rusty.logic.BooleanContainer;
 import org.key_project.rusty.logic.NameAbstractionTable;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RModality;
-import org.key_project.util.LRUCache;
+import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
-import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import static org.key_project.rusty.logic.equality.RenamingProgramElementProperty.RENAMING_PROGRAM_ELEMENT_PROPERTY;
@@ -494,8 +493,8 @@ public class EqualityConstraint implements Constraint {
     /// <code>!modifyThis</code> a new object is created, and <code>this</code> is never
     /// modified. <code>Constraint.TOP</code> is always returned for ununifiable terms
     private Constraint unifyHelp(Term t1, Term t2, boolean modifyThis, Services services) {
-        return unifyHelp(t1, t2, ImmutableSLList.nil(),
-            ImmutableSLList.nil(), null, modifyThis, services);
+        return unifyHelp(t1, t2, ImmutableList.nil(),
+            ImmutableList.nil(), null, modifyThis, services);
     }
 
 
@@ -685,8 +684,8 @@ public class EqualityConstraint implements Constraint {
     /// @param term The Term
     /// @return a boolean that is true iff. adding a mapping (mv,term) would cause a cycle
     private boolean hasCycle(Metavariable mv, Term term, Services services) {
-        ImmutableList<Metavariable> body = ImmutableSLList.nil();
-        ImmutableList<Term> fringe = ImmutableSLList.nil();
+        ImmutableList<Metavariable> body = ImmutableList.nil();
+        ImmutableList<Term> fringe = ImmutableList.nil();
         Term checkForCycle = term;
 
         while (true) {
@@ -799,8 +798,8 @@ public class EqualityConstraint implements Constraint {
 
     // the methods using these caches seem not to be used anymore otherwise refactor and move it
     // into ServiceCaches
-    private static Map<ECPair, Constraint> joinCache = new LRUCache<>(0);
-    private static Map<ECPair, Constraint> joinCacheOld = new LRUCache<>(0);
+    private static Map<ECPair, Constraint> joinCache = new ConcurrentLruCache<>(0);
+    private static Map<ECPair, Constraint> joinCacheOld = new ConcurrentLruCache<>(0);
 
     private static final ECPair ecPair0 = new ECPair(null, null, 0);
 
