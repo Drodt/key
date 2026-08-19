@@ -234,8 +234,8 @@ public final class ExampleChooser extends JDialog {
                     if (p >= 0) {
                         addTab(fileAsString.substring(p), "Proof Obligation", false);
                     }
-                    for (File file : example.getAdditionalFiles()) {
-                        addTab(fileAsString(file), file.getName(), false);
+                    for (Path file : example.getAdditionalFiles()) {
+                        addTab(fileAsString(file), file.getFileName().toString(), false);
                     }
                     loadButton.setEnabled(true);
                     loadProofButton.setEnabled(example.hasProof());
