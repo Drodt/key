@@ -7,6 +7,15 @@ import java.io.*;
 import java.nio.file.Path;
 import java.util.*;
 
+import de.uka.ilkd.key.java.ast.*;
+import de.uka.ilkd.key.java.ast.abstraction.*;
+import de.uka.ilkd.key.java.ast.declaration.*;
+import de.uka.ilkd.key.java.ast.expression.*;
+import de.uka.ilkd.key.java.ast.expression.literal.*;
+import de.uka.ilkd.key.java.ast.expression.operator.*;
+import de.uka.ilkd.key.java.ast.expression.operator.adt.*;
+import de.uka.ilkd.key.java.ast.reference.*;
+import de.uka.ilkd.key.java.ast.statement.*;
 import de.uka.ilkd.key.nparser.ParsingFacade;
 import de.uka.ilkd.key.util.Position;
 
@@ -15,7 +24,6 @@ import org.key_project.util.collection.Pair;
 import org.antlr.v4.runtime.CharStream;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-
 
 /**
  * A container to hold parsed configurations. Configurations are a mapping between property names
@@ -80,7 +88,8 @@ public class Configuration {
      * @see #getTable(String)
      */
     public <T> boolean exists(String name, Class<T> clazz) {
-        return data.containsKey(name) && clazz.isAssignableFrom(data.get(name).getClass());
+        return data.containsKey(name) && data.get(name) != null
+                && clazz.isAssignableFrom(data.get(name).getClass());
     }
 
     /**
@@ -176,7 +185,7 @@ public class Configuration {
      * @throws NullPointerException if no such value entry exists
      */
     public boolean getBool(String name) {
-        return get(name, Boolean.class);
+        return Boolean.TRUE.equals(get(name, Boolean.class));
     }
 
     /**
@@ -207,8 +216,7 @@ public class Configuration {
      * @param name property name
      * @throws ClassCastException if the entry is not a {@link String}
      */
-    @Nullable
-    public String getString(String name) {
+    public @Nullable String getString(String name) {
         return get(name, String.class);
     }
 
@@ -350,7 +358,7 @@ public class Configuration {
     /**
      * @see #getTable(String)
      */
-    public Configuration getSection(String name) {
+    public @Nullable Configuration getSection(String name) {
         return getTable(name);
     }
 
@@ -365,39 +373,39 @@ public class Configuration {
         return getSection(name);
     }
 
-    public Object set(String name, Object obj) {
+    public @Nullable Object set(String name, @Nullable Object obj) {
         return data.put(name, obj);
     }
 
-    public Object set(String name, Boolean obj) {
+    public @Nullable Object set(String name, @Nullable Boolean obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, String obj) {
+    public @Nullable Object set(String name, @Nullable String obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, Long obj) {
+    public @Nullable Object set(String name, @Nullable Long obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, int obj) {
+    public @Nullable Object set(String name, int obj) {
         return set(name, (long) obj);
     }
 
-    public Object set(String name, Double obj) {
+    public @Nullable Object set(String name, @Nullable Double obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, Configuration obj) {
+    public @Nullable Object set(String name, @Nullable Configuration obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, List<?> obj) {
+    public @Nullable Object set(String name, @Nullable List<?> obj) {
         return set(name, (Object) obj);
     }
 
-    public Object set(String name, String[] seq) {
+    public @Nullable Object set(String name, @Nullable String[] seq) {
         return set(name, (Object) Arrays.asList(seq));
     }
 
@@ -411,7 +419,7 @@ public class Configuration {
      * @param writer a writer
      * @param comment a comment
      */
-    public void save(Writer writer, String comment) {
+    public void save(Writer writer, @Nullable String comment) {
         new ConfigurationWriter(writer).printComment(comment).printMap(this.data);
     }
 
@@ -496,7 +504,10 @@ public class Configuration {
             return this;
         }
 
-        public ConfigurationWriter printComment(String comment) {
+        public ConfigurationWriter printComment(@Nullable String comment) {
+            if (comment == null) {
+                return this;
+            }
             if (comment.contains("\n")) {
                 out.format("/* %s */\n", comment);
             } else {
@@ -532,7 +543,7 @@ public class Configuration {
             } else if (value instanceof Enum<?>) {
                 printValue(value.toString());
             } else if (value == null) {
-                printValue("null");
+                out.write("null");
             } else {
                 throw new IllegalArgumentException("Unexpected object: " + value);
             }
@@ -540,7 +551,7 @@ public class Configuration {
         }
 
         private ConfigurationWriter printMap(Map<?, ?> value) {
-            out.format("{ ");
+            out.format("{");
             indent += 4;
             newline().printIndent();
             for (Iterator<? extends Map.Entry<?, ?>> iterator =
@@ -556,7 +567,7 @@ public class Configuration {
             }
             indent -= 4;
             newline().printIndent();
-            out.format(" }");
+            out.format("}");
             return this;
         }
 
@@ -567,7 +578,7 @@ public class Configuration {
         }
 
         private ConfigurationWriter printSeq(Collection<?> value) {
-            out.format("[ ");
+            out.print("[");
             indent += 4;
             newline();
             printIndent();
@@ -586,13 +597,13 @@ public class Configuration {
             }
             indent -= 4;
             newline().printIndent();
-            out.format(" ]");
+            out.print("]");
             return this;
         }
 
         private ConfigurationWriter printKey(String key) {
             printValue(key);
-            out.format(" : ");
+            out.print(" : ");
             return this;
         }
     }

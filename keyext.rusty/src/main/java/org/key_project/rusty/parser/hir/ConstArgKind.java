@@ -5,7 +5,7 @@ package org.key_project.rusty.parser.hir;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ConstArgKind {
+public sealed interface ConstArgKind {
     record Anon(AnonConst ac) implements ConstArgKind {
     }
 

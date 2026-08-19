@@ -8,7 +8,7 @@ import org.key_project.rusty.parser.hir.hirty.HirTy;
 import com.google.gson.annotations.SerializedName;
 import org.jspecify.annotations.Nullable;
 
-public interface GenericParamKind {
+public sealed interface GenericParamKind {
     record Lifetime(LifetimeParamKind kind) implements GenericParamKind {
     }
 

@@ -63,6 +63,18 @@ public record Crate(Mod topMod, HirTyMapping[] types, DefIdAdtMapping[] adts) {
                     .registerTypeAdapter(GenericParamKind.class, new GenericParamKind.Adapter())
                     .registerTypeAdapter(LifetimeParamKind.class, new LifetimeParamKind.Adapter())
                     .registerTypeAdapter(VariantData.class, new VariantData.Adapter())
+                    .registerTypeAdapter(AssocItemConstraintKind.class,
+                        new AssocItemConstraintKind.Adapter())
+                    .registerTypeAdapter(GenericBound.class, new GenericBound.Adapter())
+                    .registerTypeAdapter(PreciseCapturingArg.class,
+                        new PreciseCapturingArg.Adapter())
+                    .registerTypeAdapter(MatchSource.class, new MatchSource.Adapter())
+                    .registerTypeAdapter(StructTailExpr.class, new StructTailExpr.Adapter())
+                    .registerTypeAdapter(BoundRegionKind.class, new BoundRegionKind.Adapter())
+                    .registerTypeAdapter(BoundVarKind.class, new BoundVarKind.Adapter())
+                    .registerTypeAdapter(ExistentialPredicate.class,
+                        new ExistentialPredicate.Adapter())
+                    .registerTypeAdapter(TyTerm.class, new TyTerm.Adapter())
                     .create();
         return gson.fromJson(json, Crate.class);
     }

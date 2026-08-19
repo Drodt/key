@@ -41,6 +41,8 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
     private final ArithTermFeatures tf;
     private final RuleSetDispatchFeature conflictCostDispatcher;
     private final Feature totalCost;
+    /// the feature evaluated by [#instantiateApp]; built once, see constructor
+    private final Feature totalInstCost;
 
     // map rulesets to the strategies that participate in their cost computations, instantiation or
     // approval decisions
@@ -89,6 +91,17 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
         totalCost =
             add(AutomatedRuleFeature.getInstance(), ifMatchedF, NonDuplicateAppFeature.INSTANCE,
                 reduceCostTillMaxF, conflictCostDispatcher, AgeFeature.INSTANCE);
+
+        // The feature for instantiateApp, built once instead of on every call.
+        // Note that no conflict dispatcher takes part in this sum: resolveConflicts()
+        // *moves* the conflicting bindings out of the component dispatchers (see
+        // RuleSetDispatchFeature#remove), so any dispatcher built after the one above
+        // would be empty and contribute constant zero anyway.
+        enableInstantiate();
+        totalInstCost =
+            add(AutomatedRuleFeature.getInstance(), ifMatchedF, NonDuplicateAppFeature.INSTANCE,
+                reduceInstTillMaxF, AgeFeature.INSTANCE);
+        disableInstantiate();
     }
 
     /**
@@ -178,14 +191,7 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
     @Override
     public RuleAppCost instantiateApp(RuleApp app, PosInOccurrence pio, Goal goal,
             MutableState mState) {
-        enableInstantiate();
-        final Feature ifMatchedF = ifZero(MatchedAssumesFeature.INSTANCE, longConst(+1));
-        final Feature conflictCostDispatcher = resolveConflicts();
-        final Feature totalCost =
-            add(AutomatedRuleFeature.getInstance(), ifMatchedF, NonDuplicateAppFeature.INSTANCE,
-                conflictCostDispatcher, reduceInstTillMaxF, AgeFeature.INSTANCE);
-        disableInstantiate();
-        return totalCost.computeCost(app, pio, goal, mState);
+        return totalInstCost.computeCost(app, pio, goal, mState);
     }
 
     @Override

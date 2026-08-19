@@ -11,7 +11,7 @@ import org.key_project.rusty.parser.hir.hirty.HirTy;
 import org.jspecify.annotations.Nullable;
 
 
-public interface FnRetTy {
+public sealed interface FnRetTy {
     record Return(HirTy ty) implements FnRetTy {
     }
 

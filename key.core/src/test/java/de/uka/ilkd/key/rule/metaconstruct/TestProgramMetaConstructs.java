@@ -3,15 +3,17 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.uka.ilkd.key.rule.metaconstruct;
 
-import java.util.NoSuchElementException;
-
-import de.uka.ilkd.key.java.*;
-import de.uka.ilkd.key.java.expression.Assignment;
-import de.uka.ilkd.key.java.reference.TypeRef;
-import de.uka.ilkd.key.java.statement.Break;
-import de.uka.ilkd.key.java.statement.LabeledStatement;
-import de.uka.ilkd.key.java.statement.LoopInit;
-import de.uka.ilkd.key.java.statement.LoopStatement;
+import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.java.ast.ProgramElement;
+import de.uka.ilkd.key.java.ast.Statement;
+import de.uka.ilkd.key.java.ast.StatementBlock;
+import de.uka.ilkd.key.java.ast.expression.Assignment;
+import de.uka.ilkd.key.java.ast.expression.Expression;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
+import de.uka.ilkd.key.java.ast.statement.Break;
+import de.uka.ilkd.key.java.ast.statement.LabeledStatement;
+import de.uka.ilkd.key.java.ast.statement.LoopInit;
+import de.uka.ilkd.key.java.ast.statement.LoopStatement;
 import de.uka.ilkd.key.java.visitor.JavaASTCollector;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.op.SchemaVariableFactory;
@@ -94,7 +96,7 @@ public class TestProgramMetaConstructs {
         SVInstantiations inst = SVInstantiations.EMPTY_SVINSTANTIATIONS;
         try {
             wlt.transform(l, new Services(AbstractProfile.getDefaultProfile()), inst);
-        } catch (NoSuchElementException e) {
+        } catch (java.util.NoSuchElementException e) {
             fail(" Problem with empty while-blocks. See Bug #183 ");
         }
 

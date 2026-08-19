@@ -9,7 +9,7 @@ import org.key_project.rusty.parser.hir.expr.UnOp;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ConstExprKind {
+public sealed interface ConstExprKind {
     record Binop(BinOpKind kind) implements ConstExprKind {
     }
 

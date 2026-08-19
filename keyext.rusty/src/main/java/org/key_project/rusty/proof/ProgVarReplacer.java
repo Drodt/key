@@ -11,6 +11,7 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.InstantiationEntry;
+import org.key_project.prover.rules.instantiation.ListInstantiation;
 import org.key_project.prover.sequent.*;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -106,7 +107,10 @@ public final class ProgVarReplacer {
                 if (newPe != pe) {
                     result = result.replace(sv, newPe, services);
                 }
-            } else if (ie instanceof ProgramListInstantiation) {
+            } else if (ie instanceof ListInstantiation<?> list) {
+                if (list.getType() != RustyProgramElement.class) {
+                    throw new RuntimeException("Unexpected list instantiation: " + ie);
+                }
                 @SuppressWarnings("unchecked")
                 var a = (ImmutableArray<RustyProgramElement>) inst;
                 int size = a.size();

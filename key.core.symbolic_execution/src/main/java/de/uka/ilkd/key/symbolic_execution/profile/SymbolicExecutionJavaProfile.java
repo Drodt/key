@@ -222,7 +222,7 @@ public class SymbolicExecutionJavaProfile extends JavaProfile {
      * {@inheritDoc}
      */
     @Override
-    public String name() {
+    public String ident() {
         return NAME;
     }
 
@@ -324,5 +324,10 @@ public class SymbolicExecutionJavaProfile extends JavaProfile {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public String displayName() {
+        return NAME;
     }
 }

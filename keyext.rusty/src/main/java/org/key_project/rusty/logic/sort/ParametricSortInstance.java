@@ -173,15 +173,12 @@ public class ParametricSortInstance extends AbstractSort implements SyntaxElemen
     }
 
     /// Whether this sort contains generic sorts.
+    @Override
     public boolean containsGenericSort() {
         for (GenericArgument arg : args) {
             if (arg instanceof SortArg(Sort sort)) {
-                if (sort instanceof ParametricSortInstance psi && psi.containsGenericSort()) {
+                if (sort.containsGenericSort())
                     return true;
-                }
-                if (sort instanceof GenericSort) {
-                    return true;
-                }
             }
         }
         return false;

@@ -3,7 +3,11 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.ty;
 
-public interface BoundVarKind {
+import org.key_project.rusty.parser.hir.HirAdapter;
+
+import org.jspecify.annotations.Nullable;
+
+public sealed interface BoundVarKind {
     record Ty(BoundTyKind ty) implements BoundVarKind {
     }
 
@@ -11,5 +15,17 @@ public interface BoundVarKind {
     }
 
     record Const() implements BoundVarKind {
+    }
+
+    class Adapter extends HirAdapter<BoundVarKind> {
+        @Override
+        public @Nullable Class<? extends BoundVarKind> getType(String tag) {
+            return switch (tag) {
+                case "Ty" -> Ty.class;
+                case "Region" -> Region.class;
+                case "Const" -> Const.class;
+                default -> null;
+            };
+        }
     }
 }

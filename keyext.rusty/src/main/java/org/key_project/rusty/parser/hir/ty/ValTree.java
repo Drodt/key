@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface ValTree {
+public sealed interface ValTree {
     record Leaf(ScalarInt scalarInt) implements ValTree {
     }
 

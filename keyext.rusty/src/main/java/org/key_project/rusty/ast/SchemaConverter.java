@@ -37,7 +37,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class SchemaConverter {
-    private Namespace<@NonNull SchemaVariable> svNS;
+    private final Namespace<@NonNull SchemaVariable> svNS;
 
     // TODO: Rework this properly
     private final Map<String, VariableDeclaration> variables = new HashMap<>();
@@ -93,17 +93,6 @@ public class SchemaConverter {
         return sv;
     }
 
-    private Crate convertCrate(
-            RustySchemaParser.CrateContext ctx) {
-        return new Crate(new Mod(ctx.item().stream().map(this::convertItem)
-                .collect(ImmutableList.collector())));
-    }
-
-    private Item convertItem(RustySchemaParser.ItemContext ctx) {
-        // TODO: Rework
-        return convertFunction(ctx.function_());
-    }
-
     public Function convertFunction(
             RustySchemaParser.Function_Context ctx) {
         Name name = convertIdentifier(ctx.identifier()).name();
@@ -117,25 +106,7 @@ public class SchemaConverter {
         BlockExpression body =
             convertBlockExpr(
                 ctx.blockExpr());
-        var self = ctx.functionParams() == null ? null : ctx.functionParams().selfParam();
         var kind = Function.ImplicitSelfKind.None;
-        if (self != null) {
-            if (self.shorthandSelf() != null) {
-                if (self.shorthandSelf().AND() != null) {
-                    if (self.shorthandSelf().KW_MUT() != null) {
-                        kind = Function.ImplicitSelfKind.RefMut;
-                    } else {
-                        kind = Function.ImplicitSelfKind.RefImm;
-                    }
-                } else {
-                    if (self.shorthandSelf().KW_MUT() != null) {
-                        kind = Function.ImplicitSelfKind.Mut;
-                    } else {
-                        kind = Function.ImplicitSelfKind.Imm;
-                    }
-                }
-            }
-        }
         return new Function(name, kind,
             params,
             returnType,
@@ -211,7 +182,7 @@ public class SchemaConverter {
             return convertExprWithBlock(x.exprWithBlock());
         if (ctx instanceof RustySchemaParser.SchemaVarExpressionContext se)
             return convertSchemaVarExpression(se);
-        if (ctx instanceof RustySchemaParser.EmptyPanicContext p)
+        if (ctx instanceof RustySchemaParser.EmptyPanicContext)
             return new EmptyPanic();
         if (ctx instanceof RustySchemaParser.ExpandFnBodyContext e)
             return new ExpandFnBody(
@@ -371,7 +342,7 @@ public class SchemaConverter {
     private TypeCastExpression convertTypeCastExpression(
             RustySchemaParser.TypeCastExpressionContext ctx) {
         var base = convertExpr(ctx.expr());
-        var ty = convertTypeNoBounds(ctx.typeNoBounds());
+        var ty = convertRustType(ctx.type_());
         return new TypeCastExpression(base, ty);
     }
 
@@ -546,7 +517,7 @@ public class SchemaConverter {
             ctx.closureParameters() == null ? new ImmutableArray<>()
                     : new ImmutableArray<>(ctx.closureParameters().closureParam().stream()
                             .map(this::convertClosureParam).toList());
-        var ty = ctx.typeNoBounds() == null ? null : convertTypeNoBounds(ctx.typeNoBounds());
+        var ty = ctx.type_() == null ? null : convertRustType(ctx.type_());
         var body = ctx.expr() == null ? convertBlockExpr(ctx.blockExpr()) : convertExpr(ctx.expr());
         return new ClosureExpression(ctx.KW_MOVE() != null, params, ty, body);
     }
@@ -802,8 +773,6 @@ public class SchemaConverter {
         if (ctx.SEMI() != null && ctx.schemaStmt() == null) {
             return new EmptyStatement();
         }
-        if (ctx.item() != null)
-            return convertItem(ctx.item());
         if (ctx.letStmt() != null)
             return convertLetStmt(ctx.letStmt());
         if (ctx.exprStmt() != null)
@@ -939,18 +908,8 @@ public class SchemaConverter {
 
     private RustType convertRustType(
             RustySchemaParser.Type_Context ctx) {
-        if (ctx.typeNoBounds() != null) {
-            return convertTypeNoBounds(ctx.typeNoBounds());
-        }
-        throw new IllegalArgumentException("Unknown type " + ctx.getText());
-    }
-
-    private RustType convertTypeNoBounds(
-            RustySchemaParser.TypeNoBoundsContext ctx) {
         if (ctx.parenthesizedType() != null)
             return convertParenthesizedType(ctx.parenthesizedType());
-        if (ctx.traitObjectTypeOneBound() != null)
-            return convertTraitObjectOneBound(ctx.traitObjectTypeOneBound());
         if (ctx.typePath() != null)
             return convertTypePath(ctx.typePath());
         if (ctx.typeOf() != null) {
@@ -971,15 +930,6 @@ public class SchemaConverter {
     private RustType convertParenthesizedType(
             RustySchemaParser.ParenthesizedTypeContext ctx) {
         return convertRustType(ctx.type_());
-    }
-
-    private RustType convertTraitObjectOneBound(
-            RustySchemaParser.TraitObjectTypeOneBoundContext ctx) {
-        var tbCtx = ctx.traitBound();
-        if (ctx.KW_DYN() == null && tbCtx.QUESTION() == null && tbCtx.forLifetimes() == null) {
-            return convertTypePath(tbCtx.typePath());
-        }
-        throw new IllegalArgumentException("TODO @ DD");
     }
 
     private PrimitiveRustType convertTypePath(
@@ -1014,13 +964,13 @@ public class SchemaConverter {
             return new ImmutableArray<>();
         List<FunctionParam> params = new LinkedList<>();
         for (var param : ctx.functionParam()) {
-            params.add(convertFunctionParamPattern(param.functionParamPattern()));
+            params.add(convertFunctionParam(param));
         }
         return new ImmutableArray<>(params);
     }
 
-    private FunctionParamPattern convertFunctionParamPattern(
-            RustySchemaParser.FunctionParamPatternContext ctx) {
+    private FunctionParamPattern convertFunctionParam(
+            RustySchemaParser.FunctionParamContext ctx) {
         RustType type = convertRustType(ctx.type_());
         declaredType = services.getRustInfo().getKeYRustyType(type.type());
         inDeclarationMode = !inContextFunction;

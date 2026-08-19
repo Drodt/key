@@ -1,8 +1,93 @@
 parser grammar RustySchemaParser;
 
-import RustyParser;
-
 options { tokenVocab = RustySchemaLexer; }
+
+@header {
+package org.key_project.rusty.parsing;
+}
+
+function_
+   : KW_FN identifier LPAREN functionParams? RPAREN functionRetTy? (blockExpr | SEMI)
+   ;
+
+functionParams
+   :
+   functionParam (COMMA functionParam)* COMMA?
+   ;
+
+functionParam
+   : pattern ':' type_
+   ;
+
+functionRetTy
+   : '->' type_
+   ;
+
+identifier
+   : NON_KEYWORD_IDENTIFIER
+   | RAW_IDENTIFIER
+   ;
+
+schemaVariable
+   : SCHEMA_IDENTIFIER
+   ;
+
+genericArgs
+   : LT GT
+   | LT genericArgsLifetimes (COMMA genericArgsTypes)? (COMMA genericArgsBindings)? COMMA? GT
+   | LT genericArgsTypes (COMMA genericArgsBindings)? COMMA? GT
+   | LT (genericArg COMMA)* genericArg COMMA? GT
+   ;
+
+genericArg
+   : lifetime
+   | type_
+   | genericArgsConst
+   | genericArgsBinding
+   ;
+
+genericArgsConst
+   : blockExpr
+   | MINUS? literalExpr
+   | simplePathSegment
+   ;
+
+genericArgsLifetimes
+   : lifetime (COMMA lifetime)*
+   ;
+
+genericArgsTypes
+   : type_ (COMMA type_)*
+   ;
+
+genericArgsBindings
+   : genericArgsBinding (COMMA genericArgsBinding)*
+   ;
+
+genericArgsBinding
+   : identifier EQ type_
+   ;
+
+lifetime
+   : LIFETIME_OR_LABEL
+   | KW_STATICLIFETIME
+   | KW_UNDERLINELIFETIME
+   ;
+
+simplePath
+   : PATHSEP? simplePathSegment (PATHSEP simplePathSegment)*
+   ;
+
+simplePathSegment
+   : identifier
+   | KW_SUPER
+   | KW_SELFVALUE
+   | KW_CRATE
+   | KW_DOLLARCRATE
+   ;
+
+// === Expr ===
+
 blockExpr
    : LCURLYBRACE CONTEXT_START stmts? CONTEXT_END RCURLYBRACE # ContextBlockExpr
    | LCURLYBRACE stmts? RCURLYBRACE # StandardBlockExpr
@@ -25,7 +110,7 @@ expr
    | (AND | ANDAND) KW_MUT? expr # BorrowExpression
    | STAR expr # DereferenceExpression
    | (MINUS | NOT) expr # NegationExpression
-   | expr KW_AS typeNoBounds # TypeCastExpression
+   | expr KW_AS type_ # TypeCastExpression
    | expr (STAR | SLASH | PERCENT) expr # ArithmeticOrLogicalExpression
    | expr (PLUS | MINUS) expr # ArithmeticOrLogicalExpression
    | expr (shl | shr) expr # ArithmeticOrLogicalExpression
@@ -52,51 +137,132 @@ expr
    | SNAPSHOT LPAREN schemaVariable RPAREN # SnapshotExpression
    ;
 
-stmt
-   : item
-   | letStmt
-   | exprStmt
-   | schemaStmt SEMI
-   | PANIC_FRAME LPAREN schemaVariable COMMA blockExpr RPAREN
+callParams
+   : expr (',' expr)* ','?
    ;
 
-schemaStmt
-   : schemaVariable
+tupleIndex
+   : INTEGER_LITERAL
    ;
 
-identifierPattern
-   : KW_REF? KW_MUT? (identifier | schemaVariable) (AT pattern)?
+shl
+   : LT
+   {_input.LA(1) == LT}? LT
    ;
 
-schemaVariable
-   : SCHEMA_IDENTIFIER
+shr
+   : GT
+   {_input.LA(1) == GT}? GT
    ;
 
-rangePatternBound
-   : schemaVariable
-   | CHAR_LITERAL
-   | BYTE_LITERAL
-   | MINUS? INTEGER_LITERAL
-   // | MINUS? FLOAT_LITERAL
-   | pathExpr
+comparisonOperator
+   : '=='
+   | '!='
+   | '>'
+   | '<'
+   | '>='
+   | '<='
    ;
 
-typeNoBounds
-   : parenthesizedType
-   | implTraitTypeOneBound
-   | traitObjectTypeOneBound
-   | typePath
-   | tupleType
-   | neverType
-   | rawPointerType
-   | referenceType
-   | arrayType
-   | sliceType
-   | inferredType
-   | qualifiedPathInType
-   | bareFunctionType
-   | typeOf
-   | schemaVariable
+compoundAssignOperator
+   : PLUSEQ
+   | MINUSEQ
+   | STAREQ
+   | SLASHEQ
+   | PERCENTEQ
+   | ANDEQ
+   | OREQ
+   | CARETEQ
+   | SHLEQ
+   | SHREQ
+   ;
+
+arrayElements
+   : expr (',' expr)* ','?
+   | expr ';' expr
+   ;
+   // 8.2.7
+
+tupleElements
+   : (expr ',')+ expr?
+   ;
+
+structExpr
+   : structExprStruct
+   | structExprTuple
+   | structExprUnit
+   ;
+
+structExprStruct
+   : pathInExpr LCURLYBRACE (structExprFields | structBase)? RCURLYBRACE
+   ;
+
+structExprFields
+   : structExprField (COMMA structExprField)* (COMMA structBase | COMMA?)
+   ;
+   // outerAttribute here is not in doc
+
+structExprField
+   : (identifier | (identifier | tupleIndex) COLON expr)
+   ;
+
+structBase
+   : DOTDOT expr
+   ;
+
+structExprTuple
+   : pathInExpr LPAREN (expr (COMMA expr)* COMMA?)? RPAREN
+   ;
+
+structExprUnit
+   : pathInExpr
+   ;
+
+enumerationVariantExpr
+   : enumExprStruct
+   | enumExprTuple
+   | enumExprFieldless
+   ;
+
+enumExprStruct
+   : pathInExpr LCURLYBRACE enumExprFields? RCURLYBRACE
+   ;
+
+enumExprFields
+   : enumExprField (COMMA enumExprField)* COMMA?
+   ;
+
+enumExprField
+   : identifier
+   | (identifier | tupleIndex) COLON expr
+   ;
+
+enumExprTuple
+   : pathInExpr LPAREN (expr (COMMA expr)* COMMA?)? RPAREN
+   ;
+
+enumExprFieldless
+   : pathInExpr
+   ;
+
+closureExpr
+   : KW_MOVE? (OROR | OR closureParameters? OR) (expr | RARROW type_ blockExpr)
+   ;
+
+closureParameters
+   : closureParam (COMMA closureParam)* COMMA?
+   ;
+
+closureParam
+   : pattern (COLON type_)?
+   ;
+
+exprWithBlock
+   : blockExpr
+   | loopExpr
+   | ifExpr
+   | ifLetExpr
+   | matchExpr
    ;
 
 ifExpr
@@ -107,8 +273,69 @@ ifLetExpr
   : KW_IF KW_LET (pattern | patternSV=schemaVariable) EQ expr (thenBlock=blockExpr | thenSV=schemaVariable) (KW_ELSE (elseBlock=blockExpr | elseIf=ifExpr | elseIfLet=ifLetExpr | elseSV=schemaVariable))?
   ;
 
-typeOf
-   : TYPE_OF LPAREN expr RPAREN
+matchExpr
+   : KW_MATCH expr LCURLYBRACE matchArms? RCURLYBRACE
+   ;
+
+matchArms
+   : (matchArm FATARROW matchArmExpression)* matchArm FATARROW expr COMMA?
+   ;
+
+matchArmExpression
+   : expr COMMA
+   | exprWithBlock COMMA?
+   ;
+
+matchArm
+   : pattern matchArmGuard?
+   ;
+
+matchArmGuard
+   : KW_IF expr
+   ;
+
+literalExpr
+   : CHAR_LITERAL
+   | STRING_LITERAL
+   | RAW_STRING_LITERAL
+   | BYTE_LITERAL
+   | BYTE_STRING_LITERAL
+   | RAW_BYTE_STRING_LITERAL
+   | INTEGER_LITERAL
+   // | FLOAT_LITERAL
+   | KW_TRUE
+   | KW_FALSE
+   ;
+
+pathExpr
+   : pathInExpr
+   | qualifiedPathInExpr
+   ;
+
+pathInExpr
+   : PATHSEP? pathExprSegment (PATHSEP pathExprSegment)*
+   ;
+
+pathExprSegment
+   : pathIdentSegment (PATHSEP genericArgs)?
+   ;
+
+pathIdentSegment
+   : identifier
+   | KW_SUPER
+   | KW_SELFVALUE
+   | KW_SELFTYPE
+   | KW_CRATE
+   | KW_DOLLARCRATE
+   ;
+   //TODO: let x : T<_>=something;
+
+qualifiedPathInExpr
+   : qualifiedPathType (PATHSEP pathExprSegment)+
+   ;
+
+qualifiedPathType
+   : LT type_ (KW_AS typePath)? GT
    ;
 
 loopExpr
@@ -130,3 +357,282 @@ loopLabel
 label
     : LIFETIME_OR_LABEL | schemaVariable
     ;
+
+// === Stmt ===
+
+stmts
+   : stmt+ expr?
+   | expr
+   ;
+
+stmt
+   : letStmt
+   | exprStmt
+   | schemaStmt SEMI
+   | PANIC_FRAME LPAREN schemaVariable COMMA blockExpr RPAREN
+   ;
+
+letStmt
+   : 'let' patternNoTopAlt (':' type_)? ('=' expr)? ';'
+   ;
+
+schemaStmt
+   : schemaVariable
+   ;
+
+exprStmt
+   : expr ';'
+   | exprWithBlock ';'?
+   ;
+
+// === Type ===
+
+type_
+   : parenthesizedType
+//   | implTraitTypeOneBound
+//   | traitObjectTypeOneBound
+   | typePath
+   | tupleType
+   | neverType
+   | rawPointerType
+   | referenceType
+   | arrayType
+   | sliceType
+   | inferredType
+   | qualifiedPathInType
+   | bareFunctionType
+   | typeOf
+   | schemaVariable
+   ;
+
+parenthesizedType
+   : LPAREN type_ RPAREN
+   ;
+
+typePath
+   : PATHSEP? typePathSegment (PATHSEP typePathSegment)*
+   ;
+
+typePathSegment
+   : pathIdentSegment PATHSEP? (genericArgs | typePathFn)?
+   ;
+
+typePathFn
+   : LPAREN typePathInputs? RPAREN (RARROW type_)?
+   ;
+
+typePathInputs
+   : type_ (COMMA type_)* COMMA?
+   ;
+
+neverType
+   : '!'
+   ;
+   // 10.1.5
+
+tupleType
+   : '(' ((type_ ',')+ type_?)? ')'
+   ;
+   // 10.1.6
+
+arrayType
+   : '[' type_ ';' expr ']'
+   ;
+
+sliceType
+   : LSQUAREBRACKET type_ RSQUAREBRACKET
+   ;
+
+referenceType
+   : AND lifetime? KW_MUT? type_
+   ;
+
+rawPointerType
+   : STAR (KW_MUT | KW_CONST) type_
+   ;
+
+qualifiedPathInType
+   : qualifiedPathType (PATHSEP typePathSegment)+
+   ;
+
+bareFunctionType
+   : KW_FN LPAREN functionParametersMaybeNamedVariadic? RPAREN bareFunctionReturnType?
+   ;
+
+functionParametersMaybeNamedVariadic
+   : maybeNamedFunctionParameters
+   | maybeNamedFunctionParametersVariadic
+   ;
+
+maybeNamedFunctionParameters
+   : maybeNamedParam (COMMA maybeNamedParam)* COMMA?
+   ;
+
+maybeNamedParam
+   : ((identifier | UNDERSCORE) COLON)? type_
+   ;
+
+maybeNamedFunctionParametersVariadic
+   : (maybeNamedParam COMMA)* maybeNamedParam COMMA DOTDOTDOT
+   ;
+
+bareFunctionReturnType
+   : RARROW type_
+   ;
+
+inferredType
+   : UNDERSCORE
+   ;
+
+typeOf
+   : TYPE_OF LPAREN expr RPAREN
+   ;
+
+// === Pattern ===
+
+pattern
+   : OR? patternNoTopAlt (OR patternNoTopAlt)*
+   ;
+
+patternNoTopAlt
+   : patternWithoutRange
+   | rangePattern
+   ;
+
+patternWithoutRange
+   : literalPattern
+   | identifierPattern
+   | wildcardPattern
+   | restPattern
+   | referencePattern
+   | structPattern
+   | tupleStructPattern
+   | tuplePattern
+   | groupedPattern
+   | slicePattern
+   | pathPattern
+   ;
+
+literalPattern
+   : KW_TRUE
+   | KW_FALSE
+   | CHAR_LITERAL
+   | BYTE_LITERAL
+   | STRING_LITERAL
+   | RAW_STRING_LITERAL
+   | BYTE_STRING_LITERAL
+   | RAW_BYTE_STRING_LITERAL
+   | MINUS? INTEGER_LITERAL
+   // | MINUS? FLOAT_LITERAL
+   ;
+
+identifierPattern
+   : KW_REF? KW_MUT? (identifier | schemaVariable) (AT pattern)?
+   ;
+
+wildcardPattern
+   : UNDERSCORE
+   ;
+
+restPattern
+   : DOTDOT
+   ;
+
+rangePattern
+   : rangeExclusivePattern
+   | rangeInclusivePattern
+   | rangeFromPattern
+   | rangeToInclusivePattern
+   | obsoleteRangePattern
+   ;
+
+rangeExclusivePattern
+   : rangePatternBound DOTDOT rangePatternBound
+   ;
+
+rangeInclusivePattern
+   : rangePatternBound DOTDOTEQ rangePatternBound
+   ;
+
+rangeFromPattern
+   : rangePatternBound DOTDOT
+   ;
+
+rangeToInclusivePattern
+   : DOTDOTEQ rangePatternBound
+   ;
+
+obsoleteRangePattern
+   : rangePatternBound DOTDOTDOT rangePatternBound
+   ;
+
+rangePatternBound
+   : schemaVariable
+   | CHAR_LITERAL
+   | BYTE_LITERAL
+   | MINUS? INTEGER_LITERAL
+   // | MINUS? FLOAT_LITERAL
+   | pathExpr
+   ;
+
+referencePattern
+   : (AND | ANDAND) KW_MUT? patternWithoutRange
+   ;
+
+structPattern
+   : pathInExpr LCURLYBRACE structPatternElements? RCURLYBRACE
+   ;
+
+structPatternElements
+   : structPatternFields (COMMA structPatternEtCetera?)?
+   | structPatternEtCetera
+   ;
+
+structPatternFields
+   : structPatternField (COMMA structPatternField)*
+   ;
+
+structPatternField
+   : tupleIndex COLON pattern
+   | identifier COLON pattern
+   | KW_REF? KW_MUT? identifier
+   ;
+
+structPatternEtCetera
+   : DOTDOT
+   ;
+
+tupleStructPattern
+   : pathInExpr LPAREN tupleStructItems? RPAREN
+   ;
+
+tupleStructItems
+   : pattern (COMMA pattern)* COMMA?
+   ;
+
+tuplePattern
+   : LPAREN tuplePatternItems? RPAREN
+   ;
+
+tuplePatternItems
+   : pattern COMMA
+   | restPattern
+   | pattern (COMMA pattern)+ COMMA?
+   ;
+
+groupedPattern
+   : LPAREN pattern RPAREN
+   ;
+
+slicePattern
+   : LSQUAREBRACKET slicePatternItems? RSQUAREBRACKET
+   ;
+
+slicePatternItems
+   : pattern (COMMA pattern)* COMMA?
+   ;
+
+pathPattern
+   : pathInExpr
+   | qualifiedPathInExpr
+   ;

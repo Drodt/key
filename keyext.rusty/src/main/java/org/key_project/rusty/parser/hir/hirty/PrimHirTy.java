@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface PrimHirTy {
+public sealed interface PrimHirTy {
     record Int(IntTy ty) implements PrimHirTy {
     }
 

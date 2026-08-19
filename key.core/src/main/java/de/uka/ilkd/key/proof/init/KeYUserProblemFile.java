@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-import de.uka.ilkd.key.java.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.nparser.*;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.ProofAggregate;
@@ -96,8 +96,7 @@ public final class KeYUserProblemFile extends KeYFile implements ProofOblInput {
         initConfig.setSettings(settings);
 
         ChoiceInformation ci = getParseContext().getChoices();
-        settings.getChoiceSettings().updateWith(ci.getActivatedChoices());
-        initConfig.setActivatedChoices(settings.getChoiceSettings().getDefaultChoicesAsSet());
+        initConfig.computeDefaults(ci);
 
         ImmutableSet<PositionedString> warnings = DefaultImmutableSet.nil();
 
@@ -140,7 +139,6 @@ public final class KeYUserProblemFile extends KeYFile implements ProofOblInput {
         }
     }
 
-
     @Override
     public String chooseContract() {
         return getProblemFinder().getChooseContract();
@@ -158,7 +156,7 @@ public final class KeYUserProblemFile extends KeYFile implements ProofOblInput {
         ProofSettings settings = getPreferences();
         initConfig.setSettings(settings);
         return ProofAggregate.createProofAggregate(
-            new Proof(name, problem, getParseContext().getProblemHeader() + "\n", initConfig,
+            new Proof(name, problem, getParseContext().getProblemHeader(), initConfig,
                 file.file()),
             name);
     }
@@ -226,16 +224,18 @@ public final class KeYUserProblemFile extends KeYFile implements ProofOblInput {
      */
     @Override
     public Profile getProfile() {
-        try {
-            Profile profile = readProfileFromFile();
-            if (profile != null) {
-                return profile;
-            } else {
-                return getDefaultProfile();
-            }
-        } catch (Exception e) {
-            return getDefaultProfile();
+        if (profile != null) {
+            return profile; // enforced profile
         }
+        try {
+            profile = readProfileFromFile();
+        } catch (Exception e) {
+        }
+
+        if (profile == null) {
+            profile = getDefaultProfile();
+        }
+        return profile;
     }
 
     /**
@@ -254,13 +254,10 @@ public final class KeYUserProblemFile extends KeYFile implements ProofOblInput {
         }
     }
 
-    /**
-     * Returns the default {@link Profile} which was defined by a constructor.
-     *
-     * @return The default {@link Profile}.
-     */
-    private Profile getDefaultProfile() {
-        return super.getProfile();
+
+    /// returns the user-local definition given in the file.
+    public KeyAst.@Nullable Declarations getProblemHeader() {
+        return getParseContext().getProblemHeader();
     }
 
     /**

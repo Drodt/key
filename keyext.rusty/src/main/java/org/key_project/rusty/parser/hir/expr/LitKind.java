@@ -8,7 +8,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 import com.google.gson.annotations.SerializedName;
 import org.jspecify.annotations.Nullable;
 
-public interface LitKind {
+public sealed interface LitKind {
     record Str(String symbol, StrStyle style) implements LitKind {
     }
 

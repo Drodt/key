@@ -5,12 +5,12 @@ package de.uka.ilkd.key.rule.tacletbuilder;
 
 import java.util.*;
 
-import de.uka.ilkd.key.java.ContextStatementBlock;
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.java.StatementBlock;
-import de.uka.ilkd.key.java.abstraction.KeYJavaType;
-import de.uka.ilkd.key.java.declaration.ClassDeclaration;
-import de.uka.ilkd.key.java.statement.MethodBodyStatement;
+import de.uka.ilkd.key.java.ast.ContextStatementBlock;
+import de.uka.ilkd.key.java.ast.StatementBlock;
+import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.declaration.ClassDeclaration;
+import de.uka.ilkd.key.java.ast.statement.MethodBodyStatement;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.op.*;
@@ -186,6 +186,8 @@ public class TacletGenerator {
         tacletBuilder.setFind(findTerm);
         tacletBuilder.addTacletGoalTemplate(axiomTemplate);
         tacletBuilder.addVarsNotFreeIn(schemaAxiom.boundVars, selfSV);
+        tacletBuilder.setApplicationRestriction(
+            new ApplicationRestriction(ApplicationRestriction.SAME_UPDATE_LEVEL));
         for (SchemaVariable heapSV : heapSVs) {
             tacletBuilder.addVarsNotFreeIn(schemaAxiom.boundVars, heapSV);
         }
@@ -319,7 +321,7 @@ public class TacletGenerator {
          * tacletBuilder.addTacletGoalTemplate (tgc); }
          */
         if (ifSeq != null) {
-            tacletBuilder.setIfSequent(ifSeq);
+            tacletBuilder.setAssumesSequent(ifSeq);
         }
         tacletBuilder.setName(name);
         tacletBuilder.addRuleSet(new RuleSet(new Name("classAxiom")));
@@ -726,14 +728,14 @@ public class TacletGenerator {
             final var succ =
                 ImmutableSLList.singleton(eqNullSF);
             final Sequent ifSeq = JavaDLSequentKit.createSequent(antec, succ);
-            tacletBuilder.setIfSequent(ifSeq);
+            tacletBuilder.setAssumesSequent(ifSeq);
         } else if (!isStatic) {
             // \assumes( ==> self = null )
             final JTerm selfNull = TB.equals(TB.var(selfSV), TB.NULL());
             final SequentFormula selfNullSF = new SequentFormula(selfNull);
             final Sequent ifSeq =
                 JavaDLSequentKit.createSuccSequent(ImmutableSLList.singleton(selfNullSF));
-            tacletBuilder.setIfSequent(ifSeq);
+            tacletBuilder.setAssumesSequent(ifSeq);
         }
 
         result = result.add(tacletBuilder.getTaclet());

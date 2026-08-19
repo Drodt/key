@@ -186,7 +186,7 @@ public class HirRustyReader {
     }
 
     public RustyBlock readBlockWithProgramVariables(Namespace<@NonNull ProgramVariable> varNS,
-            String s) throws IOException {
+            String s) {
         return readBlock(s, new Context(varNS));
     }
 

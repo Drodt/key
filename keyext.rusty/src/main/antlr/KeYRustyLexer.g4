@@ -23,6 +23,7 @@ DIFFERENT     : '\\different';
 NO_FREE_VAR_IN : '\\noFreeVarIn';
 DROP_EFFECTLESS_MUTATING: '\\dropEffectlessMutating';
 APPLY_ELEMENTARIES_ON_DEREF_M: '\\applyElementariesOnDerefM';
+NEW_DEPENDING_ON: '\\newDependingOn';
 
 OPENTYPEPARAMS:'<' '[';
 CLOSETYPEPARAMS:']' '>';

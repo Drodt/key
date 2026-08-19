@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface BlockCheckMode {
+public sealed interface BlockCheckMode {
     record DefaultBlock() implements BlockCheckMode {
     }
 

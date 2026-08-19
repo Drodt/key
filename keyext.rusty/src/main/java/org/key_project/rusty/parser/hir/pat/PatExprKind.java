@@ -8,7 +8,7 @@ import org.key_project.rusty.parser.hir.QPath;
 
 import org.jspecify.annotations.Nullable;
 
-public interface PatExprKind {
+public sealed interface PatExprKind {
     record Lit(org.key_project.rusty.parser.hir.expr.Lit lit, boolean negated)
             implements PatExprKind {
     }

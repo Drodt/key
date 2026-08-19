@@ -20,7 +20,7 @@ public class SortImpl extends AbstractSort {
     /**
      * Documentation for this sort given by the associated documentation comment.
      *
-     * @see de.uka.ilkd.key.nparser.KeYParser.One_sort_declContext#doc
+     * @see de.uka.ilkd.key.nparser.JavaKeYParser.One_sort_declContext#doc
      */
     private final String documentation;
 
@@ -96,5 +96,10 @@ public class SortImpl extends AbstractSort {
     @Override
     public @Nullable String getOrigin() {
         return origin;
+    }
+
+    @Override
+    public boolean containsGenericSort() {
+        return false;
     }
 }

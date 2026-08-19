@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface WherePredicateKind {
+public sealed interface WherePredicateKind {
     record Bound(WhereBoundPredicate pred) implements WherePredicateKind {
     }
     record Region(WhereRegionPredicate pred) implements WherePredicateKind {

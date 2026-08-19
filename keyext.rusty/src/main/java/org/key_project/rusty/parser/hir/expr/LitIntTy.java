@@ -9,7 +9,7 @@ import org.key_project.rusty.parser.hir.hirty.UintTy;
 
 import org.jspecify.annotations.Nullable;
 
-public interface LitIntTy {
+public sealed interface LitIntTy {
     record Signed(IntTy ty) implements LitIntTy {
     }
 

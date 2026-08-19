@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.hirty.HirTy;
 
 import org.jspecify.annotations.Nullable;
 
-public interface GenericArg {
+public sealed interface GenericArg {
     record Lifetime(org.key_project.rusty.parser.hir.Lifetime lifetime) implements GenericArg {
 
     }

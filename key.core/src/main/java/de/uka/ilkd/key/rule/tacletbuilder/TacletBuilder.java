@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import de.uka.ilkd.key.java.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.op.ProgramSV;
 import de.uka.ilkd.key.logic.op.VariableSV;
@@ -45,7 +45,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     protected Taclet taclet;
 
     protected Name name = NONAME;
-    protected Sequent ifseq = JavaDLSequentKit.getInstance().getEmptySequent();
+    protected Sequent assumesSeq = JavaDLSequentKit.getInstance().getEmptySequent();
     protected ImmutableList<NewVarcond> varsNew = ImmutableSLList.nil();
     protected ImmutableList<NotFreeIn> varsNotFreeIn = ImmutableSLList.nil();
     protected ImmutableList<NewDependingOn> varsNewDependingOn = ImmutableSLList.nil();
@@ -133,11 +133,11 @@ public abstract class TacletBuilder<T extends Taclet> {
     }
 
     /**
-     * sets the ifseq of the Taclet to be built
+     * sets the assumesSeq of the Taclet to be built
      */
-    public void setIfSequent(Sequent seq) {
+    public void setAssumesSequent(Sequent seq) {
         checkContainsFreeVarSV(seq, getName(), "sequent");
-        this.ifseq = seq;
+        this.assumesSeq = seq;
     }
 
     /**
@@ -278,7 +278,7 @@ public abstract class TacletBuilder<T extends Taclet> {
     }
 
     public Sequent ifSequent() {
-        return ifseq;
+        return assumesSeq;
     }
 
     public ImmutableList<org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate> goalTemplates() {

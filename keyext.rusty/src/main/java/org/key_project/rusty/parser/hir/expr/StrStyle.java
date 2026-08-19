@@ -7,7 +7,7 @@ import org.key_project.rusty.parser.hir.HirAdapter;
 
 import org.jspecify.annotations.Nullable;
 
-public interface StrStyle {
+public sealed interface StrStyle {
     record Cooked() implements StrStyle {
     }
 

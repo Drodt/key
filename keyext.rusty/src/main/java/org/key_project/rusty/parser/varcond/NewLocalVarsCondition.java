@@ -11,13 +11,13 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.VariableCondition;
+import org.key_project.prover.rules.instantiation.ListInstantiation;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.pat.BindingPattern;
 import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.logic.op.ProgramVariable;
-import org.key_project.rusty.rule.inst.ProgramList;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.collection.ImmutableArray;
@@ -31,7 +31,7 @@ import org.key_project.util.collection.ImmutableSLList;
 ///
 /// To achieve this, this condition generates (1) the "before" version of each variable that may be
 /// written to by the loop
-/// [#getLocalOuts(RustyProgramElement ,Services)]; (2) an update storing the value of each
+/// [MiscTools#getLocalOuts(RustyProgramElement, Services)]; (2) an update storing the value of each
 /// such PV in its "before" version,
 /// i.e., `{...||i_before := i||...}`; (3) the reverse of the update, to be applied to the
 /// frame condition, i.e.,
@@ -84,7 +84,8 @@ public class NewLocalVarsCondition implements VariableCondition {
             updateFrames = updateFrames.append(tb.elementary(tb.var(v), tb.var(pv)));
         }
         return matchCond.setInstantiations(
-            svInst.add(varDeclsSV, new ProgramList(new ImmutableArray<>(decls)), services)
+            svInst.add(varDeclsSV,
+                new ListInstantiation<>(new ImmutableArray<>(decls), LetStatement.class), services)
                     .add(updateBeforeSV, tb.parallel(updatesBefore), services)
                     .add(updateFrameSV, tb.parallel(updateFrames), services));
     }

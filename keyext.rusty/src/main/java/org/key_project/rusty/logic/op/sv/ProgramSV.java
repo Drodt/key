@@ -20,7 +20,6 @@ import org.key_project.rusty.logic.ProgramConstruct;
 import org.key_project.rusty.logic.op.IProgramVariable;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.inst.ProgramList;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.collection.ImmutableArray;
 
@@ -31,8 +30,8 @@ public final class ProgramSV extends OperatorSV
         implements UpdateableOperator, ProgramConstruct, IProgramVariable, IFieldIdentifier {
     private final boolean isListSV;
 
-    private static final ProgramList EMPTY_LIST_INSTANTIATION =
-        new ProgramList(new ImmutableArray<>(new RustyProgramElement[0]));
+    private static final ImmutableArray<RustyProgramElement> EMPTY_LIST_INSTANTIATION =
+        new ImmutableArray<>(new RustyProgramElement[0]);
 
     /// creates a new SchemaVariable used as a placeholder for program constructs
     ///
@@ -115,7 +114,7 @@ public final class ProgramSV extends OperatorSV
         }
 
         return addProgramInstantiation(
-            new ProgramList(new ImmutableArray<>(matchedElements)), matchCond,
+            new ImmutableArray<>(matchedElements), matchCond,
             services);
     }
 
@@ -170,7 +169,8 @@ public final class ProgramSV extends OperatorSV
     /// @param services the Services provide access to the Java model
     /// @return the updated match conditions including mapping <code>var</code> to <code>list</code>
     /// or null if some variable condition would be hurt by the mapping
-    private @Nullable MatchConditions addProgramInstantiation(ProgramList list,
+    private @Nullable MatchConditions addProgramInstantiation(
+            ImmutableArray<RustyProgramElement> list,
             @Nullable MatchConditions matchCond,
             Services services) {
         if (matchCond == null) {
@@ -178,7 +178,7 @@ public final class ProgramSV extends OperatorSV
         }
 
         SVInstantiations insts = matchCond.getInstantiations();
-        final ProgramList pl = (ProgramList) insts.getInstantiation(this);
+        final var pl = (ImmutableArray<RustyProgramElement>) insts.getInstantiation(this);
         if (pl != null) {
             if (pl.equals(list)) {
                 return matchCond;
@@ -187,7 +187,7 @@ public final class ProgramSV extends OperatorSV
             }
         }
 
-        insts = insts.add(this, list, services);
+        insts = insts.add(this, list, RustyProgramElement.class, services);
         return insts == null ? null : matchCond.setInstantiations(insts);
     }
 

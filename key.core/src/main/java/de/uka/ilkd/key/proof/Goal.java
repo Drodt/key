@@ -5,6 +5,7 @@ package de.uka.ilkd.key.proof;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.logic.NamespaceSet;
@@ -41,7 +42,6 @@ import org.key_project.prover.strategy.RuleApplicationManager;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -86,7 +86,7 @@ public final class Goal implements ProofGoal<Goal> {
     /**
      * the strategy object that determines automated application of rules
      */
-    private @Nullable Strategy<@NonNull Goal> goalStrategy = null;
+    private @Nullable Strategy<Goal> goalStrategy = null;
     /**
      * This is the object which keeps book about all applicable rules.
      */
@@ -161,20 +161,22 @@ public final class Goal implements ProofGoal<Goal> {
     /**
      * @return the strategy that determines automated rule applications for this goal
      */
-    public Strategy<@NonNull Goal> getGoalStrategy() {
+    public Strategy<Goal> getGoalStrategy() {
         if (goalStrategy == null) {
             goalStrategy = proof().getActiveStrategy();
         }
         return goalStrategy;
     }
 
-    public void setGoalStrategy(Strategy<@NonNull Goal> p_goalStrategy) {
+    public void setGoalStrategy(Strategy<Goal> p_goalStrategy) {
         goalStrategy = p_goalStrategy;
-        ruleAppManager.clearCache();
+        if (ruleAppManager != null) {
+            ruleAppManager.clearCache();
+        }
     }
 
     @Override
-    public RuleApplicationManager<Goal> getRuleAppManager() {
+    public @Nullable RuleApplicationManager<Goal> getRuleAppManager() {
         return ruleAppManager;
     }
 
@@ -323,7 +325,7 @@ public final class Goal implements ProofGoal<Goal> {
      * @return the Sequent to be proved
      */
     @Override
-    public @NonNull Sequent sequent() {
+    public Sequent sequent() {
         return node().sequent();
     }
 
@@ -539,7 +541,7 @@ public final class Goal implements ProofGoal<Goal> {
      * @param n number of goals to create
      * @return the list of new created goals.
      */
-    public @NonNull ImmutableList<Goal> split(int n) {
+    public ImmutableList<Goal> split(int n) {
         ImmutableList<Goal> goalList = ImmutableSLList.nil();
 
         final Node parent = node; // has to be stored because the node
@@ -573,6 +575,20 @@ public final class Goal implements ProofGoal<Goal> {
         fireGoalReplaced(this, parent, goalList);
 
         return goalList;
+    }
+
+    /// Creates new nodes as children of the referenced node and apply each given
+    /// non-null goal transformer to each proof.
+    ///
+    /// @return the list of new created goals, manipulated by funcs
+    public ImmutableList<Goal> splitAndTransform(List<@Nullable Consumer<Goal>> funcs) {
+        final var nonNullFuncs = funcs.stream().filter(Objects::nonNull).toList();
+        var n = nonNullFuncs.size();
+        var goals = split(n);
+        for (int i = 0; i < n; i++) {
+            nonNullFuncs.get(i).accept(goals.get(i));
+        }
+        return goals;
     }
 
     public void setBranchLabel(String s) {
@@ -610,7 +626,7 @@ public final class Goal implements ProofGoal<Goal> {
      * @return new goal(s)
      */
     @Override
-    public ImmutableList<Goal> apply(@NonNull final RuleApp ruleApp) {
+    public ImmutableList<Goal> apply(final RuleApp ruleApp) {
         final Proof proof = proof();
 
         final NodeChangeJournal journal = new NodeChangeJournal(proof, this);
@@ -630,6 +646,10 @@ public final class Goal implements ProofGoal<Goal> {
         try {
             goalList = ruleApp.rule().<Goal>getExecutor().apply(this, ruleApp);
         } catch (RuleAbortException rae) {
+            removeLastAppliedRuleApp();
+            node().setAppliedRuleApp(null);
+            return null;
+        } catch (IndexOutOfBoundsException e) {
             removeLastAppliedRuleApp();
             node().setAppliedRuleApp(null);
             return null;
@@ -695,7 +715,7 @@ public final class Goal implements ProofGoal<Goal> {
         return lp.result();
     }
 
-    public <T> T getStrategyInfo(Property<T> property) {
+    public <T> @Nullable T getStrategyInfo(Property<T> property) {
         return strategyInfos.get(property);
     }
 

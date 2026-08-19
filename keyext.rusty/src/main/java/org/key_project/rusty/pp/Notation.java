@@ -10,6 +10,7 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.*;
@@ -371,6 +372,59 @@ public abstract class Notation {
                         sp.printTerm((Term) o);
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * The standard concrete syntax for the number literal indicator `Z'. This is only used in the
+     * `Pretty&amp;Untrue' syntax.
+     */
+    static final class NumLiteral extends Notation {
+        public NumLiteral() {
+            super(120);
+        }
+
+        public static String printNumberTerm(Term numberTerm) {
+            Term t = numberTerm;
+
+            // skip number symbol /as this method may be called
+            // e.g. by char literal we do not fail if the first is
+            // not the number symbol
+            if (t.op().name().equals(IntLDT.NUMBERS_NAME)) {
+                t = t.sub(0);
+            }
+
+            final StringBuilder number = new StringBuilder();
+            int offset = 0;
+
+            if (t.op().name().toString().equals(IntLDT.NEGATIVE_LITERAL_STRING)) {
+                number.append("-");
+                t = t.sub(0);
+                offset = 1;
+            }
+
+            do {
+                final String opName = String.valueOf(t.op().name());
+
+                if (t.arity() != 1
+                        || (opName.length() != 1 || !Character.isDigit(opName.charAt(0)))) {
+                    return null; // not a number
+                } else {
+                    number.insert(offset, opName);
+                }
+                t = t.sub(0);
+            } while (t.arity() != 0);
+
+            return number.toString();
+        }
+
+        public void print(Term t, LogicPrinter sp) {
+            final String number = printNumberTerm(t);
+            if (number != null) {
+                sp.printConstant(number);
+            } else {
+                sp.printFunctionTerm(t);
             }
         }
     }

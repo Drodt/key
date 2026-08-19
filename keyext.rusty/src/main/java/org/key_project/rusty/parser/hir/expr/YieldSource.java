@@ -8,7 +8,7 @@ import org.key_project.rusty.parser.hir.HirId;
 
 import org.jspecify.annotations.Nullable;
 
-public interface YieldSource {
+public sealed interface YieldSource {
     record Await(@Nullable HirId expr) implements YieldSource {
     }
 

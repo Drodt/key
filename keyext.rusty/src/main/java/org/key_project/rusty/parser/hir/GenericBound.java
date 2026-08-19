@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir;
 
-public interface GenericBound {
+import org.jspecify.annotations.Nullable;
+
+public sealed interface GenericBound {
     record Trait(PolyTraitRef traitRef) implements GenericBound {
     }
 
@@ -11,5 +13,17 @@ public interface GenericBound {
     }
 
     record Use(PreciseCapturingArg[] args, Span span) implements GenericBound {
+    }
+
+    class Adapter extends HirAdapter<GenericBound> {
+        @Override
+        public @Nullable Class<? extends GenericBound> getType(String tag) {
+            return switch (tag) {
+                case "Trait" -> Trait.class;
+                case "Outlives" -> Outlives.class;
+                case "Use" -> Use.class;
+                default -> null;
+            };
+        }
     }
 }

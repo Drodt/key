@@ -9,7 +9,7 @@ import org.key_project.rusty.parser.hir.LocalDefId;
 
 import org.jspecify.annotations.Nullable;
 
-public interface VariantData {
+public sealed interface VariantData {
     record Struct(FieldDef[] fields, boolean recovered) implements VariantData {
     }
 

@@ -12,6 +12,7 @@ import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.InstantiationEntry;
+import org.key_project.prover.rules.instantiation.ListInstantiation;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.PosInProgram;
@@ -110,15 +111,16 @@ public class SVInstantiations
         return add(sv, new TermInstantiation(sv, subst), services);
     }
 
-    public SVInstantiations add(SchemaVariable sv, ProgramList pes, LogicServices services) {
-        return add(sv, new ProgramListInstantiation(pes.list()), services);
-    }
-
     /// Add the given additional condition for the generic sort instantiations
     public SVInstantiations add(SchemaVariable sv, RModality.RustyModalityKind kind,
             LogicServices services) throws SortException {
         return add(sv, new InstantiationEntry<>(kind) {
         }, services);
+    }
+
+    public <T> SVInstantiations add(SchemaVariable sv, ImmutableArray<T> pes, Class<T> type,
+            LogicServices services) {
+        return add(sv, new ListInstantiation<>(pes, type), services);
     }
 
     /// adds the given pair to the instantiations. If the given SchemaVariable has been instantiated
@@ -493,10 +495,10 @@ public class SVInstantiations
     /// instantiated already, the new pair is taken without a warning.
     ///
     /// @param sv the SchemaVariable to be instantiated
-    /// @param pes the ArrayOf<t> the SchemaVariable is instantiated with
+    /// @param pes the ArrayOf<t> the SchemaVariable is instantiated with</t>
     public SVInstantiations replace(SchemaVariable sv, ImmutableArray<RustyProgramElement> pes,
             Services services) {
-        return replace(sv, new ProgramListInstantiation(pes), services);
+        return replace(sv, new ListInstantiation<>(pes, RustyProgramElement.class), services);
     }
 
     /// replaces the given pair in the instantiations. If the given SchemaVariable has been

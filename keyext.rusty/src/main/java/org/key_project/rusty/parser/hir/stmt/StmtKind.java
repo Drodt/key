@@ -9,7 +9,7 @@ import org.key_project.rusty.parser.hir.item.Item;
 
 import org.jspecify.annotations.Nullable;
 
-public interface StmtKind {
+public sealed interface StmtKind {
     record Let(LetStmt let) implements StmtKind {
     }
 

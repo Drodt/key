@@ -6,12 +6,15 @@ package org.key_project.rusty.rule.executor.rustydl;
 import org.key_project.logic.IntIterator;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.logic.op.SortedOperator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
+import org.key_project.rusty.logic.RustyDLTheory;
+import org.key_project.rusty.logic.op.IfThenElse;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.RuleApp;
@@ -101,8 +104,7 @@ public class RewriteTacletExecutor
             final Term[] subs = new Term[term.arity()];
             term.subs().arraycopy(0, subs, 0, term.arity());
 
-            final Sort newMaxSort = maxSort; // TODO? TermHelper.getMaxSort(term,
-                                             // indexOfNextSubTerm);
+            final Sort newMaxSort = getMaxSort(term, indexOfNextSubTerm);
             subs[indexOfNextSubTerm] = replace(term.sub(indexOfNextSubTerm), with, posOfFind, it,
                 mc, newMaxSort, goal, services, ruleApp);
 
@@ -112,12 +114,28 @@ public class RewriteTacletExecutor
 
         with = syntacticalReplace(with, posOfFind, mc, goal, ruleApp, services);
 
-        /*
-         * if (!with.sort().extendsTrans(maxSort)) {
-         * with = services.getTermBuilder().cast(maxSort, with);
-         * }
-         */
+        // If the replacewith result does not fit the sort required at this position, wrap it in a
+        // cast so the surrounding term stays well-sorted (mirrors KeY's RewriteTacletExecutor).
+        if (!with.sort().extendsTrans(maxSort)) {
+            with = services.getTermBuilder().cast(maxSort, with);
+        }
 
         return with;
+    }
+
+    /// The maximal sort allowed at the `i`-th argument of `term` (port of KeY's
+    /// `TermHelper.getMaxSort`): a formula stays a formula, the branches of an if-then-else may
+    /// carry the if-then-else's own sort, and otherwise the operator's declared argument sort.
+    private static Sort getMaxSort(Term term, int i) {
+        if (term.sub(i).sort() == RustyDLTheory.FORMULA) {
+            return RustyDLTheory.FORMULA;
+        }
+        if (term.op() instanceof IfThenElse && i > 0) {
+            return term.sort();
+        }
+        if (term.op() instanceof SortedOperator sortedOp) {
+            return sortedOp.argSort(i);
+        }
+        return term.sub(i).sort();
     }
 }

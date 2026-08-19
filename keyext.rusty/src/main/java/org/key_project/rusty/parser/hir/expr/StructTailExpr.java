@@ -3,9 +3,12 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.hir.expr;
 
+import org.key_project.rusty.parser.hir.HirAdapter;
 import org.key_project.rusty.parser.hir.Span;
 
-public interface StructTailExpr {
+import org.jspecify.annotations.Nullable;
+
+public sealed interface StructTailExpr {
     record None() implements StructTailExpr {
     }
 
@@ -13,5 +16,17 @@ public interface StructTailExpr {
     }
 
     record DefaultFields(Span span) implements StructTailExpr {
+    }
+
+    class Adapter extends HirAdapter<StructTailExpr> {
+        @Override
+        public @Nullable Class<? extends StructTailExpr> getType(String tag) {
+            return switch (tag) {
+                case "None" -> None.class;
+                case "Base" -> Base.class;
+                case "DefaultFields" -> DefaultFields.class;
+                default -> null;
+            };
+        }
     }
 }

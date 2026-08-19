@@ -375,7 +375,7 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     @Override
     public Object visitBracket_term(KeYRustyParser.Bracket_termContext ctx) {
-        Term t = accept(ctx.primitive_labeled_term());
+        Term t = accept(ctx.primitive_term());
         /*
          * for (int i = 0; i < ctx.bracket_suffix_heap().size(); i++) {
          * KeYRustyParser.Brace_suffixContext brace_suffix =
@@ -392,12 +392,6 @@ public class ExpressionBuilder extends DefaultBuilder {
         }
         throw new RuntimeException("TODO");
         // return handleAttributes(t, ctx.attribute());
-    }
-
-    @Override
-    public Object visitPrimitive_labeled_term(KeYRustyParser.Primitive_labeled_termContext ctx) {
-        return accept(ctx.primitive_term());
-        // return updateOrigin(t, ctx, services);
     }
 
     public <T> T defaultOnException(T defaultValue, Supplier<T> supplier) {
@@ -741,27 +735,38 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     @Override
     public Object visitSubstitution_term(KeYRustyParser.Substitution_termContext ctx) {
-        SubstOp op = SubstOp.SUBST;
+        SubstOp op = WarySubstOp.SUBST;
         Namespace<QuantifiableVariable> orig = variables();
         AbstractSortedOperator v = accept(ctx.bv);
         unbindVars(orig);
-        if (v instanceof LogicVariable) {
-            // bindVar((LogicVariable) v);
-            throw new RuntimeException("TODO @ DD");
+        // the substitution binds its own variable; declare it so that occurrences in the body
+        // resolve to it (de Bruijn index 1)
+        BoundVariable declared = null;
+        if (v instanceof BoundVariable bv) {
+            // a sort was given: visitOne_bound_variable already registered the bound variable
+            declared = bv;
+            bindVar();
+        } else if (v instanceof LogicVariable lv) {
+            // no sort given and the name resolved to an enclosing variable: declare the
+            // substitution's own (shadowing) bound variable of the same sort
+            declared = bindVar(ctx.bv.id.getText(), lv.sort());
+            v = declared;
         } else {
+            // schema variable (taclets)
             bindVar();
         }
 
         Term a1 = accept(ctx.replacement);
         Term a2 = oneOf(ctx.atom_prefix(), ctx.unary_formula());
         try {
-            Term result =
-                getServices().getTermBuilder().subst(op, (QuantifiableVariable) v, a1, a2);
-            return result;
+            return getServices().getTermBuilder().subst(op, (QuantifiableVariable) v, a1, a2);
         } catch (Exception e) {
             throw new BuildingException(ctx, e);
         } finally {
             unbindVars(orig);
+            if (declared != null) {
+                unbindVars(List.of(declared));
+            }
         }
     }
 
@@ -943,9 +948,11 @@ public class ExpressionBuilder extends DefaultBuilder {
     @Override
     protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName,
             KeYRustyParser.Formal_sort_argsContext genericArgsCtxt) {
-        // Might be quantified variable
+        // Might be quantified variable. Search from the innermost binder outwards so that, when
+        // several bound variables share a name, an occurrence binds to the innermost one
+        // (de Bruijn shadowing).
         var idx = -1;
-        for (int i = 0; i < boundVars.size(); ++i) {
+        for (int i = boundVars.size() - 1; i >= 0; --i) {
             if (varfuncName.equals(boundVars.get(i).name().toString())) {
                 idx = i;
                 break;
