@@ -14,11 +14,10 @@ import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.SortArg;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
-public record GenericVariant(Name name, ImmutableArray<GenericParam> genericParams,
-        ImmutableArray<GenericField> fields, ParametricFunctionDecl ctor) {
+public record GenericVariant(Name name, ImmutableList<GenericParam> genericParams,
+        ImmutableList<GenericField> fields, ParametricFunctionDecl ctor) {
     public Variant instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         var fields = new Field[this.fields.size()];
         for (int i = 0; i < this.fields.size(); i++) {
@@ -34,7 +33,7 @@ public record GenericVariant(Name name, ImmutableArray<GenericParam> genericPara
             };
             args.add(arg);
         }
-        return new Variant(name, new ImmutableArray<>(fields),
+        return new Variant(name, ImmutableList.fromArray(fields),
             ParametricFunctionInstance.get(ctor, ImmutableList.fromList(args)));
     }
 }

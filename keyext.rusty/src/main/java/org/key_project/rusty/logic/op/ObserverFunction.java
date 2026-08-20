@@ -8,7 +8,7 @@ import java.util.Objects;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /// Objects of this class represent "observer" function or predicate symbols. Observer symbols are
 /// used to
@@ -19,7 +19,7 @@ import org.key_project.util.collection.ImmutableArray;
 /// Observer symbols serve as the targets of contracts (i.e., as the subjects that the contracts are
 /// about).
 public class ObserverFunction extends RFunction implements IObserverFunction {
-    private final ImmutableArray<KeYRustyType> paramTypes;
+    private final ImmutableList<KeYRustyType> paramTypes;
     private final KeYRustyType type;
 
     // -------------------------------------------------------------------------
@@ -27,7 +27,7 @@ public class ObserverFunction extends RFunction implements IObserverFunction {
     // -------------------------------------------------------------------------
 
     public ObserverFunction(String baseName, Sort sort, KeYRustyType type,
-            ImmutableArray<KeYRustyType> paramTypes) {
+            ImmutableList<KeYRustyType> paramTypes) {
         super(new Name(baseName), sort,
             getArgSorts(paramTypes));
         assert type == null || type.getSort() == sort;
@@ -39,7 +39,7 @@ public class ObserverFunction extends RFunction implements IObserverFunction {
     // internal methods
     // -------------------------------------------------------------------------
 
-    private static Sort[] getArgSorts(ImmutableArray<KeYRustyType> paramTypes) {
+    private static Sort[] getArgSorts(ImmutableList<KeYRustyType> paramTypes) {
         final int arity = paramTypes.size();
 
         final Sort[] result = new Sort[arity];
@@ -73,7 +73,7 @@ public class ObserverFunction extends RFunction implements IObserverFunction {
     }
 
     @Override
-    public ImmutableArray<KeYRustyType> getParamTypes() {
+    public ImmutableList<KeYRustyType> getParamTypes() {
         return paramTypes;
     }
 }

@@ -14,16 +14,15 @@ import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /// A struct with no generic parameters or already instantiated parameters.
-public record Struct(Name name, ImmutableArray<Field> fields,
+public record Struct(Name name, ImmutableList<Field> fields,
         @Nullable ParametricSortDecl parametricSortDecl,
-        @Nullable ImmutableArray<GenericTyArg> args) implements Type, Adt {
+        @Nullable ImmutableList<GenericTyArg> args) implements Type, Adt {
     @Override
     public @Nullable Sort getSort(Services services) {
         if (parametricSortDecl == null)

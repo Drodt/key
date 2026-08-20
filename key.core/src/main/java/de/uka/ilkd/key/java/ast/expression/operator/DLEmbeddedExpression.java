@@ -24,7 +24,7 @@ import de.uka.ilkd.key.logic.op.LocationVariable;
 
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -33,7 +33,7 @@ public class DLEmbeddedExpression extends Operator {
 
     public DLEmbeddedExpression(
             PositionInfo pi, List<Comment> comments, JFunction functionSymbol,
-            @NonNull ImmutableArray<Expression> children) {
+            @NonNull ImmutableList<Expression> children) {
         super(pi, comments, children);
         this.functionSymbol = functionSymbol;
     }

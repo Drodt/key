@@ -14,7 +14,6 @@ import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.*;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /// Encapsulate the concrete syntax used to print a term. The [NotationInfo] class associates a
@@ -116,7 +115,7 @@ public abstract class Notation {
 
         public void print(Term t, LogicPrinter sp) {
             sp.addBoundVars(t.boundVars());
-            sp.printQuantifierTerm(name, (ImmutableArray<QuantifiableVariable>) t.varsBoundHere(0),
+            sp.printQuantifierTerm(name, (ImmutableList<QuantifiableVariable>) t.varsBoundHere(0),
                 t.sub(0), ass);
             sp.removeBoundVars(t.boundVars().size());
         }

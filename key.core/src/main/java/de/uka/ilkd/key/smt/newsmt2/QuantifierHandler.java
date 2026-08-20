@@ -15,7 +15,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /**
  * This SMT translation handler takes care of quantifier formulas using existential or universal
@@ -110,8 +110,8 @@ public class QuantifierHandler implements SMTHandler {
             current = current.sub(0);
         }
 
-        ImmutableArray<JTerm> subs = new ImmutableArray<>(current);
-        ImmutableArray<QuantifiableVariable> bvars = new ImmutableArray<>(boundVars);
+        ImmutableList<JTerm> subs = ImmutableList.singleton(current);
+        ImmutableList<QuantifiableVariable> bvars = ImmutableList.fromList(boundVars);
         return services.getTermFactory().createTerm(type, subs, bvars, null);
     }
 

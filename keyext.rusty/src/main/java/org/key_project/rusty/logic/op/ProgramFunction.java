@@ -17,7 +17,6 @@ import org.key_project.rusty.ast.fn.FunctionParamPattern;
 import org.key_project.rusty.ast.pat.BindingPattern;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -44,12 +43,12 @@ public class ProgramFunction extends ObserverFunction implements RustyProgramEle
     ///
     /// @param fn some function declaration
     /// @return java types of the parameters required by fn
-    private static ImmutableArray<KeYRustyType> getParamTypes(Function fn) {
+    private static ImmutableList<KeYRustyType> getParamTypes(Function fn) {
         KeYRustyType[] result = new KeYRustyType[fn.params().size()];
         for (int i = 0; i < result.length; i++) {
             result[i] = fn.params().get(i).getKeYRustyType();
         }
-        return new ImmutableArray<>(result);
+        return ImmutableList.fromArray(result);
     }
 
     public @NonNull Function getFunction() {

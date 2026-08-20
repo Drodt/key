@@ -588,12 +588,12 @@ public class WhileInvariantRule implements BuiltInRule {
             JavaBlock useJavaBlock =
                 JavaTools.removeActiveStatement(inst.progPost.javaBlock(), services);
             var modality = (Modality) inst.progPost.op();
-            final ImmutableArray<TermLabel> instantiateLabels = TermLabelManager.instantiateLabels(
+            final ImmutableList<TermLabel> instantiateLabels = TermLabelManager.instantiateLabels(
                 termLabelState, services, ruleApp.posInOccurrence(), ruleApp.rule(), ruleApp,
                 useGoal,
                 "UseModality", null,
                 tb.tf().createTerm(JModality.getModality(modality.kind(), useJavaBlock),
-                    new ImmutableArray<>(inst.progPost.sub(0)),
+                    ImmutableList.singleton(inst.progPost.sub(0)),
                     null, inst.progPost.getLabels()));
             JTerm restPsi =
                 tb.prog(modality.kind(), useJavaBlock, inst.progPost.sub(0),

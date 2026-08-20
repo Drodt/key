@@ -10,14 +10,14 @@ import org.key_project.logic.op.AbstractSortedOperator;
 import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 public abstract class OperatorSV extends AbstractSortedOperator
         implements SchemaVariable, org.key_project.logic.op.sv.OperatorSV {
     private final boolean isStrict;
 
 
-    protected OperatorSV(Name name, ImmutableArray<Sort> argSorts, Sort sort, boolean isRigid,
+    protected OperatorSV(Name name, ImmutableList<Sort> argSorts, Sort sort, boolean isRigid,
             boolean isStrict) {
         super(name, argSorts, sort, isRigid ? Modifier.RIGID : Modifier.NONE);
         this.isStrict = isStrict;
@@ -25,12 +25,12 @@ public abstract class OperatorSV extends AbstractSortedOperator
 
 
     protected OperatorSV(Name name, Sort[] argSorts, Sort sort, boolean isRigid, boolean isStrict) {
-        this(name, new ImmutableArray<>(argSorts), sort, isRigid, isStrict);
+        this(name, ImmutableList.fromArray(argSorts), sort, isRigid, isStrict);
     }
 
 
     protected OperatorSV(Name name, Sort sort, boolean isRigid, boolean isStrict) {
-        this(name, new ImmutableArray<>(), sort, isRigid, isStrict);
+        this(name, ImmutableList.nil(), sort, isRigid, isStrict);
     }
 
 

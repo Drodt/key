@@ -10,7 +10,7 @@ import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.op.RModality;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -74,8 +74,8 @@ public class ModalOperatorSV extends RModality.RustyModalityKind implements Sche
     }
 
     @Override
-    public @NonNull ImmutableArray<Sort> argSorts() {
-        return new ImmutableArray<>();
+    public @NonNull ImmutableList<Sort> argSorts() {
+        return ImmutableList.nil();
     }
 
     @Override

@@ -16,7 +16,6 @@ import org.key_project.rusty.logic.sort.GenericParameter;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.SortArg;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -41,7 +40,7 @@ public class FieldLDT extends LDT {
         ParametricSortInstance sort =
             ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)));
         Name name = new Name(prefix + fieldName.toString());
-        var fn = new RFunction(name, sort, new ImmutableArray<>(), null, true);
+        var fn = new RFunction(name, sort, ImmutableList.nil(), null, true);
         services.getNamespaces().functions().addSafely(fn);
         return fn;
     }
@@ -60,7 +59,7 @@ public class FieldLDT extends LDT {
         ParametricSortInstance sort =
             ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)));
         Name name = new Name(prefix + fieldName.toString());
-        var fn = new ParametricFunctionDecl(name, generics, new ImmutableArray<>(), sort, null,
+        var fn = new ParametricFunctionDecl(name, generics, ImmutableList.nil(), sort, null,
             true, true, false);
         services.getNamespaces().parametricFunctions().addSafely(fn);
         return fn;

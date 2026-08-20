@@ -20,7 +20,6 @@ import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.util.MiscTools;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /// For the loop scope rule, if a local program variable that may be altered by the loop body
@@ -84,7 +83,8 @@ public class NewLocalVarsCondition implements VariableCondition {
         }
         return matchCond.setInstantiations(
             svInst.add(varDeclsSV,
-                new ListInstantiation<>(new ImmutableArray<>(decls), LetStatement.class), services)
+                new ListInstantiation<>(ImmutableList.fromList(decls), LetStatement.class),
+                services)
                     .add(updateBeforeSV, tb.parallel(updatesBefore), services)
                     .add(updateFrameSV, tb.parallel(updateFrames), services));
     }

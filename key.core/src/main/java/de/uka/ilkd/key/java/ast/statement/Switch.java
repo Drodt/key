@@ -10,7 +10,7 @@ import de.uka.ilkd.key.java.ast.expression.Expression;
 import de.uka.ilkd.key.java.visitor.Visitor;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /**
  * Switch.
@@ -23,7 +23,7 @@ public class Switch extends BranchStatement
      * Branches.
      */
 
-    protected final ImmutableArray<Branch> branches;
+    protected final ImmutableList<Branch> branches;
 
     /**
      * Expression.
@@ -64,7 +64,7 @@ public class Switch extends BranchStatement
      */
 
     public Switch(Expression e, Branch[] branches) {
-        this.branches = new ImmutableArray<>(branches);
+        this.branches = ImmutableList.fromArray(branches);
         this.expression = e;
     }
 
@@ -78,11 +78,11 @@ public class Switch extends BranchStatement
     public Switch(ExtList children) {
         super(children);
         this.expression = children.get(Expression.class);
-        this.branches = new ImmutableArray<>(children.collect(Branch.class));
+        this.branches = ImmutableList.fromArray(children.collect(Branch.class));
     }
 
     public Switch(PositionInfo pi, List<Comment> c, Expression expr,
-            ImmutableArray<Branch> branches) {
+            ImmutableList<Branch> branches) {
         super(pi, c);
         this.expression = expr;
         this.branches = branches;
@@ -200,7 +200,7 @@ public class Switch extends BranchStatement
      *
      * @return the array wrapper of the branches
      */
-    public ImmutableArray<Branch> getBranchList() {
+    public ImmutableList<Branch> getBranchList() {
         return branches;
     }
 

@@ -14,7 +14,7 @@ import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import static org.key_project.logic.op.Function.FunctionKind.ORDINARY;
 
@@ -48,8 +48,8 @@ public class JFunction extends Function implements Sorted, Operator {
      * @param introductionTime the introduction time of the symbol, or a
      *        {@link Function#UNRECORDED}, if none available (e.g. existed from the beginning)
      */
-    JFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
-            ImmutableArray<Boolean> whereToBind, boolean unique, boolean isRigid,
+    JFunction(Name name, Sort sort, ImmutableList<Sort> argSorts,
+            ImmutableList<Boolean> whereToBind, boolean unique, boolean isRigid,
             FunctionKind kind, int introductionTime) {
         super(name, argSorts, sort, whereToBind, isRigid, unique, kind, introductionTime);
 
@@ -59,8 +59,8 @@ public class JFunction extends Function implements Sorted, Operator {
                 : "Functions with sort \"null\" are not allowed: " + this;
     }
 
-    public JFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
-            ImmutableArray<Boolean> whereToBind, boolean unique) {
+    public JFunction(Name name, Sort sort, ImmutableList<Sort> argSorts,
+            ImmutableList<Boolean> whereToBind, boolean unique) {
         this(name, sort, argSorts, whereToBind, unique, true, ORDINARY, UNRECORDED);
     }
 
@@ -77,23 +77,23 @@ public class JFunction extends Function implements Sorted, Operator {
      * @param introductionTime the introduction time of the symbol, or a
      *        {@link Function#UNRECORDED}, if none available (e.g. existed from the beginning)
      */
-    public JFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
-            ImmutableArray<Boolean> whereToBind, boolean unique, FunctionKind kind,
+    public JFunction(Name name, Sort sort, ImmutableList<Sort> argSorts,
+            ImmutableList<Boolean> whereToBind, boolean unique, FunctionKind kind,
             int introductionTime) {
         this(name, sort, argSorts, whereToBind, unique, true, kind, introductionTime);
     }
 
     public JFunction(Name name, Sort sort, Sort[] argSorts, Boolean[] whereToBind,
             boolean unique) {
-        this(name, sort, new ImmutableArray<>(argSorts),
-            whereToBind == null ? null : new ImmutableArray<>(whereToBind), unique);
+        this(name, sort, ImmutableList.fromArray(argSorts),
+            whereToBind == null ? null : ImmutableList.fromArray(whereToBind), unique);
     }
 
-    JFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts, boolean isRigid) {
+    JFunction(Name name, Sort sort, ImmutableList<Sort> argSorts, boolean isRigid) {
         this(name, sort, argSorts, null, false, isRigid, ORDINARY, UNRECORDED);
     }
 
-    public JFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts) {
+    public JFunction(Name name, Sort sort, ImmutableList<Sort> argSorts) {
         this(name, sort, argSorts, null, false);
     }
 
@@ -102,18 +102,18 @@ public class JFunction extends Function implements Sorted, Operator {
     }
 
     public JFunction(Name name, Sort sort) {
-        this(name, sort, new ImmutableArray<>(), null, false);
+        this(name, sort, ImmutableList.nil(), null, false);
     }
 
     /**
      * Creates a constant of the given kind
      */
     public JFunction(Name name, Sort sort, FunctionKind kind) {
-        this(name, sort, new ImmutableArray<>(), null, false, true, kind, UNRECORDED);
+        this(name, sort, ImmutableList.nil(), null, false, true, kind, UNRECORDED);
     }
 
     public JFunction(Name name, Sort sort, FunctionKind kind, int introductionTime) {
-        this(name, sort, new ImmutableArray<>(), null, false, true, kind, introductionTime);
+        this(name, sort, ImmutableList.nil(), null, false, true, kind, introductionTime);
     }
 
     /**

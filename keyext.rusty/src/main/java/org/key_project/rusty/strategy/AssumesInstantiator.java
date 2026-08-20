@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy;
 
+import java.lang.reflect.Array;
 import java.util.Iterator;
 
 import org.key_project.logic.PosInTerm;
@@ -20,7 +21,6 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.NoPosTacletApp;
 import org.key_project.rusty.rule.Taclet;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /// This class implements custom instantiation of if-formulas.
@@ -28,8 +28,8 @@ public class AssumesInstantiator {
     private final Goal goal;
     private final AssumesInstantiationCache assumesInstCache;
 
-    private ImmutableArray<AssumesFormulaInstantiation> allAntecFormulas;
-    private ImmutableArray<AssumesFormulaInstantiation> allSuccFormulas;
+    private ImmutableList<AssumesFormulaInstantiation> allAntecFormulas;
+    private ImmutableList<AssumesFormulaInstantiation> allSuccFormulas;
 
     private ImmutableList<NoPosTacletApp> results = ImmutableList.nil();
 
@@ -86,19 +86,19 @@ public class AssumesInstantiator {
     /// the formulas returned by <code>selectNewFormulas</code>
     /// @return a list of potential if-formula instantiations (analogously to
     /// <code>IfFormulaInstSeq.createList</code>)
-    private ImmutableArray<AssumesFormulaInstantiation> getSequentFormulas(boolean p_antec,
+    private ImmutableList<AssumesFormulaInstantiation> getSequentFormulas(boolean p_antec,
             boolean p_all) {
         if (p_all) {
             return getAllSequentFormulas(p_antec);
         }
 
-        final ImmutableArray<AssumesFormulaInstantiation> cache =
+        final ImmutableList<AssumesFormulaInstantiation> cache =
             getNewSequentFormulasFromCache(p_antec);
         if (cache != null) {
             return cache;
         }
 
-        final ImmutableArray<AssumesFormulaInstantiation> newFormulas = selectNewFormulas(p_antec);
+        final ImmutableList<AssumesFormulaInstantiation> newFormulas = selectNewFormulas(p_antec);
 
         addNewSequentFormulasToCache(newFormulas, p_antec);
 
@@ -109,8 +109,8 @@ public class AssumesInstantiator {
     /// <code>IfFormulaInstSeq.createList</code>), but consisting only of those formulas of
     /// the current goal for which the method <code>isNewFormula</code> returns
     /// <code>true</code>
-    private ImmutableArray<AssumesFormulaInstantiation> selectNewFormulas(boolean p_antec) {
-        final ImmutableArray<AssumesFormulaInstantiation> allSequentFormulas =
+    private ImmutableList<AssumesFormulaInstantiation> selectNewFormulas(boolean p_antec) {
+        final ImmutableList<AssumesFormulaInstantiation> allSequentFormulas =
             getAllSequentFormulas(p_antec);
         final AssumesFormulaInstantiation[] res =
             new AssumesFormulaInstantiation[allSequentFormulas.size()];
@@ -122,7 +122,10 @@ public class AssumesInstantiator {
                 ++i;
             }
         }
-        return new ImmutableArray<>(res, 0, i);
+        var content =
+            (AssumesFormulaInstantiation[]) Array.newInstance(AssumesFormulaInstantiation.class, i);
+        System.arraycopy(res, 0, content, 0, i);
+        return ImmutableList.fromArray(content);
     }
 
     /// @return true iff the formula described by the argument has been modified (or introduced)
@@ -131,7 +134,7 @@ public class AssumesInstantiator {
     private boolean isNewFormula(AssumesFormulaInstSeq p_ifInstantiation) {
         final boolean antec = p_ifInstantiation.inAntecedent();
 
-        final ImmutableArray<AssumesFormulaInstantiation> cache =
+        final ImmutableList<AssumesFormulaInstantiation> cache =
             getNewSequentFormulasFromCache(antec);
 
         if (cache != null) {
@@ -162,18 +165,18 @@ public class AssumesInstantiator {
         return tacletAppContainer.getAge() < formulaAge;
     }
 
-    private ImmutableArray<AssumesFormulaInstantiation> getNewSequentFormulasFromCache(
+    private ImmutableList<AssumesFormulaInstantiation> getNewSequentFormulasFromCache(
             boolean p_antec) {
         return assumesInstCache.get(p_antec, tacletAppContainer.getAge());
     }
 
-    private void addNewSequentFormulasToCache(ImmutableArray<AssumesFormulaInstantiation> p_list,
+    private void addNewSequentFormulasToCache(ImmutableList<AssumesFormulaInstantiation> p_list,
             boolean p_antec) {
         assumesInstCache.put(p_antec, tacletAppContainer.getAge(), p_list);
     }
 
 
-    private ImmutableArray<AssumesFormulaInstantiation> getAllSequentFormulas(boolean p_antec) {
+    private ImmutableList<AssumesFormulaInstantiation> getAllSequentFormulas(boolean p_antec) {
         return p_antec ? allAntecFormulas : allSuccFormulas;
     }
 
@@ -207,7 +210,7 @@ public class AssumesInstantiator {
         final boolean antec = p_ifSeqTail2nd == null;
         final boolean lastIfFormula =
             p_ifSeqTail.size() == 1 && (p_ifSeqTail2nd == null || p_ifSeqTail2nd.isEmpty());
-        final ImmutableArray<AssumesFormulaInstantiation> formulas =
+        final ImmutableList<AssumesFormulaInstantiation> formulas =
             getSequentFormulas(antec, !lastIfFormula || p_alreadyMatchedNewFor);
         final AssumesMatchResult mr = getTaclet().getMatcher().matchAssumes(formulas,
             p_ifSeqTail.head().formula(), p_matchCond, getServices());

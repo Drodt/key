@@ -34,7 +34,6 @@ import org.key_project.prover.rules.RuleExecutor;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -222,7 +221,7 @@ public class TestTermLabelManager {
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().tt();
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(1, labels.size());
@@ -249,7 +248,7 @@ public class TestTermLabelManager {
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().tt();
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(1, labels.size());
@@ -274,7 +273,7 @@ public class TestTermLabelManager {
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().tt();
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(4, labels.size());
@@ -322,7 +321,7 @@ public class TestTermLabelManager {
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().tt();
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(4, labels.size());
@@ -359,7 +358,7 @@ public class TestTermLabelManager {
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().tt();
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(2, labels.size());
@@ -397,7 +396,7 @@ public class TestTermLabelManager {
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().tt();
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(2, labels.size());
@@ -434,13 +433,13 @@ public class TestTermLabelManager {
         JTerm update = TB.label(TB.elementary(TB.var(heap), TB.var(heap)),
             new ParameterlessTermLabel(new Name("UPDATE")));
         JTerm updateApp = TB.apply(update, modality,
-            new ImmutableArray<>(new ParameterlessTermLabel(new Name("UPDATE-APPLICATION"))));
+            ImmutableList.singleton(new ParameterlessTermLabel(new Name("UPDATE-APPLICATION"))));
         PosInOccurrence pos =
             new PosInOccurrence(new SequentFormula(updateApp), PosInTerm.getTopLevel(), true);
         JTerm taclet = TB.tt();
         Rule rule = new DummyRule("rule");
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(1, labels.size());
@@ -462,7 +461,7 @@ public class TestTermLabelManager {
         JTerm taclet = services.getTermBuilder().tt();
         Rule rule = new DummyRule("rule");
         // Create labels
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(1, labels.size());
@@ -482,8 +481,8 @@ public class TestTermLabelManager {
         PosInOccurrence pos = createTestPosInOccurrence(services);
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().label(services.getTermBuilder().tt(),
-            new ImmutableArray<>(new ParameterlessTermLabel(new Name("TACLET"))));
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+            ImmutableList.singleton(new ParameterlessTermLabel(new Name("TACLET"))));
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);
         assertEquals(1, labels.size());
@@ -495,7 +494,7 @@ public class TestTermLabelManager {
     */
     @Test
     public void testInstantiateLabels_null() {
-        ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
+        ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             null, null, null, null, null, null, null, null);
         assertNotNull(labels);
         assertTrue(labels.isEmpty());

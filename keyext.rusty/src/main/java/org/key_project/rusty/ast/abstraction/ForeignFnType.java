@@ -10,23 +10,23 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.parser.hir.DefId;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class ForeignFnType implements Type {
     private final DefId defId;
-    private final ImmutableArray<GenericTyArg> args;
+    private final ImmutableList<GenericTyArg> args;
     private final Name name;
 
-    public ForeignFnType(DefId defId, ImmutableArray<GenericTyArg> args) {
+    public ForeignFnType(DefId defId, ImmutableList<GenericTyArg> args) {
         this.defId = defId;
         this.args = args;
         name = new Name("Foreign(" + defId + ")" + args);
     }
 
-    public ImmutableArray<GenericTyArg> getArgs() {
+    public ImmutableList<GenericTyArg> getArgs() {
         return args;
     }
 

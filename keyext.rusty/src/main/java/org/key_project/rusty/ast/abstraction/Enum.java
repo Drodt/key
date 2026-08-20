@@ -10,13 +10,13 @@ import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 /// An enum with no generic parameters or already instantiated parameters.
-public record Enum(Name name, ImmutableArray<Variant> variants,
+public record Enum(Name name, ImmutableList<Variant> variants,
         Sort sort) implements Type, Adt {
     @Override
     public @Nullable Sort getSort(Services services) {

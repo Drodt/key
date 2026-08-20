@@ -32,7 +32,6 @@ import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
@@ -97,7 +96,7 @@ public class LogicPrinter {
         layouter = layouter.cloneArgs();
     }
 
-    public void addBoundVars(ImmutableArray<? extends QuantifiableVariable> boundVars) {
+    public void addBoundVars(ImmutableList<? extends QuantifiableVariable> boundVars) {
         for (QuantifiableVariable qv : boundVars) {
             if (qv instanceof BoundVariable bv) {
                 this.boundVars.add(bv);
@@ -755,7 +754,7 @@ public class LogicPrinter {
             }
             if (!t.boundVars().isEmpty()) {
                 layouter.print("{").beginC(0);
-                printVariables((ImmutableArray<QuantifiableVariable>) t.boundVars(),
+                printVariables((ImmutableList<QuantifiableVariable>) t.boundVars(),
                     quantifiableVariablePrintMode);
                 layouter.print("}").end();
             }
@@ -953,7 +952,7 @@ public class LogicPrinter {
         layouter.end();
     }
 
-    private void printVariables(ImmutableArray<QuantifiableVariable> vars,
+    private void printVariables(ImmutableList<QuantifiableVariable> vars,
             QuantifiableVariablePrintMode mode) {
         int size = vars.size();
         for (int j = 0; j != size; j++) {
@@ -988,7 +987,7 @@ public class LogicPrinter {
         layouter.keyWord(keyword);
         if (!t.varsBoundHere(0).isEmpty()) {
             layouter.print(" ");
-            printVariables((ImmutableArray<QuantifiableVariable>) t.varsBoundHere(0),
+            printVariables((ImmutableList<QuantifiableVariable>) t.varsBoundHere(0),
                 quantifiableVariablePrintMode);
         }
 
@@ -1035,7 +1034,7 @@ public class LogicPrinter {
     public void printSubstTerm(String l, QuantifiableVariable v, Term t, int ass2, String r,
             Term phi, int ass3) {
         layouter.beginC().print(l);
-        printVariables(new ImmutableArray<>(v), quantifiableVariablePrintMode);
+        printVariables(ImmutableList.singleton(v), quantifiableVariablePrintMode);
         layouter.startTerm(2);
         maybeParens(t, ass2);
         layouter.print(r).brk(0);
@@ -1057,7 +1056,7 @@ public class LogicPrinter {
     /// @param vars the quantified variables (+colon and sort)
     /// @param phi the quantified formula
     /// @param ass associativity for phi
-    public void printQuantifierTerm(String name, ImmutableArray<QuantifiableVariable> vars,
+    public void printQuantifierTerm(String name, ImmutableList<QuantifiableVariable> vars,
             Term phi, int ass) {
         layouter.beginC();
         layouter.keyWord(name);
@@ -1126,7 +1125,7 @@ public class LogicPrinter {
                     final RModality m =
                         RModality.getModality(kind, mod.programBlock());
                     final Term term = services.getTermFactory().createTerm(m, ta,
-                        (ImmutableArray<QuantifiableVariable>) phi.boundVars());
+                        (ImmutableList<QuantifiableVariable>) phi.boundVars());
                     notationInfo.getNotation(m).print(term, this);
                     return;
                 }

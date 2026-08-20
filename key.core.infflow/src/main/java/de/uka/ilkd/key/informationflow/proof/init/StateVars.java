@@ -20,7 +20,6 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -242,8 +241,8 @@ public class StateVars {
 
     public static StateVars buildMethodContractPreVars(IProgramMethod pm, KeYJavaType kjt,
             Services services) {
-        ImmutableArray<TermLabel> heapLabels =
-            new ImmutableArray<>(ParameterlessTermLabel.ANON_HEAP_LABEL);
+        ImmutableList<TermLabel> heapLabels =
+            ImmutableList.singleton(ParameterlessTermLabel.ANON_HEAP_LABEL);
         return new StateVars(buildSelfVar(services, pm, kjt, ""), buildParamVars(services, "", pm),
             buildResultVar(pm, services, ""), buildExceptionVar(services, "", pm),
             buildHeapFunc("AtPre", heapLabels, services), buildMbyVar("", services));
@@ -256,7 +255,7 @@ public class StateVars {
         // preVars.localVars: no local out variables
         return new StateVars(buildSelfVar(services, pm, kjt, postfix), preVars.localVars,
             buildResultVar(pm, services, postfix), buildExceptionVar(services, postfix, pm),
-            buildHeapFunc(postfix, new ImmutableArray<>(), services), preVars.mbyAtPre);
+            buildHeapFunc(postfix, ImmutableList.nil(), services), preVars.mbyAtPre);
     }
 
 
@@ -329,7 +328,7 @@ public class StateVars {
     }
 
 
-    private static JTerm buildHeapFunc(String postfix, ImmutableArray<TermLabel> labels,
+    private static JTerm buildHeapFunc(String postfix, ImmutableList<TermLabel> labels,
             Services services) {
         HeapLDT heapLDT = services.getTypeConverter().getHeapLDT();
         final TermBuilder tb = services.getTermBuilder();

@@ -11,15 +11,15 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.TupleType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 public class TupleRustType implements RustType {
-    private final ImmutableArray<RustType> types;
+    private final ImmutableList<RustType> types;
     private final Type type;
 
     public static TupleRustType UNIT = new TupleRustType();
 
-    public TupleRustType(ImmutableArray<RustType> types, Services services) {
+    public TupleRustType(ImmutableList<RustType> types, Services services) {
         this.types = types;
         this.type =
             TupleType.getInstance(types.stream().map(RustType::type).collect(Collectors.toList()),
@@ -27,7 +27,7 @@ public class TupleRustType implements RustType {
     }
 
     private TupleRustType() {
-        types = new ImmutableArray<>();
+        types = ImmutableList.nil();
         type = TupleType.UNIT;
     }
 
@@ -36,7 +36,7 @@ public class TupleRustType implements RustType {
         return type;
     }
 
-    public ImmutableArray<RustType> getTypes() {
+    public ImmutableList<RustType> getTypes() {
         return types;
     }
 

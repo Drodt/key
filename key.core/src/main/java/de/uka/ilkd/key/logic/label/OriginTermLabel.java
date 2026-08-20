@@ -27,7 +27,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.sequent.SequentFormula;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -291,7 +291,7 @@ public class OriginTermLabel implements TermLabel {
         List<TermLabel> labels = term.getLabels().toList();
         final TermLabel originTermLabel = term.getLabel(NAME);
         final TermFactory tf = services.getTermFactory();
-        final ImmutableArray<JTerm> oldSubs = term.subs();
+        final ImmutableList<JTerm> oldSubs = term.subs();
         JTerm[] newSubs = new JTerm[oldSubs.size()];
 
         if (originTermLabel != null) {
@@ -303,7 +303,7 @@ public class OriginTermLabel implements TermLabel {
         }
 
         return tf.createTerm(term.op(), newSubs, term.boundVars(),
-            new ImmutableArray<>(labels));
+            ImmutableList.fromList(labels));
     }
 
     /**
@@ -441,7 +441,7 @@ public class OriginTermLabel implements TermLabel {
         }
 
         SubTermOriginData newSubs = getSubTermOriginData(term.subs(), services);
-        final ImmutableArray<TermLabel> labels =
+        final ImmutableList<TermLabel> labels =
             computeOriginLabelsFromSubTermOrigins(term, newSubs.origins);
 
         return services.getTermFactory().createTerm(term.op(), newSubs.terms, term.boundVars(),
@@ -505,7 +505,7 @@ public class OriginTermLabel implements TermLabel {
     }
 
 
-    private static ImmutableArray<TermLabel> computeOriginLabelsFromSubTermOrigins(final JTerm term,
+    private static ImmutableList<TermLabel> computeOriginLabelsFromSubTermOrigins(final JTerm term,
             final Set<Origin> origins) {
         List<TermLabel> labels = term.getLabels().toList();
         final OriginTermLabel oldLabel = (OriginTermLabel) term.getLabel(NAME);
@@ -522,7 +522,7 @@ public class OriginTermLabel implements TermLabel {
 
             labels.add(newLabel);
         }
-        return new ImmutableArray<>(labels);
+        return ImmutableList.fromList(labels);
     }
 
     /**
@@ -532,7 +532,7 @@ public class OriginTermLabel implements TermLabel {
      * @return origin information about the searched sub-terms stored in a {@link SubTermOriginData}
      *         object.
      */
-    private static SubTermOriginData getSubTermOriginData(final ImmutableArray<JTerm> subs,
+    private static SubTermOriginData getSubTermOriginData(final ImmutableList<JTerm> subs,
             final Services services) {
         JTerm[] newSubs = new JTerm[subs.size()];
         Set<Origin> origins = new LinkedHashSet<>();

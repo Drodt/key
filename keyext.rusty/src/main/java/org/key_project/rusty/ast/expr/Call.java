@@ -5,12 +5,12 @@ package org.key_project.rusty.ast.expr;
 
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.ProgramFunction;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 public interface Call extends Expr {
     Expr callee();
 
-    ImmutableArray<Expr> params();
+    ImmutableList<Expr> params();
 
     ProgramFunction function(Services services);
 }

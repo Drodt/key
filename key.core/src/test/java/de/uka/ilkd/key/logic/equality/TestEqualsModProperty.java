@@ -20,7 +20,7 @@ import de.uka.ilkd.key.logic.op.Junctor;
 import de.uka.ilkd.key.rule.TacletForTests;
 import de.uka.ilkd.key.util.HelperClassForTests;
 
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -84,7 +84,7 @@ public class TestEqualsModProperty {
             tf.createTerm(Junctor.AND, tf.createTerm(Junctor.TRUE), tf.createTerm(Junctor.FALSE));
         term2 =
             tf.createTerm(Junctor.AND, tf.createTerm(Junctor.TRUE), tf.createTerm(Junctor.FALSE));
-        ImmutableArray<TermLabel> labels1 = new ImmutableArray<>(irrelevantLabel);
+        ImmutableList<TermLabel> labels1 = ImmutableList.singleton(irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertTrue(RENAMING_TERM_PROPERTY.equalsModThisProperty(term1, term2),
             "Should be true as labels do not matter");
@@ -95,7 +95,7 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as labels do not matter (0)");
 
 
-        labels1 = new ImmutableArray<>(relevantLabel1);
+        labels1 = ImmutableList.singleton(relevantLabel1);
         term1 = tb.label(term1, labels1);
         assertTrue(RENAMING_TERM_PROPERTY.equalsModThisProperty(term1, term2),
             "Should be true as labels do not matter");
@@ -105,7 +105,7 @@ public class TestEqualsModProperty {
             term2.hashCodeModProperty(RENAMING_TERM_PROPERTY),
             "Hash codes should be equal as labels do not matter (1)");
 
-        ImmutableArray<TermLabel> labels2 = new ImmutableArray<>(relevantLabel2);
+        ImmutableList<TermLabel> labels2 = ImmutableList.singleton(relevantLabel2);
         term2 = tb.label(term2, labels2);
         assertTrue(RENAMING_TERM_PROPERTY.equalsModThisProperty(term1, term2),
             "Should be true as labels do not matter");
@@ -140,15 +140,15 @@ public class TestEqualsModProperty {
             tf.createTerm(Junctor.AND, tf.createTerm(Junctor.TRUE), tf.createTerm(Junctor.FALSE));
 
         // ------------ only one term has labels
-        ImmutableArray<TermLabel> labels1 =
-            new ImmutableArray<>(relevantLabel1, irrelevantLabel);
+        ImmutableList<TermLabel> labels1 =
+            ImmutableList.of(relevantLabel1, irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertFalse(term1.equalsModProperty(term2, IRRELEVANT_TERM_LABELS_PROPERTY),
             "Should be false as term1 has a proof relevant term label, but term2 does not have any labels");
         assertFalse(term2.equalsModProperty(term1, IRRELEVANT_TERM_LABELS_PROPERTY),
             "Should be false as term1 has a proof relevant term label, but term2 does not have any labels");
 
-        labels1 = new ImmutableArray<>(irrelevantLabel);
+        labels1 = ImmutableList.singleton(irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertTrue(term1.equalsModProperty(term2, IRRELEVANT_TERM_LABELS_PROPERTY),
             "Should be true as term1 has no relevant term labels and term2 does not have any labels");
@@ -159,9 +159,9 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as term1 has no relevant term labels and term2 does not have any labels (0)");
 
         // ------------ same relevant labels
-        labels1 = new ImmutableArray<>(relevantLabel1, relevantLabel2);
-        ImmutableArray<TermLabel> labels2 =
-            new ImmutableArray<>(relevantLabel1, relevantLabel2, irrelevantLabel);
+        labels1 = ImmutableList.of(relevantLabel1, relevantLabel2);
+        ImmutableList<TermLabel> labels2 =
+            ImmutableList.of(relevantLabel1, relevantLabel2, irrelevantLabel);
         term1 = tb.label(term1, labels1);
         term2 = tb.label(term2, labels2);
         assertTrue(term1.equalsModProperty(term2, IRRELEVANT_TERM_LABELS_PROPERTY),
@@ -173,8 +173,8 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as both terms have the same relevant term labels (1)");
 
         // ------------ not the same relevant labels
-        labels1 = new ImmutableArray<>(relevantLabel1, irrelevantLabel);
-        labels2 = new ImmutableArray<>(relevantLabel1, relevantLabel2);
+        labels1 = ImmutableList.of(relevantLabel1, irrelevantLabel);
+        labels2 = ImmutableList.of(relevantLabel1, relevantLabel2);
         term1 = tb.label(term1, labels1);
         term2 = tb.label(term2, labels2);
         assertFalse(term1.equalsModProperty(term2, IRRELEVANT_TERM_LABELS_PROPERTY),
@@ -203,8 +203,8 @@ public class TestEqualsModProperty {
             tf.createTerm(Junctor.AND, tf.createTerm(Junctor.TRUE), tf.createTerm(Junctor.FALSE));
 
         // ------------ only one term has labels
-        ImmutableArray<TermLabel> labels1 =
-            new ImmutableArray<>(relevantLabel1, irrelevantLabel);
+        ImmutableList<TermLabel> labels1 =
+            ImmutableList.of(relevantLabel1, irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertTrue(TERM_LABELS_PROPERTY.equalsModThisProperty(term1, term2),
             "Should be true as underlying terms are equal");
@@ -215,9 +215,9 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as all term labels are ignored (0)");
 
         // ------------ same relevant labels
-        labels1 = new ImmutableArray<>(relevantLabel1, relevantLabel2);
-        ImmutableArray<TermLabel> labels2 =
-            new ImmutableArray<>(relevantLabel1, relevantLabel2, irrelevantLabel);
+        labels1 = ImmutableList.of(relevantLabel1, relevantLabel2);
+        ImmutableList<TermLabel> labels2 =
+            ImmutableList.of(relevantLabel1, relevantLabel2, irrelevantLabel);
         term1 = tb.label(term1, labels1);
         term2 = tb.label(term2, labels2);
         assertTrue(TERM_LABELS_PROPERTY.equalsModThisProperty(term1, term2),
@@ -229,8 +229,8 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as all term labels are ignored (1)");
 
         // ------------ not the same relevant labels
-        labels1 = new ImmutableArray<>(relevantLabel1, irrelevantLabel);
-        labels2 = new ImmutableArray<>(relevantLabel1, relevantLabel2);
+        labels1 = ImmutableList.of(relevantLabel1, irrelevantLabel);
+        labels2 = ImmutableList.of(relevantLabel1, relevantLabel2);
         term1 = tb.label(term1, labels1);
         term2 = tb.label(term2, labels2);
         assertTrue(TERM_LABELS_PROPERTY.equalsModThisProperty(term1, term2),
@@ -266,15 +266,15 @@ public class TestEqualsModProperty {
             tf.createTerm(Junctor.AND, tf.createTerm(Junctor.TRUE), tf.createTerm(Junctor.FALSE));
 
         // ------------ only one term has labels
-        ImmutableArray<TermLabel> labels1 =
-            new ImmutableArray<>(relevantLabel1, irrelevantLabel);
+        ImmutableList<TermLabel> labels1 =
+            ImmutableList.of(relevantLabel1, irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertFalse(term1.equalsModProperty(term2, PROOF_IRRELEVANCY_PROPERTY),
             "Should be false as term1 has a proof relevant term label, but term2 does not have any labels");
         assertFalse(term2.equalsModProperty(term1, PROOF_IRRELEVANCY_PROPERTY),
             "Should be false as term1 has a proof relevant term label, but term2 does not have any labels");
 
-        labels1 = new ImmutableArray<>(irrelevantLabel);
+        labels1 = ImmutableList.of(irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertTrue(term1.equalsModProperty(term2, PROOF_IRRELEVANCY_PROPERTY),
             "Should be true as term1 has no relevant term labels and term2 does not have any labels");
@@ -285,9 +285,9 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as proof irrelevant properties are ignored (0)");
 
         // ------------ same relevant labels
-        labels1 = new ImmutableArray<>(relevantLabel1, relevantLabel2, irrelevantLabel);
-        ImmutableArray<TermLabel> labels2 =
-            new ImmutableArray<>(relevantLabel1, relevantLabel2, irrelevantLabel);
+        labels1 = ImmutableList.of(relevantLabel1, relevantLabel2, irrelevantLabel);
+        ImmutableList<TermLabel> labels2 =
+            ImmutableList.of(relevantLabel1, relevantLabel2, irrelevantLabel);
         term1 = tb.label(term1, labels1);
         term2 = tb.label(term2, labels2);
         assertTrue(term1.equalsModProperty(term2, PROOF_IRRELEVANCY_PROPERTY),
@@ -298,8 +298,8 @@ public class TestEqualsModProperty {
             term2.hashCodeModProperty(PROOF_IRRELEVANCY_PROPERTY),
             "Hash codes should be equal as proof irrelevant properties are ignored (1)");
 
-        labels1 = new ImmutableArray<>(relevantLabel1, relevantLabel2, irrelevantLabel);
-        labels2 = new ImmutableArray<>(relevantLabel1, relevantLabel2);
+        labels1 = ImmutableList.of(relevantLabel1, relevantLabel2, irrelevantLabel);
+        labels2 = ImmutableList.of(relevantLabel1, relevantLabel2);
         term1 = tb.label(term1, labels1);
         term2 = tb.label(term2, labels2);
         assertTrue(term1.equalsModProperty(term2, PROOF_IRRELEVANCY_PROPERTY),
@@ -311,8 +311,8 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as proof irrelevant properties are ignored (2)");
 
         // ------------ not the same relevant labels
-        labels1 = new ImmutableArray<>(relevantLabel1);
-        labels2 = new ImmutableArray<>(relevantLabel2);
+        labels1 = ImmutableList.of(relevantLabel1);
+        labels2 = ImmutableList.of(relevantLabel2);
         term1 = tb.label(term1, labels1);
         term2 = tb.label(term2, labels2);
         assertFalse(term1.equalsModProperty(term2, PROOF_IRRELEVANCY_PROPERTY),

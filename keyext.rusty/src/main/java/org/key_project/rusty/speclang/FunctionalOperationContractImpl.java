@@ -28,7 +28,6 @@ import org.key_project.rusty.proof.OpReplacer;
 import org.key_project.rusty.proof.init.ContractPO;
 import org.key_project.rusty.proof.init.FunctionalOperationContractPO;
 import org.key_project.rusty.proof.init.InitConfig;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -433,8 +432,8 @@ public class FunctionalOperationContractImpl implements FunctionalOperationContr
         ResDef resDef = new ResDef(fn);
         PathSegment segment = new PathSegment(fn.getFunction().name().toString(), resDef);
         PathExpr callee =
-            new PathExpr(new Path<>(resDef, new ImmutableArray<>(segment)), fn.getType());
-        final var ce = new CallExpression(callee, new ImmutableArray<>(args));
+            new PathExpr(new Path<>(resDef, ImmutableList.singleton(segment)), fn.getType());
+        final var ce = new CallExpression(callee, ImmutableList.fromArray(args));
         final Expr call;
         if (originalResultVar == null) {
             call = ce;

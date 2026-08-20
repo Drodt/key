@@ -29,7 +29,6 @@ import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.parsing.RustySchemaParser;
 import org.key_project.rusty.rule.metaconstruct.ExpandFnBody;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -97,7 +96,7 @@ public class SchemaConverter {
         Name name = convertIdentifier(ctx.identifier()).name();
         if (name.toString().equals(Context.TMP_FN_NAME))
             inContextFunction = true;
-        ImmutableArray<FunctionParam> params =
+        ImmutableList<FunctionParam> params =
             convertFunctionParams(ctx.functionParams());
         inContextFunction = false;
         RustType returnType = ctx.functionRetTy() == null ? TupleRustType.UNIT
@@ -263,7 +262,7 @@ public class SchemaConverter {
             var pieCtx = ctx.pathInExpr();
             var segments =
                 pieCtx.pathExprSegment().stream().map(this::convertPathExprSegment).toList();
-            var pie = new PathInExpression(new ImmutableArray<>(segments));
+            var pie = new PathInExpression(ImmutableList.fromList(segments));
             return Objects.requireNonNull(getProgramVariable(pie));
         }
     }
@@ -272,8 +271,8 @@ public class SchemaConverter {
             RustySchemaParser.MethodCallExpressionContext ctx) {
         var callee = convertExpr(ctx.expr());
         var seg = convertPathExprSegment(ctx.pathExprSegment());
-        ImmutableArray<Expr> params = ctx.callParams() == null ? new ImmutableArray<>()
-                : new ImmutableArray<>(
+        ImmutableList<Expr> params = ctx.callParams() == null ? ImmutableList.nil()
+                : ImmutableList.fromList(
                     ctx.callParams().expr().stream().map(this::convertExpr).toList());
         return new MethodCallExpression(callee,
             new PathSegment(seg.segment().ident().toString(), null), params);
@@ -301,8 +300,8 @@ public class SchemaConverter {
     private CallExpression convertCallExpression(
             RustySchemaParser.CallExpressionContext ctx) {
         var callee = convertExpr(ctx.expr());
-        ImmutableArray<Expr> params = ctx.callParams() == null ? new ImmutableArray<>()
-                : new ImmutableArray<>(
+        ImmutableList<Expr> params = ctx.callParams() == null ? ImmutableList.nil()
+                : ImmutableList.fromList(
                     ctx.callParams().expr().stream().map(this::convertExpr).toList());
         return new CallExpression(callee, params);
     }
@@ -460,9 +459,9 @@ public class SchemaConverter {
     private ArrayExpression convertEnumeratedArrayExpression(
             RustySchemaParser.ArrayExpressionContext ctx) {
         if (ctx.arrayElements() == null)
-            return new ArrayExpression(new ImmutableArray<>(), null);
+            return new ArrayExpression(ImmutableList.nil(), null);
         assert ctx.arrayElements().SEMI() == null;
-        return new ArrayExpression(new ImmutableArray<>(
+        return new ArrayExpression(ImmutableList.fromList(
             ctx.arrayElements().expr().stream().map(this::convertExpr).toList()), null);
     }
 
@@ -476,7 +475,7 @@ public class SchemaConverter {
             RustySchemaParser.TupleExpressionContext ctx) {
         if (ctx.tupleElements() == null)
             return TupleExpression.UNIT;
-        return new TupleExpression(new ImmutableArray<>(
+        return new TupleExpression(ImmutableList.fromList(
             ctx.tupleElements().expr().stream().map(this::convertExpr).toList()), null);
     }
 
@@ -512,9 +511,9 @@ public class SchemaConverter {
 
     private ClosureExpression convertClosureExpression(
             RustySchemaParser.ClosureExprContext ctx) {
-        ImmutableArray<ClosureParam> params =
-            ctx.closureParameters() == null ? new ImmutableArray<>()
-                    : new ImmutableArray<>(ctx.closureParameters().closureParam().stream()
+        ImmutableList<ClosureParam> params =
+            ctx.closureParameters() == null ? ImmutableList.nil()
+                    : ImmutableList.fromList(ctx.closureParameters().closureParam().stream()
                             .map(this::convertClosureParam).toList());
         var ty = ctx.type_() == null ? null : convertRustType(ctx.type_());
         var body = ctx.expr() == null ? convertBlockExpr(ctx.blockExpr()) : convertExpr(ctx.expr());
@@ -687,12 +686,12 @@ public class SchemaConverter {
     private MatchExpression convertMatchExpr(
             RustySchemaParser.MatchExprContext ctx) {
         var expr = convertExpr(ctx.expr());
-        ImmutableArray<MatchArm> arms = ctx.matchArms() == null ? new ImmutableArray<>()
+        ImmutableList<MatchArm> arms = ctx.matchArms() == null ? ImmutableList.nil()
                 : convertMatchArms(ctx.matchArms());
         return new MatchExpression(expr, arms);
     }
 
-    private ImmutableArray<MatchArm> convertMatchArms(
+    private ImmutableList<MatchArm> convertMatchArms(
             RustySchemaParser.MatchArmsContext ctx) {
         if (ctx.expr() != null) {
             var arms = new MatchArm[ctx.matchArm().size()];
@@ -711,7 +710,7 @@ public class SchemaConverter {
             var expr =
                 armCtx.matchArmGuard() == null ? null : convertExpr(armCtx.matchArmGuard().expr());
             arms[arms.length - 1] = new MatchArm(pat, expr, convertExpr(ctx.expr()));
-            return new ImmutableArray<>(arms);
+            return ImmutableList.fromArray(arms);
         } else {
             var arms = new MatchArm[ctx.matchArm().size()];
             for (int i = 0; i < ctx.matchArm().size(); i++) {
@@ -724,7 +723,7 @@ public class SchemaConverter {
                         : convertExprWithBlock(armExprCtx.exprWithBlock());
                 arms[i] = new MatchArm(pat, expr, body);
             }
-            return new ImmutableArray<>(arms);
+            return ImmutableList.fromArray(arms);
         }
     }
 
@@ -802,7 +801,7 @@ public class SchemaConverter {
             return convertPatternNoTopAlt(alts.getFirst());
         }
         return new AltPattern(
-            new ImmutableArray<>(alts.stream().map(this::convertPatternNoTopAlt).toList()));
+            ImmutableList.fromList(alts.stream().map(this::convertPatternNoTopAlt).toList()));
     }
 
     private Pattern convertPatternNoTopAlt(
@@ -957,15 +956,15 @@ public class SchemaConverter {
         return new PrimitiveRustType(pt);
     }
 
-    private ImmutableArray<FunctionParam> convertFunctionParams(
+    private ImmutableList<FunctionParam> convertFunctionParams(
             RustySchemaParser.FunctionParamsContext ctx) {
         if (ctx == null)
-            return new ImmutableArray<>();
+            return ImmutableList.nil();
         List<FunctionParam> params = new LinkedList<>();
         for (var param : ctx.functionParam()) {
             params.add(convertFunctionParam(param));
         }
-        return new ImmutableArray<>(params);
+        return ImmutableList.fromList(params);
     }
 
     private FunctionParamPattern convertFunctionParam(

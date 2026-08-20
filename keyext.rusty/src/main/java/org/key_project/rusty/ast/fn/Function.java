@@ -16,7 +16,7 @@ import org.key_project.rusty.ast.expr.BlockExpression;
 import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.parser.hir.LocalDefId;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -24,13 +24,13 @@ import org.jspecify.annotations.Nullable;
 public final class Function implements Item, Named {
     private final Name name;
     private final ImplicitSelfKind selfKind;
-    private ImmutableArray<FunctionParam> params;
+    private ImmutableList<FunctionParam> params;
     private final RustType returnType;
     private BlockExpression body;
     private Map<LocalDefId, GenericParam> localIdsToGenericParams;
     private @Nullable GenericParam[] genericParams;
 
-    public Function(Name name, ImplicitSelfKind selfKind, ImmutableArray<FunctionParam> params,
+    public Function(Name name, ImplicitSelfKind selfKind, ImmutableList<FunctionParam> params,
             RustType returnType, BlockExpression body) {
         this.name = name;
         this.selfKind = selfKind;
@@ -101,7 +101,7 @@ public final class Function implements Item, Named {
         return selfKind;
     }
 
-    public ImmutableArray<FunctionParam> params() {
+    public ImmutableList<FunctionParam> params() {
         return params;
     }
 
@@ -109,7 +109,7 @@ public final class Function implements Item, Named {
         return params.get(i);
     }
 
-    public void setParams(ImmutableArray<FunctionParam> params) {
+    public void setParams(ImmutableList<FunctionParam> params) {
         this.params = params;
     }
 

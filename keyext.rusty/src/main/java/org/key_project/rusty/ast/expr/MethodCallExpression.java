@@ -11,7 +11,7 @@ import org.key_project.rusty.ast.PathSegment;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.ProgramFunction;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -19,10 +19,10 @@ import org.jspecify.annotations.Nullable;
 public final class MethodCallExpression implements Call {
     private final Expr callee;
     private final PathSegment method;
-    private final ImmutableArray<Expr> params;
+    private final ImmutableList<Expr> params;
 
     public MethodCallExpression(Expr callee, PathSegment method,
-            ImmutableArray<Expr> args) {
+            ImmutableList<Expr> args) {
         this.callee = callee;
         this.method = method;
         this.params = args;
@@ -83,7 +83,7 @@ public final class MethodCallExpression implements Call {
         return method;
     }
 
-    public ImmutableArray<Expr> params() {
+    public ImmutableList<Expr> params() {
         return params;
     }
 

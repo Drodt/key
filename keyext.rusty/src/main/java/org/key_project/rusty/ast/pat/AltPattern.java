@@ -7,9 +7,9 @@ import java.util.Objects;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
-public record AltPattern(ImmutableArray<Pattern> alternatives) implements Pattern {
+public record AltPattern(ImmutableList<Pattern> alternatives) implements Pattern {
     @Override
     public SyntaxElement getChild(int n) {
         return Objects.requireNonNull(alternatives.get(n));

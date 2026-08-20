@@ -22,7 +22,7 @@ import de.uka.ilkd.key.rule.inst.SVInstantiations;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 
 /**
@@ -99,13 +99,13 @@ public final class MayExpandMethodCondition extends VariableConditionAdapter {
         this(null, methodName, args, negation);
     }
 
-    private static ImmutableArray<Expression> toExpArray(
-            ImmutableArray<? extends ProgramElement> a) {
+    private static ImmutableList<Expression> toExpArray(
+            ImmutableList<? extends ProgramElement> a) {
         Expression[] result = new Expression[a.size()];
         for (int i = 0; i < a.size(); i++) {
             result[i] = (Expression) a.get(i);
         }
-        return new ImmutableArray<>(result);
+        return ImmutableList.fromArray(result);
     }
 
 
@@ -128,10 +128,10 @@ public final class MayExpandMethodCondition extends VariableConditionAdapter {
 
         MethodName mn = svInst.getInstantiation(methname);
 
-        ImmutableArray<Expression> ar =
+        ImmutableList<Expression> ar =
             toExpArray(svInst.getInstantiation(args));
         if (var == args) {
-            ar = toExpArray((ImmutableArray<? extends ProgramElement>) subst);
+            ar = toExpArray((ImmutableList<? extends ProgramElement>) subst);
         }
 
         if (mn == null) {

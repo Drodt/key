@@ -12,7 +12,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.TermImpl;
 import org.key_project.rusty.logic.op.*;
 import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.Nullable;
@@ -220,13 +220,13 @@ public class TriggersSet {
 
             final Term[] chosenSubs = new Term[t.arity()];
             res.addAll(combineSubterms(t, possibleSubs, chosenSubs,
-                (ImmutableArray<QuantifiableVariable>) t.boundVars(), 0, services));
+                (ImmutableList<QuantifiableVariable>) t.boundVars(), 0, services));
             return res;
         }
 
         private Set<Term> combineSubterms(Term oriTerm, Set<Term>[] possibleSubs,
                 Term[] chosenSubs,
-                ImmutableArray<QuantifiableVariable> boundVars, int i, Services services) {
+                ImmutableList<QuantifiableVariable> boundVars, int i, Services services) {
             final HashSet<Term> set = new LinkedHashSet<>();
             if (i >= possibleSubs.length) {
                 final Term res = services.getTermFactory().createTerm(oriTerm.op(), chosenSubs,

@@ -28,7 +28,6 @@ import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.strategy.quantifierHeuristics.Metavariable;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 public class TermBuilder {
@@ -124,8 +123,8 @@ public class TermBuilder {
     }
 
     public Term all(QuantifiableVariable qv, Term t) {
-        return tf.createTerm(Quantifier.ALL, new ImmutableArray<>(t),
-            new ImmutableArray<>(qv));
+        return tf.createTerm(Quantifier.ALL, ImmutableList.singleton(t),
+            ImmutableList.singleton(qv));
     }
 
     public Term all(Iterable<? extends QuantifiableVariable> qvs, Term t) {
@@ -137,8 +136,8 @@ public class TermBuilder {
     }
 
     public Term ex(QuantifiableVariable qv, Term t) {
-        return tf.createTerm(Quantifier.EX, new ImmutableArray<>(t),
-            new ImmutableArray<>(qv));
+        return tf.createTerm(Quantifier.EX, ImmutableList.singleton(t),
+            ImmutableList.singleton(qv));
     }
 
     public Term ex(Iterable<? extends QuantifiableVariable> qvs, Term t) {
@@ -260,7 +259,7 @@ public class TermBuilder {
         return tf.createTerm(f, s);
     }
 
-    public Term func(Function f, Term[] s, ImmutableArray<QuantifiableVariable> boundVars) {
+    public Term func(Function f, Term[] s, ImmutableList<QuantifiableVariable> boundVars) {
         return tf.createTerm(f, s, boundVars);
     }
 
@@ -555,8 +554,8 @@ public class TermBuilder {
     /// @param substTerm the Term that replaces substVar
     /// @param origTerm the Term that is substituted
     public Term subst(SubstOp op, QuantifiableVariable substVar, Term substTerm, Term origTerm) {
-        return tf.createTerm(op, new ImmutableArray<>(substTerm, origTerm),
-            new ImmutableArray<>(substVar));
+        return tf.createTerm(op, ImmutableList.of(substTerm, origTerm),
+            ImmutableList.singleton(substVar));
     }
 
     /// Creates a program variable for the result. Take care to register it in the namespaces.

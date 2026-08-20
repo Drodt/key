@@ -17,7 +17,6 @@ import org.key_project.rusty.logic.op.ParametricFunctionInstance;
 import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
 import org.key_project.rusty.logic.sort.SortArg;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -31,11 +30,11 @@ public class TupleType implements Type {
     private final Name name;
     private final List<Type> types;
     private @MonotonicNonNull Sort sort = null;
-    private final ImmutableArray<Field> fields;
+    private final ImmutableList<Field> fields;
 
     private TupleType() {
         types = new ArrayList<>();
-        fields = new ImmutableArray<>();
+        fields = ImmutableList.nil();
         name = new Name("()");
     }
 
@@ -56,7 +55,7 @@ public class TupleType implements Type {
                 ImmutableList.of(new SortArg(type.getSort(services)));
             fields[i] = new Field(new Name("" + i), type, ParametricFunctionInstance.get(fn, args));
         }
-        this.fields = new ImmutableArray<>(fields);
+        this.fields = ImmutableList.fromArray(fields);
         this.name = new Name(name.append(')').toString());
     }
 
@@ -74,7 +73,7 @@ public class TupleType implements Type {
         return types;
     }
 
-    public ImmutableArray<Field> fields() {
+    public ImmutableList<Field> fields() {
         return fields;
     }
 
@@ -106,7 +105,7 @@ public class TupleType implements Type {
     @Override
     public RustType toRustType(Services services) {
         return new TupleRustType(
-            new ImmutableArray<>(types.stream().map(t -> t.toRustType(services)).toList()),
+            ImmutableList.fromList(types.stream().map(t -> t.toRustType(services)).toList()),
             services);
     }
 

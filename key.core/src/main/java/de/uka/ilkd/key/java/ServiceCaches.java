@@ -177,7 +177,7 @@ public class ServiceCaches implements SessionCaches {
         Collections.synchronizedMap(new WeakHashMap<>());
 
     /** Cache used by the ifinstantiator */
-    private final AssumesInstantiationCachePool<Goal> assumesInstantiationCachePool =
+    private final AssumesInstantiationCachePool<Node> assumesInstantiationCachePool =
         new AssumesInstantiationCachePool<>();
 
     /** Cache used IfFormulaInstSeq */
@@ -272,7 +272,7 @@ public class ServiceCaches implements SessionCaches {
         return exhaustiveMacroCache;
     }
 
-    public final AssumesInstantiationCachePool getAssumesInstantiationCachePool() {
+    public final AssumesInstantiationCachePool<Node> getAssumesInstantiationCachePool() {
         return assumesInstantiationCachePool;
     }
 

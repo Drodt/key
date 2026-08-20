@@ -30,7 +30,6 @@ import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -477,11 +476,11 @@ public final class HeapLDT extends LDT {
                                     .contains(fieldPV.getProgramElementName().getProgramName())) {
                         result = new ObserverFunction(kind.toString(), JavaDLTheory.FORMULA,
                             null, targetSort(), fieldPV.getContainerType(),
-                            fieldPV.isStatic(), new ImmutableArray<>(), heapCount, 1);
+                            fieldPV.isStatic(), ImmutableList.nil(), heapCount, 1);
                     } else {
                         result = new ObserverFunction(kind.toString(), fieldPV.sort(),
                             fieldPV.getKeYJavaType(), targetSort(), fieldPV.getContainerType(),
-                            fieldPV.isStatic(), new ImmutableArray<>(), heapCount, 1);
+                            fieldPV.isStatic(), ImmutableList.nil(), heapCount, 1);
                     }
                 } else {
                     result = new JFunction(name, fieldSort, new Sort[0], null, true);

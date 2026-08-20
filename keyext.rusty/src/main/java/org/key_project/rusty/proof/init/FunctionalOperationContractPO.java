@@ -18,7 +18,6 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.settings.Configuration;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -86,14 +85,14 @@ public class FunctionalOperationContractPO extends AbstractOperationPO implement
     protected BlockExpression buildOperationBlock(ImmutableList<ProgramVariable> formalParamVars,
             ProgramVariable resultVar, Services proofServices) {
         ProgramFunction target = contract.getTarget();
-        var callee = new PathExpr(new Path<>(new ResDef(target), new ImmutableArray<>(
+        var callee = new PathExpr(new Path<>(new ResDef(target), ImmutableList.singleton(
             new PathSegment(target.getFunction().name().toString(),
                 new ResDef(target)))),
             target.getType().getRustyType());
         return new BlockExpression(ImmutableList.of(
             new ExpressionStatement(
                 new FunctionBodyExpression(resultVar, target,
-                    new CallExpression(callee, new ImmutableArray<>(formalParamVars.toList()))),
+                    new CallExpression(callee, ImmutableList.fromList(formalParamVars))),
                 true)),
             null);
     }

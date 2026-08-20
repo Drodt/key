@@ -21,7 +21,7 @@ import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -144,9 +144,9 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
         final Object inst = svinsts.getInstantiation(sv);
         if (inst instanceof RustyProgramElement pe) {
             addChild(pe);
-        } else if (inst instanceof ImmutableArray/* <ProgramElement> */) {
+        } else if (inst instanceof ImmutableList/* <ProgramElement> */) {
             @SuppressWarnings("unchecked")
-            final var instArray = (ImmutableArray<RustyProgramElement>) inst;
+            final var instArray = (ImmutableList<RustyProgramElement>) inst;
             // the assertion ensures the intended instanceof check from above
             addChildren(instArray);
         } /*
@@ -190,7 +190,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
         if (result == null) {
             addChild(null);
         } else {
-            addChildren(new ImmutableArray<>(result));
+            addChildren(ImmutableList.fromArray(result));
         }
         changed();
     }

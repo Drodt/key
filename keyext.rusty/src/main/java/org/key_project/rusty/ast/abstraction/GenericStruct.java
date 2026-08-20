@@ -8,14 +8,14 @@ import java.util.HashMap;
 import org.key_project.logic.Name;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
-public record GenericStruct(Name name, ImmutableArray<GenericField> fields,
-        ImmutableArray<GenericParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
+public record GenericStruct(Name name, ImmutableList<GenericField> fields,
+        ImmutableList<GenericParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
     @Override
-    public Type instantiate(ImmutableArray<GenericTyArg> args, Services services) {
+    public Type instantiate(ImmutableList<GenericTyArg> args, Services services) {
         assert args.size() == params().size();
         var instMap = new HashMap<GenericParam, GenericTyArg>();
         for (int i = 0; i < params().size(); i++) {
@@ -25,7 +25,7 @@ public record GenericStruct(Name name, ImmutableArray<GenericField> fields,
         for (int i = 0; i < fs.length; i++) {
             fs[i] = fields.get(i).instantiate(instMap, services);
         }
-        return new Struct(name, new ImmutableArray<>(fs), sortDecl, args);
+        return new Struct(name, ImmutableList.fromArray(fs), sortDecl, args);
     }
 
     @Override

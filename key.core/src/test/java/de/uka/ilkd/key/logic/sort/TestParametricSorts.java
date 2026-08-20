@@ -18,7 +18,6 @@ import de.uka.ilkd.key.rule.TacletForTests;
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
@@ -74,7 +73,7 @@ class TestParametricSorts {
 
         var someConst = new ParametricFunctionDecl(new Name("someConst"),
             ImmutableList.of(new GenericParameter(g1, GenericParameter.Variance.INVARIANT)),
-            new ImmutableArray<>(), g1, null, false, true, false);
+            ImmutableList.nil(), g1, null, false, true, false);
         nss.parametricFunctions().add(someConst);
 
         var listOfInt =
@@ -85,7 +84,7 @@ class TestParametricSorts {
 
         var head = new ParametricFunctionDecl(new Name("head"),
             ImmutableList.of(new GenericParameter(g1, GenericParameter.Variance.INVARIANT)),
-            new ImmutableArray<>(listOfG1), g1, null, false, true, false);
+            ImmutableList.singleton(listOfG1), g1, null, false, true, false);
         nss.parametricFunctions().add(head);
 
         var headInst =

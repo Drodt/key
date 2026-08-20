@@ -49,7 +49,6 @@ import org.key_project.rusty.parser.hir.ty.TyConst;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -145,7 +144,7 @@ public class HirConverter {
                 params.add(new FunctionParamPattern(convertPat(pat, isCtxFn, type.type()), type,
                     services.getRustInfo().getKeYRustyType(type.type())));
             }
-            fn.setParams(new ImmutableArray<>(params));
+            fn.setParams(ImmutableList.fromList(params));
             fn.setBody((BlockExpression) convertExpr(hirFn.body().value()));
             services.getRustInfo().registerFunction(fn);
             if (specCases.length > 0) {
@@ -201,7 +200,7 @@ public class HirConverter {
     private Item convertUse(org.key_project.rusty.parser.hir.item.Use use) {
         var path = convertPath(use.path(), rs -> {
             var lst = Arrays.stream(rs).map(this::convertRes).toList();
-            return new ImmutableArray<>(lst);
+            return ImmutableList.fromList(lst);
         });
         var kind = switch (use.useKind()) {
             case org.key_project.rusty.parser.hir.item.Use.UseKind.Single ignored ->
@@ -296,7 +295,7 @@ public class HirConverter {
         for (int i = 0; i < exprs.length; i++) {
             exprs[i] = convertExpr(e.exprs()[i]);
         }
-        return new ArrayExpression(new ImmutableArray<>(exprs), ty);
+        return new ArrayExpression(ImmutableList.fromArray(exprs), ty);
     }
 
     private MethodCallExpression convertMethodCall(ExprKind.MethodCall e) {
@@ -305,7 +304,7 @@ public class HirConverter {
             args[i] = convertExpr(e.args()[i]);
         }
         return new MethodCallExpression(convertExpr(e.callee()), convertPathSegment(e.segment()),
-            new ImmutableArray<>(args));
+            ImmutableList.fromArray(args));
     }
 
     private TupleExpression convertTupleExpr(ExprKind.Tup e, Type type) {
@@ -315,7 +314,7 @@ public class HirConverter {
         for (int i = 0; i < exprs.length; i++) {
             exprs[i] = convertExpr(e.exprs()[i]);
         }
-        return new TupleExpression(new ImmutableArray<>(exprs), type);
+        return new TupleExpression(ImmutableList.fromArray(exprs), type);
     }
 
     private Expr convertCastExpr(ExprKind.CastExpr e) {
@@ -327,7 +326,7 @@ public class HirConverter {
         for (int i = 0; i < arms.length; i++) {
             arms[i] = convertArm(e.arms()[i], ty);
         }
-        return new MatchExpression(convertExpr(e.expr()), new ImmutableArray<>(arms));
+        return new MatchExpression(convertExpr(e.expr()), ImmutableList.fromArray(arms));
     }
 
     private MatchArm convertArm(Arm arm, Type ty) {
@@ -342,7 +341,7 @@ public class HirConverter {
         RustType ty = null;
         var body = convertExpr(c.body().value());
         return new ClosureExpression(c.captureClause() instanceof CaptureBy.Value,
-            new ImmutableArray<>(params), ty, body);
+            ImmutableList.fromArray(params), ty, body);
     }
 
     private FieldExpression convertFieldExpr(ExprKind.Field e) {
@@ -389,7 +388,7 @@ public class HirConverter {
             case StructTailExpr.DefaultFields ignored -> new DefaultStructTailExpression();
             default -> throw new IllegalArgumentException("Unknown struct tail: " + e.tail());
         };
-        return new StructExpression(path, new ImmutableArray<>(fields), tail);
+        return new StructExpression(path, ImmutableList.fromArray(fields), tail);
     }
 
     private StructExprField convertExprField(ExprField field) {
@@ -401,7 +400,7 @@ public class HirConverter {
     private CallExpression convertCall(ExprKind.Call call) {
         var callee = convertExpr(call.callee());
         var args = Arrays.stream(call.args()).map(this::convertExpr).toList();
-        return new CallExpression(callee, new ImmutableArray<>(args));
+        return new CallExpression(callee, ImmutableList.fromList(args));
     }
 
     private BlockExpression convertBlockExpr(ExprKind.BlockExpr expr) {
@@ -613,7 +612,7 @@ public class HirConverter {
 
     private RustType convertTupHirType(HirTy[] tys) {
         var innerTys = Arrays.stream(tys).map(this::convertHirTy).toList();
-        return new TupleRustType(new ImmutableArray<>(innerTys), services);
+        return new TupleRustType(ImmutableList.fromList(innerTys), services);
     }
 
     private RustType convertSliceHirTy(HirTy s) {
@@ -650,7 +649,8 @@ public class HirConverter {
                     if (args.isEmpty()) {
                         return new PathRustType((Type) adt);
                     }
-                    var type = ((GenericAdt) adt).instantiate(new ImmutableArray<>(args), services);
+                    var type =
+                        ((GenericAdt) adt).instantiate(ImmutableList.fromList(args), services);
                     return new PathRustType(type);
                 }
                 case DefKind.Struct ignored -> {
@@ -665,7 +665,8 @@ public class HirConverter {
                     if (args.isEmpty()) {
                         return new PathRustType((Type) adt);
                     }
-                    var type = ((GenericAdt) adt).instantiate(new ImmutableArray<>(args), services);
+                    var type =
+                        ((GenericAdt) adt).instantiate(ImmutableList.fromList(args), services);
                     return new PathRustType(type);
                 }
                 default -> {
@@ -768,7 +769,7 @@ public class HirConverter {
             java.util.function.Function<S, R> convertR) {
         var res = convertR.apply(path.res());
         var segments = Arrays.stream(path.segments()).map(this::convertPathSegment).toList();
-        return new Path<>(res, new ImmutableArray<>(segments));
+        return new Path<>(res, ImmutableList.fromList(segments));
     }
 
     private QPath convertQPath(org.key_project.rusty.parser.hir.QPath qPath) {
@@ -878,7 +879,7 @@ public class HirConverter {
     }
 
     private Adt getAdt(AdtDef def) {
-        ImmutableArray<GenericParam> generics;
+        ImmutableList<GenericParam> generics;
         if (def.foreignGenerics() == null)
             throw new UnsupportedOperationException("Local generics");
         else
@@ -909,14 +910,14 @@ public class HirConverter {
                     for (var e : def.variants().entrySet()) {
                         VariantDef value = e.getValue();
                         var argSorts = new Sort[value.fields().size()];
-                        ImmutableArray<Field> fields =
+                        ImmutableList<Field> fields =
                             convertFields(def.pathStr() + value.name(), value.fields());
                         for (int i = 0; i < fields.size(); i++) {
                             argSorts[i] = fields.get(i).type().getSort(services);
                         }
                         RFunction ctor =
                             new RFunction(new Name(def.pathStr() + "::" + value.name()), sort,
-                                new ImmutableArray<>(argSorts), null, true);
+                                ImmutableList.fromArray(argSorts), null, true);
                         variants[e.getKey()] =
                             new Variant(new Name(value.name()),
                                 fields, ctor);
@@ -924,7 +925,7 @@ public class HirConverter {
                         variantConstructors.put(value.ctor().id(), ctor);
                     }
                     services.getNamespaces().sorts().addSafely(sort);
-                    yield new Enum(name, new ImmutableArray<>(variants), sort);
+                    yield new Enum(name, ImmutableList.fromArray(variants), sort);
                 }
                 var sortDecl = getSortDecl(name, genSortParams);
                 List<GenericArgument> genArgs = new LinkedList<>();
@@ -945,7 +946,7 @@ public class HirConverter {
                 var variants = new GenericVariant[def.variants().size()];
                 for (var e : def.variants().entrySet()) {
                     VariantDef value = e.getValue();
-                    ImmutableArray<GenericField> fields =
+                    ImmutableList<GenericField> fields =
                         convertFields(def.pathStr() + value.name(),
                             value.fields(), genSortParams);
                     var argSorts = new Sort[value.fields().size()];
@@ -954,7 +955,7 @@ public class HirConverter {
                     }
                     ParametricFunctionDecl ctor =
                         new ParametricFunctionDecl(new Name(def.pathStr() + "::" + value.name()),
-                            genSortParams, new ImmutableArray<>(argSorts), sort,
+                            genSortParams, ImmutableList.fromArray(argSorts), sort,
                             null, true, true, false);
                     assert value.ctor() != null;
                     parametricVariantConstructors.put(value.ctor().id(), ctor);
@@ -963,7 +964,7 @@ public class HirConverter {
                             fields,
                             ctor);
                 }
-                yield new GenericEnum(name, new ImmutableArray<>(variants), generics, sortDecl);
+                yield new GenericEnum(name, ImmutableList.fromArray(variants), generics, sortDecl);
             }
         };
         currentParams = null;
@@ -982,7 +983,7 @@ public class HirConverter {
     }
 
     private ImmutableList<GenericParameter> getGenericParameters(
-            ImmutableArray<GenericParam> params) {
+            ImmutableList<GenericParam> params) {
         if (params.isEmpty())
             return null;
         ImmutableList<GenericParameter> sortParams = ImmutableList.nil();
@@ -1005,7 +1006,7 @@ public class HirConverter {
 
     }
 
-    private ImmutableArray<Field> convertFields(String prefix, Map<Integer, TyFieldDef> fields) {
+    private ImmutableList<Field> convertFields(String prefix, Map<Integer, TyFieldDef> fields) {
         var res = new Field[fields.size()];
         for (var e : fields.entrySet()) {
             var field = e.getValue();
@@ -1015,10 +1016,10 @@ public class HirConverter {
                 services.getLDTs().getFieldLDT().createField(prefix, name, type, services);
             res[e.getKey()] = new Field(name, type, fieldConst);
         }
-        return new ImmutableArray<>(res);
+        return ImmutableList.fromArray(res);
     }
 
-    private ImmutableArray<GenericField> convertFields(String prefix,
+    private ImmutableList<GenericField> convertFields(String prefix,
             Map<Integer, TyFieldDef> fields, ImmutableList<GenericParameter> generics) {
         var res = new GenericField[fields.size()];
         for (var e : fields.entrySet()) {
@@ -1030,10 +1031,10 @@ public class HirConverter {
                     services);
             res[e.getKey()] = new GenericField(name, type, fieldConst);
         }
-        return new ImmutableArray<>(res);
+        return ImmutableList.fromArray(res);
     }
 
-    private ImmutableArray<GenericTyArg> convertGenericArgs(GenericTyArgKind[] args) {
+    private ImmutableList<GenericTyArg> convertGenericArgs(GenericTyArgKind[] args) {
         var res = new ArrayList<GenericTyArg>();
         for (var e : args) {
             switch (e) {
@@ -1045,10 +1046,10 @@ public class HirConverter {
                 default -> throw new IllegalArgumentException("Unknown arg type: " + e);
             }
         }
-        return new ImmutableArray<>(res);
+        return ImmutableList.fromList(res);
     }
 
-    private ImmutableArray<GenericParam> convertGenerics(TyGenerics generics) {
+    private ImmutableList<GenericParam> convertGenerics(TyGenerics generics) {
         var res = new ArrayList<GenericParam>();
         assert currentParams == null;
         currentParams = new GenericParam[generics.params().length];
@@ -1067,7 +1068,7 @@ public class HirConverter {
                 res.add(tyParam);
             }
         }
-        return new ImmutableArray<>(res);
+        return ImmutableList.fromList(res);
     }
 
     // TODO: something other than int

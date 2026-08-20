@@ -32,7 +32,6 @@ import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
@@ -599,7 +598,7 @@ public class TacletGenerator {
             ((ProgramMethod) target).getName(), sig, kjt);
 
         final MethodBodyStatement mbs = new MethodBodyStatement(targetImpl, selfProgSV,
-            resultProgSV, new ImmutableArray<>(paramProgSVs));
+            resultProgSV, ImmutableList.fromArray(paramProgSVs));
         final JavaBlock findBlock = JavaBlock.createJavaBlock(new ContextStatementBlock(mbs, null));
 
         final var modalitySV =
@@ -864,7 +863,7 @@ public class TacletGenerator {
 
         // prepare op replacer, new bound vars
         final Map<Operator, Operator> map = new LinkedHashMap<>();
-        final ImmutableArray<QuantifiableVariable> boundVars = t.boundVars();
+        final ImmutableList<QuantifiableVariable> boundVars = t.boundVars();
         final QuantifiableVariable[] newBoundVars = new QuantifiableVariable[boundVars.size()];
         for (int i = 0; i < newBoundVars.length; i++) {
             final QuantifiableVariable qv = boundVars.get(i);
@@ -902,7 +901,7 @@ public class TacletGenerator {
             newTerm = t;
         } else {
             newTerm = services.getTermBuilder().tf().createTerm(t.op(), newSubs,
-                new ImmutableArray<>(newBoundVars), null);
+                ImmutableList.fromArray(newBoundVars), null);
         }
 
         return new TermAndBoundVarPair(newTerm, svs);

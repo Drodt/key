@@ -45,7 +45,7 @@ public class RewriteTacletExecutor extends FindTacletExecutor {
             final int indexOfNextSubTerm = pit.getIndexAt(depthIdx);
 
             final JTerm[] subs = new JTerm[term.arity()];
-            term.subs().arraycopy(0, subs, 0, term.arity());
+            System.arraycopy(term.subs(), 0, subs, 0, term.arity());
 
             final Sort newMaxSort = TermHelper.getMaxSort(term, indexOfNextSubTerm);
             subs[indexOfNextSubTerm] = replace(term.sub(indexOfNextSubTerm), with, termLabelState,

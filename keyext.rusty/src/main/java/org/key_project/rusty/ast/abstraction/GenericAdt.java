@@ -5,7 +5,7 @@ package org.key_project.rusty.ast.abstraction;
 
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -13,5 +13,5 @@ public interface GenericAdt extends HasGenerics, Adt {
     @Nullable
     ParametricSortDecl sortDecl();
 
-    Type instantiate(ImmutableArray<GenericTyArg> args, Services services);
+    Type instantiate(ImmutableList<GenericTyArg> args, Services services);
 }

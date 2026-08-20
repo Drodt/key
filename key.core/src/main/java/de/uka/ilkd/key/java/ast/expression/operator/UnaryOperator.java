@@ -21,7 +21,7 @@ import de.uka.ilkd.key.java.visitor.Visitor;
 import de.uka.ilkd.key.rule.MatchConditions;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /**
  *
@@ -38,7 +38,7 @@ public final class UnaryOperator extends Operator
     public final UnaryOperatorKind kind;
 
     public UnaryOperator(PositionInfo pi, List<Comment> c, UnaryOperatorKind op, Expression child) {
-        super(pi, c, new ImmutableArray<>(child));
+        super(pi, c, ImmutableList.singleton(child));
         this.kind = Objects.requireNonNull(op);
     }
 

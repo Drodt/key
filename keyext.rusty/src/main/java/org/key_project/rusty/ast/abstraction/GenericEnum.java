@@ -12,15 +12,14 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.sort.GenericArgument;
 import org.key_project.rusty.logic.sort.ParametricSortDecl;
 import org.key_project.rusty.logic.sort.ParametricSortInstance;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
-public record GenericEnum(Name name, ImmutableArray<GenericVariant> variants,
-        ImmutableArray<GenericParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
+public record GenericEnum(Name name, ImmutableList<GenericVariant> variants,
+        ImmutableList<GenericParam> params, ParametricSortDecl sortDecl) implements GenericAdt {
     @Override
-    public Type instantiate(ImmutableArray<GenericTyArg> args, Services services) {
+    public Type instantiate(ImmutableList<GenericTyArg> args, Services services) {
         assert args.size() == params().size();
         var instMap = new HashMap<GenericParam, GenericTyArg>();
         List<GenericArgument> sortArgs = new LinkedList<>();
@@ -32,7 +31,7 @@ public record GenericEnum(Name name, ImmutableArray<GenericVariant> variants,
         for (int i = 0; i < vars.length; i++) {
             vars[i] = variants.get(i).instantiate(instMap, services);
         }
-        return new Enum(name, new ImmutableArray<>(vars),
+        return new Enum(name, ImmutableList.fromArray(vars),
             ParametricSortInstance.get(sortDecl, ImmutableList.fromList(sortArgs)));
     }
 

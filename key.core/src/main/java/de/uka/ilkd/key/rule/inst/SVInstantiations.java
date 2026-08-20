@@ -25,7 +25,6 @@ import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.InstantiationEntry;
 import org.key_project.prover.rules.instantiation.ListInstantiation;
 import org.key_project.util.collection.DefaultImmutableMap;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableMapEntry;
@@ -147,7 +146,7 @@ public class SVInstantiations
         return addInteresting(sv, new InstantiationEntry<>(subst), services);
     }
 
-    public <T> SVInstantiations add(SchemaVariable sv, ImmutableArray<T> pes, Class<T> type,
+    public <T> SVInstantiations add(SchemaVariable sv, ImmutableList<T> pes, Class<T> type,
             LogicServices services) {
         return add(sv, new ListInstantiation<>(pes, type), services);
     }
@@ -318,7 +317,7 @@ public class SVInstantiations
      * @param sv the SchemaVariable to be instantiated
      * @param pes the ArrayOf<t> the SchemaVariable is instantiated with
      */
-    public SVInstantiations replace(SchemaVariable sv, ImmutableArray<ProgramElement> pes,
+    public SVInstantiations replace(SchemaVariable sv, ImmutableList<ProgramElement> pes,
             Services services) {
         return replace(sv, new ListInstantiation<>(pes, ProgramElement.class), services);
     }
@@ -403,7 +402,7 @@ public class SVInstantiations
      * @param updateApplicationlabels the TermLabels attached to the application operator term
      */
     public SVInstantiations addUpdate(@NonNull JTerm update,
-            ImmutableArray<TermLabel> updateApplicationlabels) {
+            ImmutableList<TermLabel> updateApplicationlabels) {
         assert update.sort() == JavaDLTheory.UPDATE;
         return new SVInstantiations(map, interesting(),
             updateContext.append(new UpdateLabelPair(update, updateApplicationlabels)),
@@ -621,6 +620,6 @@ public class SVInstantiations
     }
 
     public record UpdateLabelPair(@NonNull JTerm update,
-            ImmutableArray<TermLabel> updateApplicationlabels) {
+            ImmutableList<TermLabel> updateApplicationlabels) {
     }
 }

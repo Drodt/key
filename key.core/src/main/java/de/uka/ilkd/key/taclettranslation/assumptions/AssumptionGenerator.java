@@ -23,7 +23,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 interface VariablePool {
@@ -99,7 +99,7 @@ public class AssumptionGenerator implements TacletTranslator, VariablePool {
 
         JTerm[] subTerms = new JTerm[term.arity()];
 
-        ImmutableArray<QuantifiableVariable> variables = term.boundVars();
+        ImmutableList<QuantifiableVariable> variables = term.boundVars();
         for (int i = 0; i < term.arity(); i++) {
 
             subTerms[i] = rebuildTerm(term.sub(i));
@@ -406,7 +406,7 @@ public class AssumptionGenerator implements TacletTranslator, VariablePool {
                 list.add(getLogicVariable(qv.name(), qv.sort()));
             }
 
-            ImmutableArray<QuantifiableVariable> array = new ImmutableArray<>(list);
+            ImmutableList<QuantifiableVariable> array = ImmutableList.fromList(list);
 
             term = services.getTermFactory().createTerm(term.op(), term.subs(), array,
                 term.getLabels());

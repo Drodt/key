@@ -29,7 +29,7 @@ import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.rule.inst.ContextInstantiationEntry;
 import org.key_project.rusty.rule.inst.SVInstantiations;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /// A lightweight version of [SyntacticalReplaceVisitor] which does not replace labels. This
 /// saves a lot of dependencies to [Goal], [RuleApp], [PosInOccurrence] etc. and is
@@ -121,7 +121,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
                     || (!subStack.empty() && subStack.peek() == newMarker)) {
                 final Term newTerm =
                     tb.tf().createTerm(newOp, neededsubs,
-                        (ImmutableArray<QuantifiableVariable>) boundVars);
+                        (ImmutableList<QuantifiableVariable>) boundVars);
                 pushNew(resolveSubst(newTerm));
             } else {
                 Term term = resolveSubst(visited);
@@ -134,7 +134,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
         }
     }
 
-    private ImmutableArray<? extends QuantifiableVariable> instantiateBoundVariables(Term visited) {
+    private ImmutableList<? extends QuantifiableVariable> instantiateBoundVariables(Term visited) {
         var vBoundVars = visited.boundVars();
         if (!vBoundVars.isEmpty()) {
             final QuantifiableVariable[] newVars = new QuantifiableVariable[vBoundVars.size()];
@@ -157,7 +157,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
             }
 
             if (varsChanged) {
-                vBoundVars = new ImmutableArray<>(newVars);
+                vBoundVars = ImmutableList.fromArray(newVars);
             }
         }
         return vBoundVars;

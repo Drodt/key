@@ -270,7 +270,7 @@ public abstract class TacletApp implements RuleApp {
      *        SchemaVariables
      * @return true iff the instantiation of a Bound Schemavariable contains the given Logicvariable
      */
-    private static boolean contains(ImmutableArray<QuantifiableVariable> boundVars,
+    private static boolean contains(ImmutableList<QuantifiableVariable> boundVars,
             LogicVariable x,
             SVInstantiations insts) {
         for (int i = 0; i < boundVars.size(); i++) {
@@ -925,7 +925,7 @@ public abstract class TacletApp implements RuleApp {
             return ImmutableList.<TacletApp>singleton(this);
         }
 
-        return findIfFormulaInstantiationsHelp(
+        return findAssumesFormulaInstantiationsHelp(
             createSemisequentList(taclet().assumesSequent().succedent()),
             createSemisequentList(taclet().assumesSequent().antecedent()),
             AssumesFormulaInstSeq.createList(seq, false, services),
@@ -934,7 +934,7 @@ public abstract class TacletApp implements RuleApp {
     }
 
     /**
-     * Recursive function for matching the remaining tail of an if sequent
+     * Recursive function for matching the remaining tail of an assumes sequent
      *
      * @param ruleSuccTail tail of the current uninstantiated semisequent as list (i.e. if
      *        succedent)
@@ -949,11 +949,11 @@ public abstract class TacletApp implements RuleApp {
      *        program model
      * @return a list of tacletapps with the found if formula instantiations
      */
-    private ImmutableList<TacletApp> findIfFormulaInstantiationsHelp(
+    private ImmutableList<TacletApp> findAssumesFormulaInstantiationsHelp(
             ImmutableList<SequentFormula> ruleSuccTail,
             ImmutableList<SequentFormula> ruleAntecTail,
-            ImmutableArray<AssumesFormulaInstantiation> instSucc,
-            ImmutableArray<AssumesFormulaInstantiation> instAntec,
+            ImmutableList<AssumesFormulaInstantiation> instSucc,
+            ImmutableList<AssumesFormulaInstantiation> instAntec,
             ImmutableList<AssumesFormulaInstantiation> instAlreadyMatched,
             MatchResultInfo matchCond,
             Services services) {
@@ -985,9 +985,10 @@ public abstract class TacletApp implements RuleApp {
         Iterator<MatchResultInfo> itMC = mr.matchConditions().iterator();
         ruleSuccTail = ruleSuccTail.tail();
         for (final AssumesFormulaInstantiation instantiationCandidate : mr.candidates()) {
-            res = res.prepend(findIfFormulaInstantiationsHelp(ruleSuccTail, ruleAntecTail, instSucc,
-                instAntec, instAlreadyMatched.prepend(instantiationCandidate),
-                itMC.next(), services));
+            res = res.prepend(
+                findAssumesFormulaInstantiationsHelp(ruleSuccTail, ruleAntecTail, instSucc,
+                    instAntec, instAlreadyMatched.prepend(instantiationCandidate),
+                    itMC.next(), services));
         }
 
         return res;

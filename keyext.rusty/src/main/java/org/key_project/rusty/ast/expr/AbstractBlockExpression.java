@@ -16,7 +16,6 @@ import org.key_project.rusty.ast.stmt.Statement;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
@@ -100,7 +99,7 @@ public abstract class AbstractBlockExpression
     }
 
     @Override
-    public ImmutableArray<PossibleProgramPrefix> getPrefixElements() {
+    public ImmutableList<PossibleProgramPrefix> getPrefixElements() {
         return computePrefixElements(this);
     }
 
@@ -114,7 +113,7 @@ public abstract class AbstractBlockExpression
         return prefixLength;
     }
 
-    public static ImmutableArray<PossibleProgramPrefix> computePrefixElements(
+    public static ImmutableList<PossibleProgramPrefix> computePrefixElements(
             PossibleProgramPrefix current) {
         final ArrayList<PossibleProgramPrefix> prefix = new ArrayList<>();
         prefix.add(current);
@@ -124,7 +123,7 @@ public abstract class AbstractBlockExpression
             prefix.add(current);
         }
 
-        return new ImmutableArray<>(prefix);
+        return ImmutableList.fromList(prefix);
     }
 
     @Override

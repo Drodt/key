@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy.definition;
 
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /// Defines that a user interface control which edits a single key-value-pair of the
 /// [StrategyProperties] allows the user to select predefined values. It might be realized via
@@ -14,7 +14,7 @@ import org.key_project.util.collection.ImmutableArray;
 /// @see StrategyPropertyValueDefinition
 public class OneOfStrategyPropertyDefinition extends AbstractStrategyPropertyDefinition {
     /// The possible [StrategyPropertyValueDefinition] which the user can select.
-    private final ImmutableArray<StrategyPropertyValueDefinition> values;
+    private final ImmutableList<StrategyPropertyValueDefinition> values;
 
     /// Defines optionally how many columns are shown per row. A negative value means unlimited
     /// columns.
@@ -66,13 +66,13 @@ public class OneOfStrategyPropertyDefinition extends AbstractStrategyPropertyDef
             StrategyPropertyValueDefinition... values) {
         super(apiKey, name, tooltip, subProperties);
         this.columnsPerRow = columnsPerRow;
-        this.values = new ImmutableArray<>(values);
+        this.values = ImmutableList.fromArray(values);
     }
 
     /// Returns the possible [StrategyPropertyValueDefinition] which the user can select.
     ///
     /// @return The possible [StrategyPropertyValueDefinition] which the user can select.
-    public ImmutableArray<StrategyPropertyValueDefinition> getValues() {
+    public ImmutableList<StrategyPropertyValueDefinition> getValues() {
         return values;
     }
 

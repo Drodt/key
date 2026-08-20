@@ -35,7 +35,6 @@ import de.uka.ilkd.key.logic.op.ProgramMethod;
 import de.uka.ilkd.key.logic.op.ProgramVariable;
 
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import static de.uka.ilkd.key.java.ast.expression.UnaryAssignment.UnaryAssignmentKind.POST_INCREMENT;
@@ -111,7 +110,7 @@ public final class CreateArrayMethodBuilder extends KeYJavaASTFactory {
      * @return a IList<Field> the includes all field specifications found int the field declaration
      *         of the given list
      */
-    private ImmutableList<Field> filterField(ImmutableArray<MemberDeclaration> list) {
+    private ImmutableList<Field> filterField(ImmutableList<MemberDeclaration> list) {
         ImmutableList<Field> result = ImmutableList.nil();
         for (int i = list.size() - 1; i >= 0; i--) {
             MemberDeclaration pe = list.get(i);
@@ -132,7 +131,7 @@ public final class CreateArrayMethodBuilder extends KeYJavaASTFactory {
      */
     private ImmutableList<Field> filterField(FieldDeclaration field) {
         ImmutableList<Field> result = ImmutableList.nil();
-        ImmutableArray<FieldSpecification> spec = field.getFieldSpecifications();
+        ImmutableList<FieldSpecification> spec = field.getFieldSpecifications();
         for (int i = spec.size() - 1; i >= 0; i--) {
             result = result.prepend(spec.get(i));
         }
@@ -232,11 +231,11 @@ public final class CreateArrayMethodBuilder extends KeYJavaASTFactory {
 
         body.addLast(local);
         body.addLast(assign(newObject,
-            new MethodReference(new ImmutableArray<Expression>(paramLength),
+            new MethodReference(ImmutableList.singleton(paramLength),
                 new ProgramElementName(PipelineConstants.IMPLICIT_INSTANCE_ALLOCATE),
                 arrayRef)));
 
-        body.add(new MethodReference(new ImmutableArray<>(),
+        body.add(new MethodReference(ImmutableList.nil(),
             new ProgramElementName(IMPLICIT_ARRAY_CREATION_HELPER),
             newObject));
 
@@ -286,7 +285,7 @@ public final class CreateArrayMethodBuilder extends KeYJavaASTFactory {
 
         final List<Statement> body = createArray(fields);
 
-        body.add(new MethodReference(new ImmutableArray<>(),
+        body.add(new MethodReference(ImmutableList.nil(),
             new ProgramElementName(PipelineConstants.IMPLICIT_OBJECT_PREPARE), null));
 
         body.add(

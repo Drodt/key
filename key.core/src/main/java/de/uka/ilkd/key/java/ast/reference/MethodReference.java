@@ -20,7 +20,6 @@ import de.uka.ilkd.key.logic.op.ProgramVariable;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /**
@@ -45,17 +44,17 @@ public class MethodReference extends JavaNonTerminalProgramElement
     /**
      * Arguments.
      */
-    protected final ImmutableArray<? extends Expression> arguments;
+    protected final ImmutableList<? extends Expression> arguments;
 
     public MethodReference(ExtList args, MethodName n, ReferencePrefix p, PositionInfo pos) {
         super(pos);
         this.prefix = p;
         name = n;
         Debug.assertTrue(name != null, "Tried to reference unnamed method.");
-        this.arguments = new ImmutableArray<>(args.collect(Expression.class));
+        this.arguments = ImmutableList.fromArray(args.collect(Expression.class));
     }
 
-    public MethodReference(ImmutableArray<? extends Expression> args, MethodName n,
+    public MethodReference(ImmutableList<? extends Expression> args, MethodName n,
             ReferencePrefix p) {
         this.prefix = p;
         name = n;
@@ -64,7 +63,7 @@ public class MethodReference extends JavaNonTerminalProgramElement
         checkArguments();
     }
 
-    public MethodReference(ImmutableArray<Expression> args, MethodName n, ReferencePrefix p,
+    public MethodReference(ImmutableList<Expression> args, MethodName n, ReferencePrefix p,
             PositionInfo pos) {
         super(pos);
         this.prefix = p;
@@ -75,17 +74,17 @@ public class MethodReference extends JavaNonTerminalProgramElement
     }
 
     public MethodReference(ExtList children, MethodName n, ReferencePrefix p) {
-        this(new ImmutableArray<>(children.collect(Expression.class)), n, p,
+        this(ImmutableList.fromArray(children.collect(Expression.class)), n, p,
             children.get(PositionInfo.class));
     }
 
     public MethodReference(ExtList children, MethodName n, ReferencePrefix p, PositionInfo pos,
             String scope) {
-        this(new ImmutableArray<>(children.collect(Expression.class)), n, p, pos);
+        this(ImmutableList.fromArray(children.collect(Expression.class)), n, p, pos);
     }
 
     public MethodReference(PositionInfo pi, List<Comment> c, ReferencePrefix prefix,
-            MethodName name, ImmutableArray<Expression> args) {
+            MethodName name, ImmutableList<Expression> args) {
         super(pi, c);
         this.arguments = args;
         this.name = name;
@@ -93,7 +92,7 @@ public class MethodReference extends JavaNonTerminalProgramElement
     }
 
     protected void checkArguments() {
-        ImmutableArray<? extends Expression> args = getArguments();
+        ImmutableList<? extends Expression> args = getArguments();
         for (Expression arg : args) {
             if (arg == null) {
                 throw new NullPointerException();
@@ -266,7 +265,7 @@ public class MethodReference extends JavaNonTerminalProgramElement
      * @return the expression array wrapper.
      */
     @Override
-    public ImmutableArray<? extends Expression> getArguments() {
+    public ImmutableList<? extends Expression> getArguments() {
         return arguments;
     }
 

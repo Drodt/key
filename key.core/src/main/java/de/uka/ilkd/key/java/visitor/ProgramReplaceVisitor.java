@@ -14,7 +14,7 @@ import de.uka.ilkd.key.rule.metaconstruct.ProgramTransformer;
 
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 
 /**
@@ -75,9 +75,9 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
         final Object inst = svinsts.getInstantiation(sv);
         if (inst instanceof ProgramElement) {
             addChild((ProgramElement) inst);
-        } else if (inst instanceof ImmutableArray/* <ProgramElement> */) {
+        } else if (inst instanceof ImmutableList/* <ProgramElement> */) {
             @SuppressWarnings("unchecked")
-            final ImmutableArray<ProgramElement> instArray = (ImmutableArray<ProgramElement>) inst;
+            final ImmutableList<ProgramElement> instArray = (ImmutableList<ProgramElement>) inst;
             // the assertion ensures the intended instanceof check from above
             assert instArray.size() == 0 || instArray.last() instanceof ProgramElement;
             addChildren(instArray);
@@ -114,7 +114,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
              */
             addChild(null);
         } else {
-            addChildren(new ImmutableArray<>(transformResult));
+            addChildren(ImmutableList.fromArray(transformResult));
         }
         changed();
     }

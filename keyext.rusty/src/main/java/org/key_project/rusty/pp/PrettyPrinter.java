@@ -21,7 +21,7 @@ import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.metaconstruct.ProgramTransformer;
 import org.key_project.rusty.speclang.LoopSpecification;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -126,7 +126,7 @@ public class PrettyPrinter implements Visitor {
     /// Write separated list.
     ///
     /// @param list a program element list.
-    protected void writeSeparatedList(ImmutableArray<? extends RustyProgramElement> list,
+    protected void writeSeparatedList(ImmutableList<? extends RustyProgramElement> list,
             String sep) {
         for (int i = 0; i < list.size(); i++) {
             if (i != 0) {
@@ -139,7 +139,7 @@ public class PrettyPrinter implements Visitor {
     /// Write comma list.
     ///
     /// @param list a program element list.
-    protected void writeCommaList(ImmutableArray<? extends RustyProgramElement> list) {
+    protected void writeCommaList(ImmutableList<? extends RustyProgramElement> list) {
         writeSeparatedList(list, ",");
     }
 
@@ -243,8 +243,8 @@ public class PrettyPrinter implements Visitor {
         } else {
             if (o instanceof RustyProgramElement pe) {
                 pe.visit(this);
-            } else if (o instanceof ImmutableArray) {
-                for (RustyProgramElement e : ((ImmutableArray<RustyProgramElement>) o)) {
+            } else if (o instanceof ImmutableList) {
+                for (RustyProgramElement e : ((ImmutableList<RustyProgramElement>) o)) {
                     e.visit(this);
                 }
             } else {
@@ -272,7 +272,7 @@ public class PrettyPrinter implements Visitor {
         layouter.print(")");
     }
 
-    private void printArguments(ImmutableArray<? extends Expr> args) {
+    private void printArguments(ImmutableList<? extends Expr> args) {
         beginMultilineParen();
         if (args != null) {
             writeCommaList(args);

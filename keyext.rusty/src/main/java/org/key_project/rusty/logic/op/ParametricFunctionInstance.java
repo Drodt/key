@@ -12,7 +12,6 @@ import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.sort.*;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -41,7 +40,7 @@ public class ParametricFunctionInstance extends RFunction {
     }
 
     private ParametricFunctionInstance(ParametricFunctionDecl base,
-            ImmutableList<GenericArgument> args, ImmutableArray<Sort> argSorts, Sort sort) {
+            ImmutableList<GenericArgument> args, ImmutableList<Sort> argSorts, Sort sort) {
         super(makeName(base, args), sort, argSorts, base.getWhereToBind(), base.isUnique(),
             base.isRigid(),
             base.isSkolemConstant() ? FunctionKind.SKOLEM : FunctionKind.ORDINARY, UNRECORDED);
@@ -63,7 +62,7 @@ public class ParametricFunctionInstance extends RFunction {
         return new Name(base.name() + "<" + parameters + ">");
     }
 
-    private static ImmutableArray<Sort> instantiate(ParametricFunctionDecl base,
+    private static ImmutableList<Sort> instantiate(ParametricFunctionDecl base,
             HashMap<GenericParameter, GenericArgument> instMap) {
         var baseArgSorts = base.argSorts();
         var argSorts = new Sort[baseArgSorts.size()];
@@ -73,7 +72,7 @@ public class ParametricFunctionInstance extends RFunction {
             argSorts[i] = instantiate(sort, instMap);
         }
 
-        return new ImmutableArray<>(argSorts);
+        return ImmutableList.fromArray(argSorts);
     }
 
     private static HashMap<GenericParameter, GenericArgument> getInstMap(

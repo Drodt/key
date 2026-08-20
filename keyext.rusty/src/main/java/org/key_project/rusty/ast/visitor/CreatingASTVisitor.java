@@ -18,7 +18,7 @@ import org.key_project.rusty.ast.stmt.ExpressionStatement;
 import org.key_project.rusty.ast.stmt.LetStatement;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -393,7 +393,7 @@ public abstract class CreatingASTVisitor extends RustyASTVisitor {
         addToTopOfStack(x);
     }
 
-    protected void addChildren(ImmutableArray<RustyProgramElement> arr) {
+    protected void addChildren(ImmutableList<RustyProgramElement> arr) {
         stack.pop();
         for (int i = 0, sz = arr.size(); i < sz; i++) {
             addToTopOfStack(arr.get(i));

@@ -4,7 +4,7 @@
 package org.key_project.rusty.logic.op;
 
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 public interface IObserverFunction {
     /// Returns the result type of this symbol.
@@ -17,5 +17,5 @@ public interface IObserverFunction {
     KeYRustyType getParamType(int i);
 
     /// Returns the parameter types of this observer symbol.
-    ImmutableArray<KeYRustyType> getParamTypes();
+    ImmutableList<KeYRustyType> getParamTypes();
 }

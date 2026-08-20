@@ -31,7 +31,7 @@ import de.uka.ilkd.key.proof.NameRecorder;
 
 import org.key_project.logic.Name;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -765,8 +765,9 @@ public abstract class KeYJavaASTFactory {
 
         Statement[] block = new Statement[b.getStatementCount() + stmnt.length];
         System.arraycopy(stmnt, 0, block, 0, stmnt.length);
-        b.getBody().arraycopy(0, block, stmnt.length, b.getStatementCount());
-        return new StatementBlock(new ImmutableArray<>(block));
+        System.arraycopy(b.getBody().toArray(Statement.class), 0, block, stmnt.length,
+            b.getStatementCount());
+        return new StatementBlock(ImmutableList.fromArray(block));
     }
 
     /**
@@ -1140,7 +1141,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static IForUpdates forUpdates(final Expression update) {
 
-        return new ForUpdates(new ImmutableArray<>(update));
+        return new ForUpdates(ImmutableList.singleton(update));
     }
 
     /**
@@ -1386,7 +1387,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static LocalVariableDeclaration declare(final Modifier modifier,
             final IProgramVariable variable, final Expression init, final KeYJavaType type) {
-        final ImmutableArray<Modifier> modifiers = new ImmutableArray<>(modifier);
+        final ImmutableList<Modifier> modifiers = ImmutableList.singleton(modifier);
 
         return declare(modifiers, variable, init, type);
     }
@@ -1407,7 +1408,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static LocalVariableDeclaration declare(final Modifier[] modifiers,
             final IProgramVariable variable, final Expression init, final KeYJavaType type) {
-        final ImmutableArray<Modifier> m = new ImmutableArray<>(modifiers);
+        final ImmutableList<Modifier> m = ImmutableList.fromArray(modifiers);
 
         return declare(m, variable, init, type);
     }
@@ -1426,7 +1427,7 @@ public abstract class KeYJavaASTFactory {
      * @return a new {@link LocalVariableDeclaration} of <code>variable</code> with static type
      *         <code>type</code> and initial value <code>init</code>
      */
-    public static LocalVariableDeclaration declare(final ImmutableArray<Modifier> modifiers,
+    public static LocalVariableDeclaration declare(final ImmutableList<Modifier> modifiers,
             final IProgramVariable variable, final Expression init, final KeYJavaType type) {
         final TypeRef typeRef = new TypeRef(type);
 
@@ -1447,7 +1448,7 @@ public abstract class KeYJavaASTFactory {
      * @return a new {@link LocalVariableDeclaration} of <code>variable</code> with static type
      *         <code>typeRef</code> and initial value <code>init</code>
      */
-    public static LocalVariableDeclaration declare(final ImmutableArray<Modifier> modifiers,
+    public static LocalVariableDeclaration declare(final ImmutableList<Modifier> modifiers,
             final IProgramVariable variable, final Expression init, final TypeReference typeRef) {
         final VariableSpecification varSpec =
             variableSpecification(variable, init, typeRef.getKeYJavaType());
@@ -1468,7 +1469,7 @@ public abstract class KeYJavaASTFactory {
      * @return a new {@link LocalVariableDeclaration} of the variable specified by
      *         <code>specification</code> with static type <code>typeRef</code>
      */
-    public static LocalVariableDeclaration declare(final ImmutableArray<Modifier> modifiers,
+    public static LocalVariableDeclaration declare(final ImmutableList<Modifier> modifiers,
             final TypeReference typeRef, final VariableSpecification specification) {
 
         return new LocalVariableDeclaration(modifiers, typeRef, specification);
@@ -1487,7 +1488,7 @@ public abstract class KeYJavaASTFactory {
      * @return a new {@link LocalVariableDeclaration} of the variables specified by
      *         <code>specifications</code> with static type <code>typeRef</code>
      */
-    public static LocalVariableDeclaration declare(final ImmutableArray<Modifier> modifiers,
+    public static LocalVariableDeclaration declare(final ImmutableList<Modifier> modifiers,
             final TypeReference typeRef, final VariableSpecification[] specifications) {
 
         return new LocalVariableDeclaration(modifiers, typeRef, specifications);
@@ -1507,7 +1508,7 @@ public abstract class KeYJavaASTFactory {
      *         <code>reference</code> with arguments <code>args</code>
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final String name,
-            final ImmutableArray<? extends Expression> args) {
+            final ImmutableList<? extends Expression> args) {
         final ProgramElementName method = new ProgramElementName(name);
 
         return methodCall(reference, method, args);
@@ -1527,7 +1528,7 @@ public abstract class KeYJavaASTFactory {
      *         <code>type</code> with arguments <code>args</code>
      */
     public static MethodReference methodCall(final KeYJavaType type, final String name,
-            final ImmutableArray<? extends Expression> args) {
+            final ImmutableList<? extends Expression> args) {
         final TypeReference typeRef = new TypeRef(type);
 
         return methodCall(typeRef, name, args);
@@ -1566,7 +1567,7 @@ public abstract class KeYJavaASTFactory {
      *         <code>type</code> with arguments <code>args</code>
      */
     public static MethodReference methodCall(final KeYJavaType type, final String name) {
-        final ImmutableArray<? extends Expression> args = new ImmutableArray<>();
+        final ImmutableList<? extends Expression> args = ImmutableList.nil();
 
         return methodCall(type, name, args);
     }
@@ -1584,7 +1585,7 @@ public abstract class KeYJavaASTFactory {
      *         <code>reference</code> with no arguments
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final String name) {
-        final ImmutableArray<Expression> args = new ImmutableArray<>();
+        final ImmutableList<Expression> args = ImmutableList.nil();
 
         return methodCall(reference, name, args);
     }
@@ -1604,7 +1605,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final String name,
             final Expression... args) {
-        final ImmutableArray<? extends Expression> a = new ImmutableArray<>(args);
+        final ImmutableList<? extends Expression> a = ImmutableList.fromArray(args);
 
         return methodCall(reference, name, a);
     }
@@ -1624,7 +1625,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final MethodName name,
             final Expression... args) {
-        final ImmutableArray<Expression> a = new ImmutableArray<>(args);
+        final ImmutableList<Expression> a = ImmutableList.fromArray(args);
 
         return methodCall(reference, name, a);
     }
@@ -1643,7 +1644,7 @@ public abstract class KeYJavaASTFactory {
      *         <code>reference</code> with arguments <code>args</code>
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final MethodName name,
-            final ImmutableArray<? extends Expression> args) {
+            final ImmutableList<? extends Expression> args) {
 
         return new MethodReference(args, name, reference);
     }
@@ -1768,7 +1769,7 @@ public abstract class KeYJavaASTFactory {
      * @return a new {@link LocalVariableDeclaration} of <code>variable</code> with static type
      *         <code>baseType[dimensions]</code> and initial value <code>init</code>
      */
-    public static ProgramElement declare(final ImmutableArray<Modifier> modifiers,
+    public static ProgramElement declare(final ImmutableList<Modifier> modifiers,
             final IProgramVariable variable, final Expression init,
             final ProgramElementName typeName, final int dimensions,
             final ReferencePrefix typePrefix, final KeYJavaType baseType) {
@@ -1825,7 +1826,7 @@ public abstract class KeYJavaASTFactory {
             final Expression[] arguments) {
 
         return methodBody(result, reference,
-            method, new ImmutableArray<>(arguments));
+            method, ImmutableList.fromArray(arguments));
     }
 
     /**
@@ -1842,7 +1843,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static MethodBodyStatement methodBody(final ProgramVariable result,
             final ReferencePrefix reference, final IProgramMethod method,
-            final ImmutableArray<Expression> arguments) {
+            final ImmutableList<Expression> arguments) {
 
         return new MethodBodyStatement(method, reference, result, arguments);
     }

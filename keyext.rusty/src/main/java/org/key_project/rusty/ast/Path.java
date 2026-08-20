@@ -7,11 +7,11 @@ import java.util.Objects;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
-public record Path<R>(R res, ImmutableArray<PathSegment> segments) implements RustyProgramElement {
+public record Path<R>(R res, ImmutableList<PathSegment> segments) implements RustyProgramElement {
     @Override
     public @NonNull SyntaxElement getChild(int n) {
         return Objects.requireNonNull(segments.get(n));

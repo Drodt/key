@@ -10,7 +10,7 @@ import org.key_project.rusty.ast.expr.Expr;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
@@ -82,11 +82,11 @@ public class ExpressionStatement implements Statement, PossibleProgramPrefix {
     }
 
     @Override
-    public ImmutableArray<PossibleProgramPrefix> getPrefixElements() {
+    public ImmutableList<PossibleProgramPrefix> getPrefixElements() {
         if (hasNextPrefixElement()) {
-            return new ImmutableArray<>((PossibleProgramPrefix) expression);
+            return ImmutableList.singleton((PossibleProgramPrefix) expression);
         }
-        return new ImmutableArray<>();
+        return ImmutableList.nil();
     }
 
     @Override

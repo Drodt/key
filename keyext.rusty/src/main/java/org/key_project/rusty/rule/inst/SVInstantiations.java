@@ -118,7 +118,7 @@ public class SVInstantiations
         }, services);
     }
 
-    public <T> SVInstantiations add(SchemaVariable sv, ImmutableArray<T> pes, Class<T> type,
+    public <T> SVInstantiations add(SchemaVariable sv, ImmutableList<T> pes, Class<T> type,
             LogicServices services) {
         return add(sv, new ListInstantiation<>(pes, type), services);
     }
@@ -496,7 +496,7 @@ public class SVInstantiations
     ///
     /// @param sv the SchemaVariable to be instantiated
     /// @param pes the ArrayOf<t> the SchemaVariable is instantiated with</t>
-    public SVInstantiations replace(SchemaVariable sv, ImmutableArray<RustyProgramElement> pes,
+    public SVInstantiations replace(SchemaVariable sv, ImmutableList<RustyProgramElement> pes,
             Services services) {
         return replace(sv, new ListInstantiation<>(pes, RustyProgramElement.class), services);
     }

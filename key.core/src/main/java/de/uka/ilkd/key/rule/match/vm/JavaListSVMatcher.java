@@ -18,7 +18,7 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.matcher.compiler.ListSVMatcher;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -38,8 +38,8 @@ public final class JavaListSVMatcher implements ListSVMatcher {
     public static final JavaListSVMatcher INSTANCE = new JavaListSVMatcher();
 
     /** the instantiation of a list schema variable that matched no source children */
-    private static final ImmutableArray<ProgramElement> EMPTY_LIST_INSTANTIATION =
-        new ImmutableArray<>(new ProgramElement[0]);
+    private static final ImmutableList<ProgramElement> EMPTY_LIST_INSTANTIATION =
+        ImmutableList.fromArray(new ProgramElement[0]);
 
     private JavaListSVMatcher() {}
 
@@ -55,11 +55,11 @@ public final class JavaListSVMatcher implements ListSVMatcher {
     @Override
     public @Nullable MatchResultInfo bindRun(SchemaVariable listSV,
             List<? extends SyntaxElement> run, MatchResultInfo mc, LogicServices services) {
-        final ImmutableArray<ProgramElement> list = run.isEmpty() ? EMPTY_LIST_INSTANTIATION
-                : new ImmutableArray<>(run.toArray(new ProgramElement[0]));
+        final ImmutableList<ProgramElement> list = run.isEmpty() ? EMPTY_LIST_INSTANTIATION
+                : ImmutableList.fromArray(run.toArray(new ProgramElement[0]));
         final MatchConditions matchCond = (MatchConditions) mc;
         SVInstantiations insts = matchCond.getInstantiations();
-        final ImmutableArray<ProgramElement> pl = insts.getInstantiation(listSV);
+        final ImmutableList<ProgramElement> pl = insts.getInstantiation(listSV);
         if (pl != null) {
             return pl.equals(list) ? matchCond : null;
         }

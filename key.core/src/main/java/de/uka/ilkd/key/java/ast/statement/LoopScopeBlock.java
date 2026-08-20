@@ -28,7 +28,7 @@ import de.uka.ilkd.key.logic.op.IProgramVariable;
 import de.uka.ilkd.key.logic.op.ProgramVariable;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -137,7 +137,7 @@ public final class LoopScopeBlock extends JavaStatement
     }
 
     @Override
-    public ImmutableArray<ProgramPrefix> getPrefixElements() {
+    public ImmutableList<ProgramPrefix> getPrefixElements() {
         return StatementBlock.computePrefixElements(body.getBody(), this);
     }
 

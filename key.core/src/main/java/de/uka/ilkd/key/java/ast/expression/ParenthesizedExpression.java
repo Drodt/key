@@ -13,7 +13,7 @@ import de.uka.ilkd.key.java.ast.reference.ReferencePrefix;
 import de.uka.ilkd.key.java.visitor.Visitor;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /**
  * Redundant Parentheses. Modelled as a special "identity" unary "infix" operator.
@@ -39,7 +39,7 @@ public class ParenthesizedExpression extends Operator
     }
 
     public ParenthesizedExpression(PositionInfo pi, List<Comment> c, Expression expr) {
-        super(pi, c, new ImmutableArray<>(expr));
+        super(pi, c, ImmutableList.singleton(expr));
     }
 
     /**

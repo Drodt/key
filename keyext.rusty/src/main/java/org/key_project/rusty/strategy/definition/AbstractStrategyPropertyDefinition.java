@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.strategy.definition;
 
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /// Provides the basic function definition of user interface controls to edit a single
 /// key-value-pair
@@ -23,7 +23,7 @@ public class AbstractStrategyPropertyDefinition {
 
     /// Optional children which edits related properties to this. They might be shown different in
     /// the user interface.
-    private final ImmutableArray<AbstractStrategyPropertyDefinition> subProperties;
+    private final ImmutableList<AbstractStrategyPropertyDefinition> subProperties;
 
     /// Constructor.
     ///
@@ -36,7 +36,7 @@ public class AbstractStrategyPropertyDefinition {
         this.apiKey = apiKey;
         this.name = name;
         this.tooltip = tooltip;
-        this.subProperties = new ImmutableArray<>(subProperties);
+        this.subProperties = ImmutableList.fromArray(subProperties);
     }
 
     /// Returns the key used in KeY's API.
@@ -64,8 +64,8 @@ public class AbstractStrategyPropertyDefinition {
     /// the
     /// user interface.
     ///
-    /// @return The children if available or an empty [ImmutableArray] otherwise.
-    public ImmutableArray<AbstractStrategyPropertyDefinition> getSubProperties() {
+    /// @return The children if available or an empty [ImmutableList] otherwise.
+    public ImmutableList<AbstractStrategyPropertyDefinition> getSubProperties() {
         return subProperties;
     }
 }

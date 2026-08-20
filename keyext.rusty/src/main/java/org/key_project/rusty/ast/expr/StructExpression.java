@@ -10,12 +10,12 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.QPath;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public record StructExpression(QPath path, ImmutableArray<StructExprField> fields,
+public record StructExpression(QPath path, ImmutableList<StructExprField> fields,
         @Nullable StructTail tail) implements Expr {
     @Override
     public void visit(Visitor v) {

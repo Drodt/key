@@ -1371,12 +1371,13 @@ public final class AuxiliaryContractBuilders {
                     new SequentFormula(tb.applySequential(updates, tb.and(assumptions))), true,
                     false);
 
-                ImmutableArray<TermLabel> labels = TermLabelManager.instantiateLabels(
+                ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(
                     termLabelState, services, occurrence, application.rule(), application, goal,
                     BlockContractHint.createValidityBranchHint(variables.exception), null,
                     tb.tf().createTerm(
                         JModality.getModality(instantiation.modality().kind(), newJavaBlock),
-                        new ImmutableArray<>(newPost), null, instantiation.formula().getLabels()));
+                        ImmutableList.singleton(newPost), null,
+                        instantiation.formula().getLabels()));
 
                 term = tb.applySequential(updates,
                     tb.prog(instantiation.modality().kind(), newJavaBlock, newPost, labels));
@@ -1390,7 +1391,7 @@ public final class AuxiliaryContractBuilders {
                 JTerm pre = tb.and(assumptions);
                 JTerm prog =
                     tb.prog(instantiation.modality().kind(), newJavaBlock, newPost,
-                        new ImmutableArray<>());
+                        ImmutableList.nil());
                 term = tb.applySequential(updates, tb.imp(pre, prog));
             }
 
@@ -1605,7 +1606,7 @@ public final class AuxiliaryContractBuilders {
                     application.rule(), application, goal, BlockContractHint.USAGE_BRANCH, null,
                     services.getTermBuilder().tf().createTerm(
                         instantiation.modality(),
-                        new ImmutableArray<>(instantiation.formula().sub(0)),
+                        ImmutableList.singleton(instantiation.formula().sub(0)),
                         null,
                         instantiation.formula().getLabels())));
         }

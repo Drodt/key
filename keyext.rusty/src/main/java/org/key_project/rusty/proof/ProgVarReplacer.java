@@ -112,7 +112,7 @@ public final class ProgVarReplacer {
                     throw new RuntimeException("Unexpected list instantiation: " + ie);
                 }
                 @SuppressWarnings("unchecked")
-                var a = (ImmutableArray<RustyProgramElement>) inst;
+                var a = (ImmutableList<RustyProgramElement>) inst;
                 int size = a.size();
                 var array = new RustyProgramElement[size];
 
@@ -126,7 +126,7 @@ public final class ProgVarReplacer {
                 }
 
                 if (changedSomething) {
-                    ImmutableArray<RustyProgramElement> newA = new ImmutableArray<>(array);
+                    ImmutableList<RustyProgramElement> newA = ImmutableList.fromArray(array);
                     result = result.replace(sv, newA, services);
                 }
             } else if (ie instanceof TermInstantiation) {
@@ -185,7 +185,7 @@ public final class ProgVarReplacer {
 
         if (changedSubTerm || changedOp) {
             result = services.getTermFactory().createTerm(op, newSubTerms,
-                (ImmutableArray<QuantifiableVariable>) t.boundVars());
+                (ImmutableList<QuantifiableVariable>) t.boundVars());
         }
         return result;
     }

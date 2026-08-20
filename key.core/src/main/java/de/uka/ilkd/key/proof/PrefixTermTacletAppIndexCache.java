@@ -5,7 +5,6 @@ package de.uka.ilkd.key.proof;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /**
@@ -26,7 +25,7 @@ abstract class PrefixTermTacletAppIndexCache implements ITermTacletAppIndexCache
     }
 
     protected ImmutableList<QuantifiableVariable> getExtendedPrefix(
-            ImmutableArray<? extends QuantifiableVariable> extension) {
+            ImmutableList<? extends QuantifiableVariable> extension) {
         ImmutableList<QuantifiableVariable> res = prefix;
         for (int i = 0; i != extension.size(); ++i) {
             res = res.prepend(extension.get(i));

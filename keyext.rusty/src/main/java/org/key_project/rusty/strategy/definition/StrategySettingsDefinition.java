@@ -6,7 +6,7 @@ package org.key_project.rusty.strategy.definition;
 import java.util.ArrayList;
 
 import org.key_project.rusty.strategy.StrategyProperties;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 ///
 /// Instances of this class defines how a user interfaces has to look like which edits
@@ -50,7 +50,7 @@ public final class StrategySettingsDefinition {
     private final String propertiesTitle;
 
     /// Defines the controls to edit [StrategyProperties].
-    private final ImmutableArray<AbstractStrategyPropertyDefinition> properties;
+    private final ImmutableList<AbstractStrategyPropertyDefinition> properties;
 
     /// The default maximal rule applications.
     private final int defaultMaxRuleApplications;
@@ -153,7 +153,7 @@ public final class StrategySettingsDefinition {
         this.propertiesTitle = propertiesTitle;
         this.defaultPropertiesFactory = defaultPropertiesFactory;
         this.furtherDefaults = furtherDefaults;
-        this.properties = new ImmutableArray<>(properties);
+        this.properties = ImmutableList.fromArray(properties);
     }
 
     /// Checks if the user interface control to edit [#getMaxSteps()] should be
@@ -184,7 +184,7 @@ public final class StrategySettingsDefinition {
     /// Returns the definition of controls to edit [StrategyProperties].
     ///
     /// @return The definition of controls to edit [StrategyProperties].
-    public ImmutableArray<AbstractStrategyPropertyDefinition> getProperties() {
+    public ImmutableList<AbstractStrategyPropertyDefinition> getProperties() {
         return properties;
     }
 

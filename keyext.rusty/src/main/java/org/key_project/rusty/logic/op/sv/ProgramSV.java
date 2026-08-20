@@ -21,7 +21,7 @@ import org.key_project.rusty.logic.op.IProgramVariable;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -30,8 +30,8 @@ public final class ProgramSV extends OperatorSV
         implements UpdateableOperator, ProgramConstruct, IProgramVariable, IFieldIdentifier {
     private final boolean isListSV;
 
-    private static final ImmutableArray<RustyProgramElement> EMPTY_LIST_INSTANTIATION =
-        new ImmutableArray<>(new RustyProgramElement[0]);
+    private static final ImmutableList<RustyProgramElement> EMPTY_LIST_INSTANTIATION =
+        ImmutableList.fromArray(new RustyProgramElement[0]);
 
     /// creates a new SchemaVariable used as a placeholder for program constructs
     ///
@@ -114,7 +114,7 @@ public final class ProgramSV extends OperatorSV
         }
 
         return addProgramInstantiation(
-            new ImmutableArray<>(matchedElements), matchCond,
+            ImmutableList.fromList(matchedElements), matchCond,
             services);
     }
 
@@ -170,7 +170,7 @@ public final class ProgramSV extends OperatorSV
     /// @return the updated match conditions including mapping <code>var</code> to <code>list</code>
     /// or null if some variable condition would be hurt by the mapping
     private @Nullable MatchConditions addProgramInstantiation(
-            ImmutableArray<RustyProgramElement> list,
+            ImmutableList<RustyProgramElement> list,
             @Nullable MatchConditions matchCond,
             Services services) {
         if (matchCond == null) {
@@ -178,7 +178,7 @@ public final class ProgramSV extends OperatorSV
         }
 
         SVInstantiations insts = matchCond.getInstantiations();
-        final var pl = (ImmutableArray<RustyProgramElement>) insts.getInstantiation(this);
+        final var pl = (ImmutableList<RustyProgramElement>) insts.getInstantiation(this);
         if (pl != null) {
             if (pl.equals(list)) {
                 return matchCond;

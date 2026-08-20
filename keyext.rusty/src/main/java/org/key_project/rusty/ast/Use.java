@@ -5,9 +5,9 @@ package org.key_project.rusty.ast;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
-public record Use(Path<ImmutableArray<Res>> path, UseKind kind) implements Item {
+public record Use(Path<ImmutableList<Res>> path, UseKind kind) implements Item {
     @Override
     public void visit(Visitor v) {
 

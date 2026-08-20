@@ -10,7 +10,7 @@ import de.uka.ilkd.key.strategy.Strategy;
 import de.uka.ilkd.key.strategy.StrategyFactory;
 import de.uka.ilkd.key.strategy.StrategyProperties;
 
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /**
  * <p>
@@ -66,7 +66,7 @@ public class StrategySettingsDefinition {
     /**
      * Defines the controls to edit {@link StrategyProperties}.
      */
-    private final ImmutableArray<AbstractStrategyPropertyDefinition> properties;
+    private final ImmutableList<AbstractStrategyPropertyDefinition> properties;
 
     /**
      * The default maximal rule applications.
@@ -214,7 +214,7 @@ public class StrategySettingsDefinition {
         this.propertiesTitle = propertiesTitle;
         this.defaultPropertiesFactory = defaultPropertiesFactory;
         this.furtherDefaults = furtherDefaults;
-        this.properties = new ImmutableArray<>(properties);
+        this.properties = ImmutableList.fromArray(properties);
     }
 
     /**
@@ -253,7 +253,7 @@ public class StrategySettingsDefinition {
      *
      * @return The definition of controls to edit {@link StrategyProperties}.
      */
-    public ImmutableArray<AbstractStrategyPropertyDefinition> getProperties() {
+    public ImmutableList<AbstractStrategyPropertyDefinition> getProperties() {
         return properties;
     }
 

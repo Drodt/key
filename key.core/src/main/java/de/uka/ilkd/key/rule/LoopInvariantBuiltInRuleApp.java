@@ -30,7 +30,6 @@ import de.uka.ilkd.key.speclang.LoopSpecification;
 
 import org.key_project.logic.Term;
 import org.key_project.prover.sequent.PosInOccurrence;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NullMarked;
@@ -155,7 +154,7 @@ public class LoopInvariantBuiltInRuleApp<T extends BuiltInRule>
             }
 
             private @Nullable JTerm replace(JTerm visited) {
-                ImmutableArray<JTerm> subs = visited.subs();
+                ImmutableList<JTerm> subs = visited.subs();
                 if (subs.isEmpty()) {
                     if (visited.op().name().toString().equals("index")) {
                         return loopIdxVar;
@@ -167,7 +166,7 @@ public class LoopInvariantBuiltInRuleApp<T extends BuiltInRule>
                     for (int i = 0; i < subs.size(); i++) {
                         newSubs[i] = replace(subs.get(i));
                     }
-                    return tb.tf().createTerm(visited.op(), new ImmutableArray<>(newSubs),
+                    return tb.tf().createTerm(visited.op(), ImmutableList.fromArray(newSubs),
                         visited.boundVars(), visited.getLabels());
                 }
             }
@@ -186,7 +185,7 @@ public class LoopInvariantBuiltInRuleApp<T extends BuiltInRule>
             }
 
             private @Nullable JTerm replace(JTerm visited) {
-                ImmutableArray<JTerm> subs = visited.subs();
+                ImmutableList<JTerm> subs = visited.subs();
                 if (subs.isEmpty()) {
                     if (visited.op().name().toString().equals("values")) {
                         return valuesVar;
@@ -198,7 +197,7 @@ public class LoopInvariantBuiltInRuleApp<T extends BuiltInRule>
                     for (int i = 0; i < subs.size(); i++) {
                         newSubs[i] = replace(subs.get(i));
                     }
-                    return tb.tf().createTerm(visited.op(), new ImmutableArray<>(newSubs),
+                    return tb.tf().createTerm(visited.op(), ImmutableList.fromArray(newSubs),
                         visited.boundVars(), visited.getLabels());
                 }
             }

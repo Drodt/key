@@ -40,7 +40,6 @@ import de.uka.ilkd.key.util.Debug;
 import org.key_project.logic.Name;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.slf4j.Logger;
@@ -64,14 +63,14 @@ public final class MethodCall extends ProgramTransformer {
 
     private final SchemaVariable resultVar;
 
-    protected MethodReference methRef;
+    private MethodReference methRef;
     private IProgramMethod pm;
-    protected ReferencePrefix newContext;
-    protected ProgramVariable pvar;
+    private ReferencePrefix newContext;
+    private ProgramVariable pvar;
     private final IExecutionContext execContextSV;
     private ExecutionContext execContext;
-    protected ImmutableArray<Expression> arguments;
-    protected KeYJavaType staticPrefixType;
+    private ImmutableList<Expression> arguments;
+    private KeYJavaType staticPrefixType;
 
     /**
      * creates the methodcall-MetaConstruct
@@ -110,14 +109,14 @@ public final class MethodCall extends ProgramTransformer {
      * @param name Method name.
      * @param ec The Schema Variable.
      */
-    protected MethodCall(Name name, ProgramSV ec, SchemaVariable result, ProgramElement body) {
+    private MethodCall(Name name, ProgramSV ec, SchemaVariable result, ProgramElement body) {
         super(name, body);
         this.resultVar = result;
         this.execContextSV = ec;
     }
 
     /** gets an array of expression and returns a list of types */
-    private ImmutableList<KeYJavaType> getTypes(ImmutableArray<Expression> args,
+    private ImmutableList<KeYJavaType> getTypes(ImmutableList<Expression> args,
             Services services) {
         ImmutableList<KeYJavaType> result = ImmutableList.nil();
         for (int i = args.size() - 1; i >= 0; i--) {
@@ -491,12 +490,12 @@ public final class MethodCall extends ProgramTransformer {
         return paramDecl;
     }
 
-    private ImmutableArray<Expression> getVariables(VariableSpecification[] varspecs) {
+    private ImmutableList<Expression> getVariables(VariableSpecification[] varspecs) {
         Expression[] vars = new Expression[varspecs.length];
         for (int i = 0; i < varspecs.length; i++) {
             vars[i] = (Expression) varspecs[i].getProgramVariable();
         }
-        return new ImmutableArray<>(vars);
+        return ImmutableList.fromArray(vars);
     }
 
     /**

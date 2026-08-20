@@ -14,7 +14,6 @@ import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
@@ -253,7 +252,7 @@ public class OpReplacer {
                 changedSubTerm = true;
             }
         }
-        final ImmutableArray<QuantifiableVariable> newBoundVars = replace(term.boundVars());
+        final ImmutableList<QuantifiableVariable> newBoundVars = replaceBoundVars(term.boundVars());
 
         final JTerm result;
         if (newOp != term.op() || changedSubTerm || newBoundVars != term.boundVars()) {
@@ -341,8 +340,8 @@ public class OpReplacer {
      * @param vars the array in which to perform the replacement.
      * @return the list of transformed variables.
      */
-    public ImmutableArray<QuantifiableVariable> replace(
-            ImmutableArray<QuantifiableVariable> vars) {
+    public ImmutableList<QuantifiableVariable> replaceBoundVars(
+            ImmutableList<QuantifiableVariable> vars) {
         QuantifiableVariable[] result = new QuantifiableVariable[vars.size()];
         boolean changed = false;
         for (int i = 0, n = vars.size(); i < n; i++) {
@@ -353,6 +352,6 @@ public class OpReplacer {
                 changed = true;
             }
         }
-        return changed ? new ImmutableArray<>(result) : vars;
+        return changed ? ImmutableList.fromArray(result) : vars;
     }
 }

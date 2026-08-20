@@ -128,7 +128,7 @@ public final class ProgVarReplacer {
                 if (list.getType() != ProgramElement.class) {
                     throw new RuntimeException("Unexpected list instantiation: " + ie);
                 }
-                final ImmutableArray<ProgramElement> a = (ImmutableArray<ProgramElement>) inst;
+                final ImmutableList<ProgramElement> a = (ImmutableList<ProgramElement>) inst;
                 final int size = a.size();
                 ProgramElement[] array = new ProgramElement[size];
 
@@ -142,7 +142,7 @@ public final class ProgVarReplacer {
                 }
 
                 if (changedSomething) {
-                    result = result.replace(sv, new ImmutableArray<>(array), services);
+                    result = result.replace(sv, ImmutableList.fromArray(array), services);
                 }
             } else {
                 assert false : "unexpected subtype of InstantiationEntry<?>";

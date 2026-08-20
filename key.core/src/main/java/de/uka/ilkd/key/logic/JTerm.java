@@ -12,7 +12,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
@@ -50,7 +50,7 @@ public interface JTerm
      * The subterms.
      */
     @Override
-    ImmutableArray<JTerm> subs();
+    ImmutableList<JTerm> subs();
 
     /**
      * {@inheritDoc}
@@ -62,13 +62,13 @@ public interface JTerm
      * {@inheritDoc}
      */
     @Override
-    ImmutableArray<QuantifiableVariable> boundVars();
+    ImmutableList<QuantifiableVariable> boundVars();
 
     /**
      * {@inheritDoc}
      */
     @Override
-    ImmutableArray<QuantifiableVariable> varsBoundHere(int n);
+    ImmutableList<QuantifiableVariable> varsBoundHere(int n);
 
     /**
      * {@inheritDoc}
@@ -99,7 +99,7 @@ public interface JTerm
      *
      * @return list of labels (maybe be empty but never <code>null</code>
      */
-    ImmutableArray<TermLabel> getLabels();
+    ImmutableList<TermLabel> getLabels();
 
     /**
      * Returns the first {@link TermLabel} with the given {@link Name}.

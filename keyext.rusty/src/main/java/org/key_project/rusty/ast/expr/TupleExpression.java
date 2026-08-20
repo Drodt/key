@@ -11,23 +11,23 @@ import org.key_project.rusty.ast.abstraction.TupleType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
 public final class TupleExpression implements Expr {
     public static TupleExpression UNIT =
-        new TupleExpression(new ImmutableArray<>(), TupleType.UNIT);
-    private final ImmutableArray<Expr> elements;
+        new TupleExpression(ImmutableList.nil(), TupleType.UNIT);
+    private final ImmutableList<Expr> elements;
     private final Type type;
 
-    public TupleExpression(ImmutableArray<Expr> elements, Type type) {
+    public TupleExpression(ImmutableList<Expr> elements, Type type) {
         this.elements = elements;
         this.type = type;
     }
 
     public TupleExpression(ExtList changeList, Services services) {
-        elements = new ImmutableArray<>(changeList.collect(Expr.class));
+        elements = ImmutableList.fromArray(changeList.collect(Expr.class));
         type =
             TupleType.getInstance(elements.stream().map(e -> e.type(services)).toList(), services);
     }
@@ -70,7 +70,7 @@ public final class TupleExpression implements Expr {
         return type;
     }
 
-    public ImmutableArray<Expr> elements() {
+    public ImmutableList<Expr> elements() {
         return elements;
     }
 

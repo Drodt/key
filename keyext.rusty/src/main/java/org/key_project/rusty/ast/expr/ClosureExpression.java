@@ -8,12 +8,12 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.ty.RustType;
 import org.key_project.rusty.ast.visitor.Visitor;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public record ClosureExpression(boolean move, ImmutableArray<ClosureParam> params,
+public record ClosureExpression(boolean move, ImmutableList<ClosureParam> params,
         @Nullable RustType ty,
         Expr body) implements Expr {
     @Override

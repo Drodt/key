@@ -11,16 +11,16 @@ import org.key_project.rusty.ast.abstraction.FnDefType;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.op.ProgramFunction;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class CallExpression implements Call {
     private final Expr callee;
-    private final ImmutableArray<Expr> params;
+    private final ImmutableList<Expr> params;
 
-    public CallExpression(Expr callee, ImmutableArray<Expr> params) {
+    public CallExpression(Expr callee, ImmutableList<Expr> params) {
         this.callee = callee;
         this.params = params;
     }
@@ -75,7 +75,7 @@ public class CallExpression implements Call {
         return callee;
     }
 
-    public ImmutableArray<Expr> params() {
+    public ImmutableList<Expr> params() {
         return params;
     }
 

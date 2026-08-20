@@ -4,7 +4,7 @@
 package org.key_project.rusty.logic;
 
 import org.key_project.rusty.ast.RustyProgramElement;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 
@@ -24,7 +24,7 @@ public interface PossibleProgramPrefix extends RustyProgramElement {
     PossibleProgramPrefix getLastPrefixElement();
 
     /// returns an array with all prefix elements starting at this element
-    ImmutableArray<PossibleProgramPrefix> getPrefixElements();
+    ImmutableList<PossibleProgramPrefix> getPrefixElements();
 
     /// returns the position of the first active child
     PosInProgram getFirstActiveChildPos();

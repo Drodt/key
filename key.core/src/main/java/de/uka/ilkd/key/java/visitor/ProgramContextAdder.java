@@ -20,7 +20,7 @@ import de.uka.ilkd.key.logic.PosInProgram;
 import de.uka.ilkd.key.rule.inst.ContextStatementBlockInstantiation;
 
 import org.key_project.logic.IntIterator;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /**
  * A context given as {@link ContextStatementBlockInstantiation} is wrapped around a given
@@ -127,7 +127,7 @@ public class ProgramContextAdder {
 
         final Statement[] body = new Statement[childrenToAdd];
 
-        putIn.getBody().arraycopy(0, body, 0, putInLength);
+        System.arraycopy(putIn.getBody(), 0, body, 0, putInLength);
 
         for (int i = putInLength; i < childrenToAdd; i++) {
             body[i] = (Statement) wrapper.getChildAt(lastChild + (i - putInLength));
@@ -140,7 +140,7 @@ public class ProgramContextAdder {
          * __{putIn;....}__ }moreStmnts;}</code> Attention: we have not yet added the enclosing
          * braces or even the <code>moreStmnts</code>
          */
-        return new StatementBlock(new ImmutableArray<>(body));
+        return new StatementBlock(ImmutableList.fromArray(body));
     }
 
     /**
@@ -164,9 +164,9 @@ public class ProgramContextAdder {
             /* reconstruct block */
             body[0] = (Statement) replacement;
             if (childrenCount - 1 > 0) {
-                wrapper.getBody().arraycopy(1, body, 1, childrenCount - 1);
+                System.arraycopy(wrapper.getBody(), 1, body, 1, childrenCount - 1);
             }
-            return new StatementBlock(new ImmutableArray<>(body));
+            return new StatementBlock(ImmutableList.fromArray(body));
         }
     }
 

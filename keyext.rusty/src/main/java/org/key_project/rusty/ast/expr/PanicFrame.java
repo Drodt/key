@@ -10,7 +10,7 @@ import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.op.IProgramVariable;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
@@ -59,7 +59,7 @@ public class PanicFrame implements Statement, PossibleProgramPrefix {
     }
 
     @Override
-    public @NonNull ImmutableArray<PossibleProgramPrefix> getPrefixElements() {
+    public @NonNull ImmutableList<PossibleProgramPrefix> getPrefixElements() {
         return BlockExpression.computePrefixElements(body);
     }
 

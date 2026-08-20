@@ -11,7 +11,6 @@ import de.uka.ilkd.key.java.ast.expression.Expression;
 import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLConstruct;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.parsing.Position;
 
@@ -112,9 +111,9 @@ public abstract class LoopStatement extends JavaStatement
             @NonNull Statement body) {
         this.body = body;
         if (updates != null) {
-            this.updates = new ForUpdates(new ImmutableArray<>(updates));
+            this.updates = new ForUpdates(ImmutableList.fromArray(updates));
         } else {
-            this.updates = new ForUpdates(new ImmutableArray<>(new Expression[0]));
+            this.updates = new ForUpdates(ImmutableList.fromArray(new Expression[0]));
         }
         this.inits = new LoopInit(inits);
         this.guard = new Guard(guard);
@@ -410,7 +409,7 @@ public abstract class LoopStatement extends JavaStatement
      *
      * @return the loop initializer array wrapper .
      */
-    public ImmutableArray<LoopInitializer> getInitializers() {
+    public ImmutableList<LoopInitializer> getInitializers() {
         if (inits != null) {
             return inits.getInits();
         }
@@ -423,7 +422,7 @@ public abstract class LoopStatement extends JavaStatement
      *
      * @return the expression mutable list.
      */
-    public ImmutableArray<Expression> getUpdates() {
+    public ImmutableList<Expression> getUpdates() {
         if (updates != null) {
             return updates.getUpdates();
         }

@@ -8,11 +8,11 @@ import java.util.stream.Collectors;
 
 import org.key_project.logic.SyntaxElement;
 import org.key_project.rusty.ast.visitor.Visitor;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
-public record PathInExpression(ImmutableArray<PathExprSegment> segments)
+public record PathInExpression(ImmutableList<PathExprSegment> segments)
         implements RustyProgramElement {
     @Override
     public void visit(Visitor v) {

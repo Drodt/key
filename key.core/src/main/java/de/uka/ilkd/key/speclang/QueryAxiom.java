@@ -31,7 +31,6 @@ import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
@@ -175,7 +174,7 @@ public final class QueryAxiom extends ClassAxiom {
         final IProgramMethod targetImpl =
             services.getJavaInfo().getProgramMethod(kjt, target.getName(), sig, kjt);
         final MethodBodyStatement mbs = new MethodBodyStatement(targetImpl, selfProgSV,
-            resultProgSV, new ImmutableArray<>(paramProgSVs));
+            resultProgSV, ImmutableList.fromArray(paramProgSVs));
         final StatementBlock sb = new StatementBlock(mbs);
         final JavaBlock jb = JavaBlock.createJavaBlock(sb);
 

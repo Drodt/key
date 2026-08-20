@@ -4,9 +4,9 @@
 package org.key_project.rusty.ast.abstraction;
 
 import org.key_project.logic.Named;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 
 public interface HasGenerics extends Named {
-    ImmutableArray<GenericParam> params();
+    ImmutableList<GenericParam> params();
 }

@@ -468,7 +468,7 @@ public class TermBuilder {
         return tf.createTerm(f, s);
     }
 
-    public JTerm func(Function f, JTerm[] s, ImmutableArray<QuantifiableVariable> boundVars) {
+    public JTerm func(Function f, JTerm[] s, ImmutableList<QuantifiableVariable> boundVars) {
         return tf.createTerm(f, s, boundVars, null);
     }
 
@@ -485,7 +485,7 @@ public class TermBuilder {
     }
 
     public JTerm prog(JModality.JavaModalityKind modKind, JavaBlock jb, JTerm t,
-            ImmutableArray<TermLabel> labels) {
+            ImmutableList<TermLabel> labels) {
         return tf.createTerm(JModality.getModality(modKind, jb), new JTerm[] { t }, null, labels);
     }
 
@@ -506,8 +506,8 @@ public class TermBuilder {
      */
     public JTerm ifEx(QuantifiableVariable qv, JTerm cond, JTerm _then, JTerm _else) {
         return tf.createTerm(IfExThenElse.IF_EX_THEN_ELSE,
-            new ImmutableArray<>(cond, _then, _else),
-            new ImmutableArray<>(qv), null);
+            ImmutableList.of(cond, _then, _else),
+            ImmutableList.singleton(qv), null);
     }
 
     /**
@@ -538,8 +538,8 @@ public class TermBuilder {
     }
 
     public JTerm all(QuantifiableVariable qv, JTerm t) {
-        return tf.createTerm(Quantifier.ALL, new ImmutableArray<>(t),
-            new ImmutableArray<>(qv), null);
+        return tf.createTerm(Quantifier.ALL, ImmutableList.singleton(t),
+            ImmutableList.singleton(qv), null);
     }
 
     public JTerm all(Iterable<QuantifiableVariable> qvs, JTerm t) {
@@ -567,8 +567,8 @@ public class TermBuilder {
     }
 
     public JTerm ex(QuantifiableVariable qv, JTerm t) {
-        return tf.createTerm(Quantifier.EX, new ImmutableArray<>(t),
-            new ImmutableArray<>(qv), null);
+        return tf.createTerm(Quantifier.EX, ImmutableList.singleton(t),
+            ImmutableList.singleton(qv), null);
     }
 
     public JTerm ex(Iterable<QuantifiableVariable> qvs, JTerm t) {
@@ -581,7 +581,7 @@ public class TermBuilder {
 
     public JTerm bsum(QuantifiableVariable qv, JTerm a, JTerm b, JTerm t) {
         Function bsum = services.getTypeConverter().getIntegerLDT().getBsum();
-        return func(bsum, new JTerm[] { a, b, t }, new ImmutableArray<>(qv));
+        return func(bsum, new JTerm[] { a, b, t }, ImmutableList.singleton(qv));
     }
 
     /**
@@ -591,9 +591,9 @@ public class TermBuilder {
         final Function sum = services.getNamespaces().functions().lookup("sum");
         final Iterator<LogicVariable> it = qvs.iterator();
         JTerm res = func(sum, new JTerm[] { convertToBoolean(range), t },
-            new ImmutableArray<>(it.next()));
+            ImmutableList.singleton(it.next()));
         while (it.hasNext()) {
-            res = func(sum, new JTerm[] { TRUE(), res }, new ImmutableArray<>(it.next()));
+            res = func(sum, new JTerm[] { TRUE(), res }, ImmutableList.singleton(it.next()));
         }
         return res;
     }
@@ -603,7 +603,7 @@ public class TermBuilder {
      */
     public JTerm bprod(QuantifiableVariable qv, JTerm a, JTerm b, JTerm t, Services services) {
         Function bprod = services.getTypeConverter().getIntegerLDT().getBprod();
-        return func(bprod, new JTerm[] { a, b, t }, new ImmutableArray<>(qv));
+        return func(bprod, new JTerm[] { a, b, t }, ImmutableList.singleton(qv));
     }
 
     /**
@@ -614,10 +614,10 @@ public class TermBuilder {
         final Function prod = services.getNamespaces().functions().lookup("prod");
         final Iterator<LogicVariable> it = qvs.iterator();
         JTerm res = func(prod, new JTerm[] { convertToBoolean(range), t },
-            new ImmutableArray<>(it.next()));
+            ImmutableList.singleton(it.next()));
         while (it.hasNext()) {
             res = func(prod, new JTerm[] { TRUE(), res },
-                new ImmutableArray<>(it.next()));
+                ImmutableList.singleton(it.next()));
         }
         return res;
     }
@@ -630,10 +630,10 @@ public class TermBuilder {
         final Function min = services.getNamespaces().functions().lookup("min");
         final Iterator<? extends QuantifiableVariable> it = qvs.iterator();
         JTerm res = func(min, new JTerm[] { convertToBoolean(range), t },
-            new ImmutableArray<>(it.next()));
+            ImmutableList.singleton(it.next()));
         while (it.hasNext()) {
             res = func(min, new JTerm[] { TRUE(), res },
-                new ImmutableArray<>(it.next()));
+                ImmutableList.singleton(it.next()));
         }
         return res;
     }
@@ -646,9 +646,9 @@ public class TermBuilder {
         final Function max = services.getNamespaces().functions().lookup("max");
         final Iterator<? extends QuantifiableVariable> it = qvs.iterator();
         JTerm res = func(max, new JTerm[] { convertToBoolean(range), t },
-            new ImmutableArray<>(it.next()));
+            ImmutableList.singleton(it.next()));
         while (it.hasNext()) {
-            res = func(max, new JTerm[] { TRUE(), res }, new ImmutableArray<>(it.next()));
+            res = func(max, new JTerm[] { TRUE(), res }, ImmutableList.singleton(it.next()));
         }
         return res;
     }
@@ -791,7 +791,7 @@ public class TermBuilder {
         return imp(t1, t2, null);
     }
 
-    public JTerm imp(JTerm t1, JTerm t2, ImmutableArray<TermLabel> labels) {
+    public JTerm imp(JTerm t1, JTerm t2, ImmutableList<TermLabel> labels) {
         if (t1.op() == Junctor.FALSE || t2.op() == Junctor.TRUE) {
             return tt();
         } else if (t1.op() == Junctor.TRUE) {
@@ -833,8 +833,8 @@ public class TermBuilder {
      */
     public JTerm subst(SubstOp op, QuantifiableVariable substVar, JTerm substTerm,
             JTerm origTerm) {
-        return tf.createTerm(op, new ImmutableArray<>(substTerm, origTerm),
-            new ImmutableArray<>(substVar), null);
+        return tf.createTerm(op, ImmutableList.of(substTerm, origTerm),
+            ImmutableList.singleton(substVar), null);
     }
 
     public JTerm subst(QuantifiableVariable substVar, JTerm substTerm, JTerm origTerm) {
@@ -1099,7 +1099,7 @@ public class TermBuilder {
         return result;
     }
 
-    public JTerm apply(JTerm update, JTerm target, ImmutableArray<TermLabel> labels) {
+    public JTerm apply(JTerm update, JTerm target, ImmutableList<TermLabel> labels) {
         if (update.sort() != JavaDLTheory.UPDATE) {
             throw new TermCreationException("Not an update: " + update);
         } else if (update.op() == UpdateJunctor.SKIP) {
@@ -1136,7 +1136,7 @@ public class TermBuilder {
     }
 
     public JTerm applyParallel(ImmutableList<JTerm> updates, JTerm target,
-            ImmutableArray<TermLabel> labels) {
+            ImmutableList<TermLabel> labels) {
         return apply(parallel(updates), target, labels);
     }
 
@@ -1468,7 +1468,7 @@ public class TermBuilder {
     public JTerm infiniteUnion(QuantifiableVariable[] qvs, JTerm s) {
         final LocSetLDT ldt = services.getTypeConverter().getLocSetLDT();
         return tf.createTerm(ldt.getInfiniteUnion(), new JTerm[] { s },
-            new ImmutableArray<>(qvs), null);
+            ImmutableList.fromArray(qvs), null);
     }
 
     public JTerm infiniteUnion(QuantifiableVariable[] qvs, JTerm guard, JTerm s) {
@@ -1776,13 +1776,13 @@ public class TermBuilder {
      * @param labels the labels to apply.
      * @return a labeled term.
      */
-    public JTerm addLabelToAllSubs(JTerm term, ImmutableArray<TermLabel> labels) {
+    public JTerm addLabelToAllSubs(JTerm term, ImmutableList<TermLabel> labels) {
         if (labels == null || labels.isEmpty() || (!OriginTermLabel.canAddLabel(term, services)
                 && labels.stream().anyMatch(l -> l instanceof OriginTermLabel))) {
             return term;
         }
 
-        ImmutableArray<JTerm> oldSubs = term.subs();
+        ImmutableList<JTerm> oldSubs = term.subs();
         JTerm[] newSubs = new JTerm[oldSubs.size()];
 
         for (int i = 0; i < newSubs.length; ++i) {
@@ -1808,7 +1808,7 @@ public class TermBuilder {
      * @return a labeled term.
      */
     public JTerm addLabelToAllSubs(JTerm term, TermLabel label) {
-        return addLabelToAllSubs(term, new ImmutableArray<>(label));
+        return addLabelToAllSubs(term, ImmutableList.singleton(label));
     }
 
     /**
@@ -1818,7 +1818,7 @@ public class TermBuilder {
      * @param labels the labels to add.
      * @return the term with the labels added.
      */
-    public JTerm addLabel(JTerm term, ImmutableArray<TermLabel> labels) {
+    public JTerm addLabel(JTerm term, ImmutableList<TermLabel> labels) {
         if ((labels == null || labels.isEmpty()) && !term.hasLabels()) {
             return term;
         } else if (!term.hasLabels()) {
@@ -1841,7 +1841,7 @@ public class TermBuilder {
             }
 
             return tf.createTerm(term.op(), term.subs(), term.boundVars(),
-                new ImmutableArray<>(newLabelList));
+                ImmutableList.fromList(newLabelList));
         }
     }
 
@@ -1856,7 +1856,7 @@ public class TermBuilder {
         if (label == null && !term.hasLabels()) {
             return term;
         } else {
-            return addLabel(term, new ImmutableArray<>(label));
+            return addLabel(term, ImmutableList.singleton(label));
         }
     }
 
@@ -1867,7 +1867,7 @@ public class TermBuilder {
      * @param labels the labels to apply.
      * @return the modified term.
      */
-    public JTerm label(JTerm term, ImmutableArray<TermLabel> labels) {
+    public JTerm label(JTerm term, ImmutableList<TermLabel> labels) {
         if ((labels == null || labels.isEmpty())) {
             return term;
         } else {
@@ -1887,7 +1887,7 @@ public class TermBuilder {
         if (label == null) {
             return term;
         } else {
-            return label(term, new ImmutableArray<>(label));
+            return label(term, ImmutableList.singleton(label));
         }
     }
 
@@ -2207,7 +2207,7 @@ public class TermBuilder {
             return replacement;
         }
 
-        ImmutableArray<JTerm> oldSubs = term.subs();
+        ImmutableList<JTerm> oldSubs = term.subs();
         JTerm[] newSubs = new JTerm[oldSubs.size()];
 
         for (int i = 0; i < newSubs.length; ++i) {
@@ -2264,7 +2264,7 @@ public class TermBuilder {
 
     public JTerm seqDef(QuantifiableVariable qv, JTerm a, JTerm b, JTerm t) {
         return func(services.getTypeConverter().getSeqLDT().getSeqDef(), new JTerm[] { a, b, t },
-            new ImmutableArray<>(qv));
+            ImmutableList.singleton(qv));
     }
 
     public JTerm values() {

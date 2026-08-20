@@ -14,7 +14,7 @@ import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.op.IProgramVariable;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.Nullable;
@@ -114,7 +114,7 @@ public class LoopScope implements LoopExpression, PossibleProgramPrefix {
     }
 
     @Override
-    public ImmutableArray<PossibleProgramPrefix> getPrefixElements() {
+    public ImmutableList<PossibleProgramPrefix> getPrefixElements() {
         return BlockExpression.computePrefixElements(block);
     }
 

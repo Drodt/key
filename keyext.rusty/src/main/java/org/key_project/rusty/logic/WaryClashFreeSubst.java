@@ -10,7 +10,7 @@ import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.TermTransformer;
 import org.key_project.rusty.logic.op.UpdateApplication;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /// De Bruijn substitution that does **not** push the replacement into "state-dependent" positions
 /// — the post-formula of a modality, the target of an update application, or an operand of a
@@ -60,7 +60,7 @@ public class WaryClashFreeSubst {
             newSubterms[i] = apply1(t.sub(i), subIndex, below || isProtected(t.op()));
         }
         return tb.tf().createTerm(t.op(), newSubterms,
-            (ImmutableArray<QuantifiableVariable>) t.boundVars());
+            (ImmutableList<QuantifiableVariable>) t.boundVars());
     }
 
     /// Whether the subterms of an `op`-rooted term are state dependent: a modality, an update

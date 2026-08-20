@@ -12,21 +12,21 @@ import org.key_project.rusty.ast.abstraction.IntArrayLen;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.visitor.Visitor;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
 public final class ArrayExpression implements Expr {
-    private final ImmutableArray<Expr> elements;
+    private final ImmutableList<Expr> elements;
     private final Type type;
 
-    public ArrayExpression(ImmutableArray<Expr> elements, Type type) {
+    public ArrayExpression(ImmutableList<Expr> elements, Type type) {
         this.elements = elements;
         this.type = type;
     }
 
     public ArrayExpression(ExtList children, Services services) {
-        elements = new ImmutableArray<>(children.collect(Expr.class));
+        elements = ImmutableList.fromArray(children.collect(Expr.class));
         type = ArrayType.getInstance(elements.get(0).type(services),
             new IntArrayLen(elements().size()), services);
     }
@@ -66,7 +66,7 @@ public final class ArrayExpression implements Expr {
         return type;
     }
 
-    public ImmutableArray<Expr> elements() {
+    public ImmutableList<Expr> elements() {
         return elements;
     }
 

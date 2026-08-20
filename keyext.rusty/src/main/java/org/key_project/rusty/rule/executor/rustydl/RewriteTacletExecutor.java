@@ -21,7 +21,7 @@ import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 public class RewriteTacletExecutor
         extends FindTacletExecutor {
@@ -102,14 +102,14 @@ public class RewriteTacletExecutor
             final int indexOfNextSubTerm = it.next();
 
             final Term[] subs = new Term[term.arity()];
-            term.subs().arraycopy(0, subs, 0, term.arity());
+            System.arraycopy(term.subs().toArray(Term.class), 0, subs, 0, term.arity());
 
             final Sort newMaxSort = getMaxSort(term, indexOfNextSubTerm);
             subs[indexOfNextSubTerm] = replace(term.sub(indexOfNextSubTerm), with, posOfFind, it,
                 mc, newMaxSort, goal, services, ruleApp);
 
             return services.getTermFactory().createTerm(term.op(), subs,
-                (ImmutableArray<QuantifiableVariable>) term.boundVars());
+                (ImmutableList<QuantifiableVariable>) term.boundVars());
         }
 
         with = syntacticalReplace(with, posOfFind, mc, goal, ruleApp, services);
