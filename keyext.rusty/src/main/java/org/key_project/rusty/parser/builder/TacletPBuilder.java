@@ -249,19 +249,19 @@ public class TacletPBuilder extends ExpressionBuilder {
         if (genParams != null) {
             var psd = namespaces().parametricSorts().lookup(ctx.name.getText());
             assert psd != null;
-            ImmutableList<GenericArgument> args = ImmutableList.of();
-            for (int i = psd.getParameters().size() - 1; i >= 0; i--) {
+            List<GenericArgument> args = new ArrayList<>(psd.getParameters().size());
+            for (int i = 0; i < psd.getParameters().size(); i++) {
                 var param = psd.getParameters().get(i);
                 if (param instanceof GenericSortParam(GenericSort gs)) {
-                    args = args.prepend(new SortArg(gs));
+                    args.add(new SortArg(gs));
                     sorts.add(gs);
-                } else if (param instanceof ConstParam cp) {
-                    RFunction f = new RFunction(cp.name(), cp.sort());
-                    args = args.prepend(new TermArg(services.getTermBuilder().func(f)));
+                } else if (param instanceof ConstParam(Name name, Sort sort1)) {
+                    RFunction f = new RFunction(name, sort1);
+                    args.add(new TermArg(services.getTermBuilder().func(f)));
                     consts.add(f);
                 }
             }
-            sort = ParametricSortInstance.get(psd, args);
+            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args));
         } else {
             sort = sorts().lookup(ctx.name.getText());
         }

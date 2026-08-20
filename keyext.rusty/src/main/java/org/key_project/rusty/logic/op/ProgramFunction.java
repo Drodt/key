@@ -82,7 +82,7 @@ public class ProgramFunction extends ObserverFunction implements RustyProgramEle
 
     public static ImmutableList<ProgramVariable> collectParameters(Function function) {
         List<ProgramVariable> params = new LinkedList<>();
-        for (int i = function.params().size() - 1; i >= 0; --i) {
+        for (int i = 0; i < function.params().size(); ++i) {
             var param = function.params().get(i);
             if (param instanceof FunctionParamPattern fp
                     && fp.pattern() instanceof BindingPattern bp) {

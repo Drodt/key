@@ -302,15 +302,7 @@ abstract class ImmutableSLList<T extends @Nullable Object> implements ImmutableL
          */
         @Override
         public int hashCode() {
-            int hashCode = 0;
-            ImmutableList<S> crt = this;
-
-            while (!crt.isEmpty()) {
-                final S element = crt.head();
-                hashCode = (element == null ? 0 : element.hashCode()) + 31 * hashCode;
-                crt = crt.tail();
-            }
-            return hashCode;
+            return ImmutableList.hash(this);
         }
 
 

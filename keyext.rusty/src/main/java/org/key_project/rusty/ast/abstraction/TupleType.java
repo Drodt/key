@@ -83,16 +83,16 @@ public class TupleType implements Type {
             if (types.isEmpty()) {
                 return services.getNamespaces().sorts().lookup("Unit");
             }
-            ImmutableList<GenericArgument> args = ImmutableList.of();
-            for (int i = types.size() - 1; i >= 0; i--) {
-                args = args.prepend(new SortArg(types.get(i).getSort(services)));
+            List<GenericArgument> args = new ArrayList<>(types.size());
+            for (Type type : types) {
+                args.add(new SortArg(type.getSort(services)));
             }
             var psd = services.getNamespaces().parametricSorts().lookup("Tuple" + types.size());
             if (psd == null) {
                 throw new UnsupportedOperationException(
                     "We do not (yet) support tuples of length " + types.size());
             }
-            sort = ParametricSortInstance.get(psd, args);
+            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args));
         }
         return sort;
     }

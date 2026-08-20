@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
@@ -656,8 +653,8 @@ public class TermBuilder {
 
     /// Creates program variables for the parameters. Take care to register them in the namespaces!
     public ImmutableList<ProgramVariable> paramVars(ProgramFunction fn, boolean makeNamesUnique) {
-        ImmutableList<ProgramVariable> result = ImmutableList.nil();
-        for (int i = fn.getNumParams() - 1; i >= 0; i--) {
+        List<ProgramVariable> result = new ArrayList<>(fn.getNumParams());
+        for (int i = 0; i < fn.getNumParams(); i++) {
             final KeYRustyType paramTy = fn.getParamType(i);
             var pat = ((FunctionParamPattern) fn.getFunction().getParam(i)).pattern();
             String name = "unknown";
@@ -665,9 +662,9 @@ public class TermBuilder {
                 name = bp.pv().name().toString();
             }
             final var pv = progVar(name, paramTy, makeNamesUnique);
-            result = result.prepend(pv);
+            result.add(pv);
         }
-        return result;
+        return ImmutableList.fromList(result);
     }
 
     public Term measuredBy(Term mby) {

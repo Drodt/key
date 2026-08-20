@@ -298,7 +298,7 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     private Operator handleParametricFunction(ParametricFunctionInstance pfi) {
         List<GenericArgument> args = new LinkedList<>();
 
-        for (int i = pfi.getArgs().size() - 1; i >= 0; i--) {
+        for (int i = 0; i < pfi.getArgs().size(); i++) {
             args.add(pfi.getArgs().get(i).instantiateParamArg(svInst, services));
         }
 

@@ -21,7 +21,7 @@ public interface GenericArgument extends SyntaxElement {
             } else if (sa.sort() instanceof ParametricSortInstance psi) {
                 List<GenericArgument> args = new LinkedList<>();
 
-                for (int i = psi.getArgs().size() - 1; i >= 0; i--) {
+                for (int i = 0; i < psi.getArgs().size(); i++) {
                     args.add(psi.getArgs().get(i).instantiateParamArg(svInst, services));
                 }
 

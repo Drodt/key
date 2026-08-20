@@ -986,11 +986,11 @@ public class HirConverter {
             ImmutableList<GenericParam> params) {
         if (params.isEmpty())
             return null;
-        ImmutableList<GenericParameter> sortParams = ImmutableList.nil();
-        for (int i = params.size() - 1; i >= 0; i--) {
-            sortParams = sortParams.prepend(params.get(i).toSortParam(services));
+        List<GenericParameter> sortParams = new ArrayList<>(params.size());
+        for (int i = 0; i < params.size(); i++) {
+            sortParams.add(params.get(i).toSortParam(services));
         }
-        return sortParams;
+        return ImmutableList.fromList(sortParams);
     }
 
     private Type convertAdtTy(AdtDef def, GenericTyArgKind[] args) {

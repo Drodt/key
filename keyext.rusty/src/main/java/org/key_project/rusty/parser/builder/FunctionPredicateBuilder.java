@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.parser.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.key_project.logic.Name;
@@ -51,20 +52,20 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             var psd = namespaces().parametricSorts().lookup(ctx.name.getText());
             assert psd != null;
             genericParameters = psd.getParameters();
-            ImmutableList<GenericArgument> args = ImmutableList.of();
-            for (int i = psd.getParameters().size() - 1; i >= 0; i--) {
+            List<GenericArgument> args = new ArrayList<>(psd.getParameters().size());
+            for (int i = 0; i < psd.getParameters().size(); i++) {
                 var param = psd.getParameters().get(i);
                 if (param instanceof GenericSortParam(GenericSort gs)) {
-                    args = args.prepend(new SortArg(gs));
+                    args.add(new SortArg(gs));
                     sorts.add(gs);
                 } else if (param instanceof ConstParam cp) {
                     RFunction f = new RFunction(cp.name(), cp.sort());
                     Term term = services.getTermBuilder().func(f);
-                    args = args.prepend(new TermArg(term));
+                    args.add(new TermArg(term));
                     consts.add(f);
                 }
             }
-            sort = ParametricSortInstance.get(psd, args);
+            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args));
         } else {
             sort = sorts().lookup(ctx.name.getText());
             genericParameters = null;

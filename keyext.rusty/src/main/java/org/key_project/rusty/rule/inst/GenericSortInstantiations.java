@@ -177,7 +177,7 @@ public final class GenericSortInstantiations {
             }
         } else if (p_s instanceof ParametricSortInstance psi && psi.containsGenericSort()) {
             List<GenericArgument> args = new LinkedList<>();
-            for (int i = psi.getArgs().size() - 1; i >= 0; --i) {
+            for (int i = 0; i < psi.getArgs().size(); ++i) {
                 GenericArgument oa = psi.getArgs().get(i);
                 if (oa instanceof SortArg(Sort sort)) {
                     Sort realSort = getRealSort(sort, services);

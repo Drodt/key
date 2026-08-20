@@ -3,10 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package org.key_project.rusty.logic.op;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.WeakHashMap;
+import java.util.*;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
@@ -95,20 +92,20 @@ public class ParametricFunctionInstance extends RFunction {
             return arg == null ? gs : ((SortArg) arg).sort();
         } else if (sort instanceof ParametricSortInstance psi) {
             var base = psi.getBase();
-            ImmutableList<GenericArgument> args = ImmutableList.nil();
-            for (int i = psi.getArgs().size() - 1; i >= 0; i--) {
+            List<GenericArgument> args = new ArrayList<>(psi.getArgs().size());
+            for (int i = 0; i < psi.getArgs().size(); i++) {
                 var psiArg = psi.getArgs().get(i);
                 if (psiArg instanceof SortArg(Sort s)) {
-                    args = args.prepend(new SortArg(instantiate(s, map)));
+                    args.add(new SortArg(instantiate(s, map)));
                 } else if (psiArg instanceof TermArg ta) {
                     if (ta.term().op() instanceof RFunction rf) {
                         var t = map.get(new ConstParam(rf.name(), rf.sort()));
                         var arg = t == null ? ta : t;
-                        args = args.prepend(arg);
+                        args.add(arg);
                     }
                 }
             }
-            return ParametricSortInstance.get(base, args);
+            return ParametricSortInstance.get(base, ImmutableList.fromList(args));
         } else {
             return sort;
         }
