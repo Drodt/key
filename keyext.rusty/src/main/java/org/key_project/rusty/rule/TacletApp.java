@@ -418,8 +418,9 @@ public abstract class TacletApp implements RuleApp {
     }
 
     /// @return A TacletApp with this.sufficientlyComplete() or null
-    public final @Nullable TacletApp tryToInstantiate(Services services) {
-        TacletApp app = instantiationHelper(true, services);
+    public final @Nullable TacletApp tryToInstantiate(Goal goal) {
+        final var services = goal.getOverlayServices();
+        TacletApp app = instantiationHelper(true, goal);
         if (app == null)
             return null;
 
@@ -439,7 +440,8 @@ public abstract class TacletApp implements RuleApp {
         return app;
     }
 
-    private TacletApp instantiationHelper(boolean force, Services services) {
+    private TacletApp instantiationHelper(boolean force, Goal goal) {
+        final var services = goal.getOverlayServices();
         final VariableNamer varNamer = services.getVariableNamer();
 
         TacletApp app = this;
@@ -468,6 +470,13 @@ public abstract class TacletApp implements RuleApp {
                 if (app == null) {
                     return null;
                 }
+
+                String proposal = VariableNameProposer.DEFAULT.getProposal(app, operatorSv,
+                    services, null, proposals);
+
+                proposals = proposals.append(proposal);
+
+                app = app.createSkolemConstant(proposal, operatorSv, true, goal);
             } else if (operatorSv instanceof VariableSV) {
                 // if the sort of the schema variable is generic,
                 // ensure that it is instantiated

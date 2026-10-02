@@ -278,7 +278,7 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         }
 
         if (!app.complete()) {
-            return app.tryToInstantiate(services.getOverlay(goal.getLocalNamespaces()));
+            return app.tryToInstantiate(goal);
         } else if (!app.isExecutable()) {
             return null;
         } else {
