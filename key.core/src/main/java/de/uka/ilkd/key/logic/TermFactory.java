@@ -1,5 +1,5 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2,
+ * KeY is licensed under the GNU General Public License Version 2, 
  * or (at your option) any later version.
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.logic;
@@ -12,8 +12,8 @@ import de.uka.ilkd.key.logic.label.TermLabel;
 import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
-import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.GenerationalCache;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 

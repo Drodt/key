@@ -1,5 +1,5 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2,
+ * KeY is licensed under the GNU General Public License Version 2, 
  * or (at your option) any later version.
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.pp;
@@ -693,7 +693,7 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnAnnotationInterfaceMemberDeclaration(
             AnnotationInterfaceMemberDeclaration x) {
         layouter.beginI();
-        ImmutableArray<Modifier> mods = x.getModifiers();
+        ImmutableList<Modifier> mods = x.getModifiers();
 
         if (mods != null && !mods.isEmpty()) {
             writeKeywordList(mods);
@@ -710,7 +710,7 @@ public class PrettyPrinter implements Visitor {
     public void performActionOnAnnotationInterfaceDeclaration(AnnotationInterfaceDeclaration x) {
         layouter.beginC();
         layouter.beginC(0);
-        ImmutableArray<Modifier> mods = x.getModifiers();
+        ImmutableList<Modifier> mods = x.getModifiers();
         boolean hasMods = mods != null && !mods.isEmpty();
         if (hasMods) {
             writeKeywordList(mods);

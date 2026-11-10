@@ -1,5 +1,5 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2,
+ * KeY is licensed under the GNU General Public License Version 2, 
  * or (at your option) any later version.
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.informationflow.proof.init;
@@ -244,7 +244,8 @@ public class StateVars {
             Services services) {
         ImmutableList<TermLabel> heapLabels =
             ImmutableList.singleton(ParameterlessTermLabel.ANON_HEAP_LABEL);
-        return new StateVars(buildSelfVar(services, pm, typeRef, ""), buildParamVars(services, "", pm),
+        return new StateVars(buildSelfVar(services, pm, typeRef, ""),
+            buildParamVars(services, "", pm),
             buildResultVar(pm, services, ""), buildExceptionVar(services, "", pm),
             buildHeapFunc("AtPre", heapLabels, services), buildMbyVar("", services));
     }

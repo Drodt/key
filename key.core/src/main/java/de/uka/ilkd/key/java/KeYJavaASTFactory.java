@@ -1,5 +1,5 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2,
+ * KeY is licensed under the GNU General Public License Version 2, 
  * or (at your option) any later version.
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java;
@@ -1376,7 +1376,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static LocalVariableDeclaration declare(final Modifier modifier,
             final IProgramVariable variable, final Expression init, final TypeReference typeRef) {
-        final ImmutableList<Modifier> modifiers = new ImmutableList<>(modifier);
+        final ImmutableList<Modifier> modifiers = ImmutableList.singleton(modifier);
 
         return declare(modifiers, variable, init, typeRef);
     }
@@ -2376,7 +2376,7 @@ public abstract class KeYJavaASTFactory {
      *
      * @param type the base {@link KeYJavaType}
      * @param dimensions the number of dimensions
-     * @param annotations the {@link ImmutableArray} of {@link AnnotationExpression}s
+     * @param annotations the {@link ImmutableList} of {@link Annotation}s
      * @return a new {@link TypeRef} for <code>dimensions</code> dimensions of <code>type</code>
      */
     public static TypeRef typeRef(final KeYJavaType type, final int dimensions,
