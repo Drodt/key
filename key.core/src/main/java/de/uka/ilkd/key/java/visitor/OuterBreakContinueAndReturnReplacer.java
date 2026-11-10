@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.visitor;
 
 import java.util.ArrayDeque;
@@ -460,7 +461,7 @@ public class OuterBreakContinueAndReturnReplacer extends JavaASTVisitor {
             // Remember current flags.
             for (Entry<ProgramVariable, ProgramVariable> entry : oldFlags.entrySet()) {
                 newStatements.add(KeYJavaASTFactory.declare(entry.getValue(), entry.getKey(),
-                    entry.getValue().getKeYJavaType()));
+                    entry.getValue().getTypeReference()));
             }
 
             // Reset flags.
@@ -491,7 +492,7 @@ public class OuterBreakContinueAndReturnReplacer extends JavaASTVisitor {
             new LocationVariable(
                 new ProgramElementName(
                     flag.getProgramElementName().toString() + "__BEFORE_FINALLY"),
-                flag.getKeYJavaType()));
+                flag.getTypeReference()));
     }
 
     private void changed() {

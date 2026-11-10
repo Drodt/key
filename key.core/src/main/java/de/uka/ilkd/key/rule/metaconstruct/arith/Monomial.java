@@ -1,11 +1,11 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule.metaconstruct.arith;
 
 import java.math.BigInteger;
 import java.util.Iterator;
-import java.util.Map;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.ldt.IntegerLDT;
@@ -17,6 +17,7 @@ import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
+import org.key_project.util.GenerationalCache;
 import org.key_project.util.collection.ImmutableList;
 
 /**
@@ -35,7 +36,8 @@ public class Monomial {
     public static final Monomial ONE = new Monomial(ImmutableList.nil(), BigInteger.ONE);
 
     public static Monomial create(Term monoTerm, Services services) {
-        final Map<Term, Monomial> monomialCache = services.getCaches().getMonomialCache();
+        final GenerationalCache<Term, Monomial> monomialCache =
+            services.getCaches().getMonomialCache();
         monoTerm = TermLabelManager.removeIrrelevantLabels((JTerm) monoTerm,
             services);
         // ConcurrentLruCache: get/put are individually atomic, no external lock needed.
@@ -43,7 +45,7 @@ public class Monomial {
 
         if (res == null) {
             res = createHelp(monoTerm, services);
-            monomialCache.put(monoTerm, res);
+            monomialCache.putIfAbsent(monoTerm, res);
         }
         return res;
     }

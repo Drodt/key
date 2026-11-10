@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.scripts;
 
 import java.util.Objects;
@@ -34,6 +35,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.Nullable;
 
 import static de.uka.ilkd.key.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
+import static de.uka.ilkd.key.proof.RuleAppIndexMode.INTERACTIVE;
 
 /**
  * instantiate var=a occ=2 with="a_8" hide
@@ -109,7 +111,6 @@ public class InstantiateCommand extends AbstractCommand {
         TacletFilter filter = new TacletNameFilter(rulename);
         Goal g = state.getFirstOpenAutomaticGoal();
         RuleAppIndex index = g.ruleAppIndex();
-        index.autoModeStopped();
 
         ImmutableList<TacletApp> allApps = ImmutableList.nil();
         for (SequentFormula sf : g.node().sequent().antecedent()) {
@@ -118,7 +119,7 @@ public class InstantiateCommand extends AbstractCommand {
                 continue;
             }
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
-                new PosInOccurrence(sf, PosInTerm.getTopLevel(), true), services));
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), true), services, INTERACTIVE));
         }
 
         for (SequentFormula sf : g.node().sequent().succedent()) {
@@ -127,7 +128,7 @@ public class InstantiateCommand extends AbstractCommand {
                 continue;
             }
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
-                new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), services));
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), services, INTERACTIVE));
         }
 
         return allApps;

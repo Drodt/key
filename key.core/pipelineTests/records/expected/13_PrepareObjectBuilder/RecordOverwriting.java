@@ -1,5 +1,5 @@
 @javax.annotation.processing.Generated("RecordClassBuilder")
-final class MyRecord extends Record {
+final /*@ nullable */ class MyRecord extends Record {
 
     @javax.annotation.processing.Generated("RecordClassBuilder")
     private final String test;
@@ -12,13 +12,13 @@ final class MyRecord extends Record {
       @*/
     @javax.annotation.processing.Generated("RecordClassBuilder")
     public MyRecord(String test) {
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.test = test;
     }
 
     @Override()
     @javax.annotation.processing.Generated("RecordClassBuilder")
-    public final non_null String toString() {
+    public final /*@ non_null */ String toString() {
         return "MyRecord[" + "test=" + test + "]";
     }
 
@@ -47,16 +47,16 @@ final class MyRecord extends Record {
     static private boolean $classPrepared;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv;
+    static public /*@ model */ boolean $staticInv;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv_free;
+    static public /*@ model */ boolean $staticInv_free;
 
     public static MyRecord $allocate();
 
     public void $init(String test) {
         super.$init();
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.test = test;
     }
 
@@ -67,35 +67,35 @@ final class MyRecord extends Record {
         if (!@($classInitialized)) {
             if (!@($classInitializationInProgress)) {
                 if (!@($classPrepared)) {
-                    //Created by ClassInitializeMethodBuilder.java:219
+                    //Created by ClassInitializeMethodBuilder.java:220
                     @($clprepare());
                 }
                 if (@($classErroneous)) {
                     throw new java.lang.NoClassDefFoundError();
                 }
-                //Created by ClassInitializeMethodBuilder.java:243
+                //Created by ClassInitializeMethodBuilder.java:244
                 @($classInitializationInProgress) = true;
                 try {
                     @(java.lang.Record.$clinit());
-                }//Created by ClassInitializeMethodBuilder.java:194
+                }//Created by ClassInitializeMethodBuilder.java:195
                  catch (java.lang.Error err) {
-                    //Created by ClassInitializeMethodBuilder.java:154
-                    @($classInitializationInProgress) = false;
                     //Created by ClassInitializeMethodBuilder.java:155
+                    @($classInitializationInProgress) = false;
+                    //Created by ClassInitializeMethodBuilder.java:156
                     @($classErroneous) = true;
                     throw err;
                 } catch (java.lang.Throwable twa) {
-                    //Created by ClassInitializeMethodBuilder.java:154
-                    @($classInitializationInProgress) = false;
                     //Created by ClassInitializeMethodBuilder.java:155
+                    @($classInitializationInProgress) = false;
+                    //Created by ClassInitializeMethodBuilder.java:156
                     @($classErroneous) = true;
                     throw new java.lang.ExceptionInInitializerError(twa);
                 }
-                //Created by ClassInitializeMethodBuilder.java:249
+                //Created by ClassInitializeMethodBuilder.java:250
                 @($classInitializationInProgress) = false;
-                //Created by ClassInitializeMethodBuilder.java:251
+                //Created by ClassInitializeMethodBuilder.java:252
                 @($classErroneous) = false;
-                //Created by ClassInitializeMethodBuilder.java:253
+                //Created by ClassInitializeMethodBuilder.java:254
                 @($classInitialized) = true;
             }
         }
@@ -103,13 +103,13 @@ final class MyRecord extends Record {
 
     protected void $prepare() {
         super.$prepare();
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.test = null;
     }
 
     private void $prepareEnter() {
         super.$prepare();
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.test = null;
     }
 }

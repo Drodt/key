@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.ui;
 
 import java.io.IOException;
@@ -130,7 +131,7 @@ public abstract class AbstractMediatorUserInterfaceControl extends AbstractUserI
             ProofMacroFinishedInfo info = ProofMacroFinishedInfo.getDefaultInfo(macro, proof);
             ProverTaskListener ptl = this;
             try {
-                getMediator().initiateAutoMode(proof, true, false);
+                getMediator().initiateAutoMode(proof, true);
                 ptl.taskStarted(
                     new DefaultTaskStartedInfo(TaskStartedInfo.TaskKind.Macro, macro.getName(), 0));
                 synchronized (macro) {
@@ -143,7 +144,7 @@ public abstract class AbstractMediatorUserInterfaceControl extends AbstractUserI
                 LOGGER.debug("Exception occurred during macro application:", e);
             } finally {
                 ptl.taskFinished(info);
-                getMediator().finishAutoMode(proof, true, true, null);
+                getMediator().finishAutoMode(proof, true, null);
             }
             return true;
         } else {
@@ -175,7 +176,6 @@ public abstract class AbstractMediatorUserInterfaceControl extends AbstractUserI
             // it again at the right time.
             ThreadUtilities.invokeAndWait(() -> {
                 getMediator().stopInterface(true);
-                getMediator().setInteractive(false);
             });
         }
     }

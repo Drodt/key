@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.nparser.builder;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import de.uka.ilkd.key.ldt.*;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.label.TermLabel;
 import de.uka.ilkd.key.logic.op.*;
+import de.uka.ilkd.key.logic.sort.ParametricSortInstance;
 import de.uka.ilkd.key.logic.sort.ProgramSVSort;
 import de.uka.ilkd.key.nparser.JavaKeYLexer;
 import de.uka.ilkd.key.nparser.JavaKeYParser;
@@ -1383,7 +1385,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     /**
-     * Handles "[sort]::a.name.or.something.else"
+     * Handles "a.name.or.something.else"
      *
      * @param ctx
      * @return a Term or an operator, depending on the referenced object.
@@ -1431,13 +1433,23 @@ public class ExpressionBuilder extends DefaultBuilder {
                 List<JavaKeYParser.Simple_identContext> otherParts =
                     ctx.name.simple_ident().subList(1, ctx.name.simple_ident().size());
                 JTerm tv = getServices().getTermFactory().createTerm(v);
-                String memberName = otherParts.get(0).getText();
+                String memberName = otherParts.getFirst().getText();
                 if (v.sort() == getServices().getTypeConverter().getSeqLDT().targetSort()) {
                     if ("length".equals(memberName)) {
                         return getServices().getTermBuilder().seqLen(tv);
                     } else {
                         semanticError(ctx, "There is no attribute '%s'for sequences (Seq), only "
                             + "'length' is supported.", memberName);
+                    }
+                } else if (v.sort() instanceof ParametricSortInstance psi && psi
+                        .getBase() == getServices().getTypeConverter().getPSeqLDT().targetSort()) {
+                    if ("length".equals(memberName)) {
+                        return getServices().getTermBuilder().pseqLen(tv);
+                    } else {
+                        semanticError(ctx,
+                            "There is no attribute '%s'for parametric sequences (PSeq), only "
+                                + "'length' is supported.",
+                            memberName);
                     }
                 }
                 memberName = StringUtil.trim(memberName, "()");
@@ -1580,6 +1592,16 @@ public class ExpressionBuilder extends DefaultBuilder {
                     } else {
                         semanticError(ctxSuffix, "There is no attribute '%s'for sequences (Seq), "
                             + "only 'length' is supported.", memberName);
+                    }
+                } else if (current.sort() instanceof ParametricSortInstance psi
+                        && psi.getBase() == services.getTypeConverter().getPSeqLDT().targetSort()) {
+                    if ("length".equals(memberName)) {
+                        return getServices().getTermBuilder().pseqLen(current);
+                    } else {
+                        semanticError(ctxSuffix,
+                            "There is no attribute '%s'for parametric sequences (PSeq), "
+                                + "only 'length' is supported.",
+                            memberName);
                     }
                 } else {
                     boolean isCall = attrid.call() != null;

@@ -1,10 +1,11 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.strategy;
 
-import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.proof.RuleAppIndexMode;
 import de.uka.ilkd.key.settings.ProofSettings;
 
 import org.key_project.logic.Named;
@@ -45,6 +46,19 @@ public interface Strategy<Goal extends ProofGoal<@NonNull Goal>> extends Named, 
      * @return {@code true} stop, {@code false} continue on other {@link Goal}s.
      */
     boolean isStopAtFirstNonCloseableGoal();
+
+    /**
+     * Returns the mode of the rule app indices (automatic or interactive) required for the
+     * strategy.
+     * Usually (and by default) the index to be used is the automatic index
+     * {@link RuleAppIndexMode#AUTO}. Some strategies/macros require the
+     * interactive index as they apply rules without an attached heuristic.
+     *
+     * @return the mode specifying which index to use
+     */
+    default RuleAppIndexMode getRuleAppIndexMode() {
+        return RuleAppIndexMode.AUTO;
+    }
 
     /**
      * Re-Evaluate a <code>RuleApp</code>. This method is called immediately before a rule is really

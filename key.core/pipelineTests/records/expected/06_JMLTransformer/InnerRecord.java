@@ -21,7 +21,7 @@ public class OuterClass {
           @*/
         @javax.annotation.processing.Generated("RecordClassBuilder")
         public MyRecord(String test) {
-            //Created by RecordClassBuilder.java:131
+            //Created by RecordClassBuilder.java:132
             this.test = test;
         }
 
@@ -49,7 +49,7 @@ public class OuterClass {
 
         @Override()
         @javax.annotation.processing.Generated("RecordClassBuilder")
-        public final non_null String toString() {
+        public final /*@ non_null */ String toString() {
             return "MyRecord[" + "test=" + test + "]";
         }
     }

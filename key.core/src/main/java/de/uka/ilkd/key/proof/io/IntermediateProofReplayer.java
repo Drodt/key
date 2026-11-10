@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.proof.io;
 
 import java.io.StringReader;
@@ -32,7 +33,6 @@ import de.uka.ilkd.key.proof.io.intermediate.MergePartnerAppIntermediate;
 import de.uka.ilkd.key.proof.io.intermediate.NodeIntermediate;
 import de.uka.ilkd.key.proof.io.intermediate.SMTAppIntermediate;
 import de.uka.ilkd.key.proof.io.intermediate.TacletAppIntermediate;
-import de.uka.ilkd.key.prover.impl.PerfScope;
 import de.uka.ilkd.key.rule.*;
 import de.uka.ilkd.key.rule.merge.MergePartner;
 import de.uka.ilkd.key.rule.merge.MergeProcedure;
@@ -47,6 +47,7 @@ import de.uka.ilkd.key.smt.SMTSolverResult.ThreeValuedTruth;
 import de.uka.ilkd.key.speclang.Contract;
 import de.uka.ilkd.key.speclang.OperationContract;
 import de.uka.ilkd.key.util.Levensthein;
+import de.uka.ilkd.key.util.PerfScope;
 import de.uka.ilkd.key.util.ProgressMonitor;
 import de.uka.ilkd.key.util.mergerule.MergeRuleUtils;
 import de.uka.ilkd.key.util.mergerule.SymbolicExecutionStateWithProgCnt;

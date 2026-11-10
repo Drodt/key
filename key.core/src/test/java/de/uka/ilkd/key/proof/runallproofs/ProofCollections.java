@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.proof.runallproofs;
 
 
@@ -185,7 +186,7 @@ public class ProofCollections {
          * pervar g = c.group("- one subprocess is created for each group
          * perFile-one subprocess is created for each file
          */
-        settings.setForkMode(ForkMode.PERGROUP);
+        settings.setForkMode(ForkMode.NOFORK);
 
         /*
          * Enable or disable proof reloading.
@@ -240,7 +241,7 @@ public class ProofCollections {
          * test can be restricted to these groups (for debugging).
          */
         // runOnlyOn = group1, group2 (the space after each comma is mandatory)
-        // settings.setRunOnlyOn("performance, performancePOConstruction");
+        // settings.setRunOnlyOn("example-algos");
 
         settings.setKeySettings(GenerateUnitTestsUtil.loadFromFile("automaticJAVADL.properties"));
 
@@ -415,6 +416,10 @@ public class ProofCollections {
         g.provable("heap/verifyThis11_1_Maximum/project.key");
         g.provable("heap/fm12_01_LRS/lcp.key");
         g.provable("heap/SemanticSlicing/project.key");
+        g.provable("heap/verifyThis26_01_hIndex/compute.key");
+        g.provable("heap/verifyThis26_01_hIndex/compute_opt.key");
+        g.provable("heap/verifyThis26_01_hIndex/lemma1.key");
+        g.provable("heap/verifyThis26_01_hIndex/update.key");
 
         g = c.group("funOfIF");
         g.provable("heap/information_flow/ArrayList_contains.key");
@@ -524,13 +529,16 @@ public class ProofCollections {
         g.provable("heap/BoyerMoore/BM.count.accessible.key");
         g.provable("heap/BoyerMoore/BM.count.key");
         g.provable("heap/BoyerMoore/BM.monoLemma.key");
+        g.provable("heap/Adjacency/project.key");
+        g.provable("heap/Adjacency/distinct.key");
 
         g = c.group("quicksort");
         g.setDirectory("heap/quicksort");
         g.provable("toplevel.key");
         g.provable("sort.key");
+        g.provable("sort-jmlscript.key");
+        g.provable("split-jmlscript.key");
         g.provable("split.key");
-
 
         /*
          * These are simpler regression tests that show a certain feature works
@@ -905,6 +913,10 @@ public class ProofCollections {
         g.provable("standard_key/quantifiers/normalisation12.key");
         g.provable("standard_key/quantifiers/normalisation13.key");
         g.provable("standard_key/quantifiers/triggers0.key");
+        g.provable("standard_key/quantifiers/affineArrayIndices.key");
+        g.provable("standard_key/quantifiers/issue3972MVE.key");
+        g.provable("standard_key/quantifiers/affineSeqIndices.key");
+        g.provable("standard_key/quantifiers/affineSeqSub.key");
 
 
         g = c.group("strings");
@@ -1209,9 +1221,17 @@ public class ProofCollections {
 
         g = c.group("JavaFeatures");
         g.loadable("Java/TextBlockLiterals/project.key");
-
         g.loadable("Java/Records/Use.key");
         g.loadable("Java/Records/Constructor.key");
+        g.provable("Java/Annotations/test_annotation.key");
+
+        g = c.group("StipuLa");
+        g.provable("case-studies/stipula/behavior_run_bet.key");
+        g.provable("case-studies/stipula/behavior_run_bike.key");
+        g.provable("case-studies/stipula/behavior_run_donation.key");
+        g.provable("case-studies/stipula/behavior_run_license.key");
+        g.provable("case-studies/stipula/behavior_run_loanForUse.key");
+
 
         // use for debugging purposes.
         // c.keep("VSTTE10");

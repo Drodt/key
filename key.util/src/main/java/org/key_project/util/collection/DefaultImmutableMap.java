@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.util.collection;
 
 import java.util.Iterator;
@@ -276,7 +277,8 @@ public final class DefaultImmutableMap<S, T> implements ImmutableMap<S, T> {
     public int hashCode() {
         int hashCode = 1;
         for (ImmutableMapEntry<S, T> stImmutableMapEntry : this) {
-            hashCode += 7 * stImmutableMapEntry.hashCode();
+            hashCode += (Objects.hashCode(stImmutableMapEntry.key()) ^
+                    Objects.hashCode(stImmutableMapEntry.value()));
         }
         return hashCode;
     }

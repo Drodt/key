@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.prover.mt;
 
 import java.io.BufferedReader;
@@ -49,8 +50,9 @@ import static org.junit.jupiter.api.Assertions.fail;
  * guarded by an external lock, ...) are listed in {@code shared-state-allowlist.txt} next to this
  * test, each with a one-line justification. How to fix a genuine finding is described in
  * {@code key.core/src/main/java/de/uka/ilkd/key/prover/README.md} (in one line: cache whose value
- * depends only on the key &rarr; {@code StripedLruCache}; cache whose value depends on when it was
- * stored &rarr; {@code ConcurrentLruCache}; per-thread scratch memory &rarr; {@code ThreadLocal};
+ * depends only on the key &rarr; {@code GenerationalCache} or {@code StripedLruCache}; cache
+ * whose value depends on when it was stored &rarr; {@code ConcurrentLruCache}; per-thread scratch
+ * memory &rarr; {@code ThreadLocal};
  * fill-once lookup table &rarr; {@code final} + immutable content).
  */
 public final class SharedStateLintTest {
@@ -86,6 +88,7 @@ public final class SharedStateLintTest {
         "java.util.ImmutableCollections", // List.of(...), Map.of(...), Map.copyOf(...)
         "org.key_project.util.ConcurrentLruCache",
         "org.key_project.util.StripedLruCache",
+        "org.key_project.util.GenerationalCache",
     };
 
     /** Value classes that are mutable and not safe to share without extra protection. */
@@ -319,7 +322,8 @@ public final class SharedStateLintTest {
         }
         sb.append("\nHow to fix (details and a decision table in\n")
                 .append("key.core/src/main/java/de/uka/ilkd/key/prover/README.md):\n")
-                .append("  * value depends only on the key            -> StripedLruCache\n")
+                .append("  * value depends only on the key            -> GenerationalCache"
+                    + " (read-mostly) or StripedLruCache\n")
                 .append("  * value depends on when it was stored      -> ConcurrentLruCache\n")
                 .append("  * per-thread scratch / last-call memo      -> ThreadLocal\n")
                 .append(

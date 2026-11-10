@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.ldt;
 
 import de.uka.ilkd.key.java.Services;
@@ -23,7 +24,7 @@ import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableList;
 
 /**
- * The JavaDL theory class provides access to function symvols, sorts that are part of the core
+ * The JavaDL theory class provides access to function symbols, sorts that are part of the core
  * logic
  * like cast or instanceof functions.
  */

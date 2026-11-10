@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.prover.impl;
 
 
@@ -128,7 +129,13 @@ public class ApplyStrategy extends DefaultProver<Proof, Goal> {
         this.stopAtFirstNonClosableGoal = stopAtFirstNonCloseableGoal;
 
         ProofTreeListener treeListener = prepareStrategy(proof, goals, maxSteps, timeout);
-        ApplyStrategyInfo<Proof, Goal> result = executeStrategy(treeListener);
+        ApplyStrategyInfo<Proof, Goal> result;
+        try (var ignored =
+            proof.setRuleAppIndexMode(proof.getActiveStrategy().getRuleAppIndexMode())) {
+            result = executeStrategy(treeListener);
+        } catch (Exception e) { // should never be reached
+            throw new RuntimeException(e);
+        }
         finishStrategy(result);
         return result;
     }

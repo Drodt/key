@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule;
 
 import java.util.LinkedHashMap;
@@ -302,7 +303,7 @@ public class WhileInvariantRule implements BuiltInRule {
                 final String pvBeforeLoopName = tb.newName(pv.name() + "Before_LOOP");
                 final LocationVariable pvBeforeLoop =
                     new LocationVariable(new ProgramElementName(pvBeforeLoopName),
-                        pv.getKeYJavaType());
+                        pv.getTypeReference());
                 services.getNamespaces().programVariables().addSafely(pvBeforeLoop);
                 beforeLoopUpdate =
                     tb.parallel(beforeLoopUpdate, tb.elementary(pvBeforeLoop, tb.var(pv)));
@@ -606,7 +607,8 @@ public class WhileInvariantRule implements BuiltInRule {
                 final TermServices services) {
             final TermBuilder tb = services.getTermBuilder();
             final ProgramElementName guardVarName = new ProgramElementName(tb.newName("b"));
-            final LocationVariable guardVar = new LocationVariable(guardVarName, booleanKJT);
+            final LocationVariable guardVar =
+                new LocationVariable(guardVarName, new TypeRef(booleanKJT));
             services.getNamespaces().programVariables().addSafely(guardVar);
             loopRuleApp.setGuard(tb.var(guardVar));
             final VariableSpecification guardVarSpec =

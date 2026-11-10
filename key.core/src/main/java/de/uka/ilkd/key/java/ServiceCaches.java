@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java;
 
 import java.util.Collections;
@@ -19,8 +20,8 @@ import de.uka.ilkd.key.strategy.CostReuse;
 import de.uka.ilkd.key.strategy.feature.AbstractBetaFeature.TermInfo;
 import de.uka.ilkd.key.strategy.feature.AppliedRuleAppsNameCache;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.ClausesGraph;
-import de.uka.ilkd.key.strategy.quantifierHeuristics.Metavariable;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.TriggersSet;
+import de.uka.ilkd.key.strategy.quantifierHeuristics.constraint.Metavariable;
 
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.caches.AssumesInstantiationCachePool;
@@ -30,6 +31,7 @@ import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantia
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.ConcurrentLruCache;
+import org.key_project.util.GenerationalCache;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
 
@@ -116,11 +118,11 @@ public class ServiceCaches implements SessionCaches {
     private final Map<Taclet, CostReuse.ConditionalEligibility> costReuseClassificationCache =
         new ConcurrentHashMap<>();
 
-    private final Map<org.key_project.logic.Term, Monomial> monomialCache =
-        new ConcurrentLruCache<>(2000);
+    private final GenerationalCache<org.key_project.logic.Term, Monomial> monomialCache =
+        new GenerationalCache<>(5000);
 
-    private final Map<org.key_project.logic.Term, Polynomial> polynomialCache =
-        new ConcurrentLruCache<>(2000);
+    private final GenerationalCache<org.key_project.logic.Term, Polynomial> polynomialCache =
+        new GenerationalCache<>(5000);
 
     /**
      * a <code>HashMap</code> from <code>Term</code> to <code>TriggersSet</code> uses to cache all
@@ -149,7 +151,7 @@ public class ServiceCaches implements SessionCaches {
     /**
      * Cache used by the TermFactory to avoid unnecessary creation of terms
      */
-    private final Map<JTerm, JTerm> termCache = new ConcurrentLruCache<>(20000);
+    private final GenerationalCache<JTerm, JTerm> termCache = new GenerationalCache<>(40000);
 
     /**
      * Cache used by TypeComparisonCondition
@@ -160,17 +162,17 @@ public class ServiceCaches implements SessionCaches {
     /**
      * Cache used by HandleArith for caching formatted terms
      */
-    private final Map<JTerm, JTerm> formattedTermCache =
-        new ConcurrentLruCache<>(5000);
+    private final GenerationalCache<JTerm, JTerm> formattedTermCache =
+        new GenerationalCache<>(20000);
 
     /**
      * Caches used bu HandleArith to cache proof results
      */
-    private final Map<JTerm, JTerm> provedByArithFstCache =
-        new ConcurrentLruCache<>(5000);
+    private final GenerationalCache<JTerm, JTerm> provedByArithFstCache =
+        new GenerationalCache<>(20000);
 
-    private final Map<Pair<JTerm, JTerm>, JTerm> provedByArithSndCache =
-        new ConcurrentLruCache<>(5000);
+    private final GenerationalCache<Pair<JTerm, JTerm>, JTerm> provedByArithSndCache =
+        new GenerationalCache<>(40000);
 
     /** Cache used by the exhaustive macro */
     private final Map<Node, PosInOccurrence> exhaustiveMacroCache =
@@ -228,7 +230,7 @@ public class ServiceCaches implements SessionCaches {
         return costReuseClassificationCache;
     }
 
-    public final Map<org.key_project.logic.Term, Monomial> getMonomialCache() {
+    public final GenerationalCache<org.key_project.logic.Term, Monomial> getMonomialCache() {
         return monomialCache;
     }
 
@@ -236,7 +238,7 @@ public class ServiceCaches implements SessionCaches {
         return formulaOccurrenceCache;
     }
 
-    public final Map<org.key_project.logic.Term, Polynomial> getPolynomialCache() {
+    public final GenerationalCache<org.key_project.logic.Term, Polynomial> getPolynomialCache() {
         return polynomialCache;
     }
 
@@ -248,7 +250,7 @@ public class ServiceCaches implements SessionCaches {
         return graphCache;
     }
 
-    public final Map<JTerm, JTerm> getTermFactoryCache() {
+    public final GenerationalCache<JTerm, JTerm> getTermFactoryCache() {
         return termCache;
     }
 
@@ -256,15 +258,15 @@ public class ServiceCaches implements SessionCaches {
         return disjointnessCache;
     }
 
-    public final Map<JTerm, JTerm> getFormattedTermCache() {
+    public final GenerationalCache<JTerm, JTerm> getFormattedTermCache() {
         return formattedTermCache;
     }
 
-    public final Map<JTerm, JTerm> getProvedByArithFstCache() {
+    public final GenerationalCache<JTerm, JTerm> getProvedByArithFstCache() {
         return provedByArithFstCache;
     }
 
-    public final Map<Pair<JTerm, JTerm>, JTerm> getProvedByArithSndCache() {
+    public final GenerationalCache<Pair<JTerm, JTerm>, JTerm> getProvedByArithSndCache() {
         return provedByArithSndCache;
     }
 

@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.nparser.varexp;
 
 import java.util.ArrayList;
@@ -270,6 +271,12 @@ public class TacletBuilderManipulators {
         new ConstructorBasedBuilder("static", StaticReferenceCondition.class, SV);
     public static final TacletBuilderCommand DIFFERENT_FIELDS =
         new ConstructorBasedBuilder("differentFields", DifferentFields.class, SV, SV);
+    public static final AbstractConditionBuilder ADD_ANNOTATION =
+        new ConstructorBasedBuilder("addAnnotation", AddAnnotation.class, SV, SV, S);
+    public static final AbstractConditionBuilder REMOVE_ANNOTATION =
+        new ConstructorBasedBuilder("removeAnnotation", RemoveAnnotation.class, SV, SV, S);
+    public static final AbstractConditionBuilder HAS_ANNOTATION =
+        new ConstructorBasedBuilder("hasAnnotation", HasAnnotationCondition.class, SV, S);
     public static final AbstractConditionBuilder SAME_OBSERVER =
         new ConstructorBasedBuilder("sameObserver", SameObserverCondition.class, PV, PV);
     public static final AbstractConditionBuilder applyUpdateOnRigid = new ConstructorBasedBuilder(
@@ -382,7 +389,8 @@ public class TacletBuilderManipulators {
             applyUpdateOnRigid, DROP_EFFECTLESS_ELEMENTARIES, SIMPLIFY_ITE_UPDATE, SUBFORMULAS,
             STATIC_FIELD, MODEL_FIELD, SUBFORMULA, DROP_EFFECTLESS_STORES, EQUAL_UNIQUE,
             META_DISJOINT,
-            IS_OBSERVER, CONSTANT, HAS_SORT, LABEL, NEW_LABEL, HAS_ELEM_SORT, IS_IN_STRICTFP);
+            IS_OBSERVER, CONSTANT, HAS_SORT, LABEL, NEW_LABEL, HAS_ELEM_SORT, IS_IN_STRICTFP,
+            HAS_ANNOTATION, ADD_ANNOTATION, REMOVE_ANNOTATION);
         register(STORE_TERM_IN, STORE_STMT_IN, HAS_INVARIANT, GET_INVARIANT, GET_FREE_INVARIANT,
             GET_VARIANT, IS_LABELED);
         loadWithServiceLoader();

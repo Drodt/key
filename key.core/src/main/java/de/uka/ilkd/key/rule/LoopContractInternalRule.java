@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule;
 
 import java.util.List;
@@ -328,7 +329,7 @@ public class LoopContractInternalRule extends AbstractLoopContractRule {
         configurator.setUpUsageGoal(result.head(), updates,
             ArrayUtil.add(usageAssumptions, freePostcondition));
         final LocationVariable exceptionParameter =
-            createLocalVariable("e", vars[0].exception.getKeYJavaType(), services);
+            createLocalVariable("e", vars[0].exception.getTypeReference(), services);
         configurator.setUpLoopValidityGoal(goal, contract, context, updates[1],
             nextRemembranceUpdate, anonOutHeaps, modifiableClauses,
             freeModifiableClauses,

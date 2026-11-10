@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.speclang;
 
 import java.util.ArrayList;
@@ -365,7 +366,7 @@ public final class LoopContractImpl extends AbstractAuxiliaryContractImpl implem
             LocationVariable rem = new LocationVariable(
                 services.getVariableNamer().getTemporaryNameProposal(
                     variable.name() + VariablesCreator.REMEMBRANCE_SUFFIX),
-                variable.getKeYJavaType());
+                variable.getTypeReference());
             vars.variables.remembranceLocalVariables.put((LocationVariable) variable, rem);
         }
         return vars;

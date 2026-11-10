@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 // This file is part of KeY - Integrated Deductive Software Design
 //
 // Copyright (C) 2001-2011 Universitaet Karlsruhe (TH), Germany
@@ -294,6 +295,11 @@ public class ClassInitializeMethodBuilder extends JavaTransformerAbstract {
      */
     @Override
     public void apply(TypeDeclaration<?> td) {
+        if (td.isAnnotationDeclaration()) {
+            // Annotations cannot be initialized
+            return;
+        }
+
         td.addMember(createInitializeMethod(td));
     }
 }

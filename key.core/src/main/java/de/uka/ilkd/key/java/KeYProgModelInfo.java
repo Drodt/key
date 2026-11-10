@@ -1,9 +1,11 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -40,6 +42,7 @@ import com.github.javaparser.resolution.model.typesystem.ReferenceTypeImpl;
 import com.github.javaparser.resolution.types.ResolvedReferenceType;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.DefaultConstructorDeclaration;
+import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserAnnotationDeclaration;
 import com.github.javaparser.symbolsolver.javaparsermodel.declarations.JavaParserMethodDeclaration;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -68,6 +71,12 @@ public class KeYProgModelInfo {
     /** Size of the type model {@link #subtypeCache} was computed from. */
     private int subtypeCachedSize = -1;
 
+    /**
+     * Caches locally declared fields; does not need to be invalidated as
+     * an existing class declaration is immutable
+     */
+    private final Map<KeYJavaType, ImmutableList<Field>> localDeclaredFields =
+        new ConcurrentHashMap<>();
 
 
     public KeYProgModelInfo(JavaService service) {
@@ -105,7 +114,11 @@ public class KeYProgModelInfo {
     private List<ResolvedMethodDeclaration> getAllMethods(KeYJavaType kjt) {
         var type = rec2key().resolveType(kjt);
         if (type.isReferenceType()) {
-            return type.asReferenceType().getAllMethods();
+            var tr = type.asReferenceType();
+
+            if (!tr.getTypeDeclaration().orElseThrow().isAnnotation()) {
+                return tr.getAllMethods();
+            }
         }
         return Collections.emptyList();
     }
@@ -174,7 +187,7 @@ public class KeYProgModelInfo {
                 var node = (NodeWithModifiers<?>) td.asClass().toAst().get();
                 return node.hasModifier(Modifier.DefaultKeyword.FINAL);
             }
-            if (td.isInterface()) {
+            if (td.isInterface() || td.isAnnotation()) {
                 // Interfaces can't be final
                 return false;
             }
@@ -238,7 +251,18 @@ public class KeYProgModelInfo {
         if (!type.isReferenceType()) {
             return result;
         }
-        var rml = type.asReferenceType().getDeclaredMethods();
+
+        var refType = type.asReferenceType();
+
+        // methods for annotation declarations are currently not implemented in
+        // javaparser
+        if (refType.getTypeDeclaration()
+                .map(d -> d instanceof JavaParserAnnotationDeclaration)
+                .orElse(false)) {
+            return result;
+        }
+
+        var rml = refType.getDeclaredMethods();
         result.ensureCapacity(rml.size());
         for (MethodUsage methodUsage : rml) {
             if (methodUsage.getDeclaration() instanceof JavaParserMethodDeclaration) {
@@ -455,13 +479,19 @@ public class KeYProgModelInfo {
      * @param ct the class type whose fields are returned
      * @return the list of field members of the given type.
      */
-    public List<Field> getAllFieldsLocallyDeclaredIn(KeYJavaType ct) {
-        if (ct.getJavaType() instanceof ArrayType) {
-            return getVisibleArrayFields(ct);
+    public ImmutableList<Field> getAllFieldsLocallyDeclaredIn(KeYJavaType ct) {
+        ImmutableList<Field> fields = localDeclaredFields.get(ct);
+        if (fields == null) {
+            if (ct.getJavaType() instanceof ArrayType) {
+                fields = ImmutableList.fromList(getVisibleArrayFields(ct));
+            } else {
+                fields = ImmutableList.fromList(getReferenceType(ct)
+                        .map(r -> asKeYFieldsR(r.getDeclaredFields().stream()))
+                        .orElseGet(ArrayList::new));
+            }
+            localDeclaredFields.put(ct, fields);
         }
-        return getReferenceType(ct)
-                .map(r -> asKeYFieldsR(r.getDeclaredFields().stream()))
-                .orElseGet(ArrayList::new);
+        return fields;
     }
 
 

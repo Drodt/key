@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.proof.naming;
 
 import java.nio.file.Path;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import de.uka.ilkd.key.control.KeYEnvironment;
 import de.uka.ilkd.key.java.Services;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.logic.op.LocationVariable;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
@@ -161,7 +163,7 @@ public class TestNamingInvariants {
             final Name pvName = new Name("harnessPv");
             final LocationVariable pv = new LocationVariable(
                 new de.uka.ilkd.key.logic.ProgramElementName(pvName.toString()),
-                services.getJavaInfo().getKeYJavaType("int"));
+                new TypeRef(services.getJavaInfo().getKeYJavaType("int")));
             goal.addProgramVariable(pv);
 
             assertNotNull(goal.getLocalNamespaces().programVariables().lookup(pvName),

@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.transformations;
 
 import java.net.URI;
@@ -54,6 +55,7 @@ public class KeYJavaPipeline {
         p.add(new CreateBuilder(pipelineServices));
         p.add(new CreateObjectBuilder(pipelineServices));
         p.add(new LocalClassTransformation(pipelineServices));
+        p.add(new AnnotationMover(pipelineServices));
         // Below is an expensive transformation as it has to traverse down
         // to an expression level.
         p.add(new ConstantStringExpressionEvaluator(pipelineServices));

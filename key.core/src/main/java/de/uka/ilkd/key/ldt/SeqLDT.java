@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.ldt;
 
 import de.uka.ilkd.key.java.Services;
@@ -70,6 +71,16 @@ public final class SeqLDT extends LDT {
     public ParametricFunctionInstance getSeqGet(Sort instanceSort, TermServices services) {
         return ParametricFunctionInstance.get(seqGet,
             ImmutableList.of(new GenericArgument(instanceSort)), (Services) services);
+    }
+
+    /**
+     * Whether the operator is an instance of {@code seqGet}, for any element sort.
+     *
+     * @param op an operator
+     * @return whether {@code op} reads a sequence element
+     */
+    public boolean isSeqGetOp(org.key_project.logic.op.Operator op) {
+        return op instanceof ParametricFunctionInstance pfi && pfi.getBase() == seqGet;
     }
 
 

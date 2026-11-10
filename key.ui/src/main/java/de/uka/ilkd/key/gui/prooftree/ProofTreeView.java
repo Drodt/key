@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.gui.prooftree;
 
 import java.awt.*;
@@ -213,7 +214,8 @@ public class ProofTreeView extends JPanel implements TabPanel {
 
                     Style style = renderer.initStyleForNode(node);
                     if (style.tooltip != null) {
-                        return renderTooltip(style.tooltip);
+                        return renderTooltip(style.tooltip,
+                            node.getNode().proof().getServices());
                     }
                 }
 
@@ -721,7 +723,15 @@ public class ProofTreeView extends JPanel implements TabPanel {
 
     public void removeProofs(Proof[] ps) {
         for (final Proof p : ps) {
-            viewStates.remove(p);
+            // remove (indirect) references to proofs from view states and delegateModel
+            // when abandoning one
+            final ProofTreeViewState state = viewStates.remove(p);
+            if (state != null) {
+                state.model.clear();
+            }
+            if (p == proof && delegateModel != null) {
+                delegateModel.clear();
+            }
             mediator.getCurrentlyOpenedProofs().remove(p);
         }
     }
@@ -787,7 +797,10 @@ public class ProofTreeView extends JPanel implements TabPanel {
      * Collapse all subtrees that are closed
      */
     protected void collapseClosedNodes() {
-        collapseClosedNodesHelp(new TreePath(delegateModel.getRoot()));
+        final Object root = delegateModel.getRoot();
+        if (root != null) {
+            collapseClosedNodesHelp(new TreePath(root));
+        }
     }
 
     private void collapseClosedNodesHelp(TreePath path) {
@@ -814,7 +827,10 @@ public class ProofTreeView extends JPanel implements TabPanel {
      * Collapse all branches which are not below <tt>path</tt>
      */
     protected void collapseOthers(TreePath path) {
-        collapseOthersHelp(new TreePath(delegateModel.getRoot()), path);
+        final Object root = delegateModel.getRoot();
+        if (root != null) {
+            collapseOthersHelp(new TreePath(root), path);
+        }
     }
 
     private void collapseOthersHelp(TreePath start, TreePath stop) {
@@ -853,6 +869,151 @@ public class ProofTreeView extends JPanel implements TabPanel {
 
     public void showSearchPanel() {
         proofTreeSearchPanel.setVisible(true);
+    }
+
+    public void showGotoNodeDialog() {
+        // Build a combined dialog that allows direct input of a node number and shows all nodes
+        // annotated with notes in a JList. If there are no notes, show the explanatory message.
+
+        final var currentProof = mediator != null ? mediator.getSelectedProof() : null;
+
+        // Top: input panel for direct node number entry (keeps existing functionality)
+        final var inputLabel = new JLabel("Node number:");
+        final var inputField = new JTextField();
+        inputField.setColumns(10);
+        final var inputPanel = new JPanel(new BorderLayout(8, 0));
+        inputPanel.add(inputLabel, BorderLayout.WEST);
+        inputPanel.add(inputField, BorderLayout.CENTER);
+
+        // Center: either noted-nodes list or explanatory message
+        final JComponent centerComponent;
+        final JList<Node> notedList;
+        // Collect nodes with notes (global)
+        final java.util.List<Node> notedNodes = new ArrayList<>();
+        for (Iterator<Node> it = currentProof.root().subtreeIterator(); it.hasNext();) {
+            final Node n = it.next();
+            final String notes = n.getNodeInfo().getNotes();
+            if (notes != null) {
+                notedNodes.add(n);
+            }
+        }
+        notedNodes.sort(Comparator.comparingInt(Node::serialNr));
+
+        if (!notedNodes.isEmpty()) {
+            notedList = new JList<>(notedNodes.toArray(new Node[0]));
+            notedList.setVisibleRowCount(Math.min(8, notedNodes.size()));
+            notedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            // Custom renderer: "<serial>: <ruleName>" on first line, first line of note below
+            notedList.setCellRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value,
+                        int index, boolean isSelected, boolean cellHasFocus) {
+                    final Component c = super.getListCellRendererComponent(list, value, index,
+                        isSelected, cellHasFocus);
+                    if (value instanceof Node n) {
+                        final var app = n.getAppliedRuleApp();
+                        final String ruleName = app != null
+                                ? app.rule().name().toString()
+                                : "Root";
+                        String note = n.getNodeInfo().getNotes();
+                        if (note == null)
+                            note = "";
+                        int nl = note.indexOf('\n');
+                        final String firstLine = nl >= 0 ? note.substring(0, nl) : note;
+                        // Limit overly long lines for display
+                        final String firstLineShort = firstLine.length() > 40
+                                ? firstLine.substring(0, 40) + " …"
+                                : firstLine;
+                        // Use simple HTML for two-line display
+                        final String html = "<html><b>" + n.serialNr() + ": "
+                            + LogicPrinter.escapeHTML(ruleName, true)
+                            + "</b><br>" + LogicPrinter.escapeHTML(firstLineShort, true);
+                        ((JLabel) c).setText(html);
+                        c.setFont(UIManager.getFont("TextArea.font"));
+                        ((JLabel) c).setIcon(IconFactory.editFile(16));
+                    }
+                    return c;
+                }
+            });
+            centerComponent = new JScrollPane(notedList);
+        } else {
+            notedList = null;
+            final var info = new JLabel(
+                "<html>Nodes that have been bookmarked using<br>" +
+                    "the node context menu will be listed here.</html>");
+            info.setFont(UIManager.getFont("TextArea.font"));
+            centerComponent = info;
+            centerComponent.setBorder(
+                BorderFactory.createEmptyBorder(6, 0, 0, 0));
+        }
+
+
+        final var panel = new JPanel(new BorderLayout(0, 8));
+        panel.add(inputPanel, BorderLayout.NORTH);
+        panel.add(centerComponent, BorderLayout.CENTER);
+
+        final var optionPane = new JOptionPane(panel, JOptionPane.PLAIN_MESSAGE,
+            JOptionPane.OK_CANCEL_OPTION, IconFactory.GOTO_NODE.get(IconFactory.DEFAULT_SIZE));
+        final var dialog = optionPane.createDialog(this, "Go to proof node");
+
+        // Ensure the input field has focus once the dialog is shown
+        dialog.addWindowFocusListener(new WindowAdapter() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                inputField.requestFocusInWindow();
+            }
+        });
+
+        // Allow double-click on a list entry to immediately jump and close the dialog
+        if (notedList != null) {
+            notedList.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    final Node sel = notedList.getSelectedValue();
+                    if (sel != null) {
+                        if (e.getClickCount() == 2) {
+                            mediator.getSelectionModel().setSelectedNode(sel);
+                            dialog.dispose();
+                        }
+                        if (e.getClickCount() == 1) {
+                            inputField.setText(Integer.toString(sel.serialNr()));
+                        }
+                    }
+                }
+            });
+        }
+
+        inputField.requestFocus();
+        dialog.setVisible(true);
+
+        final Object chosen = optionPane.getValue();
+        if (!(chosen instanceof Integer) || ((Integer) chosen) != JOptionPane.OK_OPTION) {
+            return; // cancelled or closed
+        }
+
+        // OK pressed: prefer list selection; otherwise parse number field
+        if (notedList != null) {
+            final Node sel = notedList.getSelectedValue();
+            if (sel != null) {
+                mediator.getSelectionModel().setSelectedNode(sel);
+                return;
+            }
+        }
+
+        inputField.requestFocus();
+        final String nodeStr = inputField.getText();
+        if (nodeStr != null && !nodeStr.isEmpty()) {
+            try {
+                int serialNr = Integer.parseUnsignedInt(nodeStr);
+                if (!getMediator().getSelectionModel().setSelectedNodeBySerialNr(serialNr)) {
+                    JOptionPane.showMessageDialog(this, "Node not found: " + nodeStr,
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Invalid node number: " + nodeStr,
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     /**
@@ -1198,7 +1359,7 @@ public class ProofTreeView extends JPanel implements TabPanel {
         }
     }
 
-    private static String renderTooltip(Style.Tooltip tooltip) {
+    private static String renderTooltip(Style.Tooltip tooltip, Services services) {
         String title = tooltip.getTitle();
         List<Style.Tooltip.Fragment> fragments = tooltip.getAdditionalInfos();
         boolean titleEmpty = title == null || title.isEmpty();
@@ -1227,7 +1388,12 @@ public class ProofTreeView extends JPanel implements TabPanel {
             } else {
                 result.append(" ");
             }
-            result.append(fragment.value);
+            if (fragment.value instanceof final PosInOccurrence pio) {
+                String on = LogicPrinter.quickPrintTerm((JTerm) pio.subTerm(), services);
+                result.append(LogicPrinter.escapeHTML(cutIfTooLong(on), true));
+            } else {
+                result.append(fragment.value);
+            }
         }
         result.append("</html>");
         return result.toString();
@@ -1279,11 +1445,11 @@ public class ProofTreeView extends JPanel implements TabPanel {
         private void renderBranch(Style style, GUIBranchNode node) {
             style.icon = getIcon();
 
-            var text = style.text;
+            var text = style.text();
             // Elide text and move it to additional info
             // This does not influence the search since it does not use the text
             if (text.length() > 60) {
-                style.text = text.substring(0, 60) + "...";
+                style.setText(text.substring(0, 60) + "...");
                 style.tooltip.setTitle(text);
             }
 
@@ -1383,9 +1549,7 @@ public class ProofTreeView extends JPanel implements TabPanel {
             style.tooltip.addRule(node.getAppliedRuleApp().rule().name().toString());
             PosInOccurrence pio = node.getAppliedRuleApp().posInOccurrence();
             if (pio != null) {
-                String on = LogicPrinter.quickPrintTerm(
-                    (JTerm) pio.subTerm(), node.proof().getServices());
-                style.tooltip.addAppliedOn(cutIfTooLong(on));
+                style.tooltip.addPosInOccurrence(pio);
             }
 
             final String notes = node.getNodeInfo().getNotes();
@@ -1413,7 +1577,7 @@ public class ProofTreeView extends JPanel implements TabPanel {
             if (!(treeNode instanceof GUIOneStepChildTreeNode) && child.size() == 1
                     && child.get(0).getNodeInfo().getBranchLabel() != null) {
                 isBranch = true;
-                style.text = style.text + ": " + child.get(0).getNodeInfo().getBranchLabel();
+                style.setText(style.text() + ": " + child.get(0).getNodeInfo().getBranchLabel());
             }
             if (isBranch && node.childrenCount() > 1) {
                 defaultIcon = getOpenIcon();
@@ -1421,11 +1585,11 @@ public class ProofTreeView extends JPanel implements TabPanel {
             }
             style.icon = defaultIcon;
 
-            var text = style.text;
+            var text = style.text();
             // Elide text and move it to additional info
             // This does not influence the search since it does not use the text
             if (text.length() > 60 && treeNode instanceof GUIProofTreeNode) {
-                style.text = text.substring(0, 60) + "...";
+                style.setText(text.substring(0, 60) + "...");
                 // This should only happen if node.name() uses the active statement
                 // Pretty print it to make it readable
                 style.tooltip.setTitle(node.getAppliedRuleApp().rule().name().toString());
@@ -1460,12 +1624,9 @@ public class ProofTreeView extends JPanel implements TabPanel {
             style.foreground = GRAY_COLOR.get();
             style.icon = IconFactory.oneStepSimplifier(16);
             RuleApp app = node.getRuleApp();
-            style.text = app.rule().name().toString();
-            Services services = node.getNode().proof().getServices();
-            String on =
-                LogicPrinter.quickPrintTerm((JTerm) app.posInOccurrence().subTerm(), services);
-            style.tooltip.addRule(style.text);
-            style.tooltip.addAppliedOn(cutIfTooLong(on));
+            style.setText(app.rule().name().toString());
+            style.tooltip.addRule(style.text());
+            style.tooltip.addPosInOccurrence(app.posInOccurrence());
         }
 
         @Override
@@ -1496,7 +1657,7 @@ public class ProofTreeView extends JPanel implements TabPanel {
             // For performance reasons, we render the tooltips now lazily ...
             // String tooltip = renderTooltip(style.tooltip);
             // setToolTipText(tooltip);
-            setText(style.text);
+            setText(style.text());
             setIcon(style.icon);
 
             return this;
@@ -1513,7 +1674,7 @@ public class ProofTreeView extends JPanel implements TabPanel {
             style.foreground = UIManager.getColor("Label.foreground");
             style.background = UIManager.getColor("Label.background");
             // Normalize whitespace
-            style.text = node.toString().replaceAll("\\s+", " ");
+            style.setText(node.toString().replaceAll("\\s+", " "));
             style.border = null;
             style.tooltip = new Style.Tooltip();
             style.icon = null;

@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.nparser.builder;
 
 import java.util.ArrayList;
@@ -157,11 +158,15 @@ public class DefaultBuilder extends AbstractBuilder<Object> {
                 programVariables().lookup(new ProgramElementName(varfuncName)),
                 functions().lookup(name),
                 AbstractTermTransformer.name2metaop(varfuncName),
-
             };
 
         for (Operator op : operators) {
             if (op != null) {
+                if (genericArgsCtxt != null) {
+                    semanticError(genericArgsCtxt,
+                        "The operator %s expect no generic arguments; got %s", op.name(),
+                        genericArgsCtxt.getText());
+                }
                 return op;
             }
         }

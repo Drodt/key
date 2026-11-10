@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.wd.po;
 
 import java.util.LinkedHashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.ldt.HeapLDT;
 import de.uka.ilkd.key.logic.*;
 import de.uka.ilkd.key.logic.label.ParameterlessTermLabel;
@@ -83,9 +85,9 @@ public class WellDefinednessPO extends AbstractPO implements ContractPO {
     private static LocationVariable createSelf(IProgramMethod pm, KeYJavaType selfKJT,
             TermServices services) {
         if (pm == null) {
-            return services.getTermBuilder().selfVar(selfKJT, false);
+            return services.getTermBuilder().selfVar(new TypeRef(selfKJT), false);
         } else {
-            return services.getTermBuilder().selfVar(pm, selfKJT, true);
+            return services.getTermBuilder().selfVar(pm, new TypeRef(selfKJT), true);
         }
     }
 

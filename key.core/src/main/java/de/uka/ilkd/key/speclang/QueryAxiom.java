@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.speclang;
 
 import java.util.ArrayList;
@@ -173,6 +174,13 @@ public final class QueryAxiom extends ClassAxiom {
         // get real implementation of program method
         final IProgramMethod targetImpl =
             services.getJavaInfo().getProgramMethod(kjt, target.getName(), sig, kjt);
+
+        if (targetImpl.getMethodDeclaration().getBody() == null) {
+            // no method implementation available so using a query axiom
+            // that requires inlining of the body is not sensible.
+            return DefaultImmutableSet.nil();
+        }
+
         final MethodBodyStatement mbs = new MethodBodyStatement(targetImpl, selfProgSV,
             resultProgSV, ImmutableList.fromArray(paramProgSVs));
         final StatementBlock sb = new StatementBlock(mbs);

@@ -33,11 +33,11 @@ final class Point3d extends Record {
       @*/
     @javax.annotation.processing.Generated("RecordClassBuilder")
     public Point3d(int x, int y, int z) {
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.x = x;
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.y = y;
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.z = z;
     }
 
@@ -65,7 +65,7 @@ final class Point3d extends Record {
 
     @Override()
     @javax.annotation.processing.Generated("RecordClassBuilder")
-    public final non_null String toString() {
+    public final /*@ non_null */ String toString() {
         return "Point3d[" + "x=" + x + "," + "y=" + y + "," + "z=" + z + "]";
     }
 
@@ -82,20 +82,20 @@ final class Point3d extends Record {
     static private boolean $classPrepared;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv;
+    static public /*@ model */ boolean $staticInv;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv_free;
+    static public /*@ model */ boolean $staticInv_free;
 
     public static Point3d $allocate();
 
     public void $init(int x, int y, int z) {
         super.$init();
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.x = x;
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.y = y;
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.z = z;
     }
 

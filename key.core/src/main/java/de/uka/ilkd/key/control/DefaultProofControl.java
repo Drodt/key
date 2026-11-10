@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.control;
 
 import de.uka.ilkd.key.macros.ProofMacro;
@@ -92,9 +93,10 @@ public class DefaultProofControl extends AbstractProofControl {
 
     @Override
     public void waitWhileAutoMode() {
-        while (isInAutoMode()) { // Wait until auto mode has stopped.
+        Thread running;
+        while ((running = autoModeThread) != null) {
             try {
-                Thread.sleep(100);
+                running.join();
             } catch (InterruptedException e) {
             }
         }

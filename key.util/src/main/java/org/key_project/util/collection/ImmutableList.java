@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.util.collection;
 
 import java.lang.reflect.Array;
@@ -111,7 +112,9 @@ public interface ImmutableList<T extends @Nullable Object>
     /// @param list the list to wrap
     /// @return an ImmutableList containing the elements of the input list
     static <T extends @Nullable Object> ImmutableList<T> fromList(List<T> list) {
-        return new ImmutableListList<>(new ArrayList<>(list));
+        // Used constructor is public one which copies list into an ArrayList, so
+        // no copy needed here
+        return new ImmutableListList<>(list);
     }
 
     /// Creates an [ImmutableList] from an array.

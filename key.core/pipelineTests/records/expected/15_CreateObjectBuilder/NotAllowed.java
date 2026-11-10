@@ -46,7 +46,7 @@ Name extends Record {
 
     @Override()
     @javax.annotation.processing.Generated("RecordClassBuilder")
-    public final non_null String toString() {
+    public final /*@ non_null */ String toString() {
         return "Name[" + "name=" + name + "]";
     }
 
@@ -78,10 +78,10 @@ Name extends Record {
     static private boolean $classPrepared;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv;
+    static public /*@ model */ boolean $staticInv;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv_free;
+    static public /*@ model */ boolean $staticInv_free;
 
     public static // package-private
     Name $allocate();
@@ -103,35 +103,35 @@ Name extends Record {
         if (!@($classInitialized)) {
             if (!@($classInitializationInProgress)) {
                 if (!@($classPrepared)) {
-                    //Created by ClassInitializeMethodBuilder.java:219
+                    //Created by ClassInitializeMethodBuilder.java:220
                     @($clprepare());
                 }
                 if (@($classErroneous)) {
                     throw new java.lang.NoClassDefFoundError();
                 }
-                //Created by ClassInitializeMethodBuilder.java:243
+                //Created by ClassInitializeMethodBuilder.java:244
                 @($classInitializationInProgress) = true;
                 try {
                     @(java.lang.Record.$clinit());
-                }//Created by ClassInitializeMethodBuilder.java:194
+                }//Created by ClassInitializeMethodBuilder.java:195
                  catch (java.lang.Error err) {
-                    //Created by ClassInitializeMethodBuilder.java:154
-                    @($classInitializationInProgress) = false;
                     //Created by ClassInitializeMethodBuilder.java:155
+                    @($classInitializationInProgress) = false;
+                    //Created by ClassInitializeMethodBuilder.java:156
                     @($classErroneous) = true;
                     throw err;
                 } catch (java.lang.Throwable twa) {
-                    //Created by ClassInitializeMethodBuilder.java:154
-                    @($classInitializationInProgress) = false;
                     //Created by ClassInitializeMethodBuilder.java:155
+                    @($classInitializationInProgress) = false;
+                    //Created by ClassInitializeMethodBuilder.java:156
                     @($classErroneous) = true;
                     throw new java.lang.ExceptionInInitializerError(twa);
                 }
-                //Created by ClassInitializeMethodBuilder.java:249
+                //Created by ClassInitializeMethodBuilder.java:250
                 @($classInitializationInProgress) = false;
-                //Created by ClassInitializeMethodBuilder.java:251
+                //Created by ClassInitializeMethodBuilder.java:252
                 @($classErroneous) = false;
-                //Created by ClassInitializeMethodBuilder.java:253
+                //Created by ClassInitializeMethodBuilder.java:254
                 @($classInitialized) = true;
             }
         }
@@ -139,18 +139,18 @@ Name extends Record {
 
     protected void $prepare() {
         super.$prepare();
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.name = null;
     }
 
     private void $prepareEnter() {
         super.$prepare();
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.name = null;
     }
 
     public Name $create() {
-        //Created by CreateBuilder.java:57
+        //Created by CreateBuilder.java:58
         this.$initialized = false;
         $prepareEnter();
         return this;
@@ -160,7 +160,7 @@ Name extends Record {
     Name $createObject() {
         // package-private
         Name __NEW__;
-        //Created by CreateObjectBuilder.java:70
+        //Created by CreateObjectBuilder.java:71
         __NEW__ = // package-private
         Name.$allocate();
         __NEW__.$create()@// package-private
@@ -224,7 +224,7 @@ final class Point extends Record {
 
     @Override()
     @javax.annotation.processing.Generated("RecordClassBuilder")
-    public final non_null String toString() {
+    public final /*@ non_null */ String toString() {
         return "Point[" + "x=" + x + "," + "y=" + y + "]";
     }
 
@@ -264,10 +264,10 @@ final class Point extends Record {
     static private boolean $classPrepared;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv;
+    static public /*@ model */ boolean $staticInv;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv_free;
+    static public /*@ model */ boolean $staticInv_free;
 
     public static Point $allocate();
 
@@ -300,35 +300,35 @@ final class Point extends Record {
         if (!@($classInitialized)) {
             if (!@($classInitializationInProgress)) {
                 if (!@($classPrepared)) {
-                    //Created by ClassInitializeMethodBuilder.java:219
+                    //Created by ClassInitializeMethodBuilder.java:220
                     @($clprepare());
                 }
                 if (@($classErroneous)) {
                     throw new java.lang.NoClassDefFoundError();
                 }
-                //Created by ClassInitializeMethodBuilder.java:243
+                //Created by ClassInitializeMethodBuilder.java:244
                 @($classInitializationInProgress) = true;
                 try {
                     @(java.lang.Record.$clinit());
-                }//Created by ClassInitializeMethodBuilder.java:194
+                }//Created by ClassInitializeMethodBuilder.java:195
                  catch (java.lang.Error err) {
-                    //Created by ClassInitializeMethodBuilder.java:154
-                    @($classInitializationInProgress) = false;
                     //Created by ClassInitializeMethodBuilder.java:155
+                    @($classInitializationInProgress) = false;
+                    //Created by ClassInitializeMethodBuilder.java:156
                     @($classErroneous) = true;
                     throw err;
                 } catch (java.lang.Throwable twa) {
-                    //Created by ClassInitializeMethodBuilder.java:154
-                    @($classInitializationInProgress) = false;
                     //Created by ClassInitializeMethodBuilder.java:155
+                    @($classInitializationInProgress) = false;
+                    //Created by ClassInitializeMethodBuilder.java:156
                     @($classErroneous) = true;
                     throw new java.lang.ExceptionInInitializerError(twa);
                 }
-                //Created by ClassInitializeMethodBuilder.java:249
+                //Created by ClassInitializeMethodBuilder.java:250
                 @($classInitializationInProgress) = false;
-                //Created by ClassInitializeMethodBuilder.java:251
+                //Created by ClassInitializeMethodBuilder.java:252
                 @($classErroneous) = false;
-                //Created by ClassInitializeMethodBuilder.java:253
+                //Created by ClassInitializeMethodBuilder.java:254
                 @($classInitialized) = true;
             }
         }
@@ -336,22 +336,22 @@ final class Point extends Record {
 
     protected void $prepare() {
         super.$prepare();
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.x = 0;
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.y = 0;
     }
 
     private void $prepareEnter() {
         super.$prepare();
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.x = 0;
-        //Created by PrepareObjectBuilder.java:94
+        //Created by PrepareObjectBuilder.java:95
         this.y = 0;
     }
 
     public Point $create() {
-        //Created by CreateBuilder.java:57
+        //Created by CreateBuilder.java:58
         this.$initialized = false;
         $prepareEnter();
         return this;
@@ -359,7 +359,7 @@ final class Point extends Record {
 
     public static Point $createObject() {
         Point __NEW__;
-        //Created by CreateObjectBuilder.java:70
+        //Created by CreateObjectBuilder.java:71
         __NEW__ = Point.$allocate();
         __NEW__.$create()@Point
         return __NEW__;

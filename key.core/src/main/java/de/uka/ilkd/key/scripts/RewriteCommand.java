@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.scripts;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.jspecify.annotations.Nullable;
 
 import static de.uka.ilkd.key.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
+import static de.uka.ilkd.key.proof.RuleAppIndexMode.INTERACTIVE;
 
 /**
  * This class provides the command <code>rewrite</code>.
@@ -119,7 +121,6 @@ public class RewriteCommand extends AbstractCommand {
         TacletFilter filter = TacletFilter.TRUE;
         Goal g = state.getFirstOpenAutomaticGoal();
         RuleAppIndex index = g.ruleAppIndex();
-        index.autoModeStopped();
 
         ImmutableList<TacletApp> allApps = ImmutableList.nil();
 
@@ -134,7 +135,7 @@ public class RewriteCommand extends AbstractCommand {
                 }
             }
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
-                new PosInOccurrence(sf, PosInTerm.getTopLevel(), true), services));
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), true), services, INTERACTIVE));
         }
 
         // filter taclets that are applicable on the given formula in the succedent
@@ -146,7 +147,7 @@ public class RewriteCommand extends AbstractCommand {
                 }
             }
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
-                new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), services));
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), services, INTERACTIVE));
         }
 
         return allApps;

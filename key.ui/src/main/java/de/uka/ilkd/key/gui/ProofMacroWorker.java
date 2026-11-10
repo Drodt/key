@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.gui;
 
 import java.util.ArrayList;
@@ -161,7 +162,6 @@ public class ProofMacroWorker extends SwingWorker<ProofMacroFinishedInfo, Void>
             }
             mediator.getUI().taskFinished(info);
 
-            mediator.setInteractive(true);
             mediator.startInterface(true);
             mediator.getUI().getProofControl().fireAutoModeStopped(new ProofEvent(node.proof()));
             if (SELECT_GOAL_AFTER_MACRO) {

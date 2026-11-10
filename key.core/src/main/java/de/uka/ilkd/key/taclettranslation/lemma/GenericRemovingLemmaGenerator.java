@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.taclettranslation.lemma;
 
 import java.util.*;
@@ -13,6 +14,7 @@ import de.uka.ilkd.key.logic.sort.GenericSort;
 import de.uka.ilkd.key.logic.sort.ParametricSortInstance;
 import de.uka.ilkd.key.logic.sort.ProxySort;
 
+import org.key_project.logic.Name;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.DefaultImmutableSet;
@@ -83,8 +85,9 @@ public class GenericRemovingLemmaGenerator extends DefaultLemmaGenerator {
                 return declaredProxy;
             }
             ImmutableSet<Sort> extSorts = replaceSorts(gs.extendsSorts(), services);
-            ProxySort result = new ProxySort(gs.name(), extSorts);
+            ProxySort result = new ProxySort(new Name("P_" + gs.name()), extSorts);
             sortMap.put(gs, result);
+            services.getNamespaces().sorts().addSafely(result);
             return result;
         } else if (sort instanceof ParametricSortInstance psi && psi.containsGenericSort()) {
             List<GenericArgument> newArgs = new ArrayList<>(psi.getArgs().size());

@@ -1,12 +1,13 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2,
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.informationflow.proof.init;
 
 import java.util.Iterator;
 
 import de.uka.ilkd.key.java.Services;
-import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.ldt.HeapLDT;
 import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.JTerm;
@@ -239,21 +240,21 @@ public class StateVars {
     }
 
 
-    public static StateVars buildMethodContractPreVars(IProgramMethod pm, KeYJavaType kjt,
+    public static StateVars buildMethodContractPreVars(IProgramMethod pm, TypeReference typeRef,
             Services services) {
         ImmutableList<TermLabel> heapLabels =
             ImmutableList.singleton(ParameterlessTermLabel.ANON_HEAP_LABEL);
-        return new StateVars(buildSelfVar(services, pm, kjt, ""), buildParamVars(services, "", pm),
+        return new StateVars(buildSelfVar(services, pm, typeRef, ""), buildParamVars(services, "", pm),
             buildResultVar(pm, services, ""), buildExceptionVar(services, "", pm),
             buildHeapFunc("AtPre", heapLabels, services), buildMbyVar("", services));
     }
 
 
     public static StateVars buildMethodContractPostVars(StateVars preVars, IProgramMethod pm,
-            KeYJavaType kjt, Services services) {
+            TypeReference typeRef, Services services) {
         final String postfix = "AtPost";
         // preVars.localVars: no local out variables
-        return new StateVars(buildSelfVar(services, pm, kjt, postfix), preVars.localVars,
+        return new StateVars(buildSelfVar(services, pm, typeRef, postfix), preVars.localVars,
             buildResultVar(pm, services, postfix), buildExceptionVar(services, postfix, pm),
             buildHeapFunc(postfix, ImmutableList.nil(), services), preVars.mbyAtPre);
     }
@@ -296,13 +297,13 @@ public class StateVars {
     }
 
 
-    private static JTerm buildSelfVar(Services services, IProgramMethod pm, KeYJavaType kjt,
+    private static JTerm buildSelfVar(Services services, IProgramMethod pm, TypeReference typeRef,
             String postfix) {
         if (pm.isStatic()) {
             return null;
         }
         final TermBuilder tb = services.getTermBuilder();
-        JTerm selfVar = tb.var(tb.selfVar(pm, kjt, true, postfix));
+        JTerm selfVar = tb.var(tb.selfVar(pm, typeRef, true, postfix));
         register(selfVar.op(ProgramVariable.class), services);
         return selfVar;
     }

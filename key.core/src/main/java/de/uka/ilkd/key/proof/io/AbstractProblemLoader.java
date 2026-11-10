@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.proof.io;
 
 import java.io.FileNotFoundException;
@@ -25,7 +26,6 @@ import de.uka.ilkd.key.proof.init.loader.ProofObligationLoader;
 import de.uka.ilkd.key.proof.io.consistency.DiskFileRepo;
 import de.uka.ilkd.key.proof.io.consistency.FileRepo;
 import de.uka.ilkd.key.proof.io.consistency.SimpleFileRepo;
-import de.uka.ilkd.key.prover.impl.PerfScope;
 import de.uka.ilkd.key.rule.OneStepSimplifier;
 import de.uka.ilkd.key.settings.Configuration;
 import de.uka.ilkd.key.settings.ProofIndependentSettings;
@@ -34,6 +34,7 @@ import de.uka.ilkd.key.speclang.SLEnvInput;
 import de.uka.ilkd.key.speclang.njml.JmlFacade;
 import de.uka.ilkd.key.strategy.Strategy;
 import de.uka.ilkd.key.strategy.StrategyProperties;
+import de.uka.ilkd.key.util.PerfScope;
 
 import org.key_project.util.collection.Pair;
 import org.key_project.util.java.IOUtil;

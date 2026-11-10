@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.util;
 
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
@@ -252,57 +253,52 @@ public class ProofStarter {
      * @throws NullPointerException if the proof object is not yet created
      */
     public ProofSearchInformation<Proof, Goal> start(ImmutableList<Goal> goals) {
-        try {
-            final Profile profile = proof.getInitConfig().getProfile();
+        final Profile profile = proof.getInitConfig().getProfile();
 
-            if (strategy == null) {
-                StrategyFactory factory = profile.getDefaultStrategyFactory();
-                StrategyProperties sp = factory.getSettingsDefinition()
-                        .getDefaultPropertiesFactory().createDefaultStrategyProperties();
-                strategy = factory.create(proof, sp);
-            }
-
-            proof.setActiveStrategy(strategy);
-
-            // It is important that OSS is refreshed AFTER the strategy has been
-            // set!
-            OneStepSimplifier.refreshOSS(proof);
-
-            var goalChooser = profile.<Proof, Goal>getSelectedGoalChooserBuilder().create();
-            ProverCore<Proof, Goal> prover =
-                AutoProvers.create(goalChooser, profile, allowParallel);
-            if (ptl != null) {
-                prover.addProverTaskObserver(ptl);
-            }
-            if (autoSaver != null) {
-                autoSaver.setProof(proof);
-                prover.addProverTaskObserver(autoSaver);
-            }
-
-            ProofSearchInformation<Proof, Goal> result;
-            proof.setRuleAppIndexToAutoMode();
-
-            result = prover.start(proof, goals, maxSteps, timeout,
-                strategy.isStopAtFirstNonCloseableGoal());
-
-            if (result.isError()) {
-                throw new RuntimeException(
-                    "Proof attempt failed due to exception:" + result.getException(),
-                    result.getException());
-            }
-
-            if (ptl != null) {
-                prover.removeProverTaskObserver(ptl);
-            }
-            if (autoSaver != null) {
-                prover.removeProverTaskObserver(autoSaver);
-                autoSaver.setProof(null);
-            }
-
-            return result;
-        } finally {
-            proof.setRuleAppIndexToInteractiveMode();
+        if (strategy == null) {
+            StrategyFactory factory = profile.getDefaultStrategyFactory();
+            StrategyProperties sp = factory.getSettingsDefinition()
+                    .getDefaultPropertiesFactory().createDefaultStrategyProperties();
+            strategy = factory.create(proof, sp);
         }
+
+        proof.setActiveStrategy(strategy);
+
+        // It is important that OSS is refreshed AFTER the strategy has been
+        // set!
+        OneStepSimplifier.refreshOSS(proof);
+
+        var goalChooser = profile.<Proof, Goal>getSelectedGoalChooserBuilder().create();
+        ProverCore<Proof, Goal> prover =
+            AutoProvers.create(goalChooser, profile, allowParallel);
+        if (ptl != null) {
+            prover.addProverTaskObserver(ptl);
+        }
+        if (autoSaver != null) {
+            autoSaver.setProof(proof);
+            prover.addProverTaskObserver(autoSaver);
+        }
+
+        ProofSearchInformation<Proof, Goal> result;
+
+        result = prover.start(proof, goals, maxSteps, timeout,
+            strategy.isStopAtFirstNonCloseableGoal());
+
+        if (result.isError()) {
+            throw new RuntimeException(
+                "Proof attempt failed due to exception:" + result.getException(),
+                result.getException());
+        }
+
+        if (ptl != null) {
+            prover.removeProverTaskObserver(ptl);
+        }
+        if (autoSaver != null) {
+            prover.removeProverTaskObserver(autoSaver);
+            autoSaver.setProof(null);
+        }
+
+        return result;
     }
 
     /**

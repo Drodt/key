@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.gui.testgen;
 
 import java.util.List;
@@ -40,7 +41,7 @@ public class TGWorker extends SwingWorker<Void, Void> implements InterruptListen
 
     public void start() {
         final KeYMediator mediator = getMediator();
-        mediator.initiateAutoMode(originalProof, true, false);
+        mediator.initiateAutoMode(originalProof, true);
         mediator.addInterruptedListener(this);
         execute();
     }
@@ -56,7 +57,7 @@ public class TGWorker extends SwingWorker<Void, Void> implements InterruptListen
      */
     @Override
     public void done() {
-        getMediator().finishAutoMode(originalProof, true, true, null);
+        getMediator().finishAutoMode(originalProof, true, null);
         getMediator().removeInterruptedListener(this);
         originalProof = null;
     }
@@ -161,7 +162,6 @@ class MainWindowTestGenerator extends AbstractTestGenerator {
      */
     @Override
     protected void handleAllProofsPerformed(UserInterfaceControl ui) {
-        mediator.setInteractive(true);
         mediator.startInterface(true);
     }
 

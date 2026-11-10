@@ -1,9 +1,11 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.visitor;
 
 import de.uka.ilkd.key.java.ast.*;
+import de.uka.ilkd.key.java.ast.annotation.Annotation;
 import de.uka.ilkd.key.java.ast.ccatch.*;
 import de.uka.ilkd.key.java.ast.declaration.*;
 import de.uka.ilkd.key.java.ast.expression.*;
@@ -88,6 +90,11 @@ public interface Visitor {
     void performActionOnClassDeclaration(ClassDeclaration x);
 
     void performActionOnInterfaceDeclaration(InterfaceDeclaration x);
+
+    void performActionOnAnnotationInterfaceDeclaration(AnnotationInterfaceDeclaration x);
+
+    void performActionOnAnnotationInterfaceMemberDeclaration(
+            AnnotationInterfaceMemberDeclaration x);
 
     void performActionOnFieldDeclaration(FieldDeclaration x);
 
@@ -216,6 +223,8 @@ public interface Visitor {
     void performActionOnGuard(Guard x);
 
     void performActionOnLoopInit(LoopInit x);
+
+    void performActionOnAnnotation(Annotation annot);
 
     void performActionOnAssert(Assert assert1);
 

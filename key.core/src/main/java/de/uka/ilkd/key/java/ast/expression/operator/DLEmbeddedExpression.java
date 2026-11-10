@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2,
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.ast.expression.operator;
 
 import java.util.List;
@@ -121,7 +122,7 @@ public class DLEmbeddedExpression extends Operator {
         final ProgramElementName programName =
             qualifier.isEmpty() ? new ProgramElementName(name)
                     : new ProgramElementName(name, qualifier);
-        TypeRef tr = new TypeRef(programName, 0, null, containingClass);
+        TypeRef tr = new TypeRef(programName, ImmutableList.of(), 0, null, containingClass);
         ExecutionContext ec = new ExecutionContext(tr, null, null);
 
         for (int i = 0; i < actual; i++) {

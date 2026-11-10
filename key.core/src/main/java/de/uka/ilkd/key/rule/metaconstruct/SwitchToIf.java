@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule.metaconstruct;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import de.uka.ilkd.key.java.ast.expression.Expression;
 import de.uka.ilkd.key.java.ast.expression.operator.BinaryOperator;
 import de.uka.ilkd.key.java.ast.expression.operator.New;
 import de.uka.ilkd.key.java.ast.reference.ExecutionContext;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.java.ast.statement.*;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.VariableNamer;
@@ -59,9 +61,11 @@ public class SwitchToIf extends ProgramTransformer {
 
         final ExecutionContext ec = insts.getExecutionContext();
         ProgramVariable exV =
-            KeYJavaASTFactory.localVariable(name, sw.getExpression().getKeYJavaType(services, ec));
+            KeYJavaASTFactory.localVariable(name,
+                new TypeRef(sw.getExpression().getKeYJavaType(services, ec)));
         Statement s =
-            KeYJavaASTFactory.declare(name, sw.getExpression().getKeYJavaType(services, ec));
+            KeYJavaASTFactory.declare(name,
+                new TypeRef(sw.getExpression().getKeYJavaType(services, ec)));
 
         final var changeBreakResult = changeBreaks(sw, newBreak, true);
         sw = (Switch) changeBreakResult.result;

@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.strategy;
 
 import java.util.HashSet;
@@ -8,6 +9,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import de.uka.ilkd.key.ldt.HeapLDT;
+import de.uka.ilkd.key.logic.op.Equality;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.rule.BuiltInRule;
@@ -17,6 +19,7 @@ import de.uka.ilkd.key.strategy.feature.*;
 import de.uka.ilkd.key.strategy.termProjection.*;
 import de.uka.ilkd.key.strategy.termfeature.*;
 import de.uka.ilkd.key.strategy.termgenerator.HeapGenerator;
+import de.uka.ilkd.key.util.PerfScope;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
@@ -184,6 +187,7 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy implements Compo
         final int pullOutHeapSize = getHeapSizeBound();
         bindRuleSet(d, "pull_out_heap",
             pullOutHeapSize <= 0 ? inftyConst() : pullOutHeap(pullOutHeapSize));
+        bindRuleSet(d, "derive_inequality", longConst(DERIVE_INEQUALITY));
         bindRuleSet(d, "simplify_heap_high_costs", inftyConst());
 
         bindRuleSet(d, "javaIntegerSemantics",
@@ -493,6 +497,19 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy implements Compo
     private RuleSetDispatchFeature setupApprovalDispatcher() {
         final RuleSetDispatchFeature d = new RuleSetDispatchFeature();
 
+        // Only derive a disequality that is not known yet. The same disequality follows from
+        // every location the two objects read differently, so a duplicate-application check does
+        // not recognise those derivations as duplicates: their instantiations differ while their
+        // conclusion does not. Comparing the conclusion against the succedent does.
+        final TermBuffer succedentFormula = new TermBuffer();
+        final TermBuffer firstObject = new TermBuffer();
+        final TermBuffer secondObject = new TermBuffer();
+        bindRuleSet(d, "derive_inequality",
+            let(firstObject, instOf("o"), let(secondObject, instOf("o2"),
+                sum(succedentFormula, SequentFormulasGenerator.succedent(),
+                    not(applyTF(succedentFormula,
+                        or(opSub(Equality.EQUALS, eq(firstObject), eq(secondObject)),
+                            opSub(Equality.EQUALS, eq(secondObject), eq(firstObject)))))))));
         bindRuleSet(d, "inReachableStateImplication", NonDuplicateAppModPositionFeature.INSTANCE);
         bindRuleSet(d, "limitObserver", NonDuplicateAppModPositionFeature.INSTANCE);
         bindRuleSet(d, "partialInvAxiom", NonDuplicateAppModPositionFeature.INSTANCE);
@@ -616,11 +633,11 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy implements Compo
             @NonNull PosInOccurrence pio,
             @NonNull GOAL goal,
             @NonNull MutableState mState) {
-        var time = System.nanoTime();
+        final long time = PerfScope.start();
         try {
             return costComputationF.computeCost(app, pio, goal, mState);
         } finally {
-            PERF_COMPUTE.addAndGet(System.nanoTime() - time);
+            PerfScope.stop(PERF_COMPUTE, time);
         }
     }
 
@@ -636,12 +653,12 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy implements Compo
     @Override
     public final boolean isApprovedApp(RuleApp app,
             PosInOccurrence pio, Goal goal) {
-        var time = System.nanoTime();
+        final long time = PerfScope.start();
         try {
             return !(approvalF.computeCost(app, pio, goal,
                 new MutableState()) == TopRuleAppCost.INSTANCE);
         } finally {
-            PERF_APPROVE.addAndGet(System.nanoTime() - time);
+            PerfScope.stop(PERF_APPROVE, time);
         }
     }
 
@@ -649,11 +666,11 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy implements Compo
     public RuleAppCost instantiateApp(RuleApp app,
             PosInOccurrence pio, Goal goal,
             MutableState mState) {
-        var time = System.nanoTime();
+        final long time = PerfScope.start();
         try {
             return instantiationF.computeCost(app, pio, goal, mState);
         } finally {
-            PERF_INSTANTIATE.addAndGet(System.nanoTime() - time);
+            PerfScope.stop(PERF_INSTANTIATE, time);
         }
     }
 

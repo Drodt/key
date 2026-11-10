@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 // This file is part of KeY - Integrated Deductive Software Design
 //
 // Copyright (C) 2001-2011 Universitaet Karlsruhe (TH), Germany
@@ -51,19 +52,15 @@ public class ConstructorNormalformBuilder extends JavaTransformerAbstract {
         return cd.getFieldByName(PipelineConstants.IMPLICIT_ENCLOSING_THIS);
     }
 
-    private ConstructorDeclaration attachDefaultConstructor(ClassOrInterfaceDeclaration cd) {
+    private ConstructorDeclaration attachEmptyDefaultConstructor(ClassOrInterfaceDeclaration cd) {
         // attach Java original
         if (!cd.isInterface() && cd.getConstructors().isEmpty()) {
             cd.addConstructor(Modifier.DefaultKeyword.PUBLIC);
         }
-        // attach normalform
-        var body = new BlockStmt();
-        body.addStatement(new MethodCallExpr(new SuperExpr(),
-            PipelineConstants.CONSTRUCTOR_NORMALFORM_IDENTIFIER));
-        addInitializers(cd, body, 0);
+        // create empty default constructor template for normalform()
         final ConstructorDeclaration constructor = new ConstructorDeclaration();
         constructor.setModifiers(Modifier.DefaultKeyword.PUBLIC);
-        constructor.setBody(body);
+        constructor.setBody(new BlockStmt());
         return constructor;
     }
 
@@ -129,7 +126,7 @@ public class ConstructorNormalformBuilder extends JavaTransformerAbstract {
 
         if (outerVars != null && !outerVars.isEmpty()) {
             if (parameters.isEmpty()) {
-                attachDefaultConstructor(cd);
+                attachEmptyDefaultConstructor(cd);
             }
 
             for (var v : outerVars) {
@@ -139,7 +136,7 @@ public class ConstructorNormalformBuilder extends JavaTransformerAbstract {
 
         if (implictParameter != null) {
             if (parameters.isEmpty()) {
-                attachDefaultConstructor(cd);
+                attachEmptyDefaultConstructor(cd);
             }
             parameters.add(implictParameter);
         }
@@ -292,7 +289,7 @@ public class ConstructorNormalformBuilder extends JavaTransformerAbstract {
                 constructors.add(anonConstr);
 
             if (constructors.isEmpty()) {
-                final ConstructorDeclaration defaultConstructor = attachDefaultConstructor(cd);
+                final ConstructorDeclaration defaultConstructor = attachEmptyDefaultConstructor(cd);
                 constructors.add(defaultConstructor);
             }
 

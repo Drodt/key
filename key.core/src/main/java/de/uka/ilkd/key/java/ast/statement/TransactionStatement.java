@@ -1,28 +1,31 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.ast.statement;
 
 import java.util.List;
 
-import de.uka.ilkd.key.java.*;
-import de.uka.ilkd.key.java.ast.*;
+import de.uka.ilkd.key.java.ast.Comment;
+import de.uka.ilkd.key.java.ast.PositionInfo;
+import de.uka.ilkd.key.java.ast.ProgramElement;
+import de.uka.ilkd.key.java.ast.SourceData;
 import de.uka.ilkd.key.java.visitor.Visitor;
 import de.uka.ilkd.key.rule.MatchConditions;
 
-import com.github.javaparser.ast.key.KeyTransactionStatement;
+import com.github.javaparser.ast.key.KeyTransactionStmt;
 
 public class TransactionStatement extends JavaStatement {
-    private final KeyTransactionStatement.TransactionType type;
+    private final KeyTransactionStmt.TransactionType type;
 
-    public TransactionStatement(KeyTransactionStatement.TransactionType type) {
+    public TransactionStatement(KeyTransactionStmt.TransactionType type) {
         super();
         this.type = type;
     }
 
     public TransactionStatement(
             PositionInfo pi, List<Comment> c,
-            KeyTransactionStatement.TransactionType type) {
+            KeyTransactionStmt.TransactionType type) {
         super(pi, c);
         this.type = type;
     }

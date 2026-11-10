@@ -1,12 +1,14 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.speclang;
 
 import java.util.*;
 
 import de.uka.ilkd.key.java.Services;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.label.OriginTermLabel;
@@ -125,7 +127,7 @@ public class ContractFactory {
      */
     public FunctionalOperationContract addPost(FunctionalOperationContract old,
             InitiallyClause ini) {
-        final LocationVariable selfVar = tb.selfVar(ini.getKJT(), true);
+        final LocationVariable selfVar = tb.selfVar(new TypeRef(ini.getKJT()), true);
         return addPost(old, ini.getClause(selfVar, services), null, null, null, null, null);
     }
 

@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2,
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.prover.caches;
 
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
-import org.key_project.util.ConcurrentLruCache;
+import org.key_project.util.GenerationalCache;
 import org.key_project.util.collection.ImmutableList;
 
 /// Direct-mapped cache of lists of formulas (potential instantiations of if-formulas of taclets)
@@ -34,11 +35,11 @@ public class AssumesInstantiationCachePool<Node> {
     /// (each entry is one small [AssumesInstantiationCache]).
     private static final int CACHE_CAPACITY = 64;
 
-    public final ConcurrentLruCache<Node, AssumesInstantiationCache> cacheMgr =
-        new ConcurrentLruCache<>(CACHE_CAPACITY);
+    public final GenerationalCache<Node, AssumesInstantiationCache> cacheMgr =
+        new GenerationalCache<>(CACHE_CAPACITY);
 
     public AssumesInstantiationCache getCache(Node n) {
-        // cacheMgr is a ConcurrentLruCache; get/putIfAbsent/clear/remove are individually atomic,
+        // cacheMgr is a GenerationalCache; get/putIfAbsent/clear/remove are individually atomic,
         // so no external synchronization is needed. The create-then-putIfAbsent idiom below already
         // resolves a concurrent-miss race (the loser adopts the winner's cache via the return).
         AssumesInstantiationCache cache = cacheMgr.get(n);
@@ -59,7 +60,7 @@ public class AssumesInstantiationCachePool<Node> {
     }
 
     public void release(Node n) {
-        AssumesInstantiationCache cache = cacheMgr.remove(n);
+        final AssumesInstantiationCache cache = cacheMgr.remove(n);
         if (cache != null) {
             cache.reset();
         }

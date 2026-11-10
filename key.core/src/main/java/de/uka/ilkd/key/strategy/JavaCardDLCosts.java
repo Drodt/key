@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.strategy;
 
 /*
@@ -125,4 +126,10 @@ final class HeapSelectCost {
 
     /** {@code hide_auxiliary_eq_const}: same, for the constant-valued case. */
     static final long HIDE_AUXILIARY_EQ_CONST = -500;
+
+    /**
+     * {@code derive_inequality}: two objects whose reads of one field differ are different; the
+     * disequality feeds the assumes clauses of the select simplification rules.
+     */
+    static final long DERIVE_INEQUALITY = -2000;
 }

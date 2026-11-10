@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.util;
 
 import java.util.LinkedHashMap;
@@ -38,7 +39,9 @@ import org.jspecify.annotations.Nullable;
  * harmless when the value depends on when it was first stored -- for such caches the eviction
  * order can change results, and {@link ConcurrentLruCache} (exact, single-lock) must be used.
  * One-question test: <em>"if this entry were thrown away and computed again later, could the new
- * value be different?"</em> No &rarr; this class. Yes &rarr; {@link ConcurrentLruCache}.
+ * value be different?"</em> No &rarr; this class, or {@link GenerationalCache} for a cache that
+ * the workers read far more often than they insert into: it reads without any lock and keeps
+ * every entry that is in use. Yes &rarr; {@link ConcurrentLruCache}.
  *
  * <p>
  * The total capacity is still hard-bounded (each of the {@code stripes} segments holds at most

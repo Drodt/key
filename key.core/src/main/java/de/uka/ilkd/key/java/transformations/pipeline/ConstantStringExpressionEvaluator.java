@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 // This file is part of KeY - Integrated Deductive Software Design
 //
 // Copyright (C) 2001-2011 Universitaet Karlsruhe (TH), Germany
@@ -28,6 +29,10 @@ import com.github.javaparser.ast.comments.LineComment;
 import com.github.javaparser.ast.comments.MarkdownComment;
 import com.github.javaparser.ast.comments.TraditionalJavadocComment;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.jml.doc.JmlDoc;
+import com.github.javaparser.ast.jml.doc.JmlDocDeclaration;
+import com.github.javaparser.ast.jml.doc.JmlDocStmt;
+import com.github.javaparser.ast.jml.doc.JmlDocType;
 import com.github.javaparser.ast.key.*;
 import com.github.javaparser.ast.key.sv.*;
 import com.github.javaparser.ast.modules.ModuleDeclaration;
@@ -689,7 +694,7 @@ public class ConstantStringExpressionEvaluator extends JavaTransformerAbstract {
         }
 
         @Override
-        public void visit(KeyCatchAllStatement n, Object arg) {
+        public void visit(KeyCatchAllStmt n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
@@ -701,7 +706,7 @@ public class ConstantStringExpressionEvaluator extends JavaTransformerAbstract {
         }
 
         @Override
-        public void visit(KeyExecStatement n, Object arg) {
+        public void visit(KeyExecStmt n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
@@ -713,13 +718,13 @@ public class ConstantStringExpressionEvaluator extends JavaTransformerAbstract {
         }
 
         @Override
-        public void visit(KeyLoopScopeBlock n, Object arg) {
+        public void visit(KeyLoopScopeBlockStmt n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
 
         @Override
-        public void visit(KeyMergePointStatement n, Object arg) {
+        public void visit(KeyMergePointStmt n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
@@ -731,7 +736,7 @@ public class ConstantStringExpressionEvaluator extends JavaTransformerAbstract {
         }
 
         @Override
-        public void visit(KeyMethodCallStatement n, Object arg) {
+        public void visit(KeyMethodCallStmt n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
@@ -743,13 +748,7 @@ public class ConstantStringExpressionEvaluator extends JavaTransformerAbstract {
         }
 
         @Override
-        public void visit(KeyRangeExpression n, Object arg) {
-            super.visit(n, arg);
-            defaultAction(n, arg);
-        }
-
-        @Override
-        public void visit(KeyTransactionStatement n, Object arg) {
+        public void visit(KeyTransactionStmt n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
@@ -863,25 +862,19 @@ public class ConstantStringExpressionEvaluator extends JavaTransformerAbstract {
         }
 
         @Override
-        public void visit(JmlDocsBodyDeclaration n, Object arg) {
+        public void visit(JmlDocDeclaration n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
 
         @Override
-        public void visit(JmlDocsTypeDeclaration n, Object arg) {
+        public void visit(JmlDocType n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }
 
         @Override
-        public void visit(JmlDocsStatements n, Object arg) {
-            super.visit(n, arg);
-            defaultAction(n, arg);
-        }
-
-        @Override
-        public void visit(KeYMarkerStatement n, Object arg) {
+        public void visit(JmlDocStmt n, Object arg) {
             super.visit(n, arg);
             defaultAction(n, arg);
         }

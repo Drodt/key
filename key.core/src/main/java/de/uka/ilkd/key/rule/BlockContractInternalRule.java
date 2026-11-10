@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule;
 
 import java.util.List;
@@ -322,7 +323,7 @@ public class BlockContractInternalRule extends AbstractBlockContractRule {
             final Services services) {
         Goal validityGoal = result.tail().tail().head();
         final ProgramVariable exceptionParameter =
-            createLocalVariable("e", variables.exception.getKeYJavaType(), services);
+            createLocalVariable("e", variables.exception.getTypeReference(), services);
         configurator.setUpValidityGoal(validityGoal, new JTerm[] { updates[0], updates[1] },
             preconditions, new JTerm[] { assumptions[0], frameCondition }, exceptionParameter,
             conditionsAndClausesBuilder.terms);

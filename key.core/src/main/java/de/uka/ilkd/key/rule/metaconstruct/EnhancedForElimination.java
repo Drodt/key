@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule.metaconstruct;
 
 import java.util.LinkedHashMap;
@@ -194,14 +195,15 @@ public class EnhancedForElimination extends ProgramTransformer {
         final JavaInfo ji = services.getJavaInfo();
 
         // T[] arr = exp;
-        final KeYJavaType arrayType = expression.getKeYJavaType(services, data.execContext());
+        final TypeReference arrayType =
+            new TypeRef(expression.getKeYJavaType(services, data.execContext()));
         final ProgramVariable arrayVar = KeYJavaASTFactory.localVariable(services, ARR, arrayType);
         final Statement arrAssignment = KeYJavaASTFactory.declare(arrayVar, expression);
 
         data.setHead(KeYJavaASTFactory.block(arrAssignment));
 
         // for(int i; i < arr.length; i++)
-        final KeYJavaType intType = ji.getPrimitiveKeYJavaType("int");
+        final TypeReference intType = new TypeRef(ji.getPrimitiveKeYJavaType("int"));
         data.setIndexVariable(KeYJavaASTFactory.localVariable(services, INDEX, intType));
         final ILoopInit inits = KeYJavaASTFactory.loopInitZero(intType, data.indexVariable());
         final IGuard guard =
@@ -244,13 +246,13 @@ public class EnhancedForElimination extends ProgramTransformer {
                 ImmutableList.nil(), data.execContext().getTypeReference().getKeYJavaType());
 
         // local variable "it"
-        final KeYJavaType iteratorType = iteratorMethod.getReturnType();
+        final TypeReference iteratorType = new TypeRef(iteratorMethod.getReturnType());
         ProgramVariable iteratorVariable =
             KeYJavaASTFactory.localVariable(services, IT, iteratorType);
 
         // local variable "values"
-        final KeYJavaType seqType =
-            services.getTypeConverter().getKeYJavaType(PrimitiveType.JAVA_SEQ);
+        final TypeReference seqType =
+            new TypeRef(services.getTypeConverter().getKeYJavaType(PrimitiveType.JAVA_SEQ));
         data.setValuesVariable(KeYJavaASTFactory.localVariable(services, VALUES, seqType));
 
         // ghost \seq values = \seq_empty

@@ -21,7 +21,7 @@ public class OuterClass {
           @*/
         @javax.annotation.processing.Generated("RecordClassBuilder")
         public MyRecord(String test) {
-            //Created by RecordClassBuilder.java:131
+            //Created by RecordClassBuilder.java:132
             this.test = test;
         }
 
@@ -49,7 +49,7 @@ public class OuterClass {
 
         @Override()
         @javax.annotation.processing.Generated("RecordClassBuilder")
-        public final non_null String toString() {
+        public final /*@ non_null */ String toString() {
             return "MyRecord[" + "test=" + test + "]";
         }
 
@@ -68,17 +68,17 @@ public class OuterClass {
         private OuterClass $enclosingThis;
 
         @javax.annotation.processing.Generated()
-        static public model boolean $staticInv;
+        static public /*@ model */ boolean $staticInv;
 
         @javax.annotation.processing.Generated()
-        static public model boolean $staticInv_free;
+        static public /*@ model */ boolean $staticInv_free;
 
         public static MyRecord $allocate();
 
         public void $init(String test, OuterClass $ENCLOSING_THIS) {
             super.$init();
             this.$enclosingThis = $ENCLOSING_THIS;
-            //Created by RecordClassBuilder.java:131
+            //Created by RecordClassBuilder.java:132
             this.test = test;
         }
 
@@ -99,10 +99,10 @@ public class OuterClass {
     static private boolean $classPrepared;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv;
+    static public /*@ model */ boolean $staticInv;
 
     @javax.annotation.processing.Generated()
-    static public model boolean $staticInv_free;
+    static public /*@ model */ boolean $staticInv_free;
 
     public static OuterClass $allocate();
 
@@ -110,7 +110,6 @@ public class OuterClass {
     }
 
     public void $init() {
-        super.$init();
         super.$init();
     }
 

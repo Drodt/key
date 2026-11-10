@@ -30,9 +30,9 @@ final class Mapping extends Record {
             from = "abc";
             to = "def";
         }
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.from = from;
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.to = to;
     }
 
@@ -60,7 +60,7 @@ final class Mapping extends Record {
 
     @Override()
     @javax.annotation.processing.Generated("RecordClassBuilder")
-    public final non_null String toString() {
+    public final /*@ non_null */ String toString() {
         return "Mapping[" + "from=" + from + "," + "to=" + to + "]";
     }
 }

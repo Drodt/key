@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.scripts;
 
 import java.util.*;
@@ -36,6 +37,7 @@ import org.jspecify.annotations.Nullable;
 
 import static de.uka.ilkd.key.logic.equality.IrrelevantTermLabelsProperty.IRRELEVANT_TERM_LABELS_PROPERTY;
 import static de.uka.ilkd.key.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
+import static de.uka.ilkd.key.proof.RuleAppIndexMode.INTERACTIVE;
 
 /**
  * Command that applies a calculus rule All parameters are passed as strings and converted by the
@@ -308,7 +310,6 @@ public class RuleCommand extends AbstractCommand {
         TacletFilter filter = new TacletNameFilter(p.rulename);
         Goal g = state.getFirstOpenAutomaticGoal();
         RuleAppIndex index = g.ruleAppIndex();
-        index.autoModeStopped();
 
         ImmutableList<TacletApp> allApps = ImmutableList.nil();
         for (SequentFormula sf : g.node().sequent().antecedent()) {
@@ -317,7 +318,7 @@ public class RuleCommand extends AbstractCommand {
             }
 
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
-                new PosInOccurrence(sf, PosInTerm.getTopLevel(), true), services));
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), true), services, INTERACTIVE));
         }
 
         for (SequentFormula sf : g.node().sequent().succedent()) {
@@ -326,7 +327,7 @@ public class RuleCommand extends AbstractCommand {
             }
 
             allApps = allApps.append(index.getTacletAppAtAndBelow(filter,
-                new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), services));
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), services, INTERACTIVE));
         }
 
         return allApps;
@@ -341,8 +342,8 @@ public class RuleCommand extends AbstractCommand {
      * @param sf The {@link SequentFormula} to check.
      * @return true if <code>sf</code> matches.
      */
-    private boolean isSequentFormulaSearchedFor(Parameters p, SequentFormula sf, Services services)
-            throws ScriptException {
+    private boolean isSequentFormulaSearchedFor(Parameters p, SequentFormula sf,
+            Services services) {
         Term term = sf.formula();
         final boolean satisfiesFormulaParameter =
             p.formula != null && RENAMING_TERM_PROPERTY.equalsModThisProperty(term, p.formula);

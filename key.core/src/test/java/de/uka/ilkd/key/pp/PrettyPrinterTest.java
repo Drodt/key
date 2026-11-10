@@ -1,9 +1,11 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.pp;
 
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.op.LocationVariable;
 
@@ -17,7 +19,8 @@ class PrettyPrinterTest {
         // This is important for saving instantiations (see #3071)
         PrettyPrinter pp = PrettyPrinter.purePrinter();
         ProgramElementName name = new ProgramElementName("x");
-        LocationVariable variable = new LocationVariable(name, KeYJavaType.VOID_TYPE);
+        LocationVariable variable = new LocationVariable(name,
+            new TypeRef(KeYJavaType.VOID_TYPE));
         pp.printFragment(variable);
         Assertions.assertEquals("x", pp.result());
     }

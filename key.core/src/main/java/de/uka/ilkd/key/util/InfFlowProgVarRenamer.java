@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.util;
 
 import java.util.Map;
@@ -140,14 +141,14 @@ public class InfFlowProgVarRenamer extends TermBuilder {
         if (pv instanceof LocationVariable lv) {
             if (lv.getKeYJavaType() != null) {
                 return new LocationVariable(new ProgramElementName(newName.toString()),
-                    lv.getKeYJavaType(),
+                    lv.getTypeReference(),
                     lv.getContainerType(), lv.isStatic(), lv.isModel());
             } else {
                 return new LocationVariable(new ProgramElementName(newName.toString()), lv.sort());
             }
         } else if (pv instanceof ProgramConstant pc) {
             return new ProgramConstant(new ProgramElementName(newName.toString()),
-                pc.getKeYJavaType(),
+                pc.getTypeReference(),
                 pc.getContainerType(), pc.isStatic(), pc.getCompileTimeConstant());
         } else {
             throw new IllegalArgumentException("Unknown type for pv: " + pv);

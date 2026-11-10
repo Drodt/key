@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule;
 
 import java.util.LinkedHashMap;
@@ -196,7 +197,8 @@ public abstract class AbstractLoopInvariantRule implements BuiltInRule {
         for (ProgramVariable pv : localOuts) {
             final String pvBeforeLoopName = tb.newName(pv.name() + "Before_LOOP");
             final LocationVariable pvBeforeLoop =
-                new LocationVariable(new ProgramElementName(pvBeforeLoopName), pv.getKeYJavaType());
+                new LocationVariable(new ProgramElementName(pvBeforeLoopName),
+                    pv.getTypeReference());
             progVarNS.addSafely(pvBeforeLoop);
             beforeLoopUpdate =
                 tb.parallel(beforeLoopUpdate, tb.elementary(pvBeforeLoop, tb.var(pv)));

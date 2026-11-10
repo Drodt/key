@@ -1,5 +1,5 @@
 @javax.annotation.processing.Generated("RecordClassBuilder")
-final class MyRecord extends Record {
+final /*@ nullable */ class MyRecord extends Record {
 
     @javax.annotation.processing.Generated("RecordClassBuilder")
     private final String test;
@@ -12,13 +12,13 @@ final class MyRecord extends Record {
       @*/
     @javax.annotation.processing.Generated("RecordClassBuilder")
     public MyRecord(String test) {
-        //Created by RecordClassBuilder.java:131
+        //Created by RecordClassBuilder.java:132
         this.test = test;
     }
 
     @Override()
     @javax.annotation.processing.Generated("RecordClassBuilder")
-    public final non_null String toString() {
+    public final /*@ non_null */ String toString() {
         return "MyRecord[" + "test=" + test + "]";
     }
 

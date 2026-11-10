@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.rule.metaconstruct;
 
 import de.uka.ilkd.key.java.KeYJavaASTFactory;
@@ -348,7 +349,7 @@ public final class MethodCall extends ProgramTransformer {
             if (newContextAsExp.getKeYJavaType(services, execContext) != targetType) {
                 castedThisVar = KeYJavaASTFactory.declare(
                     new ProgramElementName(services.getTermBuilder().newName("target")),
-                    KeYJavaASTFactory.cast(newContextAsExp, targetType), targetType);
+                    KeYJavaASTFactory.cast(newContextAsExp, targetType), new TypeRef(targetType));
 
                 localContext = (ReferencePrefix) castedThisVar.getVariableSpecifications().get(0)
                         .getProgramVariable();
@@ -401,7 +402,7 @@ public final class MethodCall extends ProgramTransformer {
 
             final IProgramVariable paramVar = KeYJavaASTFactory.localVariable(services,
                 originalParamVar.getProgramElementName().toString(),
-                originalParamVar.getKeYJavaType());
+                originalParamVar.getTypeReference());
 
             // this condition checks whether this is the last formal parameter
             // and is used

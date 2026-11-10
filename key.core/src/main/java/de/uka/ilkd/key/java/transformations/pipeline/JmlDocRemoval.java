@@ -1,14 +1,12 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.transformations.pipeline;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
-import com.github.javaparser.ast.key.JmlDocModifier;
-import com.github.javaparser.ast.key.JmlDocsBodyDeclaration;
-import com.github.javaparser.ast.key.JmlDocsStatements;
-import com.github.javaparser.ast.key.JmlDocsTypeDeclaration;
+import com.github.javaparser.ast.jml.doc.*;
 import org.jspecify.annotations.NonNull;
 
 /**
@@ -30,9 +28,9 @@ public class JmlDocRemoval extends JavaTransformerAbstract {
                 }
             }
 
-            if (it instanceof JmlDocsStatements ||
-                    it instanceof JmlDocsTypeDeclaration ||
-                    it instanceof JmlDocsBodyDeclaration) {
+            if (it instanceof JmlDocStmt ||
+                    it instanceof JmlDocType ||
+                    it instanceof JmlDocDeclaration) {
                 it.remove();
             }
         });

@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.gui;
 
 import java.awt.*;
@@ -143,7 +144,7 @@ public class ProofScriptWorker extends SwingWorker<@Nullable Object, ProofScript
     public void init() {
         mediator.initiateAutoMode(initiallySelectedGoal != null ? initiallySelectedGoal.proof()
                 : mediator.getSelectedProof(),
-            true, false);
+            true);
         mediator.addInterruptedListener(this);
         makeDialog();
         monitor.setVisible(true);
@@ -169,7 +170,7 @@ public class ProofScriptWorker extends SwingWorker<@Nullable Object, ProofScript
 
         final Proof proof = initiallySelectedGoal != null ? initiallySelectedGoal.proof()
                 : mediator.getSelectedProof();
-        mediator.finishAutoMode(proof, true, true, this::selectGoalOrNode);
+        mediator.finishAutoMode(proof, true, this::selectGoalOrNode);
     }
 
     private void selectGoalOrNode() {

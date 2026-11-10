@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.taclettranslation.lemma;
 
 import java.util.HashSet;
@@ -34,7 +35,7 @@ public class TestGenericRemovingLemmaGenerator {
         Set<Sort> sorts = new HashSet<>();
         collectSorts(result.getFormula(TacletForTests.services()), sorts);
 
-        Name nameG = new Name("G");
+        Name nameG = new Name("P_G");
         boolean found = false;
         for (Sort sort : sorts) {
             Assertions.assertFalse(sort instanceof GenericSort, "No generic sorts must survive");
@@ -43,7 +44,7 @@ public class TestGenericRemovingLemmaGenerator {
                 found = true;
             }
         }
-        Assertions.assertTrue(found, "There is a proxy sort of the name 'G'");
+        Assertions.assertTrue(found, "There is a proxy sort of the name 'P_G'");
     }
 
     private void collectSorts(JTerm term, Set<Sort> sorts) {

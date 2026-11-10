@@ -1,16 +1,19 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.ast.reference;
 
 import de.uka.ilkd.key.java.ast.*;
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.annotation.Annotation;
 import de.uka.ilkd.key.java.ast.expression.Expression;
 import de.uka.ilkd.key.java.visitor.Visitor;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.rule.MatchConditions;
 
 import org.key_project.util.ExtList;
+import org.key_project.util.collection.ImmutableList;
 
 /**
  * TypeReferences reference Types by name. A TypeReference can refer to
@@ -39,6 +42,11 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
      */
     protected final ProgramElementName name;
 
+    /**
+     * Java Annotations (like @NonNull or @Rep).
+     */
+    protected final ImmutableList<Annotation> annotations;
+
 
     /**
      * Constructor for the transformation of RECODER ASTs to KeY.
@@ -54,16 +62,22 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
         super(children);
         prefix = children.get(ReferencePrefix.class);
         name = children.get(ProgramElementName.class);
+        annotations = ImmutableList.of(children.collect(Annotation.class));
         dimensions = dim;
     }
 
 
     protected TypeReferenceImp(ProgramElementName name) {
-        this(name, 0, null);
+        this(name, ImmutableList.of(), 0, null);
     }
 
-    protected TypeReferenceImp(ProgramElementName name, int dimension, ReferencePrefix prefix) {
+    protected TypeReferenceImp(
+            ProgramElementName name,
+            ImmutableList<Annotation> annotations,
+            int dimension,
+            ReferencePrefix prefix) {
         this.name = name;
+        this.annotations = annotations;
         this.dimensions = dimension;
         this.prefix = prefix;
     }
@@ -116,6 +130,11 @@ public abstract class TypeReferenceImp extends JavaNonTerminalProgramElement
             }
         }
         throw new ArrayIndexOutOfBoundsException();
+    }
+
+    @Override
+    public ImmutableList<Annotation> getAnnotations() {
+        return annotations;
     }
 
     /**

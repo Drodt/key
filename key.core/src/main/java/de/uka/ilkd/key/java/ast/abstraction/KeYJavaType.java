@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.ast.abstraction;
 
 import java.util.Comparator;
@@ -97,7 +98,7 @@ public class KeYJavaType implements Type {
      *
      * @return the default value of the given type according to JLS Sect. 4.5.5
      */
-    public Literal getDefaultValue() {
+    public @Nullable Literal getDefaultValue() {
         if (javaType == null) {
             return null;
         }

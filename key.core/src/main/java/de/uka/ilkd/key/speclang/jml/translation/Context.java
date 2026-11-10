@@ -1,9 +1,11 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.speclang.jml.translation;
 
 import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
+import de.uka.ilkd.key.java.ast.reference.TypeRef;
 import de.uka.ilkd.key.logic.TermBuilder;
 import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.logic.op.LocationVariable;
@@ -32,7 +34,7 @@ public record Context(@NonNull SpecMathMode specMathMode, @NonNull KeYJavaType c
      */
     private static @Nullable LocationVariable createSelfVar(TermBuilder tb, KeYJavaType classType,
             boolean isStaticContext) {
-        return isStaticContext ? null : tb.selfVar(classType, false);
+        return isStaticContext ? null : tb.selfVar(new TypeRef(classType), false);
     }
 
     /**

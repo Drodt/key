@@ -1,6 +1,7 @@
 /* This file is part of KeY - https://key-project.org
- * KeY is licensed under the GNU General Public License Version 2
- * SPDX-License-Identifier: GPL-2.0-only */
+ * KeY is licensed under the GNU General Public License Version 2, 
+ * or (at your option) any later version.
+ * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.ast.reference;
 
 import de.uka.ilkd.key.java.Services;
@@ -12,13 +13,15 @@ import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.rule.AbstractProgramElement;
 import de.uka.ilkd.key.rule.MatchConditions;
 
+import org.key_project.util.collection.ImmutableList;
+
 
 public class SchemaTypeReference extends TypeReferenceImp implements AbstractProgramElement {
 
     private final String fullName;
 
     public SchemaTypeReference(ProgramElementName name, int dimension, ReferencePrefix prefix) {
-        super(name, dimension, prefix);
+        super(name, ImmutableList.of(), dimension, prefix);
         final StringBuilder sb = new StringBuilder();
 
         // as no inner classes prefix must be package reference
