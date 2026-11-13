@@ -8,6 +8,7 @@ package org.key_project.rusty.ast.expr;
 import java.util.Objects;
 
 import org.key_project.logic.IntIterator;
+import org.key_project.prover.rules.matcher.vm.ProgramChildrenMatcher;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.SourceData;
@@ -66,8 +67,20 @@ public class ContextBlockExpression extends BlockExpression {
     }
 
     @Override
-    public @Nullable MatchConditions match(SourceData source, @Nullable MatchConditions mc) {
+    public @Nullable MatchConditions match(SourceData sourceData, MatchConditions mc) {
+        return match(sourceData, mc, null);
+    }
+
+    public @Nullable MatchConditions match(SourceData source, MatchConditions mc,
+            @Nullable ProgramChildrenMatcher activeStatements) {
+        assert getPrefixLength() > 0;
         SourceData newSource = source;
+
+        if (mc.getInstantiations().getContextInstantiation() != null) {
+            // Currently we do not allow to context statement block
+            // occurrences in find or assumes clauses
+            return null;
+        }
 
         final RustyProgramElement src = newSource.getSource();
         final Services services = source.getServices();
@@ -110,7 +123,11 @@ public class ContextBlockExpression extends BlockExpression {
         }
 
         // matching children
-        mc = matchChildren(newSource, mc, 0);
+        if (activeStatements != null && newSource.getChildPos() >= 0) {
+            mc = matchActiveStatements(newSource, mc, activeStatements);
+        } else {
+            mc = matchChildren(newSource, mc, 0);
+        }
 
         if (mc == null) {
             return null;
@@ -121,6 +138,33 @@ public class ContextBlockExpression extends BlockExpression {
                 services);
 
         return mc;
+    }
+
+    /// Matches the active statements via the supplied matcher: this block's children from index
+    /// `offset` against the children of `newSource.getElement()` starting at
+    /// `newSource.getChildPos()`. This mirrors
+    /// [#matchChildren(SourceData, MatchConditions, int)] for the case where every active
+    /// statement consumes exactly one source child. On success the source position is advanced
+    /// exactly as `matchChildren` would, so the subsequent
+    /// [#makeContextInfoComplete] computes the same suffix start.
+    private @Nullable MatchConditions matchActiveStatements(SourceData newSource,
+            MatchConditions matchCond, ProgramChildrenMatcher activeStatements) {
+        final int startPos = newSource.getChildPos();
+        // number of active statements to match (each consumes exactly one source child)
+        final int n = getChildCount();
+        final RustyProgramElement parent = newSource.getElement();
+        if (parent.getChildCount() < startPos + n) {
+            // not enough source children -> matchChildren would also fail (null source child)
+            return null;
+        }
+        final MatchConditions result = (MatchConditions) activeStatements.matchChildrenFrom(
+            parent, startPos, matchCond, newSource.getServices());
+        if (result == null) {
+            return null;
+        }
+        // advance the source position past the matched children, as matchChildren would
+        newSource.setChildPos(startPos + n);
+        return result;
     }
 
     /// completes match of context block by adding the prefix end position and the suffix start

@@ -14,12 +14,15 @@ import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
-public class MatchModalOperatorSVInstruction implements MatchInstruction {
+/// Matches a modal-operator schema variable against a concrete Java modality kind: the source kind
+/// must be one of the kinds the schema variable ranges over, and the schema variable is
+/// instantiated with it.
+public final class MatchModalOperatorSVInstruction implements MatchInstruction {
     private final Set<RModality.RustyModalityKind> modalityKinds;
     private final ModalOperatorSV modalitySV;
 
-    public MatchModalOperatorSVInstruction(ModalOperatorSV op) {
-        this.modalitySV = op;
+    public MatchModalOperatorSVInstruction(ModalOperatorSV mod) {
+        this.modalitySV = mod;
         this.modalityKinds = modalitySV.getModalities().toSet();
     }
 
@@ -29,7 +32,13 @@ public class MatchModalOperatorSVInstruction implements MatchInstruction {
         if (actualElement instanceof RModality.RustyModalityKind kind
                 && modalityKinds.contains(kind)) {
             final SVInstantiations instantiations = (SVInstantiations) mc.getInstantiations();
-            return mc.setInstantiations(instantiations.add(modalitySV, kind, services));
+            // instantiate or agree: a schema variable that is already instantiated matches only
+            // the same modality kind again (SVInstantiations.add would silently overwrite)
+            final Object inst = instantiations.getInstantiation(modalitySV);
+            if (inst == null) {
+                return mc.setInstantiations(instantiations.add(modalitySV, kind, services));
+            }
+            return inst.equals(kind) ? mc : null;
         } else {
             return null;
         }

@@ -254,16 +254,16 @@ public class SVInstantiations
     /// @return the InstantiationEntry the SchemaVariable will be instantiated with, `null` if
     /// no
     /// instantiation is stored
-    public InstantiationEntry<?> getInstantiationEntry(SchemaVariable sv) {
-        return map.get(sv);
+    public <T> InstantiationEntry<T> getInstantiationEntry(SchemaVariable sv) {
+        return (InstantiationEntry<T>) map.get(sv);
     }
 
     /// returns the instantiation of the given SchemaVariable
     ///
     /// @return the Object the SchemaVariable will be instantiated with, null if no instantiation is
     /// stored
-    public Object getInstantiation(SchemaVariable sv) {
-        final InstantiationEntry<?> entry = getInstantiationEntry(sv);
+    public <T> @Nullable T getInstantiation(SchemaVariable sv) {
+        final InstantiationEntry<T> entry = getInstantiationEntry(sv);
         return entry == null ? null : entry.getInstantiation();
     }
 

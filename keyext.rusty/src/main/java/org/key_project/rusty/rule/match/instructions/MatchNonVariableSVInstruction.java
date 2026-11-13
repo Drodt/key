@@ -5,7 +5,6 @@
 package org.key_project.rusty.rule.match.instructions;
 
 import org.key_project.logic.LogicServices;
-import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
@@ -16,14 +15,16 @@ import org.key_project.rusty.logic.op.sv.VariableSV;
 /// are not a [VariableSV] or a [ProgramSV].
 /// For those see [MatchVariableSVInstruction] and [MatchProgramSVInstruction].
 public class MatchNonVariableSVInstruction extends MatchSchemaVariableInstruction {
-    public MatchNonVariableSVInstruction(OperatorSV op) {
+
+    protected MatchNonVariableSVInstruction(OperatorSV op) {
         super(op);
         assert !(op instanceof VariableSV || op instanceof ProgramSV);
     }
 
     @Override
-    public MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo mc,
+    protected MatchResultInfo match(Term instantiationCandidate, MatchResultInfo mc,
             LogicServices services) {
-        return addInstantiation((Term) actualElement, mc, services);
+        return addInstantiation(instantiationCandidate, mc, services);
     }
+
 }

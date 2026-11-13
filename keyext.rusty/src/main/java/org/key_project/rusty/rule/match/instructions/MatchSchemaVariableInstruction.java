@@ -5,42 +5,59 @@
 package org.key_project.rusty.rule.match.instructions;
 
 import org.key_project.logic.LogicServices;
+import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.ast.RustyProgramElement;
+import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static org.key_project.rusty.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
 
-public abstract class MatchSchemaVariableInstruction
-        implements MatchInstruction {
+/// Base of the schema-variable match instructions (`MatchVariableSVInstruction`,
+/// `MatchProgramSVInstruction`, `MatchNonVariableSVInstruction`, ...): holds the schema
+/// variable and provides [#addInstantiation], the common "instantiate or agree" step: a term
+/// candidate is checked for rigidness and either recorded as the schema variable's instantiation or
+/// compared (modulo renaming) against the instantiation it already has.
+///
+/// A candidate is either a term or a program element (an update's left-hand side, for example, is a
+/// program variable). The base routes each candidate to the typed method for its kind; a subclass
+/// implements [#match(Term, MatchResultInfo, LogicServices)] and, if its schema-variable
+/// kind can stand for program elements, overrides
+/// [#match(RustyProgramElement, MatchResultInfo, LogicServices)].
+public abstract class MatchSchemaVariableInstruction implements MatchInstruction {
     protected final @NonNull OperatorSV op;
 
     protected MatchSchemaVariableInstruction(@NonNull OperatorSV op) {
         this.op = op;
     }
 
-    /// Tries to add the pair <tt>(this,term)</tt> to the match conditions. If successful the
+    /// Tries to add the pair `(this,term)` to the match conditions. If successful the
     /// resulting conditions are returned, otherwise null. Failure is possible e.g. if this
-    /// schemavariable has been already matched to a term <tt>t2</tt> which is not unifiable with
-    /// the
+    /// schemavariable has been already matched to a term `t2` which is not unifiable with the
     /// given term.
-    protected final MatchResultInfo addInstantiation(Term term,
-            MatchResultInfo matchCond,
+    protected final MatchConditions addInstantiation(Term term, MatchResultInfo matchResultInfo,
             LogicServices services) {
         if (op.isRigid() && !term.isRigid()) {
             return null;
         }
 
-        final SVInstantiations inst = (SVInstantiations) matchCond.getInstantiations();
+        final MatchConditions matchCond = (MatchConditions) matchResultInfo;
+        final SVInstantiations inst = matchCond.getInstantiations();
 
         final Term t = inst.getTermInstantiation(op, services);
         if (t != null) {
+            // An already instantiated schema variable accepts a candidate exactly when it is
+            // equal to the instantiation modulo renaming. The proof-search queue relies on this:
+            // it indexes waiting rule applications by hashCodeModRenaming of the instantiation
+            // (QueueRuleApplicationManager), and that hash is only a safe filter as long as the
+            // comparison here is not more liberal than equality modulo renaming.
             if (!RENAMING_TERM_PROPERTY.equalsModThisProperty(t, term)) {
                 return null;
             } else {
@@ -55,19 +72,47 @@ public abstract class MatchSchemaVariableInstruction
         }
     }
 
-    /// tries to match the schema variable of this instruction with the specified
-    /// [RustyProgramElement] `instantiationCandidate` w.r.t. the given constraints by
-    /// [MatchResultInfo]
+    /// Routes the candidate to the typed match method for its kind. A candidate that is neither a
+    /// term nor a program element matches no schema variable.
+    @Override
+    public final @Nullable MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo mc,
+            LogicServices services) {
+        if (actualElement instanceof Term term) {
+            return match(term, mc, services);
+        }
+        if (actualElement instanceof RustyProgramElement pe) {
+            return match(pe, mc, services);
+        }
+        return null;
+    }
+
+    /// Matches the schema variable against a term candidate.
+    ///
+    /// @param instantiationCandidate the [Term] to be matched
+    /// @param mc the [MatchResultInfo] with the constraints accumulated so far
+    /// @param services the [Services]
+    /// @return the extended [MatchResultInfo], or `null` if the schema variable does
+    /// not match the term
+    protected abstract @Nullable MatchResultInfo match(Term instantiationCandidate,
+            MatchResultInfo mc, LogicServices services);
+
+    /// Matches the schema variable against a program element. Most schema-variable kinds stand for
+    /// terms and cannot match a program element, so this default fails; the program schema variable
+    /// overrides it.
     ///
     /// @param instantiationCandidate the [RustyProgramElement] to be matched
-    /// @param mc the [MatchResultInfo] with additional constraints (e.g. previous matches of
-    /// this instructions [SchemaVariable])
+    /// @param mc the [MatchResultInfo] with the constraints accumulated so far
     /// @param services the [Services]
-    /// @return `null` if no matches have been found or the new [MatchResultInfo] with
-    /// the pair ([SchemaVariable], [RustyProgramElement]) added
-    public MatchResultInfo match(RustyProgramElement instantiationCandidate,
+    /// @return the extended [MatchResultInfo], or `null` if the schema variable does
+    /// not match the program element
+    public @Nullable MatchResultInfo match(RustyProgramElement instantiationCandidate,
             MatchResultInfo mc,
             LogicServices services) {
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "matchSV(" + op.name() + ")";
     }
 }

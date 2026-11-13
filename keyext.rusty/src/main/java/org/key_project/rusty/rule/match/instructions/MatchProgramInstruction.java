@@ -14,6 +14,15 @@ import org.key_project.rusty.ast.SourceData;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.rule.MatchConditions;
 
+/// The _monolithic_ program matcher: matches the Java program of a modality by delegating to
+/// the pattern's own `ProgramElement.match(SourceData, MatchConditions)`, which walks the
+/// program AST with the per-construct `match` methods of the AST classes. The current element
+/// is the modality's [RustyBlock]; the whole program is consumed in this one instruction.
+///
+/// It is the safety net of the interpreter back-end: it matches a program the converted
+/// instructions do not cover (conversion off, the default, or a construct outside the
+/// single-source dispatch, e.g. a variable-arity list schema variable), and it is the main consumer
+/// of the AST `match` methods.
 public class MatchProgramInstruction implements MatchInstruction {
     private final RustyProgramElement pe;
 
@@ -24,10 +33,9 @@ public class MatchProgramInstruction implements MatchInstruction {
     @Override
     public MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo matchConditions,
             LogicServices services) {
-        final var rb = (RustyBlock) actualElement;
-        final MatchResultInfo result = pe.match(
-            new SourceData(rb.program(), -1, (Services) services),
+        return pe.match(
+            new SourceData(((RustyBlock) actualElement).program(), -1,
+                (Services) services),
             (MatchConditions) matchConditions);
-        return result;
     }
 }

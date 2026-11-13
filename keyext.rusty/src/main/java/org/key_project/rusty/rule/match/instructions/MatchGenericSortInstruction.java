@@ -15,8 +15,10 @@ import org.key_project.rusty.rule.inst.GenericSortCondition;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.inst.SortException;
 
-import org.jspecify.annotations.Nullable;
-
+/// Matches a generic sort of the pattern against the concrete sort found in the source (the sort
+/// of a parametric function's [GenericArgument]) by
+/// recording an identity [GenericSortCondition] in the instantiations: the generic sort must
+/// be (or already have been) instantiated with exactly that concrete sort.
 public class MatchGenericSortInstruction implements MatchInstruction {
     private final GenericSort genericSortOfOp;
 
@@ -24,20 +26,17 @@ public class MatchGenericSortInstruction implements MatchInstruction {
         this.genericSortOfOp = sort;
     }
 
-    /// Matches the generic sort of this instruction's parameter against the given
-    /// sort. If a match is possible the resulting match conditions are returned otherwise
-    /// `null` is returned.
+    /// Matches this instruction's generic sort against the given concrete sort by adding the
+    /// corresponding identity condition. If that is consistent with the instantiations so far the
+    /// resulting match conditions are returned, otherwise `null`.
     ///
-    /// @param dependingSortToMatch the [Sort] of the concrete function to be matched
+    /// @param dependingSortToMatch the concrete [Sort] found in the source
     /// @param matchConditions the [MatchResultInfo] accumulated so far
-    /// @return <code>null</code> if failed the resulting match conditions otherwise the resulting
-    /// [MatchResultInfo]
+    /// @return the resulting [MatchResultInfo], or `null` on failure
     private MatchResultInfo matchSorts(Sort dependingSortToMatch, MatchResultInfo matchConditions,
             LogicServices services) {
-        // This restriction has been dropped for free generic sorts to prove taclets correct
-        // assert !(s2 instanceof GenericSort)
-        // : "Sort s2 is not allowed to be of type generic.";
-        MatchResultInfo result;
+        // the source sort may itself be generic: proving a taclet correct matches schematic
+        // patterns against schematic terms
         final GenericSortCondition c =
             GenericSortCondition.createIdentityCondition(genericSortOfOp, dependingSortToMatch);
         try {
@@ -49,11 +48,12 @@ public class MatchGenericSortInstruction implements MatchInstruction {
         }
     }
 
+    /// {@inheritDoc}
     @Override
-    public @Nullable MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo mc,
+    public MatchResultInfo match(SyntaxElement actualElement, MatchResultInfo mc,
             LogicServices services) {
-        if (actualElement instanceof SortArg sa) {
-            return matchSorts(sa.sort(), mc, services);
+        if (actualElement instanceof SortArg(Sort sort)) {
+            return matchSorts(sort, mc, services);
         }
         return null;
     }

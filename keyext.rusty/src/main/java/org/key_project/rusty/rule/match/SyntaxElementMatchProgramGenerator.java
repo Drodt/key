@@ -15,12 +15,10 @@ import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.sort.*;
 
-import static org.key_project.rusty.rule.match.instructions.RustyDLMatchInstructionSet.*;
+import static org.key_project.rusty.rule.match.old_instructions.RustyDLMatchInstructionSet.*;
 
 /// This class generates a matching program for a given syntax element that can be
 /// interpreted by the virtual machine's interpreter
-///
-/// @see VMProgramInterpreter
 public class SyntaxElementMatchProgramGenerator {
     /// creates a matcher for the given pattern
     ///
