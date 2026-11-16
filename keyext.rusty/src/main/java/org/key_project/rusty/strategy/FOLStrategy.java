@@ -575,9 +575,7 @@ public class FOLStrategy extends AbstractFeatureStrategy implements ComponentStr
 
     @Override
     public Set<RuleSet> getResponsibilities(StrategyAspect aspect) {
-        var set = new HashSet<RuleSet>();
-        set.addAll(getDispatcher(aspect).ruleSets());
-        return set;
+        return new HashSet<>(getDispatcher(aspect).ruleSets());
     }
 
     @Override

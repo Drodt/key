@@ -50,7 +50,7 @@ public class ExpressionStatement implements Statement, PossibleProgramPrefix {
 
     @Override
     public String toString() {
-        return expression.toString() + ";";
+        return expression + ";";
     }
 
     @Override

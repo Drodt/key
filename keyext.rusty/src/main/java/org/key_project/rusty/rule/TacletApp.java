@@ -146,13 +146,11 @@ public abstract class TacletApp implements RuleApp {
         return result;
     }
 
-    /**
-     * collects all bound variables above the occurrence of the schemavariable whose prefix is given
-     *
-     * @param prefix the TacletPrefix of the schemavariable
-     * @param pos the posInOccurrence describing the position of the schemavariable
-     * @return set of the bound variables
-     */
+    /// collects all bound variables above the occurrence of the schemavariable whose prefix is given
+    ///
+    /// @param prefix the TacletPrefix of the schemavariable
+    /// @param pos the posInOccurrence describing the position of the schemavariable
+    /// @return set of the bound variables
     protected static boolean boundAtOccurrenceSet(TacletPrefix prefix,
             @Nullable PosInOccurrence pos,
             ImmutableSet<? extends QuantifiableVariable> freeVars) {

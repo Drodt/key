@@ -70,12 +70,10 @@ public class RustyDLMatchVMInstructionSet {
         return new BindVariablesInstruction(boundVars);
     }
 
-    /**
-     * returns the instruction for the specified variable
-     *
-     * @param op the {@link SchemaVariable} for which to get the instruction
-     * @return the instruction for the specified variable
-     */
+    /// returns the instruction for the specified variable
+    ///
+    /// @param op the [SchemaVariable] for which to get the instruction
+    /// @return the instruction for the specified variable
     public static MatchSchemaVariableInstruction getMatchInstructionForSV(
             SchemaVariable op) {
         return switch (op) {

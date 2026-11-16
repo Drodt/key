@@ -146,16 +146,12 @@ public class SpecificationRepository {
         return null;
     }
 
-    /**
-     * Registers the passed proof.
-     */
+    /// Registers the passed proof.
     public void registerProof(ProofOblInput po, Proof proof) {
         proofs.put(po, getProofs(po).add(proof));
     }
 
-    /**
-     * Unregisters the passed proof.
-     */
+    /// Unregisters the passed proof.
     public void removeProof(Proof proof) {
         for (Map.Entry<ProofOblInput, ImmutableSet<Proof>> entry : proofs.entrySet()) {
             ImmutableSet<Proof> sop = entry.getValue();

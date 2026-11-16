@@ -141,9 +141,7 @@ public final class RustProgramMatchPlanBuilder {
         return structuralPlan(progEl, null);
     }
 
-    /**
-     * Caches, per program-element class, whether it uses the generic {@code match} (no override).
-     */
+    /// Caches, per program-element class, whether it uses the generic `match` (no override).
     private static final Map<Class<?>, Boolean> GENERIC_MATCH = new ConcurrentHashMap<>();
 
     /// @return whether the element's class uses the generic

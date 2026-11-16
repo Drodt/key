@@ -105,12 +105,10 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
         disableInstantiate();
     }
 
-    /**
-     * Caches the information which strategies are responsible for which ruleset
-     *
-     * @param aspect the StrategyAspect for which the cache is created
-     * @param responsibilityMap the map used as cache for the specified aspect
-     */
+    /// Caches the information which strategies are responsible for which ruleset
+    ///
+    /// @param aspect the StrategyAspect for which the cache is created
+    /// @param responsibilityMap the map used as cache for the specified aspect
     private void initializeResponsibilityMap(StrategyAspect aspect,
             Map<RuleSet, List<ComponentStrategy>> responsibilityMap) {
         for (ComponentStrategy strategy : strategies) {
@@ -126,13 +124,11 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
             RuleSetDispatchFeature dispatcher) {
     }
 
-    /**
-     * checks for conflicts and resolves known ones (in case an unknown conflict is encountered the
-     * method fails
-     * with a runtime exception
-     *
-     * @return the feature implementing the conflict resolution
-     */
+    /// checks for conflicts and resolves known ones (in case an unknown conflict is encountered the
+    /// method fails
+    /// with a runtime exception
+    ///
+    /// @return the feature implementing the conflict resolution
     private RuleSetDispatchFeature resolveConflicts() {
         var dis = new RuleSetDispatchFeature();
         var dispatchers =

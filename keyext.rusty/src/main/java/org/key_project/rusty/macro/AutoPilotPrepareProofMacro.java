@@ -72,7 +72,7 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
     private static class AutoPilotStrategy implements Strategy<Goal> {
         private static final Name NAME = new Name("Autopilot filter strategy");
         private final Strategy<@NonNull Goal> delegate;
-        /** the modality cache used by this strategy */
+        /// the modality cache used by this strategy
         private final ModalityCache modalityCache = new ModalityCache();
 
         public AutoPilotStrategy(Proof proof) {

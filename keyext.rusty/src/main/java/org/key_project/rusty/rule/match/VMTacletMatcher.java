@@ -371,9 +371,7 @@ public class VMTacletMatcher implements TacletMatcher {
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
+    /// {@inheritDoc}
     @Override
     public @Nullable MatchResultInfo matchSV(@NonNull SchemaVariable sv,
             @NonNull SyntaxElement syntaxElement,

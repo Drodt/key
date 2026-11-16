@@ -132,9 +132,7 @@ public class ProofSettings {
         return config;
     }
 
-    /**
-     * Used by saveSettings() and settingsToString()
-     */
+    /// Used by saveSettings() and settingsToString()
     public void settingsToStream(Writer out) {
         getConfiguration().save(out, "Proof-Settings-Config-File");
     }

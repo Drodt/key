@@ -13,16 +13,14 @@ import org.key_project.util.collection.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The abstract superclass of caches for taclet app indexes that are implemented using a common
- * backend <code>LRUCache</code> (the backend is stored in <code>TermTacletAppIndexCacheSet</code>).
- * The backend is accessed in a way that guarantees that two distinct instances of this class never
- * interfere, by choosing cache keys that are specific for a particular instance of
- * <code>PrefixTermTacletAppIndexCacheImpl</code> and cannot be created by other instances. This
- * ensures that it is safe to use one instance of <code>LRUCache</code> for many instances of
- * <code>PrefixTermTacletAppIndexCacheImpl</code> (different proofs, different proof branches,
- * different locations).
- */
+/// The abstract superclass of caches for taclet app indexes that are implemented using a common
+/// backend `LRUCache` (the backend is stored in `TermTacletAppIndexCacheSet`).
+/// The backend is accessed in a way that guarantees that two distinct instances of this class never
+/// interfere, by choosing cache keys that are specific for a particular instance of
+/// `PrefixTermTacletAppIndexCacheImpl` and cannot be created by other instances. This
+/// ensures that it is safe to use one instance of `LRUCache` for many instances of
+/// `PrefixTermTacletAppIndexCacheImpl` (different proofs, different proof branches,
+/// different locations).
 public abstract class PrefixTermTacletAppIndexCacheImpl extends PrefixTermTacletAppIndexCache {
     private static final Logger LOGGER =
         LoggerFactory.getLogger(PrefixTermTacletAppIndexCacheImpl.class);
@@ -60,24 +58,18 @@ public abstract class PrefixTermTacletAppIndexCacheImpl extends PrefixTermTaclet
         cache.put(getNewKey(t), index);
     }
 
-    /**
-     * Only used for debugging purposes
-     */
+    /// Only used for debugging purposes
     protected abstract String name();
 
-    /**
-     * @return a freshly created key for the term <code>t</code> that can be stored in the
-     *         <code>cache</code>
-     */
+    /// @return a freshly created key for the term `t` that can be stored in the
+    ///         `cache`
     private CacheKey getNewKey(Term t) {
         return new CacheKey(this, t);
     }
 
-    /**
-     * @return a key for the term <code>t</code> that can be used for cache queries. Calling this
-     *         method twice will return the same object (with different attribute values), i.e., the
-     *         result is not supposed to be stored anywhere
-     */
+    /// @return a key for the term `t` that can be used for cache queries. Calling this
+    ///         method twice will return the same object (with different attribute values), i.e., the
+    ///         result is not supposed to be stored anywhere
     private CacheKey getQueryKey(Term t) {
         queryCacheKey.analysedTerm = t;
         return queryCacheKey;

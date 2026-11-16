@@ -146,11 +146,9 @@ public class SemisequentTacletAppIndex {
         }
     }
 
-    /**
-     * called if a formula has been replaced
-     *
-     * @param sci SequentChangeInfo describing the change of the sequent
-     */
+    /// called if a formula has been replaced
+    ///
+    /// @param sci SequentChangeInfo describing the change of the sequent
     public SemisequentTacletAppIndex sequentChanged(
             SequentChangeInfo sci,
             Services services,
@@ -169,10 +167,8 @@ public class SemisequentTacletAppIndex {
         return this;
     }
 
-    /**
-     * Remove the indices for the given formulas from the map <code>termIndices</code>. Note:
-     * destructive, use only when constructing new index
-     */
+    /// Remove the indices for the given formulas from the map `termIndices`. Note:
+    /// destructive, use only when constructing new index
     private void removeTermIndices(
             ImmutableList<SequentFormula> cfmas) {
         for (SequentFormula cfma : cfmas) {
@@ -180,10 +176,8 @@ public class SemisequentTacletAppIndex {
         }
     }
 
-    /**
-     * Remove the index for the given formula from the map <code>termIndices</code>. Note:
-     * destructive, use only when constructing new index
-     */
+    /// Remove the index for the given formula from the map `termIndices`. Note:
+    /// destructive, use only when constructing new index
     private void removeTermIndex(SequentFormula cfma) {
         termIndices = termIndices.remove(cfma);
     }
@@ -198,12 +192,10 @@ public class SemisequentTacletAppIndex {
         updateTermIndices(oldIndices, infos, services, tacletIndex, listener);
     }
 
-    /**
-     * Remove the formulas that are listed as modified by <code>infos</code>
-     *
-     * @return the old indices in the same order as the list <code>infos</code> Note: destructive,
-     *         use only when constructing new index
-     */
+    /// Remove the formulas that are listed as modified by `infos`
+    ///
+    /// @return the old indices in the same order as the list `infos` Note: destructive,
+    ///         use only when constructing new index
     private List<TermTacletAppIndex> removeFormulas(
             ImmutableList<FormulaChangeInfo> infos) {
         var oldIndices = new ArrayList<TermTacletAppIndex>(infos.size());
@@ -218,12 +210,10 @@ public class SemisequentTacletAppIndex {
         return oldIndices;
     }
 
-    /**
-     * Update the given list of term indices according to the list <code>infos</code> of
-     * modification information. Both lists have to be compatible, i.e. same length and same order.
-     * The new indices are inserted in the map <code>termIndices</code>. Note: destructive, use only
-     * when constructing new index
-     */
+    /// Update the given list of term indices according to the list `infos` of
+    /// modification information. Both lists have to be compatible, i.e. same length and same order.
+    /// The new indices are inserted in the map `termIndices`. Note: destructive, use only
+    /// when constructing new index
     private void updateTermIndices(List<TermTacletAppIndex> oldIndices,
             ImmutableList<FormulaChangeInfo> infos,
             Services services,

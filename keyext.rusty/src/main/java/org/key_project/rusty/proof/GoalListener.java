@@ -7,28 +7,22 @@ package org.key_project.rusty.proof;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.util.collection.ImmutableList;
 
-/** interface to be implemented by a goal listener */
+/// interface to be implemented by a goal listener
 public interface GoalListener {
 
-    /**
-     * informs the listener about a change that occured to the sequent of goal
-     */
+    /// informs the listener about a change that occured to the sequent of goal
     void sequentChanged(Goal source, SequentChangeInfo sci);
 
-    /**
-     * Informs the listener that the given goal <code>source</code> has been replaced by the goals
-     * <code>newGoals</code> (note that <code>source</code> may be an element of
-     * <code>newGoals</code>). The nodes of <code>newGoals</code> are children of the node
-     * <code>parent</code>
-     */
+    /// Informs the listener that the given goal `source` has been replaced by the goals
+    /// `newGoals` (note that `source` may be an element of
+    /// `newGoals`). The nodes of `newGoals` are children of the node
+    /// `parent`
     void goalReplaced(Goal source, Node parent, ImmutableList<Goal> newGoals);
 
-    /**
-     * Informs the listener that the automatic state {@link Goal#isAutomatic()} has changed.
-     *
-     * @param source The changed {@link Goal}.
-     * @param oldAutomatic The old state.
-     * @param newAutomatic The new state.
-     */
+    /// Informs the listener that the automatic state [Goal#isAutomatic()] has changed.
+    ///
+    /// @param source The changed [Goal].
+    /// @param oldAutomatic The old state.
+    /// @param newAutomatic The new state.
     void automaticStateChanged(Goal source, boolean oldAutomatic, boolean newAutomatic);
 }

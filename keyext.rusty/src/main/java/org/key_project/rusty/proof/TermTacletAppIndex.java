@@ -380,16 +380,14 @@ public class TermTacletAppIndex {
         listener.rulesAdded(taclets, pos);
     }
 
-    /**
-     * Updates the TermTacletAppIndex after a change at or below position <code>pos</code>
-     *
-     * @param pos Pointer to the term/formula where a change occurred
-     * @param services the Services
-     * @param tacletIndex the TacletIndex to access taclets
-     * @param listener the NewRuleListener to be register such that new rules can be reported
-     *        //@param indexCaches caches
-     * @return the updated index object
-     */
+    /// Updates the TermTacletAppIndex after a change at or below position `pos`
+    ///
+    /// @param pos Pointer to the term/formula where a change occurred
+    /// @param services the Services
+    /// @param tacletIndex the TacletIndex to access taclets
+    /// @param listener the NewRuleListener to be register such that new rules can be reported
+    ///        //@param indexCaches caches
+    /// @return the updated index object
     TermTacletAppIndex update(PosInOccurrence pos, Services services,
             TacletIndex tacletIndex,
             NewRuleListener listener, TermTacletAppIndexCacheSet indexCaches) {
@@ -400,14 +398,12 @@ public class TermTacletAppIndex {
         return updateHelp(it, services, tacletIndex, listener, indexCache);
     }
 
-    /**
-     * Recursively update the term index, starting at <code>this</code> and descending along the
-     * given path iterator to the term position below which a modification was performed
-     *
-     * @param pathToModification an iterator that walks from the root of the formula to the position
-     *        of modification
-     * @return the updated TermTacletAppIndex
-     */
+    /// Recursively update the term index, starting at `this` and descending along the
+    /// given path iterator to the term position below which a modification was performed
+    ///
+    /// @param pathToModification an iterator that walks from the root of the formula to the position
+    ///        of modification
+    /// @return the updated TermTacletAppIndex
     private TermTacletAppIndex updateHelp(PIOPathIterator pathToModification, Services services,
             TacletIndex tacletIndex, NewRuleListener listener,
             ITermTacletAppIndexCache indexCache) {
@@ -497,11 +493,9 @@ public class TermTacletAppIndex {
             indexCache.descend(newTerm, child));
     }
 
-    /**
-     * Update the target formula/term of an update (which has position <code>subtermPos</code> in
-     * the complete formula). This is necessary whenever a part of the update has changed, because
-     * this also changes the update context of taclet apps in the target.
-     */
+    /// Update the target formula/term of an update (which has position `subtermPos` in
+    /// the complete formula). This is necessary whenever a part of the update has changed, because
+    /// this also changes the update context of taclet apps in the target.
     private ImmutableList<TermTacletAppIndex> updateIUpdateTarget(
             ImmutableList<TermTacletAppIndex> oldSubindices, int updateTarget,
             PosInOccurrence targetPos, Services services,
@@ -534,9 +528,7 @@ public class TermTacletAppIndex {
     }
 
 
-    /**
-     * Update the subtree of indices the given iterator <code>pathToModification</code> descends to
-     */
+    /// Update the subtree of indices the given iterator `pathToModification` descends to
     private ImmutableList<TermTacletAppIndex> updateOneSubIndex(
             ImmutableList<TermTacletAppIndex> oldSubindices, PIOPathIterator pathToModification,
             Services services, TacletIndex tacletIndex, NewRuleListener listener,

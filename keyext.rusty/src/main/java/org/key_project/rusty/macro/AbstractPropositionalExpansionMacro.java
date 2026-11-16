@@ -34,11 +34,9 @@ public abstract class AbstractPropositionalExpansionMacro extends StrategyProofM
         return "Propositional";
     }
 
-    /**
-     * Gets the set of admitted rule names.
-     *
-     * @return a constant non-<code>null</code> set
-     */
+    /// Gets the set of admitted rule names.
+    ///
+    /// @return a constant non-`null` set
     protected abstract Set<String> getAdmittedRuleNames();
 
     @Override

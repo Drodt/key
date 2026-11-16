@@ -35,12 +35,10 @@ public abstract class StrategyProofMacro extends AbstractProofMacro {
         return goals != null && !goals.isEmpty();
     }
 
-    /**
-     * Subclasses can use this method to do some postprocessing on the proof-object after the
-     * strategy has finished.
-     *
-     * @param proof The proof object.
-     */
+    /// Subclasses can use this method to do some postprocessing on the proof-object after the
+    /// strategy has finished.
+    ///
+    /// @param proof The proof object.
     protected void doPostProcessing(Proof proof) {}
 
     /*

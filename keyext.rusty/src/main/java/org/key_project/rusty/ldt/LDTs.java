@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
 
 public class LDTs implements Iterable<LDT> {
     private final BoolLDT boolLDT;
-    private final IntLDT intLDT;;
+    private final IntLDT intLDT;
     private final CharLDT charLDT;
     private final StrLDT strLDT;
     private final NeverLDT neverLDT;

@@ -168,11 +168,9 @@ public class SVInstantiations
         }
     }
 
-    /**
-     * adds the schemvariable to the set of interesting ones
-     *
-     * @throws IllegalInstantiationException, if sv has not yet been instantiated
-     */
+    /// adds the schemvariable to the set of interesting ones
+    ///
+    /// @throws IllegalInstantiationException, if sv has not yet been instantiated
     public SVInstantiations makeInteresting(SchemaVariable sv, LogicServices services) {
         final InstantiationEntry<?> entry = getInstantiationEntry(sv);
 

@@ -249,11 +249,11 @@ public class Statistics {
         for (Pair<String, String> p : summaryList) {
             final String c = p.first;
             final String s = p.second;
-            sb = sb.append(c);
-            if (!"".equals(s)) {
-                sb = sb.append(": ").append(s);
+            sb.append(c);
+            if (!s.isEmpty()) {
+                sb.append(": ").append(s);
             }
-            sb = sb.append('\n');
+            sb.append('\n');
         }
         sb.deleteCharAt(sb.length() - 1);
         return sb.toString();

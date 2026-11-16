@@ -307,7 +307,7 @@ public final class ProblemInitializer {
             final ImmutableList<BuiltInRule> rules =
                 profile.getStandardRules().standardBuiltInRules();
             int j = 0;
-            final int step = rules.size() != 0 ? (7 / rules.size()) : 0;
+            final int step = !rules.isEmpty() ? (7 / rules.size()) : 0;
             for (Rule r : rules) {
                 proofs[i].getInitConfig().registerRule(r, profile.getJustification(r));
                 // setProgress((++j) * step + 3 + i * proofs.length);

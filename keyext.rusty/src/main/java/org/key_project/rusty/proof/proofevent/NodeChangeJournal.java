@@ -28,9 +28,7 @@ public class NodeChangeJournal implements GoalListener {
     private ImmutableMap<@NonNull Node, NodeChangesHolder> changes =
         DefaultImmutableMap.nilMap();
 
-    /**
-     * @param p_goal the original goal/node
-     */
+    /// @param p_goal the original goal/node
     public NodeChangeJournal(Proof p_proof, Goal p_goal) {
         proof = p_proof;
         node = p_goal.getNode();
@@ -38,10 +36,8 @@ public class NodeChangeJournal implements GoalListener {
     }
 
 
-    /**
-     * Create an RuleAppInfo object containing all changes stored within this object; remove all
-     * listeners
-     */
+    /// Create an RuleAppInfo object containing all changes stored within this object; remove all
+    /// listeners
     public RuleAppInfo getRuleAppInfo(RuleApp p_ruleApp) {
         ImmutableList<NodeReplacement> nrs = ImmutableList.nil();
 
@@ -64,9 +60,7 @@ public class NodeChangeJournal implements GoalListener {
 
     // GoalListener methods
 
-    /**
-     * informs the listener about a change that occured to the sequent of goal
-     */
+    /// informs the listener about a change that occured to the sequent of goal
     @Override
     public void sequentChanged(Goal source, SequentChangeInfo sci) {
         NodeChangesHolder nc = getChangeObj(source.getNode());

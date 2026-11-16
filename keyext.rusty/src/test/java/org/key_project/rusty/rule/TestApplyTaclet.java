@@ -380,7 +380,7 @@ public class TestApplyTaclet {
             "First goal should be 'b==>b', but is " + goals.head().sequent());
         goals = goals.tail();
         assertTrue(
-            goals.head().sequent().antecedent().size() == 0
+                goals.head().sequent().antecedent().isEmpty()
                     && goals.head().sequent().succedent().size() == 1
                     && goals.head().sequent().succedent().iterator().next().formula()
                             .op() == Quantifier.ALL,
@@ -474,7 +474,7 @@ public class TestApplyTaclet {
 
         assertTrue(
             goals.head().sequent().antecedent().size() == 2
-                    && goals.head().sequent().succedent().size() == 0
+                    && goals.head().sequent().succedent().isEmpty()
                     && it.next().formula().equals(TacletForTests.parseTerm("A"))
                     && it.next().formula().equals(TacletForTests.parseTerm("B")),
             "Expected 'A, B ==>', but is " + goals.head().sequent());

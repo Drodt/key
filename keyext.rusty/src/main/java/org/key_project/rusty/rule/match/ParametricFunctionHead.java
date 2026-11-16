@@ -36,10 +36,8 @@ public final class ParametricFunctionHead implements MatchHead {
         this.argMatchers = argMatchers;
     }
 
-    /**
-     * @param pfi the parametric function instance pattern
-     * @return a head for {@code pfi}
-     */
+    /// @param pfi the parametric function instance pattern
+    /// @return a head for `pfi`
     public static ParametricFunctionHead of(ParametricFunctionInstance pfi) {
         final int argCount = pfi.getChildCount();
         final MatchInstruction[] argMatchers = new MatchInstruction[argCount];

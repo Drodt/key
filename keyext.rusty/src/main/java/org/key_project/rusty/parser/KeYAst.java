@@ -90,13 +90,11 @@ public abstract class KeYAst<T extends ParserRuleContext> {
             return null;
         }
 
-        /**
-         * Extracts the decls and taclets into a string.
-         * The problem header may contain the source file to load,
-         * include statements to load other files, configuration of options,
-         * declarations of sorts, program variables, schema variables, predicates, and more.
-         * See the grammar (KeYParser.g4) for more possible elements.
-         */
+        /// Extracts the decls and taclets into a string.
+        /// The problem header may contain the source file to load,
+        /// include statements to load other files, configuration of options,
+        /// declarations of sorts, program variables, schema variables, predicates, and more.
+        /// See the grammar (KeYParser.g4) for more possible elements.
         public String getProblemHeader() {
             final KeYRustyParser.DeclsContext decls = ctx.decls();
             if (decls != null && decls.getChildCount() > 0) {

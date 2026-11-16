@@ -13,7 +13,7 @@ import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
 
 public interface ComponentStrategy extends Strategy<Goal> {
     enum StrategyAspect {
-        Cost, Instantiation, Approval;
+        Cost, Instantiation, Approval
     }
 
     /// The strategy's cost dispatcher.

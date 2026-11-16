@@ -327,10 +327,8 @@ public class TermImpl implements Term {
         return labelAgnosticHash;
     }
 
-    /**
-     * Performs the actual computation of the hashcode and can be overwritten by subclasses if
-     * necessary
-     */
+    /// Performs the actual computation of the hashcode and can be overwritten by subclasses if
+    /// necessary
     protected int computeHashCode() {
         int hashcode = 5;
         hashcode = hashcode * 17 + op().hashCode();
@@ -345,10 +343,8 @@ public class TermImpl implements Term {
         return hashcode;
     }
 
-    /**
-     * Computes the three hashcode caches of {@link #hashCode()}, {@link #nameHash()} and
-     * {@link #labelAgnosticHash()}.
-     */
+    /// Computes the three hashcode caches of [#hashCode()], [#nameHash()] and
+    /// [#labelAgnosticHash()].
     private void computeHashes() {
         // Iterate the subterm array, not arity(): the term factory probes hashCode() before it
         // validates that the operator's arity matches the subterm count, so the two can differ.

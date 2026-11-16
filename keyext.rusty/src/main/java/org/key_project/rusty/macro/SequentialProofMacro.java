@@ -17,17 +17,14 @@ import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.prover.impl.DefaultTaskStartedInfo;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * The abstract class SequentialProofMacro can be used to create compound macros which sequentially
- * apply macros one after the other. This works only for macros which use
- * {@code KeYMediator.startAutoMode()}.
- *
- * <p>
- * Since {@link ProofMacro}s run asynchronously, the start of the next macro must be performed in a
- * listener call at the end of a autostart.
- *
- * @author mattias ulbrich
- */
+/// The abstract class SequentialProofMacro can be used to create compound macros which sequentially
+/// apply macros one after the other. This works only for macros which use
+/// `KeYMediator.startAutoMode()`.
+///
+/// Since [ProofMacro]s run asynchronously, the start of the next macro must be performed in a
+/// listener call at the end of a autostart.
+///
+/// @author mattias ulbrich
 public abstract class SequentialProofMacro extends AbstractProofMacro {
     /// The proof macros to be applied in their order.
     /// This array is created on demand using [#createProofMacroArray()].

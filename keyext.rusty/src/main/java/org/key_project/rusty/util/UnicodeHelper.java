@@ -93,9 +93,7 @@ public final class UnicodeHelper {
     public static final char FRQQ = '\u00bb';
 
 
-    /**
-     * Return a String containing em-spaces.
-     */
+    /// Return a String containing em-spaces.
     public static String emSpaces(int em) {
         return Character.toString(EMSPACE).repeat(em);
     }

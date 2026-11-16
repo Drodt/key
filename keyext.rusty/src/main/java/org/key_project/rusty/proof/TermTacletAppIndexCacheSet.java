@@ -76,21 +76,15 @@ public class TermTacletAppIndexCacheSet {
         new ConcurrentLruCache<>(
             MAX_CACHE_ENTRIES);
 
-    /**
-     * cache for locations that are below updates, but not below programs or in the scope of binders
-     */
+    /// cache for locations that are below updates, but not below programs or in the scope of binders
     private final ITermTacletAppIndexCache belowUpdateCacheEmptyPrefix =
         new BelowUpdateCache(ImmutableList.nil());
 
-    /**
-     * cache for locations that are below programs, but not in the scope of binders
-     */
+    /// cache for locations that are below programs, but not in the scope of binders
     private final ITermTacletAppIndexCache belowProgCacheEmptyPrefix;
 
-    /**
-     * caches for locations that are both below programs and in the scope of binders. this is a
-     * mapping from <code>IList<QuantifiedVariable></code> to <code>BelowProgCache</code>
-     */
+    /// caches for locations that are both below programs and in the scope of binders. this is a
+    /// mapping from `IList<quantifiedvariable></quantifiedvariable>` to `BelowProgCache`
     private final ConcurrentLruCache<ImmutableList<QuantifiableVariable>, ITermTacletAppIndexCache> belowProgCaches =
         new ConcurrentLruCache<>(
             MAX_CACHE_ENTRIES);
@@ -110,40 +104,30 @@ public class TermTacletAppIndexCacheSet {
 
     ////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @return the cache for top-level locations in the antecedent
-     */
+    /// @return the cache for top-level locations in the antecedent
     public ITermTacletAppIndexCache getAntecCache() {
         return antecCache;
     }
 
-    /**
-     * @return the cache for top-level locations in the succedent
-     */
+    /// @return the cache for top-level locations in the succedent
     public ITermTacletAppIndexCache getSuccCache() {
         return succCache;
     }
 
-    /**
-     * @return a dummy cache that is not caching at all, and from which no other cache is reachable
-     */
+    /// @return a dummy cache that is not caching at all, and from which no other cache is reachable
     public ITermTacletAppIndexCache getNoCache() {
         return noCache;
     }
 
-    /**
-     * @return <code>true</code> iff <code>t</code> is a taclet that might be cached by any
-     *         of the caches of this set
-     */
+    /// @return `true` iff `t` is a taclet that might be cached by any
+    ///         of the caches of this set
     public boolean isRelevantTaclet(Taclet t) {
         return t instanceof FindTaclet;
     }
     ////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @return the cache for locations that are not below updates or programs and in the scope of
-     *         binders binding <code>prefix</code> (which might be empty)
-     */
+    /// @return the cache for locations that are not below updates or programs and in the scope of
+    ///         binders binding `prefix` (which might be empty)
     private ITermTacletAppIndexCache getTopLevelCache(ImmutableList<QuantifiableVariable> prefix) {
         if (prefix.isEmpty()) {
             return topLevelCacheEmptyPrefix;
@@ -156,10 +140,8 @@ public class TermTacletAppIndexCacheSet {
         return res;
     }
 
-    /**
-     * @return the cache for locations that are below programs and in the scope of binders binding
-     *         <code>prefix</code> (which might be empty)
-     */
+    /// @return the cache for locations that are below programs and in the scope of binders binding
+    ///         `prefix` (which might be empty)
     private ITermTacletAppIndexCache getBelowProgCache(ImmutableList<QuantifiableVariable> prefix) {
         if (prefix.isEmpty()) {
             return belowProgCacheEmptyPrefix;
@@ -172,10 +154,8 @@ public class TermTacletAppIndexCacheSet {
         return res;
     }
 
-    /**
-     * @return the cache for locations that are below updates, but not below programs, and that are
-     *         in the scope of binders binding <code>prefix</code> (which might be empty)
-     */
+    /// @return the cache for locations that are below updates, but not below programs, and that are
+    ///         in the scope of binders binding `prefix` (which might be empty)
     private ITermTacletAppIndexCache getBelowUpdateCache(
             ImmutableList<QuantifiableVariable> prefix) {
         if (prefix.isEmpty()) {
@@ -184,10 +164,8 @@ public class TermTacletAppIndexCacheSet {
         return new BelowUpdateCache(prefix);
     }
 
-    /**
-     * @return <code>true</code> if the head operator of <code>t</code> is an update and
-     *         <code>subtermIndex</code> is the number of the target subterm of the update
-     */
+    /// @return `true` if the head operator of `t` is an update and
+    ///         `subtermIndex` is the number of the target subterm of the update
     private boolean isUpdateTargetPos(Term t, int subtermIndex) {
         final Operator op = t.op();
         if (!(op instanceof UpdateApplication)) {
@@ -197,9 +175,7 @@ public class TermTacletAppIndexCacheSet {
         return subtermIndex == UpdateApplication.targetPos();
     }
 
-    /**
-     * @return <code>true</code> if <code>op</code> is an operator below which we are caching
-     */
+    /// @return `true` if `op` is an operator below which we are caching
     private boolean isAcceptedOperator(Operator op) {
         return op instanceof IfThenElse
                 || (op instanceof Function)

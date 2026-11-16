@@ -49,9 +49,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     private @Nullable Strategy<@NonNull Goal> goalStrategy = null;
     /// This is the object which keeps book about all applicable rules.
     private @Nullable RuleApplicationManager<Goal> ruleAppManager;
-    /**
-     * goal listeners
-     */
+    /// goal listeners
     private List<GoalListener> listeners = new ArrayList<>(10);
     /// this object manages the tags for all formulas of the sequent
     private FormulaTagManager tagManager;
@@ -268,11 +266,9 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         fireSequentChanged(sci);
     }
 
-    /**
-     * informs all goal listeners about a change of the sequent to reduce unnecessary object
-     * creation the necessary information is passed to the listener as parameters and not through an
-     * event object.
-     */
+    /// informs all goal listeners about a change of the sequent to reduce unnecessary object
+    /// creation the necessary information is passed to the listener as parameters and not through an
+    /// event object.
     private void fireSequentChanged(SequentChangeInfo sci) {
         getFormulaTagManager().sequentChanged(sci, getTime());
         ruleAppIndex.sequentChanged(sci);

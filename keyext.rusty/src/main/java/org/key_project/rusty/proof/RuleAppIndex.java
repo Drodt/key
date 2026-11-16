@@ -110,11 +110,9 @@ public class RuleAppIndex {
         automatedTacletAppIndex.addedNoPosTacletApp(tacletApp);
     }
 
-    /**
-     * called if a formula has been replaced
-     *
-     * @param sci SequentChangeInfo describing the change of the sequent
-     */
+    /// called if a formula has been replaced
+    ///
+    /// @param sci SequentChangeInfo describing the change of the sequent
     public void sequentChanged(SequentChangeInfo sci) {
         if (!autoMode) {
             interactiveTacletAppIndex.sequentChanged(sci);
@@ -204,11 +202,9 @@ public class RuleAppIndex {
         }
     }
 
-    /**
-     * adds a change listener to the index
-     *
-     * @param l the AppIndexListener to add
-     */
+    /// adds a change listener to the index
+    ///
+    /// @param l the AppIndexListener to add
     public void setNewRuleListener(@Nullable NewRuleListener l) {
         ruleListener = l;
     }

@@ -213,11 +213,9 @@ public class TacletAppIndex {
             indexCaches, cache);
     }
 
-    /**
-     * called if a formula has been replaced
-     *
-     * @param sci SequentChangeInfo describing the change of the sequent
-     */
+    /// called if a formula has been replaced
+    ///
+    /// @param sci SequentChangeInfo describing the change of the sequent
     public void sequentChanged(
             SequentChangeInfo sci) {
         if (sci.getOriginalSequent() != getSequent()) {

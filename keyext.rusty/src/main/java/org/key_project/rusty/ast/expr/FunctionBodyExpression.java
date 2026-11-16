@@ -27,7 +27,7 @@ public record FunctionBodyExpression(@Nullable ProgramVariable resultVar, Progra
             if (n == 0)
                 return resultVar;
             --n;
-        } ;
+        }
         if (n == 0)
             return call;
         throw new IndexOutOfBoundsException("Index: " + n);
