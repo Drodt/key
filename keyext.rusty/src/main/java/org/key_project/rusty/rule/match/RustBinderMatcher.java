@@ -4,26 +4,22 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.rule.match;
 
-import de.uka.ilkd.key.rule.MatchConditions;
-
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.matcher.compiler.BinderMatcher;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
+import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.util.collection.ImmutableList;
 
-import static de.uka.ilkd.key.rule.match.vm.instructions.JavaDLMatchVMInstructionSet.matchAndBindVariables;
+import static org.key_project.rusty.rule.match.instructions.RustyDLMatchVMInstructionSet.matchAndBindVariables;
 
-/**
- * Java-DL implementation of the {@link BinderMatcher} SPI (service provider interface): bound
- * variables are bound via the
- * {@code matchAndBindVariables} instruction, and the binding scope is closed via
- * {@link MatchConditions#shrinkRenameTable()}. The renaming table is scope-structured (closing
- * pops one scope), so the bound variables themselves are not needed for unbinding.
- */
+/// RustyDL implementation of the [BinderMatcher] SPI (service provider interface): bound
+/// variables are bound via the
+/// `matchAndBindVariables` instruction, and the binding scope is closed via
+/// [MatchConditions#shrinkLogicVarTable()]. The renaming table is scope-structured (closing
+/// pops one scope), so the bound variables themselves are not needed for unbinding.
 public final class RustBinderMatcher implements BinderMatcher {
-
-    /** stateless; a single shared instance suffices. */
+    /// stateless; a single shared instance suffices.
     public static final RustBinderMatcher INSTANCE = new RustBinderMatcher();
 
     private RustBinderMatcher() {}
@@ -37,6 +33,6 @@ public final class RustBinderMatcher implements BinderMatcher {
     @Override
     public MatchResultInfo unbind(MatchResultInfo mc,
             ImmutableList<? extends QuantifiableVariable> boundVars) {
-        return ((MatchConditions) mc).shrinkRenameTable();
+        return ((MatchConditions) mc).shrinkLogicVarTable();
     }
 }

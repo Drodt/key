@@ -58,7 +58,6 @@ public record SchemaVarPattern(boolean reference, boolean mut, OperatorSV operat
                 return null;
             }
         } else {
-
             final SVInstantiations instantiations = mc.getInstantiations();
             final Object instant = instantiations.getInstantiation(operatorSV);
             if (instant == null || instant.equals(src)

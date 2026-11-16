@@ -37,7 +37,7 @@ public record SchemaRustType(SchemaType type) implements RustType {
     }
 
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         return type.toString();
     }
 
@@ -56,7 +56,6 @@ public record SchemaRustType(SchemaType type) implements RustType {
         if (instant == null) {
             instantiations = instantiations.add(type.sv(), src, services);
             mc = mc.setInstantiations(instantiations);
-            assert mc != null;
         } else if (!instant.equals(src)) {
             return null;
         }

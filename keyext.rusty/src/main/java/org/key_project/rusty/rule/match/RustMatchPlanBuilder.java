@@ -104,21 +104,26 @@ public final class RustMatchPlanBuilder extends MatchPlanBuilder {
     @Override
     protected @Nullable MatchHead headFor(Term pattern) {
         final Operator op = pattern.op();
-        if (op instanceof ElementaryUpdate elUp) {
-            return ElementaryUpdateHead.of(elUp);
-        }
-        if (op instanceof ParametricFunctionInstance pfi) {
-            return ParametricFunctionHead.of(pfi);
-        }
-        if (op instanceof RModality mod) {
-            final RustProgramMatchHook hook = RustProgramMatchHook.of(mod.programBlock().program());
-            if (hook == null) {
-                return null; // the modality's program cannot be matched by the framework
+        switch (op) {
+            case ElementaryUpdate elUp -> {
+                return ElementaryUpdateHead.of(elUp);
             }
-            final MatchInstruction kindInstr = mod.kind() instanceof ModalOperatorSV sv
-                    ? matchModalOperatorSV(sv)
-                    : getMatchIdentityInstruction(mod.kind());
-            return new ModalityHead(mod.kind(), kindInstr, hook);
+            case ParametricFunctionInstance pfi -> {
+                return ParametricFunctionHead.of(pfi);
+            }
+            case RModality mod -> {
+                final RustProgramMatchHook hook =
+                    RustProgramMatchHook.of(mod.programBlock().program());
+                if (hook == null) {
+                    return null; // the modality's program cannot be matched by the framework
+                }
+                final MatchInstruction kindInstr = mod.kind() instanceof ModalOperatorSV sv
+                        ? matchModalOperatorSV(sv)
+                        : getMatchIdentityInstruction(mod.kind());
+                return new ModalityHead(mod.kind(), kindInstr, hook);
+            }
+            default -> {
+            }
         }
         return new GenericOperatorHead(op);
     }

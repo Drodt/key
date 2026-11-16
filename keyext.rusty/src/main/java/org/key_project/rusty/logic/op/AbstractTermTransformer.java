@@ -133,7 +133,8 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
             var sv = term.sub(0);
             var pes =
                 (ListInstantiation<RustyProgramElement>) svInst
-                        .getInstantiationEntry((SchemaVariable) sv.op());
+                        .<ImmutableList<RustyProgramElement>>getInstantiationEntry(
+                            (SchemaVariable) sv.op());
 
             var terms = new Term[pes.getInstantiation().size()];
             for (int i = 0; i < terms.length; i++) {
@@ -235,7 +236,8 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
         public Term transform(Term term, SVInstantiations svInst, Services services) {
             var sort = (ParametricSortInstance) term.sub(0).sort();
             var sv = (SchemaVariable) term.sub(1).op();
-            var inst = (ListInstantiation<RustyProgramElement>) svInst.getInstantiationEntry(sv);
+            var inst = (ListInstantiation<RustyProgramElement>) svInst
+                    .<ImmutableList<RustyProgramElement>>getInstantiationEntry(sv);
             var lst = inst.getInstantiation();
 
             var terms = new Term[lst.size()];

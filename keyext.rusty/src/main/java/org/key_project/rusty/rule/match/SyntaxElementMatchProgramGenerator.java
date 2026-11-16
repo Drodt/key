@@ -34,7 +34,7 @@ public class SyntaxElementMatchProgramGenerator {
     /// to the given list of instructions
     ///
     /// @param pattern the [Term] used as pattern for which to create a matcher
-    /// @param program the list of [MatchInstruction] to which the instructions for matching
+    /// @param program the list of `MatchInstruction`s to which the instructions for matching
     /// `pattern` are added.
     private static void createProgram(Term pattern, ArrayList<VMInstruction> program) {
         final Operator op = pattern.op();

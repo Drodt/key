@@ -90,7 +90,7 @@ public abstract class MatchSchemaVariableInstruction implements MatchInstruction
     ///
     /// @param instantiationCandidate the [Term] to be matched
     /// @param mc the [MatchResultInfo] with the constraints accumulated so far
-    /// @param services the [Services]
+    /// @param services the [LogicServices]
     /// @return the extended [MatchResultInfo], or `null` if the schema variable does
     /// not match the term
     protected abstract @Nullable MatchResultInfo match(Term instantiationCandidate,
@@ -102,7 +102,7 @@ public abstract class MatchSchemaVariableInstruction implements MatchInstruction
     ///
     /// @param instantiationCandidate the [RustyProgramElement] to be matched
     /// @param mc the [MatchResultInfo] with the constraints accumulated so far
-    /// @param services the [Services]
+    /// @param services the [LogicServices]
     /// @return the extended [MatchResultInfo], or `null` if the schema variable does
     /// not match the program element
     public @Nullable MatchResultInfo match(RustyProgramElement instantiationCandidate,

@@ -90,54 +90,57 @@ public final class ProgVarReplacer {
             InstantiationEntry<?> ie = e.value();
             Object inst = ie.getInstantiation();
 
-            if (ie instanceof ContextInstantiationEntry) {
-                var pe = (RustyProgramElement) inst;
-                RustyProgramElement newPe = replace(pe);
-                if (newPe != pe) {
-                    ContextInstantiationEntry cie = (ContextInstantiationEntry) ie;
-                    result = result.replace(cie.prefix(), cie.suffix(),
-                        newPe, services);
-                }
-            } /*
-               * else if (ie instanceof OperatorInstantiation) {
-               * /* nothing to be done (currently)
-               */
-            /* } */ else if (ie instanceof ProgramInstantiation) {
-                var pe = (RustyProgramElement) inst;
-                RustyProgramElement newPe = replace(pe);
-                if (newPe != pe) {
-                    result = result.replace(sv, newPe, services);
-                }
-            } else if (ie instanceof ListInstantiation<?> list) {
-                if (list.getType() != RustyProgramElement.class) {
-                    throw new RuntimeException("Unexpected list instantiation: " + ie);
-                }
-                @SuppressWarnings("unchecked")
-                var a = (ImmutableList<RustyProgramElement>) inst;
-                int size = a.size();
-                var array = new RustyProgramElement[size];
-
-                boolean changedSomething = false;
-                for (int i = 0; i < size; i++) {
-                    RustyProgramElement pe = a.get(i);
-                    array[i] = replace(pe);
-                    if (array[i] != pe) {
-                        changedSomething = true;
+            switch (ie) {
+                case ContextInstantiationEntry cie -> {
+                    var pe = (RustyProgramElement) inst;
+                    RustyProgramElement newPe = replace(pe);
+                    if (newPe != pe) {
+                        result = result.replace(cie.prefix(), cie.suffix(),
+                            newPe, services);
                     }
                 }
 
-                if (changedSomething) {
-                    ImmutableList<RustyProgramElement> newA = ImmutableList.fromArray(array);
-                    result = result.replace(sv, newA, services);
+                /* } */
+                case ProgramInstantiation ignored -> {
+                    var pe = (RustyProgramElement) inst;
+                    RustyProgramElement newPe = replace(pe);
+                    if (newPe != pe) {
+                        result = result.replace(sv, newPe, services);
+                    }
                 }
-            } else if (ie instanceof TermInstantiation) {
-                Term t = (Term) inst;
-                Term newT = replace(t);
-                if (newT != t) {
-                    result = result.replace(sv, newT, services);
+                case ListInstantiation<?> list -> {
+                    if (list.getType() != RustyProgramElement.class) {
+                        throw new RuntimeException("Unexpected list instantiation: " + ie);
+                    }
+                    @SuppressWarnings("unchecked")
+                    var a = (ImmutableList<RustyProgramElement>) inst;
+                    int size = a.size();
+                    var array = new RustyProgramElement[size];
+
+                    boolean changedSomething = false;
+                    for (int i = 0; i < size; i++) {
+                        RustyProgramElement pe = a.get(i);
+                        array[i] = replace(pe);
+                        if (array[i] != pe) {
+                            changedSomething = true;
+                        }
+                    }
+
+                    if (changedSomething) {
+                        ImmutableList<RustyProgramElement> newA = ImmutableList.fromArray(array);
+                        result = result.replace(sv, newA, services);
+                    }
                 }
-            } else {
-                assert false : "unexpected subtype of InstantiationEntry<?>";
+                case TermInstantiation ignored -> {
+                    Term t = (Term) inst;
+                    Term newT = replace(t);
+                    if (newT != t) {
+                        result = result.replace(sv, newT, services);
+                    }
+                }
+                default -> {
+                    assert false : "unexpected subtype of InstantiationEntry<?>";
+                }
             }
         }
 

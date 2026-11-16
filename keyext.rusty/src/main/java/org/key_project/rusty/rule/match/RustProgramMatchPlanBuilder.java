@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.key_project.logic.SyntaxElement;
+import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.matcher.compiler.*;
 import org.key_project.prover.rules.matcher.vm.MatchProgram;
@@ -22,12 +23,16 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.Identifier;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.SourceData;
-import org.key_project.rusty.ast.expr.ContextBlockExpression;
-import org.key_project.rusty.ast.expr.LiteralExpression;
+import org.key_project.rusty.ast.abstraction.SchemaType;
+import org.key_project.rusty.ast.expr.*;
+import org.key_project.rusty.ast.pat.BindingPattern;
+import org.key_project.rusty.ast.pat.SchemaVarPattern;
+import org.key_project.rusty.ast.ty.SchemaRustType;
 import org.key_project.rusty.logic.PosInProgram;
 import org.key_project.rusty.logic.PossibleProgramPrefix;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
+import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.match.instructions.MatchContextBlockExpressionInstruction;
@@ -100,11 +105,13 @@ public final class RustProgramMatchPlanBuilder {
         // value-carrying leaves matched by equals (class + payload): Literal (+ subclasses),
         // TransactionStatement, and ProgramElementName (a name identity). They recurse into no
         // children and bind no schema variables.
-        if (pe instanceof LiteralExpression || pe instanceof Identifier) {
+        if (pe instanceof LiteralExpression || pe instanceof Identifier
+                || pe instanceof UnaryExpression.Operator
+                || pe instanceof BinaryExpression.Operator) {
             return new ProgramLeafPlan(pe, new MatchByEqualsInstruction(pe));
         }
         // concrete program variables and methods occurring literally in a pattern (e.g.
-        // "int x = 0;" in a hand-written taclet) match by reference identity, mirroring
+        // "let x = 0;" in a handwritten taclet) match by reference identity, mirroring
         // ProgramVariable.match / ProgramMethod.match
         if (pe instanceof ProgramVariable) {
             return new ProgramLeafPlan(pe, getMatchIdentityInstruction(pe));
@@ -112,8 +119,21 @@ public final class RustProgramMatchPlanBuilder {
         if (!(pe instanceof RustyProgramElement progEl)) {
             return null;
         }
-        if (progEl instanceof ContextBlockExpression cbe) {
-            return ContextBlockPlan.of(cbe);
+        switch (progEl) {
+            case ContextBlockExpression cbe -> {
+                return ContextBlockPlan.of(cbe);
+            }
+            case BorrowExpression be -> {
+                return new BorrowExpressionPlan(be);
+            }
+            case SchemaRustType(SchemaType type) -> {
+                return buildProgramPlan(type.sv());
+            }
+            case SchemaVarPattern svp -> {
+                return new SchemaVarPatternPlan(svp);
+            }
+            default -> {
+            }
         }
         if (!isGenericMatch(progEl)) {
             return null; // overrides match() with logic not described here
@@ -350,9 +370,6 @@ public final class RustProgramMatchPlanBuilder {
             } else {
                 matchCond =
                     (MatchConditions) activeSequence.match(newSource, matchCond, services);
-                if (matchCond == null) {
-                    return null;
-                }
             }
             return matchCond;
         }
@@ -407,6 +424,107 @@ public final class RustProgramMatchPlanBuilder {
         public String toString() {
             return "context" + (ecPlan == null ? "" : "(ec " + ecPlan + ")")
                 + Arrays.toString(active);
+        }
+    }
+
+    private static final class BorrowExpressionPlan implements ProgramMatchPlan {
+        private final ProgramMatchPlan inner;
+        boolean mut;
+
+        BorrowExpressionPlan(BorrowExpression be) {
+            this.inner = buildProgramPlan(be.getExpr());
+            this.mut = be.isMut();
+        }
+
+        @Override
+        public void emit(List<VMInstruction> out) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public MatchProgram compile() {
+            var ic = inner.compile();
+            return (actual, mc, services) -> {
+                if (!(actual instanceof BorrowExpression be))
+                    return null;
+                if (mut != be.isMut())
+                    return null;
+                return ic.match(be.getExpr(), mc, services);
+            };
+        }
+
+        @Override
+        public String toString() {
+            return "borrow(mut=" + mut + "," + inner + ")";
+        }
+    }
+
+    private static class SchemaVarPatternPlan implements ProgramMatchPlan {
+        private final SchemaVarPattern svp;
+        private final ProgramMatchPlan inner;
+
+        SchemaVarPatternPlan(SchemaVarPattern svp) {
+            this.svp = svp;
+            this.inner = buildProgramPlan(svp.operatorSV());
+        }
+
+        @Override
+        public void emit(List<VMInstruction> out) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public MatchProgram compile() {
+            var inner = this.inner.compile();
+            if (svp.operatorSV().sort() == ProgramSVSort.VARIABLE) {
+                return (actual, mc, services) -> {
+                    if (!(actual instanceof RustyProgramElement rpe))
+                        return null;
+                    if (!ProgramSVSort.PATTERN.canStandFor(rpe, (Services) services))
+                        return null;
+                    var bp = (BindingPattern) rpe;
+                    if (bp.mut() != svp.mut() || bp.mutRef() && (!svp.mut() || !svp.reference())
+                            || bp.ref() && (svp.mut() || !svp.reference())) {
+                        return null;
+                    }
+                    return inner.match(bp.pv(), mc, services);
+                };
+            } else {
+                return (actual, mc, services) -> {
+                    if (!(actual instanceof RustyProgramElement rpe))
+                        return null;
+                    if (!ProgramSVSort.PATTERN.canStandFor(rpe, (Services) services))
+                        return null;
+                    var bp = (BindingPattern) rpe;
+                    if (bp.mut() != svp.mut() || bp.mutRef() && (!svp.mut() || !svp.reference())
+                            || bp.ref() && (svp.mut() || !svp.reference())) {
+                        return null;
+                    }
+                    final var instantiations = (SVInstantiations) mc.getInstantiations();
+                    final Object inst = instantiations.getInstantiation(svp.operatorSV());
+                    if (inst == null) {
+                        var insts = instantiations.add(svp.operatorSV(), bp, services);
+                        return insts == null ? null : mc.setInstantiations(insts);
+                    } else {
+                        final Object newInst;
+                        if (inst instanceof Term) {
+                            newInst = ((Services) services).convertToLogicElement(bp);
+                        } else {
+                            newInst = bp;
+                        }
+                        if (inst.equals(newInst)) {
+                            return mc;
+                        } else {
+                            return null;
+                        }
+                    }
+                };
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "schemaVarPattern(" + svp + "," + inner + ")";
         }
     }
 }

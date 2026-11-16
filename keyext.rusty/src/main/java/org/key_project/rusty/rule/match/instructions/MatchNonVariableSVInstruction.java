@@ -15,7 +15,6 @@ import org.key_project.rusty.logic.op.sv.VariableSV;
 /// are not a [VariableSV] or a [ProgramSV].
 /// For those see [MatchVariableSVInstruction] and [MatchProgramSVInstruction].
 public class MatchNonVariableSVInstruction extends MatchSchemaVariableInstruction {
-
     protected MatchNonVariableSVInstruction(OperatorSV op) {
         super(op);
         assert !(op instanceof VariableSV || op instanceof ProgramSV);
@@ -26,5 +25,4 @@ public class MatchNonVariableSVInstruction extends MatchSchemaVariableInstructio
             LogicServices services) {
         return addInstantiation(instantiationCandidate, mc, services);
     }
-
 }

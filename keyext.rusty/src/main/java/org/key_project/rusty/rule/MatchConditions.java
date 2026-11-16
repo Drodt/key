@@ -9,6 +9,8 @@ import org.key_project.rusty.logic.LogicVariableTable;
 import org.key_project.rusty.logic.op.BoundVariable;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 
+import org.jspecify.annotations.NonNull;
+
 public class MatchConditions extends MatchResultInfo {
     public static final MatchConditions EMPTY_MATCHCONDITIONS =
         new MatchConditions(SVInstantiations.EMPTY_SVINSTANTIATIONS, LogicVariableTable.EMPTY);
@@ -29,7 +31,7 @@ public class MatchConditions extends MatchResultInfo {
         return (SVInstantiations) instantiations;
     }
 
-    public MatchConditions setInstantiations(
+    public @NonNull MatchConditions setInstantiations(
             org.key_project.prover.rules.instantiation.SVInstantiations p_instantiations) {
         if (instantiations == p_instantiations) {
             return this;

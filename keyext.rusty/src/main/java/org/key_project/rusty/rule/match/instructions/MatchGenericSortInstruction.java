@@ -16,7 +16,7 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.inst.SortException;
 
 /// Matches a generic sort of the pattern against the concrete sort found in the source (the sort
-/// of a parametric function's [GenericArgument]) by
+/// of a parametric function's [SortArg]) by
 /// recording an identity [GenericSortCondition] in the instantiations: the generic sort must
 /// be (or already have been) instantiated with exactly that concrete sort.
 public class MatchGenericSortInstruction implements MatchInstruction {

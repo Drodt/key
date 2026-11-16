@@ -20,11 +20,7 @@ import static org.key_project.rusty.rule.match.instructions.RustyDLMatchVMInstru
 /// `RustyBlock` program of a modality. The compiled side is the single-source dispatch's plan
 /// ([RustProgramMatchPlanBuilder#buildProgramPlan]) and nothing else; it calls no AST
 /// `match` method; a program the dispatch does not describe yields no hook, and the taclet
-/// fails to load with the framework's clear error. The interpreter side reuses the generator's
-/// converted program instruction
-/// ([SyntaxElementMatchProgramGenerator#buildProgramInstruction],
-/// falling back to the monolithic `MatchProgramInstruction` when conversion is off or
-/// unavailable).
+/// fails to load with the framework's clear error.
 public final class RustProgramMatchHook implements ProgramMatchHook {
     private final RustyProgramElement prog;
     private final MatchProgram compiled;

@@ -84,7 +84,6 @@ public class MatchProgramSVInstruction extends MatchSchemaVariableInstruction {
         return null;
     }
 
-
     /// A term candidate matches when the schema variable's sort can stand for the term (a program
     /// schema variable may occur at an expression position and then binds a term).
     @Override
