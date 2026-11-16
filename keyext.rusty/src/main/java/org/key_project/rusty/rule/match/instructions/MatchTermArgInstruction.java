@@ -24,6 +24,8 @@ public class MatchTermArgInstruction implements MatchInstruction {
     @Override
     public @Nullable MatchResultInfo match(SyntaxElement actualElement,
             MatchResultInfo matchConditions, LogicServices services) {
-        return prog.match(actualElement, matchConditions, services);
+        if (!(actualElement instanceof TermArg(org.key_project.logic.Term term)))
+            return null;
+        return prog.match(term, matchConditions, services);
     }
 }
