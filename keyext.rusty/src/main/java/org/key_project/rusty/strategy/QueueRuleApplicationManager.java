@@ -5,10 +5,14 @@
 package org.key_project.rusty.strategy;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.sequent.FormulaChangeInfo;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.sequent.SequentChangeInfo;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.prover.strategy.RuleApplicationManager;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
@@ -49,6 +53,12 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
 
     private long nextRuleTime;
 
+    /// Candidates that are currently set aside because their `\\assumes` formulas have no
+    /// match in the sequent yet, together with the machinery to file and wake them; see
+    /// [ParkedBases]. One instance per manager, replaced on [#clearCache()],
+    /// deep-copied on [#clone()].
+    private ParkedBases parking = new ParkedBases();
+
     @Override
     public void setGoal(Goal p_goal) {
         goal = p_goal;
@@ -59,6 +69,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
     public void clearCache() {
         queue = null;
         previousMinimum = null;
+        parking = new ParkedBases();
         if (goal != null) {
             goal.proof().getServices().getCaches().getAssumesInstantiationCache().releaseAll();
         }
@@ -224,6 +235,11 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
          */
         ImmutableList<RuleAppContainer> workingList = ImmutableList.nil();
 
+        // Put back every parked base that a formula added or changed since the last round could
+        // match, so it re-expands in this round. This is the round in which an un-parked copy
+        // would first see that formula as new (see the comment on the parking field).
+        wakeParkedBases();
+
         /*
          * Try to find a rule app that can be completed until both queues are exhausted.
          */
@@ -282,9 +298,17 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
                      * Create further apps if found in main queue. Rule apps obtained this way will
                      * be considered during the current round.
                      */
-                    furtherAppsQueue =
-                        push(minRuleAppContainer.createFurtherApps(goal).iterator(),
-                            furtherAppsQueue);
+                    final ImmutableList<RuleAppContainer> further =
+                        minRuleAppContainer.createFurtherApps(goal);
+                    // The re-expansion produced only the re-costed base itself: park it if it
+                    // can be keyed, re-add it unchanged otherwise (see ParkedBases#park).
+                    if (further.size() == 1
+                            && further.head() instanceof TacletAppContainer base
+                            && !base.getTacletApp().assumesInstantionsComplete()
+                            && park(base)) {
+                        continue;
+                    }
+                    furtherAppsQueue = push(further.iterator(), furtherAppsQueue);
                 }
             } else {
                 /*
@@ -301,6 +325,56 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         queue = queue.insert(furtherAppsQueue);
     }
 
+    // ---------------------------------------------------------------------------------------------
+    // Assumes-base parking (see the parking field)
+    // ---------------------------------------------------------------------------------------------
+
+    /// Set the given base aside; see [ParkedBases#park].
+    ///
+    /// @return `true` if the base was parked, `false` if it cannot be parked and the
+    /// caller must keep it in the queue
+    private boolean park(TacletAppContainer base) {
+        return parking.park(base, goal);
+    }
+
+    /**
+     * Put back into the queue every parked base that a formula changed since the previous round
+     * could match; see {@link ParkedBases#getAndClearWokenApplications()}.
+     */
+    private void wakeParkedBases() {
+        final Collection<RuleAppContainer> woken = parking.getAndClearWokenApplications();
+        if (!woken.isEmpty()) {
+            queue = queue.insert(woken.iterator());
+        }
+    }
+
+    /// Called by `Goal` whenever it adds or changes a formula in the sequent. Records the
+    /// wake keys of each such formula (see [ParkedBases#recordWakeKeysOf]), so that
+    /// [#wakeParkedBases()] can wake the matching bases at the start of the next round.
+    ///
+    /// The calls for one goal must arrive in the order in which that goal changed its sequent.
+    /// These records decide which bases are woken in which round, and so, as the class comment
+    /// explains, they decide the proof. Combining or reordering the calls would change the proof.
+    public void sequentChanged(SequentChangeInfo sci) {
+        recordWakeKeys(sci.addedFormulas(true), true);
+        recordWakeKeys(sci.addedFormulas(false), false);
+        recordModifiedWakeKeys(sci.modifiedFormulas(true), true);
+        recordModifiedWakeKeys(sci.modifiedFormulas(false), false);
+    }
+
+    private void recordWakeKeys(ImmutableList<SequentFormula> added, boolean inAntecedent) {
+        for (SequentFormula sf : added) {
+            parking.recordWakeKeysOf(sf.formula(), inAntecedent);
+        }
+    }
+
+    private void recordModifiedWakeKeys(ImmutableList<FormulaChangeInfo> modified,
+            boolean inAntecedent) {
+        for (FormulaChangeInfo fci : modified) {
+            parking.recordWakeKeysOf(fci.newFormula().formula(), inAntecedent);
+        }
+    }
+
     @Override
     public RuleApplicationManager<Goal> copy() {
         // noinspection unchecked
@@ -312,6 +386,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         QueueRuleApplicationManager res = new QueueRuleApplicationManager();
         res.queue = queue;
         res.previousMinimum = previousMinimum;
+        res.parking = parking.copy();
         return res;
     }
 }

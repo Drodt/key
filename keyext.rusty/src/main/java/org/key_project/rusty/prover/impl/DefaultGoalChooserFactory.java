@@ -26,7 +26,7 @@ public class DefaultGoalChooserFactory
         return NAME;
     }
 
-    public GoalChooserFactory<@NonNull Proof, @NonNull Goal> copy() {
+    public @NonNull GoalChooserFactory<@NonNull Proof, @NonNull Goal> copy() {
         return new DefaultGoalChooserFactory();
     }
 }

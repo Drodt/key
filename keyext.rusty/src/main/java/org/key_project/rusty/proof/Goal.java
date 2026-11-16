@@ -17,6 +17,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.prover.strategy.DelegationBasedRuleApplicationManager;
 import org.key_project.prover.strategy.RuleApplicationManager;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
@@ -275,6 +276,13 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     private void fireSequentChanged(SequentChangeInfo sci) {
         getFormulaTagManager().sequentChanged(sci, getTime());
         ruleAppIndex.sequentChanged(sci);
+        RuleApplicationManager<Goal> m = ruleAppManager;
+        while (m instanceof DelegationBasedRuleApplicationManager<Goal> d) {
+            m = d.getDelegate();
+        }
+        if (m instanceof QueueRuleApplicationManager qm) {
+            qm.sequentChanged(sci);
+        }
         for (GoalListener listener : listeners) {
             listener.sequentChanged(this, sci);
         }
