@@ -11,6 +11,7 @@ import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.prover.strategy.costbased.termfeature.*;
 import org.key_project.rusty.Services;
@@ -21,6 +22,13 @@ import org.key_project.util.collection.ImmutableList;
 
 /// Feature that returns zero iff each monomial of one polynomial is smaller than all monomials of a
 /// second polynomial
+///
+/// [StableCost]: the monomial ordering is determined by the compared instantiation terms alone
+/// -- multiplication degree, atom counts, the term-only
+/// [org.key_project.rusty.logic.LexPathOrdering], and the introduction time of basis symbols, which
+/// is a constant for every operator a cost evaluation can encounter (the argument is given at
+/// [AbstractMonomialSmallerThanFeature#introductionTime]).
+@StableCost
 public class MonomialsSmallerThanFeature extends AbstractMonomialSmallerThanFeature {
     private final TermFeature hasCoeff;
 

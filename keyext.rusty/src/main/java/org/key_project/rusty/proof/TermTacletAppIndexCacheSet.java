@@ -76,7 +76,8 @@ public class TermTacletAppIndexCacheSet {
         new ConcurrentLruCache<>(
             MAX_CACHE_ENTRIES);
 
-    /// cache for locations that are below updates, but not below programs or in the scope of binders
+    /// cache for locations that are below updates, but not below programs or in the scope of
+    /// binders
     private final ITermTacletAppIndexCache belowUpdateCacheEmptyPrefix =
         new BelowUpdateCache(ImmutableList.nil());
 
@@ -120,14 +121,14 @@ public class TermTacletAppIndexCacheSet {
     }
 
     /// @return `true` iff `t` is a taclet that might be cached by any
-    ///         of the caches of this set
+    /// of the caches of this set
     public boolean isRelevantTaclet(Taclet t) {
         return t instanceof FindTaclet;
     }
     ////////////////////////////////////////////////////////////////////////////
 
     /// @return the cache for locations that are not below updates or programs and in the scope of
-    ///         binders binding `prefix` (which might be empty)
+    /// binders binding `prefix` (which might be empty)
     private ITermTacletAppIndexCache getTopLevelCache(ImmutableList<QuantifiableVariable> prefix) {
         if (prefix.isEmpty()) {
             return topLevelCacheEmptyPrefix;
@@ -141,7 +142,7 @@ public class TermTacletAppIndexCacheSet {
     }
 
     /// @return the cache for locations that are below programs and in the scope of binders binding
-    ///         `prefix` (which might be empty)
+    /// `prefix` (which might be empty)
     private ITermTacletAppIndexCache getBelowProgCache(ImmutableList<QuantifiableVariable> prefix) {
         if (prefix.isEmpty()) {
             return belowProgCacheEmptyPrefix;
@@ -155,7 +156,7 @@ public class TermTacletAppIndexCacheSet {
     }
 
     /// @return the cache for locations that are below updates, but not below programs, and that are
-    ///         in the scope of binders binding `prefix` (which might be empty)
+    /// in the scope of binders binding `prefix` (which might be empty)
     private ITermTacletAppIndexCache getBelowUpdateCache(
             ImmutableList<QuantifiableVariable> prefix) {
         if (prefix.isEmpty()) {
@@ -165,7 +166,7 @@ public class TermTacletAppIndexCacheSet {
     }
 
     /// @return `true` if the head operator of `t` is an update and
-    ///         `subtermIndex` is the number of the target subterm of the update
+    /// `subtermIndex` is the number of the target subterm of the update
     private boolean isUpdateTargetPos(Term t, int subtermIndex) {
         final Operator op = t.op();
         if (!(op instanceof UpdateApplication)) {

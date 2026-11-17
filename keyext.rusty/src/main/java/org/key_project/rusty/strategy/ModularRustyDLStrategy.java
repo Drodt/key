@@ -120,6 +120,22 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
         }
     }
 
+    /// The [RuleSetDispatchFeature]s that contribute to a rule's COST (the conflict-resolution
+    /// dispatcher plus each component strategy's cost dispatcher). Exposed for [CostReuse]'s
+    /// feature-locality classification, which must NOT reach this via reflection from the strategy
+    /// object (that would traverse the live proof graph the strategy references).
+    public List<RuleSetDispatchFeature> costRuleSetDispatchers() {
+        final List<RuleSetDispatchFeature> result = new ArrayList<>();
+        result.add(conflictCostDispatcher);
+        for (ComponentStrategy s : strategies) {
+            final RuleSetDispatchFeature d = s.getDispatcher(StrategyAspect.Cost);
+            if (d != null) {
+                result.add(d);
+            }
+        }
+        return result;
+    }
+
     private record StratAndDispatcher(ComponentStrategy strategy,
             RuleSetDispatchFeature dispatcher) {
     }

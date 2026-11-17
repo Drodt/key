@@ -7,11 +7,13 @@ package org.key_project.rusty.strategy.feature;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.TacletApp;
 
 /// Binary features that returns zero iff the if-formulas of a Taclet are instantiated or the Taclet
 /// does not have any if-formulas.
+@StableCost
 public class MatchedAssumesFeature extends BinaryTacletAppFeature {
     public static final Feature INSTANCE = new MatchedAssumesFeature();
 

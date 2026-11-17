@@ -36,6 +36,8 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.VariableNameProposer;
 import org.key_project.rusty.rule.inst.GenericSortCondition;
 import org.key_project.rusty.rule.inst.GenericSortException;
+import org.key_project.rusty.strategy.BuiltInRuleAppContainer;
+import org.key_project.rusty.strategy.TacletAppContainer;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
@@ -146,7 +148,8 @@ public abstract class TacletApp implements RuleApp {
         return result;
     }
 
-    /// collects all bound variables above the occurrence of the schemavariable whose prefix is given
+    /// collects all bound variables above the occurrence of the schemavariable whose prefix is
+    /// given
     ///
     /// @param prefix the TacletPrefix of the schemavariable
     /// @param pos the posInOccurrence describing the position of the schemavariable
@@ -900,6 +903,12 @@ public abstract class TacletApp implements RuleApp {
     @Override
     public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
             ProofGoal<G> goal, boolean initial) {
+        if (this instanceof NoPosTacletApp npa)
+            return TacletAppContainer.createAppContainers(npa, pos, (Goal) goal);
+        if (this instanceof IBuiltInRuleApp ba) {
+            return BuiltInRuleAppContainer.createAppContainer(ba, pos,
+                goal);
+        }
         throw new UnsupportedOperationException("Not supported for taclet app " + getClass());
     }
 }

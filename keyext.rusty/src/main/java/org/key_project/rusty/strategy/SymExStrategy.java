@@ -22,7 +22,7 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.UseOperationContractRule;
-import org.key_project.rusty.strategy.feature.DiffFindAndIfFeature;
+import org.key_project.rusty.strategy.feature.DiffFindAndAssumesFeature;
 import org.key_project.rusty.strategy.feature.MatchedAssumesFeature;
 import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
 import org.key_project.rusty.strategy.feature.findprefix.FindPrefixRestrictionFeature;
@@ -146,7 +146,7 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
         }
 
         bindRuleSet(d, "confluence_restricted",
-            ifZero(MatchedAssumesFeature.INSTANCE, DiffFindAndIfFeature.INSTANCE));
+            ifZero(MatchedAssumesFeature.INSTANCE, DiffFindAndAssumesFeature.INSTANCE));
 
         final var superFor = new TermBuffer();
         bindRuleSet(d, "split_if",

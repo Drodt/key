@@ -8,6 +8,7 @@ import org.key_project.logic.Term;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.RewriteTaclet;
 import org.key_project.rusty.rule.TacletApp;
@@ -15,6 +16,9 @@ import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
 
 /// Binary feature that returns zero iff the replacewith- and find-parts of a Taclet are matched to
 /// different terms.
+// Stable: compares the find term against the taclet's replacewith template, both fixed for a given
+// rule application.
+@StableCost
 public class DiffFindAndReplacewithFeature extends BinaryTacletAppFeature {
     /// the single instance of this feature
     public static final Feature INSTANCE = new DiffFindAndReplacewithFeature();

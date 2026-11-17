@@ -8,13 +8,14 @@ import org.key_project.logic.Term;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
 
-/// Projection for dividing one monomial by another.
-public class ReduceMonomialsProjection implements ProjectionToTerm<Goal> {
+@StableCost
+public final class ReduceMonomialsProjection implements ProjectionToTerm<Goal> {
     private final ProjectionToTerm<Goal> dividend, divisor;
 
     private ReduceMonomialsProjection(ProjectionToTerm<Goal> dividend,

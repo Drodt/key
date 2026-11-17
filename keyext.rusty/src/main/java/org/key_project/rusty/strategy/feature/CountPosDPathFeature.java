@@ -9,11 +9,14 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.WeakStableCost;
 import org.key_project.rusty.ServiceCaches;
 
 /// Feature that returns the maximum number of positive literals occurring within a d-path of the
 /// find-formula as a formula of the antecedent. Used terminology is defined in Diss. by Martin
 /// Giese.
+// Reads the whole find formula (its d-paths); reusable only while that formula is unchanged.
+@WeakStableCost
 public class CountPosDPathFeature extends AbstractBetaFeature {
     public final static Feature INSTANCE = new CountPosDPathFeature();
 

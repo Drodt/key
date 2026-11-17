@@ -8,14 +8,18 @@ import org.key_project.logic.Name;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.strategy.termProjection.SVInstantiationProjection;
 
 /// Feature that returns zero iff a certain schema variable is instantiated. If the schemavariable
-/// is
-/// not instantiated schema variable or does not occur in the taclet infinity costs are returned.
+/// is not instantiated schema variable or does not occur in the taclet infinity costs are returned.
+///
+/// [StableCost]: the instantiation is read from the rule application's own instantiations, not
+/// from the goal, so the result is fixed for a given application.
+@StableCost
 public class InstantiatedSVFeature extends BinaryTacletAppFeature {
     private final ProjectionToTerm<Goal> instProj;
 

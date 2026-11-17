@@ -44,13 +44,14 @@ public class FindTacletAppContainer extends TacletAppContainer {
     ///
     /// @param app the taclet application
     /// @param pio the position in occurrence
-    /// @param cost the rule application cost
+    /// @param ageFreeCost the rule application cost without the goal-age term
+    /// @param cost the rule application cost (age-free cost plus the goal-age term)
     /// @param goal the goal to apply the taclet on
     /// @param age the age
     public FindTacletAppContainer(NoPosTacletApp app, PosInOccurrence pio,
-            RuleAppCost cost, Goal goal,
+            RuleAppCost ageFreeCost, boolean ageFreeCostIsRegular, RuleAppCost cost, Goal goal,
             long age) {
-        super(app, cost, age);
+        super(app, ageFreeCost, ageFreeCostIsRegular, cost, age);
         applicationPosition = pio;
 
         final FormulaTag posTag = goal.getFormulaTagManager().getTagForPos(pio.topLevel());
@@ -58,6 +59,11 @@ public class FindTacletAppContainer extends TacletAppContainer {
         positionTag = posTag;
     }
 
+    /// @return the original position for which this container was created (a stable key for the
+    /// deterministic queue tie-break, see [TacletAppContainer#compareTo])
+    PosInOccurrence getApplicationPosition() {
+        return applicationPosition;
+    }
 
     /// @return true iff the stored rule app is applicable for the given sequent, i.e. if the
     /// find-position does still exist (if-formulas are not considered)
@@ -68,6 +74,15 @@ public class FindTacletAppContainer extends TacletAppContainer {
         return topPos != null && !subformulaOrPreceedingUpdateHasChanged(p_goal);
     }
 
+    /// {@inheritDoc} The find formula is unchanged iff the formula now carried by this container's
+    /// position tag is identity-equal to the one present when the container was created. (Terms are
+    /// immutable, so any rewrite -- including an independent sibling rewrite that
+    /// [#isStillApplicable] tolerates -- yields a fresh formula object.)
+    @Override
+    protected boolean findFormulaUnchanged(Goal p_goal) {
+        final PosInOccurrence cur = getPosInOccurrence(p_goal);
+        return cur != null && cur.sequentFormula() == applicationPosition.sequentFormula();
+    }
 
     /// @return true iff a subformula that contains the find position stored by this object has been
     /// altered since the creation of this object or if a preceding update has changed
@@ -92,7 +107,6 @@ public class FindTacletAppContainer extends TacletAppContainer {
 
         return false;
     }
-
 
     /// checks if the modification path and the position where this taclet application has been
     /// matched again denote independent subformulas. The modification affects a formula

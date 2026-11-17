@@ -195,7 +195,7 @@ public class SemisequentTacletAppIndex {
     /// Remove the formulas that are listed as modified by `infos`
     ///
     /// @return the old indices in the same order as the list `infos` Note: destructive,
-    ///         use only when constructing new index
+    /// use only when constructing new index
     private List<TermTacletAppIndex> removeFormulas(
             ImmutableList<FormulaChangeInfo> infos) {
         var oldIndices = new ArrayList<TermTacletAppIndex>(infos.size());

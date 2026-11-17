@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.strategy.termProjection;
 
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.rusty.proof.Goal;
 
+@StableCost
 public class TermBuffer
         extends org.key_project.prover.strategy.costbased.termProjection.TermBuffer<Goal> {
 }

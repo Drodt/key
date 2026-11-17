@@ -9,6 +9,7 @@ import org.key_project.logic.op.Function;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.proof.Goal;
@@ -17,6 +18,14 @@ import org.key_project.rusty.rule.TacletApp;
 /// Feature that returns zero iff each variable/atom of one monomial is smaller than all variables
 /// of
 /// a second monomial
+///
+/// The value is determined by the compared instantiation terms alone: the atom ordering consists
+/// of the number-literal distinction, the term-only [org.key_project.rusty.logic.LexPathOrdering],
+/// and the introduction time of definitional Skolem symbols, which is a constant of the symbol
+/// (see [AbstractMonomialSmallerThanFeature#introductionTime]). Hence [StableCost] --
+/// the same classification, for the same reason, as [MonomialsSmallerThanFeature], which
+/// orders whole monomials by the same ingredients.
+@StableCost
 public class AtomsSmallerThanFeature extends AbstractMonomialSmallerThanFeature {
     private final ProjectionToTerm<Goal> left, right;
     private final Function Z;

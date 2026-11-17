@@ -19,8 +19,7 @@ import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
 
 /// Return zero only if the value of one (left) polynomial always will be (less or equal) or (less)
 /// than the value of a second (right) polynomial. Both polynomials can optionally be multiplied
-/// with
-/// some constant before comparison.
+/// with some constant before comparison.
 public abstract class PolynomialValuesCmpFeature extends BinaryTacletAppFeature {
     private final ProjectionToTerm<Goal> left, right, leftCoeff, rightCoeff;
 

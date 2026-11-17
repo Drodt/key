@@ -380,7 +380,7 @@ public class TestApplyTaclet {
             "First goal should be 'b==>b', but is " + goals.head().sequent());
         goals = goals.tail();
         assertTrue(
-                goals.head().sequent().antecedent().isEmpty()
+            goals.head().sequent().antecedent().isEmpty()
                     && goals.head().sequent().succedent().size() == 1
                     && goals.head().sequent().succedent().iterator().next().formula()
                             .op() == Quantifier.ALL,

@@ -267,7 +267,8 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     }
 
     /// informs all goal listeners about a change of the sequent to reduce unnecessary object
-    /// creation the necessary information is passed to the listener as parameters and not through an
+    /// creation the necessary information is passed to the listener as parameters and not through
+    /// an
     /// event object.
     private void fireSequentChanged(SequentChangeInfo sci) {
         getFormulaTagManager().sequentChanged(sci, getTime());

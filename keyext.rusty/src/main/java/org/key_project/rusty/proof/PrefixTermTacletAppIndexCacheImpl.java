@@ -62,14 +62,14 @@ public abstract class PrefixTermTacletAppIndexCacheImpl extends PrefixTermTaclet
     protected abstract String name();
 
     /// @return a freshly created key for the term `t` that can be stored in the
-    ///         `cache`
+    /// `cache`
     private CacheKey getNewKey(Term t) {
         return new CacheKey(this, t);
     }
 
     /// @return a key for the term `t` that can be used for cache queries. Calling this
-    ///         method twice will return the same object (with different attribute values), i.e., the
-    ///         result is not supposed to be stored anywhere
+    /// method twice will return the same object (with different attribute values), i.e., the
+    /// result is not supposed to be stored anywhere
     private CacheKey getQueryKey(Term t) {
         queryCacheKey.analysedTerm = t;
         return queryCacheKey;

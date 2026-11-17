@@ -18,6 +18,7 @@ import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
+import org.key_project.prover.strategy.costbased.feature.WeakStableCost;
 import org.key_project.prover.strategy.costbased.termfeature.TermFeature;
 import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.Services;
@@ -28,6 +29,12 @@ import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
+/// Generates the terms upward a given (usually the find-)position and
+/// allows to iterate over those in order to check e.g. whether the
+/// position is below an update or quantifier.
+///
+/// As it only looks upwards, the computed cost is weak stable
+@WeakStableCost
 public abstract class SuperTermGenerator implements TermGenerator<Goal> {
     private final TermFeature cond;
 
@@ -73,6 +80,7 @@ public abstract class SuperTermGenerator implements TermGenerator<Goal> {
         return !(cond.compute(t, mState, services) instanceof TopRuleAppCost);
     }
 
+    @WeakStableCost
     abstract static class SuperTermWithIndexGenerator extends SuperTermGenerator {
         private Services services;
         private Operator binFunc;

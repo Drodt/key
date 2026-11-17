@@ -386,7 +386,7 @@ public class TermTacletAppIndex {
     /// @param services the Services
     /// @param tacletIndex the TacletIndex to access taclets
     /// @param listener the NewRuleListener to be register such that new rules can be reported
-    ///        //@param indexCaches caches
+    /// //@param indexCaches caches
     /// @return the updated index object
     TermTacletAppIndex update(PosInOccurrence pos, Services services,
             TacletIndex tacletIndex,
@@ -401,8 +401,9 @@ public class TermTacletAppIndex {
     /// Recursively update the term index, starting at `this` and descending along the
     /// given path iterator to the term position below which a modification was performed
     ///
-    /// @param pathToModification an iterator that walks from the root of the formula to the position
-    ///        of modification
+    /// @param pathToModification an iterator that walks from the root of the formula to the
+    /// position
+    /// of modification
     /// @return the updated TermTacletAppIndex
     private TermTacletAppIndex updateHelp(PIOPathIterator pathToModification, Services services,
             TacletIndex tacletIndex, NewRuleListener listener,

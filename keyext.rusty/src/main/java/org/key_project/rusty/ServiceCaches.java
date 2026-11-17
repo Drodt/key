@@ -6,17 +6,20 @@ package org.key_project.rusty;
 
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
+import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.PrefixTermTacletAppIndexCacheImpl.CacheKey;
 import org.key_project.rusty.proof.TermTacletAppIndex;
 import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
 import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
+import org.key_project.rusty.strategy.CostReuse;
 import org.key_project.rusty.strategy.feature.AbstractBetaFeature.TermInfo;
 import org.key_project.rusty.strategy.feature.AppliedRuleAppsNameCache;
 import org.key_project.rusty.strategy.quantifierHeuristics.Metavariable;
@@ -113,6 +116,16 @@ public class ServiceCaches implements SessionCaches {
     private final Map<Term, TriggersSet> triggerSetCache =
         new ConcurrentLruCache<>(1000);
 
+    /// Per-proof cache for `CostReuse`'s feature-locality classification (taclet -> its
+    /// reuse-eligibility verdict). Held here, like the other proof-scoped caches, so it is freed
+    /// with
+    /// the proof and never shared between proofs with different taclet options. Values are opaque
+    /// to
+    /// this class (a `CostReuse.Eligibility`, or its ineligible sentinel) to keep this package
+    /// independent of the strategy package.
+    private final Map<Taclet, CostReuse.ConditionalEligibility> costReuseClassificationCache =
+        new ConcurrentHashMap<>();
+
     @Override
     public AssumesFormulaInstantiationCache getAssumesFormulaInstantiationCache() {
         return assumesFormulaInstantiationCache;
@@ -163,5 +176,9 @@ public class ServiceCaches implements SessionCaches {
     /// @return The cache used by [TermTacletAppIndexCacheSet] instances.
     public Map<CacheKey, TermTacletAppIndex> getTermTacletAppIndexCache() {
         return termTacletAppIndexCache;
+    }
+
+    public Map<Taclet, CostReuse.ConditionalEligibility> getCostReuseClassificationCache() {
+        return costReuseClassificationCache;
     }
 }

@@ -9,6 +9,7 @@ import org.key_project.logic.op.Operator;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.proof.Goal;
@@ -18,6 +19,7 @@ import org.key_project.rusty.proof.Goal;
 ///
 /// NB: this is a rather restricted version of term construction, one can think of also allowing
 /// bound variables, etc. to be specified
+@StableCost
 public class TermConstructionProjection implements ProjectionToTerm<Goal> {
     private final Operator op;
     private final ProjectionToTerm<Goal>[] subTerms;

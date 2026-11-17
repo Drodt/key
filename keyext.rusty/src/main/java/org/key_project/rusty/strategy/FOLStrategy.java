@@ -398,7 +398,7 @@ public class FOLStrategy extends AbstractFeatureStrategy implements ComponentStr
 
     private void setupReplaceKnown(RuleSetDispatchFeature d) {
         final Feature commonF =
-            add(ifZero(MatchedAssumesFeature.INSTANCE, DiffFindAndIfFeature.INSTANCE),
+            add(ifZero(MatchedAssumesFeature.INSTANCE, DiffFindAndAssumesFeature.INSTANCE),
                 longConst(-5000),
                 add(DiffFindAndReplacewithFeature.INSTANCE,
                     ScaleFeature.createScaled(CountMaxDPathFeature.INSTANCE, 10.0)));
