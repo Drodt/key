@@ -12,7 +12,6 @@ import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.Feature;
 
-import org.jspecify.annotations.NonNull;
 
 /// Feature that computes the age of the goal (i.e. total number of rules applications that have
 /// been
@@ -23,8 +22,8 @@ public class AgeFeature implements Feature {
     private AgeFeature() {}
 
     @Override
-    public <Goal extends ProofGoal<@NonNull Goal>> RuleAppCost computeCost(RuleApp app,
-            PosInOccurrence pos, Goal goal, MutableState mState) {
+    public RuleAppCost computeCost(RuleApp app,
+            PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
         return NumberRuleAppCost.create(goal.getTime());
     }
 }

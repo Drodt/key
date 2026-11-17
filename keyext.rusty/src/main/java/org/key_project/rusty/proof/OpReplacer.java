@@ -12,6 +12,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.logic.TermFactory;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /// Replaces operators in a term by other operators with the same signature, or subterms of the term
@@ -132,7 +133,8 @@ public class OpReplacer {
                 changedSubTerm = true;
             }
         }
-        final ImmutableList<QuantifiableVariable> newBoundVars = replaceQuantVars(term.boundVars());
+        final ImmutableArray<QuantifiableVariable> newBoundVars =
+            replaceQuantVars(term.boundVars());
 
         final Term result;
         if (newOp != term.op() || changedSubTerm || newBoundVars != term.boundVars()) {
@@ -161,8 +163,8 @@ public class OpReplacer {
     ///
     /// @param vars the array in which to perform the replacement.
     /// @return the list of transformed variables.
-    public ImmutableList<QuantifiableVariable> replaceQuantVars(
-            ImmutableList<? extends QuantifiableVariable> vars) {
+    public ImmutableArray<QuantifiableVariable> replaceQuantVars(
+            ImmutableArray<? extends QuantifiableVariable> vars) {
         QuantifiableVariable[] result = new QuantifiableVariable[vars.size()];
         boolean changed = false;
         for (int i = 0, n = vars.size(); i < n; i++) {
@@ -173,7 +175,7 @@ public class OpReplacer {
                 changed = true;
             }
         }
-        return changed ? ImmutableList.fromArray(result)
-                : (ImmutableList<QuantifiableVariable>) vars;
+        return changed ? new ImmutableArray<>(result)
+                : (ImmutableArray<QuantifiableVariable>) vars;
     }
 }

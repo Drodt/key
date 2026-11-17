@@ -28,6 +28,7 @@ import org.key_project.rusty.rule.metaconstruct.CreateLocalAnonUpdate;
 import org.key_project.rusty.rule.metaconstruct.IntroAtPreDefs;
 import org.key_project.rusty.rule.metaconstruct.ShiftTransformer;
 import org.key_project.rusty.rule.metaconstruct.arith.*;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -133,7 +134,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
             var sv = term.sub(0);
             var pes =
                 (ListInstantiation<RustyProgramElement>) svInst
-                        .<ImmutableList<RustyProgramElement>>getInstantiationEntry(
+                        .<ImmutableArray<RustyProgramElement>>getInstantiationEntry(
                             (SchemaVariable) sv.op());
 
             var terms = new Term[pes.getInstantiation().size()];
@@ -237,7 +238,7 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
             var sort = (ParametricSortInstance) term.sub(0).sort();
             var sv = (SchemaVariable) term.sub(1).op();
             var inst = (ListInstantiation<RustyProgramElement>) svInst
-                    .<ImmutableList<RustyProgramElement>>getInstantiationEntry(sv);
+                    .<ImmutableArray<RustyProgramElement>>getInstantiationEntry(sv);
             var lst = inst.getInstantiation();
 
             var terms = new Term[lst.size()];

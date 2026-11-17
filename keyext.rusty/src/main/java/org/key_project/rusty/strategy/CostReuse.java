@@ -12,13 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.prover.strategy.costbased.CostClassifiable;
 import org.key_project.prover.strategy.costbased.CostLocality;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.RuleSetDispatchFeature;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.strategy.feature.AbstractNonDuplicateAppFeature;
 import org.key_project.rusty.strategy.feature.NonDuplicateAppFeature;
-import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
 
 import org.jspecify.annotations.Nullable;
 

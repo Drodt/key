@@ -5,10 +5,21 @@
 package org.key_project.rusty.strategy;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.strategy.ArithTermFeatures;
+import org.key_project.prover.strategy.IntegerStrategy;
+import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Proof;
+import org.key_project.rusty.rule.metaconstruct.arith.RMonomial;
 import org.key_project.rusty.strategy.definition.OneOfStrategyPropertyDefinition;
 import org.key_project.rusty.strategy.definition.StrategyPropertyValueDefinition;
 import org.key_project.rusty.strategy.definition.StrategySettingsDefinition;
+import org.key_project.rusty.strategy.feature.PolynomialValuesCmpFeature;
+import org.key_project.rusty.strategy.termProjection.CoeffGcdProjection;
+import org.key_project.rusty.strategy.termProjection.MonomialColumnOp;
+import org.key_project.rusty.strategy.termProjection.ReduceMonomialsProjection;
+import org.key_project.rusty.strategy.termgenerator.DividePolynomialsProjection;
+import org.key_project.rusty.strategy.termgenerator.MultiplesModEquationsGenerator;
+import org.key_project.rusty.strategy.termgenerator.RootsGenerator;
 
 import org.jspecify.annotations.NonNull;
 
@@ -46,8 +57,30 @@ public class IntegerStrategyFactory implements StrategyFactory {
     }
 
     @Override
-    public IntegerStrategy create(Proof proof, StrategyProperties strategyProperties) {
-        return new IntegerStrategy(proof, strategyProperties);
+    public RustIntegerStrategy create(Proof proof, StrategyProperties strategyProperties) {
+        var tf = new ArithTermFeatures(proof.getServices().getLDTs().getIntLDT(), Equality.EQUALS);
+        var ff = new FormulaTermFeatures(tf);
+        final String nonLin =
+            strategyProperties.getProperty(StrategyProperties.NON_LIN_ARITH_OPTIONS_KEY);
+        final IntegerStrategy.ArithTreatment arith =
+            StrategyProperties.NON_LIN_ARITH_COMPLETION.equals(nonLin)
+                    ? IntegerStrategy.ArithTreatment.MODEL_SEARCH
+                    : StrategyProperties.NON_LIN_ARITH_DEF_OPS.equals(nonLin)
+                            ? IntegerStrategy.ArithTreatment.DEF_OPS
+                            : IntegerStrategy.ArithTreatment.BASIC;
+        var cfg = new IntegerStrategy.Config(tf, arith,
+            strategyProperties.getProperty(StrategyProperties.STOPMODE_OPTIONS_KEY)
+                    .equals(StrategyProperties.STOPMODE_NONCLOSE),
+            proof.getServices().getLDTs().getIntLDT(),
+            RMonomial::create, ReduceMonomialsProjection::create, MonomialColumnOp::create,
+            DividePolynomialsProjection::createRoundingUp,
+            DividePolynomialsProjection::createRoundingDown, CoeffGcdProjection::create,
+            PolynomialValuesCmpFeature::lt, PolynomialValuesCmpFeature::lt,
+            PolynomialValuesCmpFeature::leq,
+            PolynomialValuesCmpFeature::leq, PolynomialValuesCmpFeature::eq,
+            PolynomialValuesCmpFeature::divides, MultiplesModEquationsGenerator::create,
+            RootsGenerator::create);
+        return new RustIntegerStrategy(cfg, ff, proof);
     }
 
     @Override
@@ -58,6 +91,6 @@ public class IntegerStrategyFactory implements StrategyFactory {
 
     @Override
     public @NonNull Name name() {
-        return IntegerStrategy.NAME;
+        return RustIntegerStrategy.NAME;
     }
 }

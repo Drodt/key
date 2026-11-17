@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.strategy.feature;
 
+import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.feature.Feature;
-import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.TacletApp;
 
 /// Binary feature that returns zero iff a certain Taclet app has not already been performed
@@ -15,8 +16,8 @@ public class NonDuplicateAppFeature extends AbstractNonDuplicateAppFeature {
     public static final Feature INSTANCE = new NonDuplicateAppFeature();
 
     @Override
-    public boolean filter(TacletApp app, PosInOccurrence pos,
-            Goal goal, MutableState mState) {
+    public boolean filter(ITacletApp app, PosInOccurrence pos,
+            ProofGoal<?> goal, MutableState mState) {
         if (!app.assumesInstantionsComplete()) {
             return true;
         }

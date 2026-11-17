@@ -7,6 +7,7 @@ package org.key_project.rusty.strategy.feature.findprefix;
 import org.key_project.logic.op.Operator;
 import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.costbased.feature.findprefix.Checker;
 import org.key_project.rusty.logic.op.IfThenElse;
 import org.key_project.rusty.logic.op.Junctor;
 

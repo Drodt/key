@@ -7,7 +7,7 @@ package org.key_project.logic;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
 /// This interface is implemented by classes that represent terms or formulas.
@@ -20,16 +20,16 @@ public interface Term extends LogicElement, Sorted {
     <T> T op(Class<T> opClass) throws IllegalArgumentException;
 
     /// The subterms.
-    ImmutableList<? extends Term> subs();
+    ImmutableArray<? extends Term> subs();
 
     /// The <code>n</code>-th direct subterm.
     Term sub(int n);
 
     /// The logical variables bound by the top level operator.
-    ImmutableList<? extends QuantifiableVariable> boundVars();
+    ImmutableArray<? extends QuantifiableVariable> boundVars();
 
     /// The logical variables bound by the top level operator for the nth subterm.
-    ImmutableList<? extends QuantifiableVariable> varsBoundHere(int n);
+    ImmutableArray<? extends QuantifiableVariable> varsBoundHere(int n);
 
     /// The arity of the term.
     int arity();

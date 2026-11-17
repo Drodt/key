@@ -31,6 +31,7 @@ import org.key_project.rusty.parser.KeYRustyLexer;
 import org.key_project.rusty.parser.KeYRustyParser;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.util.parsing.BuildingException;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.java.StringUtil;
@@ -410,7 +411,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     public Term visitAccessterm(KeYRustyParser.AccesstermContext ctx) {
         String firstName = accept(ctx.simple_ident());
 
-        ImmutableList<QuantifiableVariable> boundVars = null;
+        ImmutableArray<QuantifiableVariable> boundVars = null;
         Namespace<@NonNull QuantifiableVariable> origVars = null;
         KeYRustyParser.Formal_sort_argsContext genericArgsCtxt = null;
         if (ctx.formal_sort_args() != null) {
@@ -421,7 +422,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             origVars = variables();
             List<QuantifiableVariable> bv = accept(ctx.call().boundVars);
             boundVars =
-                bv != null ? ImmutableList.fromArray(bv.toArray(new QuantifiableVariable[0]))
+                bv != null ? new ImmutableArray<>(bv.toArray(new QuantifiableVariable[0]))
                         : null;
             args = visitArguments(ctx.call().argument_list());
             if (boundVars != null) {
@@ -469,7 +470,7 @@ public class ExpressionBuilder extends DefaultBuilder {
                         }
                     }
                 }
-                ImmutableList<QuantifiableVariable> finalBoundVars = boundVars;
+                ImmutableArray<QuantifiableVariable> finalBoundVars = boundVars;
                 // create term
                 Term[] finalArgs1 = args;
                 current = capsulateTf(ctx,
@@ -724,9 +725,9 @@ public class ExpressionBuilder extends DefaultBuilder {
         }
         List<@NonNull QuantifiableVariable> vars = accept(ctx.bound_variables());
         assert vars != null;
-        ImmutableList<QuantifiableVariable> bound = ImmutableList.fromList(vars);
+        ImmutableArray<QuantifiableVariable> bound = new ImmutableArray<>(vars);
         Term a1 = accept(ctx.sub);
-        Term a = getTermFactory().createTerm(op, ImmutableList.singleton(a1),
+        Term a = getTermFactory().createTerm(op, new ImmutableArray<>(a1),
             bound);
         unbindVars(orig);
         unbindVars(vars);

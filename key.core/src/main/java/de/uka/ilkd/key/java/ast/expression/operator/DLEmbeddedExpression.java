@@ -25,6 +25,7 @@ import de.uka.ilkd.key.logic.op.LocationVariable;
 
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.ExtList;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -35,7 +36,7 @@ public class DLEmbeddedExpression extends Operator {
     @SuppressWarnings("deprecation") // ctor parameter bound to the deprecated ImmutableArray
     public DLEmbeddedExpression(
             PositionInfo pi, List<Comment> comments, JFunction functionSymbol,
-            @NonNull ImmutableList<Expression> children) {
+            @NonNull ImmutableArray<Expression> children) {
         super(pi, comments, children);
         this.functionSymbol = functionSymbol;
     }

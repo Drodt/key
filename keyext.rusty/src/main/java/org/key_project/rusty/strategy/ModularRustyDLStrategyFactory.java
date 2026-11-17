@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.strategy.ComponentStrategy;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.strategy.definition.AbstractStrategyPropertyDefinition;
@@ -119,8 +121,8 @@ public class ModularRustyDLStrategyFactory implements StrategyFactory {
 
     @Override
     public Strategy<@NonNull Goal> create(Proof proof, StrategyProperties strategyProperties) {
-        List<ComponentStrategy> componentStrategies = componentFactories.stream()
-                .map(f -> (ComponentStrategy) f.create(proof, strategyProperties))
+        List<ComponentStrategy<Goal>> componentStrategies = componentFactories.stream()
+                .map(f -> (ComponentStrategy<Goal>) f.create(proof, strategyProperties))
                 .collect(Collectors.toList());
         return new ModularRustyDLStrategy(proof, componentStrategies, strategyProperties);
     }

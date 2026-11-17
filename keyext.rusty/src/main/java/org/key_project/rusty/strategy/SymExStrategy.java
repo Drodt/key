@@ -9,30 +9,29 @@ import java.util.Set;
 
 import org.key_project.logic.Name;
 import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.IBuiltInRule;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.ArithTermFeatures;
+import org.key_project.prover.strategy.ComponentStrategy;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
-import org.key_project.prover.strategy.costbased.feature.Feature;
-import org.key_project.prover.strategy.costbased.feature.FindDepthFeature;
-import org.key_project.prover.strategy.costbased.feature.ScaleFeature;
-import org.key_project.prover.strategy.costbased.feature.SumFeature;
+import org.key_project.prover.strategy.costbased.feature.*;
+import org.key_project.prover.strategy.costbased.termProjection.TermBuffer;
+import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.UseOperationContractRule;
-import org.key_project.rusty.strategy.feature.DiffFindAndAssumesFeature;
-import org.key_project.rusty.strategy.feature.MatchedAssumesFeature;
-import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
 import org.key_project.rusty.strategy.feature.findprefix.FindPrefixRestrictionFeature;
-import org.key_project.rusty.strategy.termProjection.TermBuffer;
 import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 
 import org.jspecify.annotations.NonNull;
 
+import static org.key_project.rusty.strategy.RustStaticFeatureCollection.functionSpecFeature;
+
 /// Strategy for symbolic execution rules
-public class SymExStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
+public class SymExStrategy extends RustAbstractFeatureStrategy implements ComponentStrategy<Goal> {
     public static final Name NAME = new Name("SymExStrategy");
 
     private final FormulaTermFeatures ff;
@@ -48,7 +47,7 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
         super(proof);
 
         this.strategyProperties = strategyProperties;
-        var tf = new ArithTermFeatures(getServices().getLDTs().getIntLDT());
+        var tf = new ArithTermFeatures(getServices().getLDTs().getIntLDT(), Equality.EQUALS);
         ff = new FormulaTermFeatures(tf);
 
         costComputationDispatcher = setupCostComputationF();
@@ -56,11 +55,6 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
 
         costComputationF = setupGlobalF(costComputationDispatcher);
         instantiationF = setupGlobalF(instantiationDispatcher);
-    }
-
-    @Override
-    public boolean isResponsibleFor(RuleSet rs) {
-        return costComputationDispatcher.get(rs) != null || instantiationDispatcher.get(rs) != null;
     }
 
     private Feature setupGlobalF(Feature dispatcher) {
@@ -87,7 +81,7 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
         boolean programsToRight = true; // XXX
 
         bindRuleSet(d, "simplify_prog",
-            ifZero(isBelow(add(ff.forF, not(ff.atom))), longConst(200), longConst(-100)));
+            ifZero(isBelow(add(ff.forF(), not(ff.atom()))), longConst(200), longConst(-100)));
 
         bindRuleSet(d, "simplify_prog_subset", longConst(-4000));
 
@@ -146,12 +140,12 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
         }
 
         bindRuleSet(d, "confluence_restricted",
-            ifZero(MatchedAssumesFeature.INSTANCE, DiffFindAndAssumesFeature.INSTANCE));
+            ifZero(MatchedAssumesFeature.create(), DiffFindAndAssumesFeature.create()));
 
         final var superFor = new TermBuffer();
         bindRuleSet(d, "split_if",
             add(sum(superFor, SuperTermGenerator.upwards(any(), getServices()),
-                applyTF(superFor, not(ff.program))), longConst(50)));
+                applyTF(superFor, not(ff.program()))), longConst(50)));
 
         return d;
     }
@@ -178,8 +172,8 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
     }
 
     @Override
-    public <GOAL extends ProofGoal<@NonNull GOAL>> RuleAppCost computeCost(RuleApp app,
-            PosInOccurrence pos, GOAL goal, MutableState mState) {
+    public RuleAppCost computeCost(RuleApp app,
+            PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
         return costComputationF.computeCost(app, pos, goal, mState);
     }
 
@@ -203,7 +197,7 @@ public class SymExStrategy extends AbstractFeatureStrategy implements ComponentS
     }
 
     @Override
-    public boolean isResponsibleFor(BuiltInRule rule) {
+    public boolean isResponsibleFor(IBuiltInRule rule) {
         return rule instanceof UseOperationContractRule;
     }
 }

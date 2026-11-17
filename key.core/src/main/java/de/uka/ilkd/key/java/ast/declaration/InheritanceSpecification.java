@@ -11,7 +11,7 @@ import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.java.ast.reference.TypeReferenceContainer;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Inheritance specification.
@@ -26,7 +26,7 @@ public abstract class InheritanceSpecification extends JavaNonTerminalProgramEle
      * Supertypes.
      */
 
-    protected final ImmutableList<TypeReference> supertypes;
+    protected final ImmutableArray<TypeReference> supertypes;
 
 
     /**
@@ -45,7 +45,7 @@ public abstract class InheritanceSpecification extends JavaNonTerminalProgramEle
      */
 
     protected InheritanceSpecification(TypeReference supertype) {
-        this.supertypes = ImmutableList.singleton(supertype);
+        this.supertypes = new ImmutableArray<>(supertype);
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class InheritanceSpecification extends JavaNonTerminalProgramEle
      */
 
     protected InheritanceSpecification(TypeReference[] supertypes) {
-        this.supertypes = ImmutableList.fromArray(supertypes);
+        this.supertypes = new ImmutableArray<>(supertypes);
     }
 
     /**
@@ -68,10 +68,10 @@ public abstract class InheritanceSpecification extends JavaNonTerminalProgramEle
      */
     protected InheritanceSpecification(ExtList children) {
         super(children);
-        this.supertypes = ImmutableList.fromArray(children.collect(TypeReference.class));
+        this.supertypes = new ImmutableArray<>(children.collect(TypeReference.class));
     }
 
-    public InheritanceSpecification(ImmutableList<TypeReference> types) {
+    public InheritanceSpecification(ImmutableArray<TypeReference> types) {
         this.supertypes = types;
     }
 
@@ -121,7 +121,7 @@ public abstract class InheritanceSpecification extends JavaNonTerminalProgramEle
      * @return the type reference array wrapper.
      */
 
-    public ImmutableList<TypeReference> getSupertypes() {
+    public ImmutableArray<TypeReference> getSupertypes() {
         return supertypes;
     }
 

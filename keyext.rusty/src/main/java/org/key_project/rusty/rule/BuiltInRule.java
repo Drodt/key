@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.rule;
 
+import org.key_project.logic.LogicServices;
+import org.key_project.prover.rules.IBuiltInRule;
 import org.key_project.prover.rules.RuleAbortException;
 import org.key_project.prover.rules.RuleExecutor;
 import org.key_project.prover.sequent.PosInOccurrence;
-import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.util.collection.ImmutableList;
 
@@ -16,7 +17,7 @@ import org.jspecify.annotations.NonNull;
 /// Built-in rule interface. As applications of this rule kind may not be successful in each case
 /// one
 /// has to ensure that the goal split is done only iff the application was successful.
-public interface BuiltInRule extends Rule, RuleExecutor<Goal> {
+public interface BuiltInRule extends Rule, IBuiltInRule<Goal> {
     /// the rule is applied on the given goal using the information of rule application.
     ///
     /// @param goal the Goal on which to apply <tt>ruleApp</tt>
@@ -45,5 +46,5 @@ public interface BuiltInRule extends Rule, RuleExecutor<Goal> {
 
     boolean isApplicableOnSubTerms();
 
-    IBuiltInRuleApp createApp(PosInOccurrence pos, Services services);
+    IBuiltInRuleApp createApp(PosInOccurrence pos, LogicServices services);
 }

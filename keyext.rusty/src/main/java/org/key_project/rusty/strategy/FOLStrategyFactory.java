@@ -5,6 +5,10 @@
 package org.key_project.rusty.strategy;
 
 import org.key_project.logic.Name;
+import org.key_project.prover.strategy.ArithTermFeatures;
+import org.key_project.prover.strategy.FOLStrategy;
+import org.key_project.prover.strategy.Strategy;
+import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.strategy.definition.OneOfStrategyPropertyDefinition;
@@ -35,7 +39,9 @@ public class FOLStrategyFactory implements StrategyFactory {
 
     @Override
     public Strategy<@NonNull Goal> create(Proof proof, StrategyProperties strategyProperties) {
-        return new RFOLStrategy(proof, strategyProperties);
+        var tf = new ArithTermFeatures(proof.getServices().getLDTs().getIntLDT(), Equality.EQUALS);
+        var ff = new FormulaTermFeatures(tf);
+        return new RFOLStrategy(tf, ff, proof, strategyProperties);
     }
 
     private static OneOfStrategyPropertyDefinition getQuantifierTreatment() {

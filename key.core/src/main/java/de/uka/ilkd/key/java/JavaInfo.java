@@ -27,6 +27,7 @@ import de.uka.ilkd.key.speclang.SpecificationElement;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.ConcurrentLruCache;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.Pair;
 
@@ -1455,7 +1456,7 @@ public final class JavaInfo {
     public boolean isCanonicalProgramMethod(IProgramMethod method, KeYJavaType context)
             throws NullPointerException {
         String name = method.getName();
-        ImmutableList<KeYJavaType> paramTypes = method.getParamTypes();
+        ImmutableArray<KeYJavaType> paramTypes = method.getParamTypes();
         IProgramMethod canonicalMethod = getProgramMethod(context, name, paramTypes, context);
         if (method.isPublic()) {
             /*

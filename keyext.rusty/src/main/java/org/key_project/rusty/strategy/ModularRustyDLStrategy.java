@@ -14,28 +14,31 @@ import org.key_project.prover.rules.Rule;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.ArithTermFeatures;
+import org.key_project.prover.strategy.ComponentStrategy;
+import org.key_project.prover.strategy.ComponentStrategy.StrategyAspect;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.AutomatedRuleFeature;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.MatchedAssumesFeature;
+import org.key_project.prover.strategy.costbased.feature.RuleSetDispatchFeature;
+import org.key_project.prover.strategy.costbased.termProjection.FocusProjection;
+import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.rule.BuiltInRule;
-import org.key_project.rusty.strategy.ComponentStrategy.StrategyAspect;
 import org.key_project.rusty.strategy.feature.AgeFeature;
-import org.key_project.rusty.strategy.feature.MatchedAssumesFeature;
 import org.key_project.rusty.strategy.feature.NonDuplicateAppFeature;
-import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
-import org.key_project.rusty.strategy.termProjection.FocusProjection;
 
 import org.jspecify.annotations.NonNull;
 
-public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
+public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
     public static final Name NAME = new Name("Modular RustyDL Strategy");
 
-    private final List<ComponentStrategy> strategies = new ArrayList<>();
+    private final List<ComponentStrategy<Goal>> strategies = new ArrayList<>();
     private final StrategyProperties strategyProperties;
     private final Feature reduceCostTillMaxF;
     private final Feature reduceInstTillMaxF;
@@ -47,29 +50,29 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
 
     // map rulesets to the strategies that participate in their cost computations, instantiation or
     // approval decisions
-    private final Map<RuleSet, List<ComponentStrategy>> costResponsibilityMap =
+    private final Map<RuleSet, List<ComponentStrategy<Goal>>> costResponsibilityMap =
         new LinkedHashMap<>();
-    private final Map<RuleSet, List<ComponentStrategy>> instantiationResponsibilityMap =
+    private final Map<RuleSet, List<ComponentStrategy<Goal>>> instantiationResponsibilityMap =
         new LinkedHashMap<>();
-    private final Map<RuleSet, List<ComponentStrategy>> approvalResponsibilityMap =
+    private final Map<RuleSet, List<ComponentStrategy<Goal>>> approvalResponsibilityMap =
         new LinkedHashMap<>();
 
     // map rules to the strategies that participate in their cost computations, instantiation or
     // approval decisions
-    private final Map<Rule, LinkedHashSet<ComponentStrategy>> costRuleToStrategyMap =
+    private final Map<Rule, LinkedHashSet<ComponentStrategy<Goal>>> costRuleToStrategyMap =
         new LinkedHashMap<>();
-    private final Map<Rule, LinkedHashSet<ComponentStrategy>> instantiationRuleToStrategyMap =
+    private final Map<Rule, LinkedHashSet<ComponentStrategy<Goal>>> instantiationRuleToStrategyMap =
         new LinkedHashMap<>();
-    private final Map<Rule, LinkedHashSet<ComponentStrategy>> approvalRuleToStrategyMap =
+    private final Map<Rule, LinkedHashSet<ComponentStrategy<Goal>>> approvalRuleToStrategyMap =
         new LinkedHashMap<>();
-    private final Map<Name, ComponentStrategy> nameToStrategyMap = new HashMap<>();
+    private final Map<Name, ComponentStrategy<Goal>> nameToStrategyMap = new HashMap<>();
 
-    public ModularRustyDLStrategy(Proof proof, List<ComponentStrategy> componentStrategies,
+    public ModularRustyDLStrategy(Proof proof, List<ComponentStrategy<Goal>> componentStrategies,
             StrategyProperties properties) {
         super(proof);
         strategies.addAll(componentStrategies);
         this.strategyProperties = (StrategyProperties) properties.clone();
-        this.tf = new ArithTermFeatures(getServices().getLDTs().getIntLDT());
+        this.tf = new ArithTermFeatures(getServices().getLDTs().getIntLDT(), Equality.EQUALS);
 
         initializeResponsibilityMap(StrategyAspect.Cost, costResponsibilityMap);
         initializeResponsibilityMap(StrategyAspect.Instantiation, instantiationResponsibilityMap);
@@ -80,7 +83,7 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
         // competing computations
         conflictCostDispatcher = resolveConflicts();
 
-        final Feature ifMatchedF = ifZero(MatchedAssumesFeature.INSTANCE, longConst(+1));
+        final Feature ifMatchedF = ifZero(MatchedAssumesFeature.create(), longConst(+1));
         reduceCostTillMaxF = new ReduceTillMaxFeature(Feature::computeCost,
             (rule) -> getResponsibleStrategies(rule, costResponsibilityMap, costRuleToStrategyMap));
 
@@ -110,8 +113,8 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
     /// @param aspect the StrategyAspect for which the cache is created
     /// @param responsibilityMap the map used as cache for the specified aspect
     private void initializeResponsibilityMap(StrategyAspect aspect,
-            Map<RuleSet, List<ComponentStrategy>> responsibilityMap) {
-        for (ComponentStrategy strategy : strategies) {
+            Map<RuleSet, List<ComponentStrategy<Goal>>> responsibilityMap) {
+        for (ComponentStrategy<Goal> strategy : strategies) {
             nameToStrategyMap.put(strategy.name(), strategy);
             var res = strategy.getResponsibilities(aspect);
             for (var rs : res) {
@@ -171,7 +174,7 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
         switch (rs.name().toString()) {
             case "order_terms" -> {
                 var folStrat = nameToStrategyMap.get(RFOLStrategy.NAME);
-                var intStrat = nameToStrategyMap.get(IntegerStrategy.NAME);
+                var intStrat = nameToStrategyMap.get(RustIntegerStrategy.NAME);
                 bindRuleSet(d, "order_terms",
                     ifZero(applyTF("commEqLeft", tf.intF),
                         intStrat.getDispatcher(StrategyAspect.Cost).remove(rs),
@@ -179,7 +182,7 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
             }
             case "apply_equations" -> {
                 var folStrat = nameToStrategyMap.get(RFOLStrategy.NAME);
-                var intStrat = nameToStrategyMap.get(IntegerStrategy.NAME);
+                var intStrat = nameToStrategyMap.get(RustIntegerStrategy.NAME);
                 bindRuleSet(d, "apply_equations",
                     ifZero(applyTF(FocusProjection.create(0), tf.intF),
                         intStrat.getDispatcher(StrategyAspect.Cost).remove(rs),
@@ -187,7 +190,7 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
             }
             case "apply_equations_andOr" -> {
                 var folStrat = nameToStrategyMap.get(RFOLStrategy.NAME);
-                var intStrat = nameToStrategyMap.get(IntegerStrategy.NAME);
+                var intStrat = nameToStrategyMap.get(RustIntegerStrategy.NAME);
                 if (quantifierInstantiatedEnabled()) {
                     bindRuleSet(d, "apply_equations_andOr",
                         ifZero(applyTF(FocusProjection.create(0), tf.intF),
@@ -232,8 +235,9 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
     }
 
     private <R> R reduceTillMax(R init, R max, BiFunction<R, R, R> accumulator,
-            Function<ComponentStrategy, R> mapper, LinkedHashSet<ComponentStrategy> strats) {
-        for (ComponentStrategy strategy : strats) {
+            Function<ComponentStrategy<Goal>, R> mapper,
+            LinkedHashSet<ComponentStrategy<Goal>> strats) {
+        for (ComponentStrategy<Goal> strategy : strats) {
             init = accumulator.apply(init, mapper.apply(strategy));
             if (init == max) {
                 break;
@@ -242,10 +246,10 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
         return init;
     }
 
-    private LinkedHashSet<ComponentStrategy> getResponsibleStrategies(Rule rule,
-            Map<RuleSet, List<ComponentStrategy>> responsibilityMap,
-            Map<Rule, LinkedHashSet<ComponentStrategy>> ruleToStrategyMap) {
-        LinkedHashSet<ComponentStrategy> strats = ruleToStrategyMap.get(rule);
+    private LinkedHashSet<ComponentStrategy<Goal>> getResponsibleStrategies(Rule rule,
+            Map<RuleSet, List<ComponentStrategy<Goal>>> responsibilityMap,
+            Map<Rule, LinkedHashSet<ComponentStrategy<Goal>>> ruleToStrategyMap) {
+        LinkedHashSet<ComponentStrategy<Goal>> strats = ruleToStrategyMap.get(rule);
         if (strats == null) {
             strats = new LinkedHashSet<>();
             if (rule instanceof BuiltInRule bir) {
@@ -258,7 +262,7 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
                 var ruleSets = rule.ruleSets();
                 while (ruleSets.hasNext()) {
                     var rs = ruleSets.next();
-                    List<ComponentStrategy> s = responsibilityMap.get(rs);
+                    List<ComponentStrategy<Goal>> s = responsibilityMap.get(rs);
                     if (s != null)
                         strats.addAll(s);
                 }
@@ -269,30 +273,30 @@ public class ModularRustyDLStrategy extends AbstractFeatureStrategy {
     }
 
     @Override
-    public <GOAL extends ProofGoal<@NonNull GOAL>> RuleAppCost computeCost(RuleApp app,
-            PosInOccurrence pos, GOAL goal, MutableState mState) {
+    public RuleAppCost computeCost(RuleApp app,
+            PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
         return totalCost.computeCost(app, pos, goal, mState);
     }
 
     @FunctionalInterface
     private interface StrategyCostFunction {
-        RuleAppCost compute(ComponentStrategy strategy, RuleApp app,
+        RuleAppCost compute(ComponentStrategy<Goal> strategy, RuleApp app,
                 PosInOccurrence pos, Goal goal, MutableState mState);
     }
 
     private class ReduceTillMaxFeature implements Feature {
         private final StrategyCostFunction mapper;
-        private final Function<Rule, LinkedHashSet<ComponentStrategy>> ruleToStrategy;
+        private final Function<Rule, LinkedHashSet<ComponentStrategy<Goal>>> ruleToStrategy;
 
         ReduceTillMaxFeature(StrategyCostFunction mapper,
-                Function<Rule, LinkedHashSet<ComponentStrategy>> ruleToStrategy) {
+                Function<Rule, LinkedHashSet<ComponentStrategy<Goal>>> ruleToStrategy) {
             this.mapper = mapper;
             this.ruleToStrategy = ruleToStrategy;
         }
 
         @Override
-        public <GOAL extends ProofGoal<@NonNull GOAL>> RuleAppCost computeCost(RuleApp app,
-                PosInOccurrence pos, GOAL goal, MutableState mState) {
+        public RuleAppCost computeCost(RuleApp app,
+                PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
             return reduceTillMax(NumberRuleAppCost.getZeroCost(), TopRuleAppCost.INSTANCE,
                 RuleAppCost::add, s -> mapper.compute(s, app, pos, (Goal) goal, mState),
                 ruleToStrategy.apply(app.rule()));

@@ -5,42 +5,47 @@
 package org.key_project.rusty.strategy.quantifierHeuristics;
 
 import org.key_project.logic.Term;
+import org.key_project.logic.TermOrdering;
+import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.SmallerThanFeature;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.rule.TacletApp;
-import org.key_project.rusty.strategy.feature.SmallerThanFeature;
+import org.key_project.rusty.strategy.RustStaticFeatureCollection;
 
 /// Ordering used to sort the clauses in a quantified formula. This ordering should only be applied
 /// if at least one of the two clauses contains more than one literal (otherwise, use
 /// <code>LiteralsSmallerThanFeature</code>).
 public class ClausesSmallerThanFeature extends SmallerThanFeature {
-    private final ProjectionToTerm<Goal> left, right;
+    private final ProjectionToTerm left, right;
 
     private final QuanEliminationAnalyser quanAnalyser = new QuanEliminationAnalyser();
 
     private final LiteralsSmallerThanFeature litComparator;
 
-    private ClausesSmallerThanFeature(ProjectionToTerm<Goal> left, ProjectionToTerm<Goal> right,
-            IntLDT numbers) {
+    private ClausesSmallerThanFeature(ProjectionToTerm left, ProjectionToTerm right,
+            TermOrdering termOrdering, IntLDT numbers) {
+        super(termOrdering);
         this.left = left;
         this.right = right;
         this.litComparator =
-            (LiteralsSmallerThanFeature) LiteralsSmallerThanFeature.create(left, right, numbers);
+            (LiteralsSmallerThanFeature) LiteralsSmallerThanFeature.create(left, right,
+                RustStaticFeatureCollection.createTermOrdering(), numbers);
     }
 
-    public static Feature create(ProjectionToTerm<Goal> left, ProjectionToTerm<Goal> right,
-            IntLDT numbers) {
-        return new ClausesSmallerThanFeature(left, right, numbers);
+    public static Feature create(ProjectionToTerm left, ProjectionToTerm right,
+            TermOrdering termOrdering, IntLDT numbers) {
+        return new ClausesSmallerThanFeature(left, right, termOrdering, numbers);
     }
 
     @Override
-    protected boolean filter(TacletApp app, PosInOccurrence pos,
-            Goal goal, MutableState mState) {
+    protected boolean filter(ITacletApp app, PosInOccurrence pos,
+            ProofGoal<?> goal, MutableState mState) {
         final Term leftTerm = left.toTerm(app, pos, goal, mState);
         final Term rightTerm = right.toTerm(app, pos, goal, mState);
 
@@ -54,7 +59,7 @@ public class ClausesSmallerThanFeature extends SmallerThanFeature {
 
     /// this overwrites the method of <code>SmallerThanFeature</code>
     @Override
-    protected boolean lessThan(Term t1, Term t2, PosInOccurrence focus, Goal goal) {
+    protected boolean lessThan(Term t1, Term t2, PosInOccurrence focus, ProofGoal<?> goal) {
         final int t1Def = quanAnalyser.eliminableDefinition(t1, focus);
         final int t2Def = quanAnalyser.eliminableDefinition(t2, focus);
 
@@ -75,7 +80,7 @@ public class ClausesSmallerThanFeature extends SmallerThanFeature {
             if (t2.op() == Junctor.OR) {
                 return true;
             } else {
-                return litComparator.compareTerms(t1, t2, focus, goal);
+                return litComparator.compareTerms(t1, t2, focus, (Goal) goal);
             }
         }
     }

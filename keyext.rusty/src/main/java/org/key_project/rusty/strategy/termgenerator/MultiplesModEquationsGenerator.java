@@ -10,18 +10,21 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.key_project.logic.Term;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Monomial;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Polynomial;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
-import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
+import org.key_project.rusty.rule.metaconstruct.arith.RMonomial;
+import org.key_project.rusty.rule.metaconstruct.arith.RPolynomial;
 import org.key_project.util.collection.ImmutableList;
 
 /// Try to rewrite a monomial (term) <code>source</code> so that it becomes a multiple of another
@@ -36,31 +39,32 @@ import org.key_project.util.collection.ImmutableList;
 ///
 /// In the future, this class should also be used for instantiating explicit quantifiers over the
 /// integers.
-public class MultiplesModEquationsGenerator implements TermGenerator<Goal> {
-    private final ProjectionToTerm<Goal> source;
-    private final ProjectionToTerm<Goal> target;
+public class MultiplesModEquationsGenerator implements TermGenerator {
+    private final ProjectionToTerm source;
+    private final ProjectionToTerm target;
 
-    private MultiplesModEquationsGenerator(ProjectionToTerm<Goal> source,
-            ProjectionToTerm<Goal> target) {
+    private MultiplesModEquationsGenerator(ProjectionToTerm source,
+            ProjectionToTerm target) {
         this.source = source;
         this.target = target;
     }
 
-    public static TermGenerator<Goal> create(ProjectionToTerm<Goal> source,
-            ProjectionToTerm<Goal> target) {
+    public static TermGenerator create(ProjectionToTerm source,
+            ProjectionToTerm target) {
         return new MultiplesModEquationsGenerator(source, target);
     }
 
     @Override
-    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
+    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, ProofGoal<?> p_goal,
             MutableState mState) {
+        final var goal = (Goal) p_goal;
         final Services services = goal.proof().getServices();
 
-        final Monomial sourceM = Monomial.create(source.toTerm(app, pos, goal, mState), services);
-        final Monomial targetM = Monomial.create(target.toTerm(app, pos, goal, mState), services);
+        final Monomial sourceM = RMonomial.create(source.toTerm(app, pos, goal, mState), services);
+        final Monomial targetM = RMonomial.create(target.toTerm(app, pos, goal, mState), services);
 
         if (targetM.divides(sourceM)) {
-            return toIterator(targetM.reduce(sourceM).toTerm(services));
+            return toIterator(RMonomial.toTerm(targetM.reduce(sourceM), services));
         }
 
         final List<CofactorPolynomial> cofactorPolys = extractPolys(goal, services);
@@ -125,7 +129,7 @@ public class MultiplesModEquationsGenerator implements TermGenerator<Goal> {
 
             // do not return zero, that's too easy
             if (!quotient.getParts().isEmpty() || quotient.getConstantTerm().signum() != 0) {
-                return res.prepend(quotient.toTerm(services));
+                return res.prepend(RPolynomial.toTerm(quotient, services));
             }
         }
         return res;
@@ -149,8 +153,8 @@ public class MultiplesModEquationsGenerator implements TermGenerator<Goal> {
                 continue;
             }
 
-            final Polynomial left = Polynomial.create(t.sub(0), services);
-            final Polynomial right = Polynomial.create(t.sub(1), services);
+            final Polynomial left = RPolynomial.create(t.sub(0), services);
+            final Polynomial right = RPolynomial.create(t.sub(1), services);
 
             res.add(new CofactorPolynomial(left.sub(right), Polynomial.ZERO));
         }

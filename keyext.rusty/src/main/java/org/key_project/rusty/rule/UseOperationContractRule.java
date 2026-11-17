@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.rule;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.prover.rules.RuleAbortException;
@@ -284,7 +285,7 @@ public final class UseOperationContractRule implements BuiltInRule {
     }
 
     @Override
-    public ContractRuleApp createApp(PosInOccurrence pos, Services services) {
+    public ContractRuleApp createApp(PosInOccurrence pos, LogicServices services) {
         return new ContractRuleApp(this, pos);
     }
 

@@ -5,13 +5,14 @@
 package org.key_project.rusty.strategy.feature;
 
 import org.key_project.logic.Term;
+import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.feature.BinaryTacletAppFeature;
 import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.prover.strategy.costbased.feature.StableCost;
-import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.RewriteTaclet;
-import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
 
 /// Binary feature that returns zero iff the replacewith- and find-parts of a Taclet are matched to
@@ -26,7 +27,8 @@ public class DiffFindAndReplacewithFeature extends BinaryTacletAppFeature {
     private DiffFindAndReplacewithFeature() {}
 
     @Override
-    protected boolean filter(TacletApp app, PosInOccurrence pos, Goal goal, MutableState mState) {
+    protected boolean filter(ITacletApp app, PosInOccurrence pos, ProofGoal<?> goal,
+            MutableState mState) {
         assert pos != null && app.rule() instanceof RewriteTaclet
                 : "Feature is only applicable to rewrite taclets";
 

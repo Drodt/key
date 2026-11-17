@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.prover.rules.instantiation;
 
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /// This class is used to store the instantiation of a SchemaVariable if it is a ProgramElement.
-public class ListInstantiation<T> extends InstantiationEntry<ImmutableList<T>> {
+public class ListInstantiation<T> extends InstantiationEntry<ImmutableArray<T>> {
 
     /// type of the stored elements
     private final Class<T> type;
@@ -15,14 +15,14 @@ public class ListInstantiation<T> extends InstantiationEntry<ImmutableList<T>> {
     /// creates a new ContextInstantiationEntry
     ///
     /// @param pes the ProgramElement array the SchemaVariable is instantiated with
-    public ListInstantiation(ImmutableList<T> pes, Class<T> type) {
+    public ListInstantiation(ImmutableArray<T> pes, Class<T> type) {
         super(pes);
         this.type = type;
     }
 
     /// {@inheritDoc}
     @Override
-    public ImmutableList<T> getInstantiation() {
+    public ImmutableArray<T> getInstantiation() {
         return super.getInstantiation();
     }
 

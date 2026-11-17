@@ -7,12 +7,12 @@ package org.key_project.rusty.macro;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.RuleAppCostCollector;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.strategy.RuleAppCostCollector;
-import org.key_project.rusty.strategy.Strategy;
 
 import org.jspecify.annotations.NonNull;
 
@@ -30,9 +30,9 @@ public abstract class FilterStrategy implements Strategy<@NonNull Goal> {
     }
 
     @Override
-    public <G extends ProofGoal<@NonNull G>> RuleAppCost computeCost(RuleApp app,
+    public RuleAppCost computeCost(RuleApp app,
             PosInOccurrence pio,
-            G goal, MutableState mState) {
+            ProofGoal<?> goal, MutableState mState) {
         if (!isApprovedApp(app, pio, (Goal) goal)) {
             return TopRuleAppCost.INSTANCE;
         }

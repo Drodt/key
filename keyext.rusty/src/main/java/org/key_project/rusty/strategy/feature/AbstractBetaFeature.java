@@ -18,7 +18,6 @@ import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.logic.op.Quantifier;
 import org.key_project.rusty.logic.op.RModality;
 
-import org.jspecify.annotations.NonNull;
 
 /// This abstract class contains some auxiliary methods for the selection of beta rules that are
 /// supposed to be applied. Used terminology is defined in Diss. by Martin Giese.
@@ -297,8 +296,8 @@ public abstract class AbstractBetaFeature implements Feature {
     /// @param goal the goal on which <code>app</code> is to be applied
     /// @return the cost of <code>app</code>
     @Override
-    public <Goal extends ProofGoal<@NonNull Goal>> RuleAppCost computeCost(RuleApp app,
-            PosInOccurrence pos, Goal goal,
+    public RuleAppCost computeCost(RuleApp app,
+            PosInOccurrence pos, ProofGoal<?> goal,
             MutableState mState) {
         assert pos != null : "Feature is only applicable to rules with find";
 

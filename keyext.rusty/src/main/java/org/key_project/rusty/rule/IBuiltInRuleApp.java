@@ -8,7 +8,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.util.collection.ImmutableList;
 
-public interface IBuiltInRuleApp extends RuleApp {
+public interface IBuiltInRuleApp extends org.key_project.prover.rules.IBuiltInRuleApp<Goal> {
     /// returns the built-in rule of this rule application
     BuiltInRule rule();
 

@@ -12,7 +12,7 @@ import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.ProgramPrefix;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Labeled statement.
@@ -127,13 +127,13 @@ public class LabeledStatement extends JavaStatement
     }
 
     @Override
-    public ImmutableList<ProgramPrefix> getPrefixElements() {
+    public ImmutableArray<ProgramPrefix> getPrefixElements() {
         if (body instanceof StatementBlock) {
             return StatementBlock.computePrefixElements(((StatementBlock) body).getBody(), this);
         } else if (body instanceof ProgramPrefix) {
-            return StatementBlock.computePrefixElements(ImmutableList.singleton(body), this);
+            return StatementBlock.computePrefixElements(new ImmutableArray<>(body), this);
         }
-        return ImmutableList.singleton(this);
+        return new ImmutableArray<>(this);
     }
 
 

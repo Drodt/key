@@ -12,6 +12,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Semisequent;
@@ -33,8 +34,8 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.strategy.quantifierHeuristics.*;
 import org.key_project.util.collection.*;
 
-public class TriggeredInstantiations implements TermGenerator<Goal> {
-    public static TermGenerator<Goal> create(boolean skipConditions) {
+public class TriggeredInstantiations implements TermGenerator {
+    public static TermGenerator create(boolean skipConditions) {
         return new TriggeredInstantiations(skipConditions);
     }
 
@@ -52,8 +53,9 @@ public class TriggeredInstantiations implements TermGenerator<Goal> {
     /// Generates all instances
     @Override
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos,
-            Goal goal,
+            ProofGoal<?> p_goal,
             MutableState mState) {
+        final var goal = (Goal) p_goal;
         if (app instanceof TacletApp tapp) {
 
             final Services services = goal.proof().getServices();

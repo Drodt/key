@@ -28,6 +28,7 @@ import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLConstruct;
 
 import org.key_project.util.ExtList;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -40,8 +41,8 @@ public class InterfaceDeclaration extends TypeDeclaration {
 
 
     public InterfaceDeclaration(PositionInfo pi, List<Comment> comments,
-            @NonNull ImmutableList<Modifier> modArray, ProgramElementName name,
-            ProgramElementName fullName, ImmutableList<MemberDeclaration> members,
+            @NonNull ImmutableArray<Modifier> modArray, ProgramElementName name,
+            ProgramElementName fullName, ImmutableArray<MemberDeclaration> members,
             boolean parentIsInterfaceDeclaration, boolean isLibrary, Extends extending,
             List<TextualJMLConstruct> spec) {
         super(pi, comments, modArray, name, fullName, members, parentIsInterfaceDeclaration,

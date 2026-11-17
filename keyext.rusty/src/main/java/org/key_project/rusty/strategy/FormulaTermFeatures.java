@@ -5,6 +5,9 @@
 package org.key_project.rusty.strategy;
 
 import org.key_project.logic.op.Function;
+import org.key_project.logic.op.Operator;
+import org.key_project.prover.strategy.ArithTermFeatures;
+import org.key_project.prover.strategy.IFormulaTermFeatures;
 import org.key_project.prover.strategy.costbased.termfeature.OperatorClassTF;
 import org.key_project.prover.strategy.costbased.termfeature.TermFeature;
 import org.key_project.rusty.logic.RustyDLTheory;
@@ -12,39 +15,40 @@ import org.key_project.rusty.logic.op.*;
 import org.key_project.rusty.strategy.termfeature.AtomTermFeature;
 import org.key_project.rusty.strategy.termfeature.ContainsExecutableCodeTermFeature;
 
-class FormulaTermFeatures extends StaticFeatureCollection {
-    final TermFeature forF;
+class FormulaTermFeatures extends RustStaticFeatureCollection implements IFormulaTermFeatures {
+    private final TermFeature forF;
 
-    final TermFeature orF;
-    final TermFeature andF;
-    final TermFeature impF;
-    final TermFeature notF;
-    final TermFeature propJunctor;
-    final TermFeature ifThenElse;
-    final TermFeature notExecutable;
-    final TermFeature notContainsExecutable;
+    private final TermFeature orF;
+    private final TermFeature andF;
+    private final TermFeature impF;
+    private final TermFeature notF;
+    private final TermFeature propJunctor;
+    private final TermFeature ifThenElse;
+    private final TermFeature notExecutable;
+    private final TermFeature notContainsExecutable;
 
-    final TermFeature quantifiedFor;
-    final TermFeature quantifiedOr;
-    final TermFeature quantifiedAnd;
+    private final TermFeature quantifiedFor;
+    private final TermFeature quantifiedOr;
+    private final TermFeature quantifiedAnd;
 
-    final TermFeature atom;
-    final TermFeature literal;
-    final TermFeature clause;
-    final TermFeature clauseSet;
-    final TermFeature quantifiedClauseSet;
+    private final TermFeature atom;
+    private final TermFeature literal;
+    private final TermFeature clause;
+    private final TermFeature clauseSet;
+    private final TermFeature quantifiedClauseSet;
 
-    final TermFeature pureLitConjDisj;
-    final TermFeature quantifiedPureLitConjDisj;
+    private final TermFeature pureLitConjDisj;
+    private final TermFeature quantifiedPureLitConjDisj;
 
-    final TermFeature elemUpdate;
-    final TermFeature update;
-    final TermFeature program;
-    final TermFeature modalOperator;
+    private final TermFeature elemUpdate;
+    private final TermFeature update;
+    private final TermFeature program;
+    private final TermFeature modalOperator;
 
-    final TermFeature cutAllowed;
-    final TermFeature cutAllowedBelowQuantifier;
-    final TermFeature cutPriority;
+    private final TermFeature cutAllowed;
+    private final TermFeature cutAllowedBelowQuantifier;
+    private final TermFeature cutPriority;
+    private final TermFeature quantifierF;
 
     public FormulaTermFeatures(ArithTermFeatures tf) {
         forF = extendsTrans(RustyDLTheory.FORMULA);
@@ -94,5 +98,162 @@ class FormulaTermFeatures extends StaticFeatureCollection {
             ifZero(tf.intInEquation, longTermConst(0),
                 ifZero(tf.eqF, longTermConst(100), longTermConst(200))),
             rec(any(), longTermConst(1)));
+
+        quantifierF = OperatorClassTF.create(Quantifier.class);
+    }
+
+    @Override
+    public TermFeature forF() {
+        return forF;
+    }
+
+    @Override
+    public TermFeature orF() {
+        return orF;
+    }
+
+    @Override
+    public TermFeature andF() {
+        return andF;
+    }
+
+    @Override
+    public TermFeature impF() {
+        return impF;
+    }
+
+    @Override
+    public TermFeature notF() {
+        return notF;
+    }
+
+    @Override
+    public TermFeature propJunctor() {
+        return propJunctor;
+    }
+
+    @Override
+    public TermFeature ifThenElse() {
+        return ifThenElse;
+    }
+
+    @Override
+    public TermFeature notExecutable() {
+        return notExecutable;
+    }
+
+    @Override
+    public TermFeature notContainsExecutable() {
+        return notContainsExecutable;
+    }
+
+    @Override
+    public TermFeature quantifiedFor() {
+        return quantifiedFor;
+    }
+
+    @Override
+    public TermFeature quantifiedOr() {
+        return quantifiedOr;
+    }
+
+    @Override
+    public TermFeature quantifiedAnd() {
+        return quantifiedAnd;
+    }
+
+    @Override
+    public TermFeature atom() {
+        return atom;
+    }
+
+    @Override
+    public TermFeature literal() {
+        return literal;
+    }
+
+    @Override
+    public TermFeature clause() {
+        return clause;
+    }
+
+    @Override
+    public TermFeature clauseSet() {
+        return clauseSet;
+    }
+
+    @Override
+    public TermFeature quantifiedClauseSet() {
+        return quantifiedClauseSet;
+    }
+
+    @Override
+    public TermFeature pureLitConjDisj() {
+        return pureLitConjDisj;
+    }
+
+    @Override
+    public TermFeature quantifiedPureLitConjDisj() {
+        return quantifiedPureLitConjDisj;
+    }
+
+    @Override
+    public TermFeature elemUpdate() {
+        return elemUpdate;
+    }
+
+    @Override
+    public TermFeature update() {
+        return update;
+    }
+
+    @Override
+    public TermFeature program() {
+        return program;
+    }
+
+    @Override
+    public TermFeature modalOperator() {
+        return modalOperator;
+    }
+
+    @Override
+    public TermFeature cutAllowed() {
+        return cutAllowed;
+    }
+
+    @Override
+    public TermFeature cutAllowedBelowQuantifier() {
+        return cutAllowedBelowQuantifier;
+    }
+
+    @Override
+    public TermFeature cutPriority() {
+        return cutPriority;
+    }
+
+    @Override
+    public TermFeature quantifierF() {
+        return quantifierF;
+    }
+
+    @Override
+    public Operator equiv() {
+        return Equality.EQV;
+    }
+
+    @Override
+    public Operator imp() {
+        return Junctor.IMP;
+    }
+
+    @Override
+    public Operator all() {
+        return Quantifier.ALL;
+    }
+
+    @Override
+    public Operator exists() {
+        return Quantifier.EX;
     }
 }

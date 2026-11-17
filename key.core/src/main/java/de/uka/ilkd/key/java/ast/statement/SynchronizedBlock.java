@@ -17,7 +17,7 @@ import de.uka.ilkd.key.logic.ProgramPrefix;
 import de.uka.ilkd.key.logic.op.ProgramVariable;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Synchronized block.
@@ -134,7 +134,7 @@ public class SynchronizedBlock extends JavaStatement
     }
 
     @Override
-    public ImmutableList<ProgramPrefix> getPrefixElements() {
+    public ImmutableArray<ProgramPrefix> getPrefixElements() {
         return StatementBlock.computePrefixElements(body.getBody(), this);
     }
 

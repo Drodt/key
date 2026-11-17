@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.strategy.feature;
 
+import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.feature.BinaryTacletAppFeature;
 import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.rusty.logic.op.UpdateApplication;
-import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.rule.TacletApp;
 
 /// Feature for investigating whether the focus of a rule application is a top-level formula, a
 /// top-level formula of the antecedent or a top-level formula of the succedent
@@ -71,7 +72,8 @@ public abstract class TopLevelFindFeature extends BinaryTacletAppFeature {
     };
 
     @Override
-    protected boolean filter(TacletApp app, PosInOccurrence pos, Goal goal, MutableState mState) {
+    protected boolean filter(ITacletApp app, PosInOccurrence pos, ProofGoal<?> goal,
+            MutableState mState) {
         assert pos != null : "Feature is only applicable to rules with find";
         return checkPosition(pos);
     }

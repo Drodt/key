@@ -7,13 +7,14 @@ package org.key_project.rusty.strategy.quantifierHeuristics;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.op.Operator;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Polynomial;
 import org.key_project.rusty.ServiceCaches;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.op.Junctor;
-import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
+import org.key_project.rusty.rule.metaconstruct.arith.RPolynomial;
 import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.collection.Pair;
 
@@ -52,8 +53,8 @@ public class HandleArith {
             putInTermCache(provedByArithCache, problem, result);
             return result;
         }
-        Polynomial poly1 = Polynomial.create(arithTerm.sub(0), services);
-        Polynomial poly2 = Polynomial.create(arithTerm.sub(1), services);
+        Polynomial poly1 = RPolynomial.create(arithTerm.sub(0), services);
+        Polynomial poly2 = RPolynomial.create(arithTerm.sub(1), services);
 
         if (poly2.valueLeq(poly1)) {
             putInTermCache(provedByArithCache, problem, trueT);
@@ -92,8 +93,8 @@ public class HandleArith {
         if (op == Equality.EQUALS) {
             Term sub0 = pro.sub(0);
             Term sub1 = pro.sub(1);
-            Polynomial poly1 = Polynomial.create(sub0, services);
-            Polynomial poly2 = Polynomial.create(sub1, services);
+            Polynomial poly1 = RPolynomial.create(sub0, services);
+            Polynomial poly2 = RPolynomial.create(sub1, services);
             boolean gt = poly2.valueLeq(poly1);
             boolean lt = poly1.valueLeq(poly2);
             if (gt && lt) {

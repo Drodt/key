@@ -8,7 +8,7 @@ import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.java.visitor.Visitor;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Implements.
@@ -57,7 +57,7 @@ public class Implements extends InheritanceSpecification {
         super(children);
     }
 
-    public Implements(ImmutableList<TypeReference> types) {
+    public Implements(ImmutableArray<TypeReference> types) {
         super(types);
     }
 

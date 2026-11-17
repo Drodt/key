@@ -13,7 +13,7 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Functions with a restricted/special rule set only applicable for the top level of the term
@@ -29,12 +29,12 @@ import org.key_project.util.collection.ImmutableList;
  */
 public class Transformer extends JFunction {
 
-    public Transformer(Name name, Sort sort, ImmutableList<Sort> argSorts) {
+    public Transformer(Name name, Sort sort, ImmutableArray<Sort> argSorts) {
         super(name, sort, argSorts, false);
     }
 
     public Transformer(Name name, Sort argSort) {
-        this(name, JavaDLTheory.FORMULA, ImmutableList.singleton(argSort));
+        this(name, JavaDLTheory.FORMULA, new ImmutableArray<>(argSort));
     }
 
     /**
@@ -47,7 +47,7 @@ public class Transformer extends JFunction {
      * @param services
      * @return the term transformer of interest
      */
-    public static Transformer getTransformer(Name name, Sort sort, ImmutableList<Sort> argSorts,
+    public static Transformer getTransformer(Name name, Sort sort, ImmutableArray<Sort> argSorts,
             TermServices services) {
         final Named f = services.getNamespaces().functions().lookup(name);
         if (f instanceof Transformer t) {

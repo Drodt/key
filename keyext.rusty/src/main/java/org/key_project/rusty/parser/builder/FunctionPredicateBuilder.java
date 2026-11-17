@@ -20,6 +20,7 @@ import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 import org.key_project.rusty.logic.op.RFunction;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.rusty.parser.KeYRustyParser;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -150,9 +151,9 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
 
             assert argSorts != null;
             Function p = new RFunction(new Name(pred_name), RustyDLTheory.FORMULA,
-                ImmutableList.fromArray(argSorts.toArray(new Sort[0])),
+                new ImmutableArray<>(argSorts.toArray(new Sort[0])),
                 whereToBind == null ? null
-                        : ImmutableList.fromArray(whereToBind.toArray(new Boolean[0])),
+                        : new ImmutableArray<>(whereToBind.toArray(new Boolean[0])),
                 false, rigid, Function.FunctionKind.ORDINARY, -1);
 
             if (lookup(p.name()) == null) {
@@ -213,11 +214,11 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             if (f == null) {
                 Name name = new Name(funcName);
                 Sort[] sortsArray = argSorts.toArray(new Sort[0]);
-                ImmutableList<Boolean> whereToBind1 =
+                ImmutableArray<Boolean> whereToBind1 =
                     whereToBind == null ? null
-                            : ImmutableList.fromArray(whereToBind.toArray(new Boolean[0]));
+                            : new ImmutableArray<>(whereToBind.toArray(new Boolean[0]));
                 if (genericParameters == null)
-                    f = new RFunction(name, retSort, ImmutableList.fromArray(sortsArray),
+                    f = new RFunction(name, retSort, new ImmutableArray<>(sortsArray),
                         whereToBind1, unique, rigid, Function.FunctionKind.ORDINARY, -1);
                 else {
                     var d = new ParametricFunctionDecl(name,

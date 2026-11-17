@@ -6,6 +6,7 @@ package org.key_project.rusty.proof;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /// The abstract superclass of caches for taclet app indexes that are separated by different
@@ -13,7 +14,6 @@ import org.key_project.util.collection.ImmutableList;
 /// of bound variables. This class simply stores a <code>IList<QuantifiableVariable></code> and
 /// offers a couple of access functions to this list.
 abstract class PrefixTermTacletAppIndexCache implements ITermTacletAppIndexCache {
-
     private final ImmutableList<QuantifiableVariable> prefix;
 
     protected PrefixTermTacletAppIndexCache(ImmutableList<QuantifiableVariable> prefix) {
@@ -25,7 +25,7 @@ abstract class PrefixTermTacletAppIndexCache implements ITermTacletAppIndexCache
     }
 
     protected ImmutableList<QuantifiableVariable> getExtendedPrefix(
-            ImmutableList<? extends QuantifiableVariable> extension) {
+            ImmutableArray<? extends QuantifiableVariable> extension) {
         ImmutableList<QuantifiableVariable> res = prefix;
         for (int i = 0; i != extension.size(); ++i) {
             res = res.prepend(extension.get(i));

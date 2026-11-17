@@ -18,7 +18,6 @@ import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.proof.TermTacletAppIndex;
 import de.uka.ilkd.key.proof.TermTacletAppIndexCacheSet;
 import de.uka.ilkd.key.strategy.CostReuse;
-import de.uka.ilkd.key.strategy.IfInstantiationCachePool;
 import de.uka.ilkd.key.strategy.feature.AbstractBetaFeature.TermInfo;
 import de.uka.ilkd.key.strategy.feature.AppliedRuleAppsNameCache;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.ClausesGraph;
@@ -26,6 +25,7 @@ import de.uka.ilkd.key.strategy.quantifierHeuristics.TriggersSet;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.constraint.Metavariable;
 
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
@@ -181,8 +181,9 @@ public class ServiceCaches implements SessionCaches {
     private final Map<Node, PosInOccurrence> exhaustiveMacroCache =
         Collections.synchronizedMap(new WeakHashMap<>());
 
-    /** Cache used by the ifinstantiator */
-    private final IfInstantiationCachePool ifInstantiationCache = new IfInstantiationCachePool();
+    /** Cache used by the assumes instantiator */
+    private final AssumesInstantiationCachePool<Node> assumesInstantiationCache =
+        new AssumesInstantiationCachePool<>();
 
     /** Cache used IfFormulaInstSeq */
     private final AssumesFormulaInstantiationCache assumesFormulaInstantiationCache =
@@ -276,8 +277,8 @@ public class ServiceCaches implements SessionCaches {
         return exhaustiveMacroCache;
     }
 
-    public final IfInstantiationCachePool getIfInstantiationCache() {
-        return ifInstantiationCache;
+    public final AssumesInstantiationCachePool<Node> getAssumesInstantiationCache() {
+        return assumesInstantiationCache;
     }
 
     public final AssumesFormulaInstantiationCache getAssumesFormulaInstantiationCache() {

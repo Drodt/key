@@ -7,7 +7,7 @@ package de.uka.ilkd.key.java.ast.statement;
 import de.uka.ilkd.key.java.ast.NonTerminalProgramElement;
 import de.uka.ilkd.key.java.ast.expression.Expression;
 
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 public interface IForUpdates extends NonTerminalProgramElement {
 
@@ -15,6 +15,6 @@ public interface IForUpdates extends NonTerminalProgramElement {
 
     Expression getExpressionAt(int i);
 
-    ImmutableList<Expression> getUpdates();
+    ImmutableArray<Expression> getUpdates();
 
 }

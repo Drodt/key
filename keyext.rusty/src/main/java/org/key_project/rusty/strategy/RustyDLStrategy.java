@@ -10,29 +10,32 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.key_project.logic.Name;
 import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.IBuiltInRule;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.ArithTermFeatures;
+import org.key_project.prover.strategy.ComponentStrategy;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
+import org.key_project.prover.strategy.costbased.feature.CountBranchFeature;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.RuleSetDispatchFeature;
+import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.rule.BuiltInRule;
-import org.key_project.rusty.strategy.ComponentStrategy.StrategyAspect;
-import org.key_project.rusty.strategy.feature.CountBranchFeature;
 import org.key_project.rusty.strategy.feature.EqNonDuplicateAppFeature;
 import org.key_project.rusty.strategy.feature.NonDuplicateAppFeature;
-import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
 import org.key_project.rusty.strategy.termfeature.IsInductionVariable;
 
 import org.jspecify.annotations.NonNull;
 
-import static org.key_project.prover.strategy.costbased.feature.CompareCostsFeature.leq;
+import static org.key_project.rusty.strategy.RustStaticFeatureCollection.sequentContainsNoPrograms;
 
 /// Strategy tailored to be used as long as a Rust program can be found in the sequent.
-public final class RustyDLStrategy extends AbstractFeatureStrategy implements ComponentStrategy {
+public final class RustyDLStrategy extends RustAbstractFeatureStrategy
+        implements ComponentStrategy<Goal> {
     public static final AtomicLong PERF_COMPUTE = new AtomicLong();
     public static final AtomicLong PERF_APPROVE = new AtomicLong();
     public static final AtomicLong PERF_INSTANTIATE = new AtomicLong();
@@ -57,7 +60,7 @@ public final class RustyDLStrategy extends AbstractFeatureStrategy implements Co
 
         this.strategyProperties = (StrategyProperties) strategyProperties.clone();
 
-        this.tf = new ArithTermFeatures(getServices().getLDTs().getIntLDT());
+        this.tf = new ArithTermFeatures(getServices().getLDTs().getIntLDT(), Equality.EQUALS);
         this.ff = new FormulaTermFeatures(this.tf);
 
         costComputationDispatcher = setupCostComputationF();
@@ -67,12 +70,6 @@ public final class RustyDLStrategy extends AbstractFeatureStrategy implements Co
         costComputationF = setupGlobalF(costComputationDispatcher);
         instantiationF = setupGlobalF(instantiationDispatcher);
         approvalF = add(setupApprovalF(), approvalDispatcher);
-    }
-
-    @Override
-    public boolean isResponsibleFor(RuleSet rs) {
-        return costComputationDispatcher.get(rs) != null || instantiationDispatcher.get(rs) != null
-                || approvalDispatcher.get(rs) != null;
     }
 
     @Override
@@ -92,9 +89,9 @@ public final class RustyDLStrategy extends AbstractFeatureStrategy implements Co
     /// <code>TopRuleAppCost.INSTANCE</code> indicates that the rule shall not be applied at
     /// all (it is discarded by the strategy).
     @Override
-    public <GOAL extends ProofGoal<@NonNull GOAL>> RuleAppCost computeCost(@NonNull RuleApp app,
+    public RuleAppCost computeCost(@NonNull RuleApp app,
             @NonNull PosInOccurrence pio,
-            @NonNull GOAL goal,
+            @NonNull ProofGoal<?> goal,
             @NonNull MutableState mState) {
         var time = System.nanoTime();
         try {
@@ -261,7 +258,7 @@ public final class RustyDLStrategy extends AbstractFeatureStrategy implements Co
     }
 
     @Override
-    public boolean isResponsibleFor(BuiltInRule rule) {
+    public boolean isResponsibleFor(IBuiltInRule rule) {
         return false;
     }
 }

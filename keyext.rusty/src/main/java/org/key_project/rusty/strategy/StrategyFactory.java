@@ -5,6 +5,7 @@
 package org.key_project.rusty.strategy;
 
 import org.key_project.logic.Named;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.strategy.definition.StrategySettingsDefinition;

@@ -14,7 +14,6 @@ import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.logic.op.Quantifier;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /// Feature that returns zero iff the application focus of a rule is a potential cut position
 /// (taclet
@@ -25,8 +24,8 @@ public class AllowedCutPositionFeature extends BinaryFeature {
     private AllowedCutPositionFeature() {}
 
     @Override
-    public <Goal extends ProofGoal<@NonNull Goal>> boolean filter(RuleApp app, PosInOccurrence pos,
-            Goal goal, MutableState mState) {
+    public boolean filter(RuleApp app, PosInOccurrence pos,
+            ProofGoal<?> goal, MutableState mState) {
         assert pos != null : "Feature is only applicable to rules with find";
         return onlyBelowRightJunctors(pos);
     }

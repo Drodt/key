@@ -11,7 +11,7 @@ import de.uka.ilkd.key.java.ast.expression.Expression;
 import de.uka.ilkd.key.java.visitor.Visitor;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Case.
@@ -27,7 +27,7 @@ public class Case extends BranchImp implements ExpressionContainer {
     /**
      * Body.
      */
-    protected final ImmutableList<Statement> body;
+    protected final ImmutableArray<Statement> body;
 
     /**
      * Case.
@@ -57,7 +57,7 @@ public class Case extends BranchImp implements ExpressionContainer {
      *        a statement mutable list.
      */
     public Case(Expression e, Statement[] body) {
-        this.body = ImmutableList.fromArray(body);
+        this.body = new ImmutableArray<>(body);
         this.expression = e;
     }
 
@@ -77,10 +77,10 @@ public class Case extends BranchImp implements ExpressionContainer {
     public Case(ExtList children, Expression expr, PositionInfo pos) {
         super(children, pos);
         this.expression = expr;
-        this.body = ImmutableList.fromArray(children.collect(Statement.class));
+        this.body = new ImmutableArray<>(children.collect(Statement.class));
     }
 
-    public Case(Expression expr, ImmutableList<Statement> body, PositionInfo pi,
+    public Case(Expression expr, ImmutableArray<Statement> body, PositionInfo pi,
             List<Comment> comments) {
         super(pi, comments);
         this.expression = expr;
@@ -193,7 +193,7 @@ public class Case extends BranchImp implements ExpressionContainer {
      * The body may be empty (null), to define a fall-through. Attaching an {@link EmptyStatement}
      * would create a single ";".
      */
-    public ImmutableList<Statement> getBody() {
+    public ImmutableArray<Statement> getBody() {
         return body;
     }
 

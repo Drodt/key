@@ -9,6 +9,7 @@ import org.key_project.logic.Named;
 import org.key_project.logic.Sorted;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.sort.GenericParameter;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -19,14 +20,14 @@ public class ParametricFunctionDecl implements Named, Sorted {
     private final ImmutableList<GenericParameter> parameters;
     private final ImmutableList<Sort> argSorts;
     private final Sort sort;
-    private final @Nullable ImmutableList<Boolean> whereToBind;
+    private final @Nullable ImmutableArray<Boolean> whereToBind;
     private final boolean unique;
     private final boolean isRigid;
     private final boolean isSkolemConstant;
 
     public ParametricFunctionDecl(Name name, ImmutableList<GenericParameter> parameters,
             ImmutableList<Sort> argSorts, Sort sort,
-            @Nullable ImmutableList<Boolean> whereToBind, boolean unique, boolean isRigid,
+            @Nullable ImmutableArray<Boolean> whereToBind, boolean unique, boolean isRigid,
             boolean isSkolemConstant) {
         this.name = name;
         this.parameters = parameters;
@@ -47,7 +48,7 @@ public class ParametricFunctionDecl implements Named, Sorted {
         return argSorts;
     }
 
-    public @Nullable ImmutableList<Boolean> getWhereToBind() {
+    public @Nullable ImmutableArray<Boolean> getWhereToBind() {
         return whereToBind;
     }
 

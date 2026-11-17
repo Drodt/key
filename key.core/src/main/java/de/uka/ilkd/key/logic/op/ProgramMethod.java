@@ -23,6 +23,7 @@ import de.uka.ilkd.key.speclang.ContractFactory;
 
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.ExtList;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.parsing.Position;
@@ -81,13 +82,13 @@ public final class ProgramMethod extends ObserverFunction
      * @param md some method declaration
      * @return java types of the parameters required by md
      */
-    private static ImmutableList<KeYJavaType> getParamTypes(MethodDeclaration md) {
+    private static ImmutableArray<KeYJavaType> getParamTypes(MethodDeclaration md) {
         KeYJavaType[] result = new KeYJavaType[md.getParameterDeclarationCount()];
         for (int i = 0; i < result.length; i++) {
             result[i] = md.getParameterDeclarationAt(i).getVariableSpecification()
                     .getProgramVariable().getKeYJavaType();
         }
-        return ImmutableList.fromArray(result);
+        return new ImmutableArray<>(result);
     }
 
     // -------------------------------------------------------------------------
@@ -245,7 +246,7 @@ public final class ProgramMethod extends ObserverFunction
     }
 
     @Override
-    public @NonNull ImmutableList<Modifier> getModifiers() {
+    public @NonNull ImmutableArray<Modifier> getModifiers() {
         return method.getModifiers();
     }
 
@@ -439,7 +440,7 @@ public final class ProgramMethod extends ObserverFunction
      * @see de.uka.ilkd.key.logic.op.IProgramMethod#getParameters()
      */
     @Override
-    public ImmutableList<ParameterDeclaration> getParameters() {
+    public ImmutableArray<ParameterDeclaration> getParameters() {
         return getMethodDeclaration().getParameters();
     }
 

@@ -13,7 +13,7 @@ import de.uka.ilkd.key.java.ast.reference.TypeReference;
 import de.uka.ilkd.key.java.visitor.Visitor;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Formal parameters require a VariableSpecificationList of {@code size() <= 1} ({@code size() == 0}
@@ -26,7 +26,7 @@ public class ParameterDeclaration extends VariableDeclaration {
     /**
      * Var spec.
      */
-    protected final ImmutableList<VariableSpecification> varSpec;
+    protected final ImmutableArray<VariableSpecification> varSpec;
 
 
     /**
@@ -64,7 +64,7 @@ public class ParameterDeclaration extends VariableDeclaration {
     public ParameterDeclaration(Modifier[] mods, TypeReference typeRef, VariableSpecification var,
             boolean parentIsInterfaceDeclaration, boolean parameterIsVarArg) {
         super(mods, typeRef, parentIsInterfaceDeclaration);
-        this.varSpec = ImmutableList.singleton(var);
+        this.varSpec = new ImmutableArray<>(var);
         this.varArgParameter = parameterIsVarArg;
     }
 
@@ -106,13 +106,13 @@ public class ParameterDeclaration extends VariableDeclaration {
             boolean parameterIsVarArg) {
         super(children, parentIsInterfaceDeclaration);
         this.varSpec =
-            ImmutableList.singleton(children.get(VariableSpecification.class));
+            new ImmutableArray<>(children.get(VariableSpecification.class));
         this.varArgParameter = parameterIsVarArg;
     }
 
     public ParameterDeclaration(
-            ImmutableList<VariableSpecification> specs,
-            PositionInfo pi, List<Comment> c, ImmutableList<Modifier> modArray,
+            ImmutableArray<VariableSpecification> specs,
+            PositionInfo pi, List<Comment> c, ImmutableArray<Modifier> modArray,
             TypeReference type, boolean parentIsInterfaceDeclaration,
             boolean parameterIsVarArg) {
         super(pi, c, modArray, type, parentIsInterfaceDeclaration);
@@ -126,7 +126,7 @@ public class ParameterDeclaration extends VariableDeclaration {
     }
 
 
-    public ImmutableList<VariableSpecification> getVariables() {
+    public ImmutableArray<VariableSpecification> getVariables() {
         return varSpec;
     }
 

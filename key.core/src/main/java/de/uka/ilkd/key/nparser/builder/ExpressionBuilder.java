@@ -48,6 +48,7 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.java.StringUtil;
@@ -1139,7 +1140,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     public Object visitPrimitive_labeled_term(JavaKeYParser.Primitive_labeled_termContext ctx) {
         JTerm t = accept(ctx.primitive_term());
         if (ctx.LGUILLEMETS() != null) {
-            ImmutableList<TermLabel> labels = accept(ctx.label());
+            ImmutableArray<TermLabel> labels = accept(ctx.label());
             if (!labels.isEmpty()) {
                 t = getServices().getTermBuilder().addLabel(t, labels);
             }
@@ -1217,7 +1218,7 @@ public class ExpressionBuilder extends DefaultBuilder {
 
         JTerm thenT = accept(ctx.thenT);
         JTerm elseT = accept(ctx.elseT);
-        ImmutableList<QuantifiableVariable> exVarsArray = ImmutableList.fromList(exVars);
+        ImmutableArray<QuantifiableVariable> exVarsArray = new ImmutableArray<>(exVars);
         JTerm result = getTermFactory().createTerm(IfExThenElse.IF_EX_THEN_ELSE,
             new JTerm[] { condF, thenT, elseT }, exVarsArray, null);
         unbindVars(orig);
@@ -1236,8 +1237,8 @@ public class ExpressionBuilder extends DefaultBuilder {
         }
         List<QuantifiableVariable> vs = accept(ctx.bound_variables());
         JTerm a1 = accept(ctx.sub);
-        JTerm a = getTermFactory().createTerm(op, ImmutableList.singleton(a1),
-            ImmutableList.fromArray(vs.toArray(new QuantifiableVariable[0])), null);
+        JTerm a = getTermFactory().createTerm(op, new ImmutableArray<>(a1),
+            new ImmutableArray<>(vs.toArray(new QuantifiableVariable[0])), null);
         unbindVars(orig);
         return a;
     }
@@ -1686,7 +1687,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         Sort sortId = defaultOnException(null, () -> accept(ctx.sortId()));
         String firstName = accept(ctx.simple_ident());
 
-        ImmutableList<QuantifiableVariable> boundVars = null;
+        ImmutableArray<QuantifiableVariable> boundVars = null;
         Namespace<QuantifiableVariable> orig = null;
         JavaKeYParser.Formal_sort_argsContext genericArgsCtxt = null;
         if (ctx.formal_sort_args() != null) {
@@ -1697,7 +1698,7 @@ public class ExpressionBuilder extends DefaultBuilder {
             orig = variables();
             List<QuantifiableVariable> bv = accept(ctx.call().boundVars);
             boundVars =
-                bv != null ? ImmutableList.fromArray(bv.toArray(new QuantifiableVariable[0]))
+                bv != null ? new ImmutableArray<>(bv.toArray(new QuantifiableVariable[0]))
                         : null;
             args = visitArguments(ctx.call().argument_list());
             if (boundVars != null) {
@@ -1757,7 +1758,7 @@ public class ExpressionBuilder extends DefaultBuilder {
                         }
                     }
                 }
-                ImmutableList<QuantifiableVariable> finalBoundVars = boundVars;
+                ImmutableArray<QuantifiableVariable> finalBoundVars = boundVars;
                 // create term
                 JTerm[] finalArgs1 = args;
                 current = capsulateTf(ctx,

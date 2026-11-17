@@ -4,17 +4,18 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.strategy.feature;
 
+import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
 import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.feature.BinaryTacletAppFeature;
 import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.prover.strategy.costbased.feature.StableCost;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.op.UpdateApplication;
-import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.rule.TacletApp;
 
 /// This feature checks that an equation is not applied to itself. This means that the focus of the
 /// rule application must not be one side of an equation that is the instantiation of the first
@@ -26,7 +27,8 @@ public class CheckApplyEqFeature extends BinaryTacletAppFeature {
     private CheckApplyEqFeature() {}
 
     @Override
-    protected boolean filter(TacletApp p_app, PosInOccurrence pos, Goal goal, MutableState mState) {
+    protected boolean filter(ITacletApp p_app, PosInOccurrence pos, ProofGoal<?> goal,
+            MutableState mState) {
         assert pos != null : "Need to know the position of " + "the application of the taclet";
 
         AssumesFormulaInstantiation ifInst = p_app.assumesFormulaInstantiations().head();

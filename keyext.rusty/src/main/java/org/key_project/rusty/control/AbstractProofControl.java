@@ -18,7 +18,6 @@ import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.ProofEvent;
 import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.NoPosTacletApp;
-import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.util.collection.ImmutableList;
 
@@ -144,9 +143,9 @@ public abstract class AbstractProofControl implements ProofControl {
     public ImmutableList<BuiltInRule> getBuiltInRule(Goal focusedGoal, PosInOccurrence pos) {
         ImmutableList<BuiltInRule> rules = ImmutableList.nil();
 
-        for (RuleApp ruleApp : focusedGoal.ruleAppIndex()
+        for (var ruleApp : focusedGoal.ruleAppIndex()
                 .getBuiltInRules(focusedGoal, pos)) {
-            BuiltInRule r = (BuiltInRule) ruleApp.rule();
+            BuiltInRule r = ruleApp.rule();
             if (!rules.contains(r)) {
                 rules = rules.prepend(r);
             }

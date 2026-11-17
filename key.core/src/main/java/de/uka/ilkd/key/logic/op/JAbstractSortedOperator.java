@@ -14,7 +14,7 @@ import org.key_project.logic.op.AbstractSortedOperator;
 import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.sort.Sort;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 
 /**
@@ -25,33 +25,33 @@ import org.key_project.util.collection.ImmutableList;
 public abstract class JAbstractSortedOperator extends AbstractSortedOperator
         implements Sorted, Operator {
 
-    protected JAbstractSortedOperator(Name name, ImmutableList<Sort> argSorts, Sort sort,
-            ImmutableList<Boolean> whereToBind, Modifier modifier) {
+    protected JAbstractSortedOperator(Name name, ImmutableArray<Sort> argSorts, Sort sort,
+            ImmutableArray<Boolean> whereToBind, Modifier modifier) {
         super(name, argSorts, sort, whereToBind, modifier);
     }
 
-    protected JAbstractSortedOperator(Name name, ImmutableList<Sort> argSorts, Sort sort,
-            ImmutableList<Boolean> whereToBind, boolean isRigid) {
+    protected JAbstractSortedOperator(Name name, ImmutableArray<Sort> argSorts, Sort sort,
+            ImmutableArray<Boolean> whereToBind, boolean isRigid) {
         this(name, argSorts, sort, whereToBind, isRigid ? Modifier.RIGID : Modifier.NONE);
     }
 
     protected JAbstractSortedOperator(Name name, Sort[] argSorts, Sort sort, Boolean[] whereToBind,
             boolean isRigid) {
-        this(name, ImmutableList.fromArray(argSorts), sort,
-            ImmutableList.fromArray(whereToBind), isRigid);
+        this(name, new ImmutableArray<>(argSorts), sort,
+            new ImmutableArray<>(whereToBind), isRigid);
     }
 
-    protected JAbstractSortedOperator(Name name, ImmutableList<Sort> argSorts, Sort sort,
+    protected JAbstractSortedOperator(Name name, ImmutableArray<Sort> argSorts, Sort sort,
             boolean isRigid) {
         this(name, argSorts, sort, null, isRigid);
     }
 
     protected JAbstractSortedOperator(Name name, Sort[] argSorts, Sort sort, boolean isRigid) {
-        this(name, ImmutableList.fromArray(argSorts), sort, null, isRigid);
+        this(name, new ImmutableArray<>(argSorts), sort, null, isRigid);
     }
 
     protected JAbstractSortedOperator(Name name, Sort sort, boolean isRigid) {
-        this(name, ImmutableList.nil(), sort, null, isRigid);
+        this(name, new ImmutableArray<>(), sort, null, isRigid);
     }
 
     /**

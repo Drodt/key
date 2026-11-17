@@ -6,6 +6,7 @@ package org.key_project.rusty.strategy.termProjection;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
@@ -20,27 +21,27 @@ import org.key_project.rusty.proof.Goal;
 /// NB: this is a rather restricted version of term construction, one can think of also allowing
 /// bound variables, etc. to be specified
 @StableCost
-public class TermConstructionProjection implements ProjectionToTerm<Goal> {
+public class TermConstructionProjection implements ProjectionToTerm {
     private final Operator op;
-    private final ProjectionToTerm<Goal>[] subTerms;
+    private final ProjectionToTerm[] subTerms;
 
-    private TermConstructionProjection(Operator op, ProjectionToTerm<Goal>[] subTerms) {
+    private TermConstructionProjection(Operator op, ProjectionToTerm[] subTerms) {
         assert !(op instanceof RModality); // XXX
         this.op = op;
         this.subTerms = subTerms;
         assert op.arity() == subTerms.length;
     }
 
-    public static ProjectionToTerm<Goal> create(Operator op, ProjectionToTerm<Goal>[] subTerms) {
+    public static ProjectionToTerm create(Operator op, ProjectionToTerm[] subTerms) {
         return new TermConstructionProjection(op, subTerms);
     }
 
     @Override
-    public Term toTerm(RuleApp app, PosInOccurrence pos, Goal goal, MutableState mState) {
+    public Term toTerm(RuleApp app, PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
         final Term[] subs = new Term[subTerms.length];
         for (int i = 0; i != subTerms.length; ++i) {
             subs[i] = subTerms[i].toTerm(app, pos, goal, mState);
         }
-        return goal.proof().getServices().getTermFactory().createTerm(op, subs);
+        return ((Goal) goal).proof().getServices().getTermFactory().createTerm(op, subs);
     }
 }

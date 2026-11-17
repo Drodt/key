@@ -10,9 +10,9 @@ import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.strategy.Strategy;
 
 import org.jspecify.annotations.NonNull;
 

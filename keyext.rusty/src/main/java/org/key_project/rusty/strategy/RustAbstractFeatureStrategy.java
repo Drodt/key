@@ -11,33 +11,36 @@ import org.key_project.prover.proof.rulefilter.TacletFilter;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.AbstractFeatureStrategy;
+import org.key_project.prover.strategy.RuleAppCostCollector;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.feature.RuleSetDispatchFeature;
 import org.key_project.prover.strategy.costbased.feature.instantiator.BackTrackingManager;
+import org.key_project.prover.strategy.costbased.feature.instantiator.ForEachCP;
+import org.key_project.prover.strategy.costbased.feature.instantiator.OneOfCP;
+import org.key_project.prover.strategy.costbased.feature.instantiator.SVInstantiationCP;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
+import org.key_project.prover.strategy.costbased.termProjection.TermBuffer;
 import org.key_project.prover.strategy.costbased.termfeature.TermFeature;
 import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.strategy.feature.RuleSetDispatchFeature;
-import org.key_project.rusty.strategy.feature.instantiator.ForEachCP;
-import org.key_project.rusty.strategy.feature.instantiator.OneOfCP;
-import org.key_project.rusty.strategy.feature.instantiator.SVInstantiationCP;
-import org.key_project.rusty.strategy.termProjection.TermBuffer;
 import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
-public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
+public abstract class RustAbstractFeatureStrategy extends AbstractFeatureStrategy<Goal>
         implements Strategy<Goal> {
     private final Proof proof;
 
-    protected AbstractFeatureStrategy(Proof proof) {
+    protected RustAbstractFeatureStrategy(Proof proof) {
         this.proof = proof;
     }
 
@@ -127,7 +130,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
         instantiateActive = false;
     }
 
-    protected Feature instantiate(Name sv, ProjectionToTerm<Goal> value) {
+    protected Feature instantiate(Name sv, ProjectionToTerm value) {
         if (instantiateActive) {
             return SVInstantiationCP.create(sv, value);
         } else {
@@ -135,7 +138,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
         }
     }
 
-    protected Feature instantiateTriggeredVariable(ProjectionToTerm<Goal> value) {
+    protected Feature instantiateTriggeredVariable(ProjectionToTerm value) {
         if (instantiateActive) {
             return SVInstantiationCP.createTriggeredVarCP(value);
         } else {
@@ -143,7 +146,7 @@ public abstract class AbstractFeatureStrategy extends StaticFeatureCollection
         }
     }
 
-    protected Feature instantiate(String sv, ProjectionToTerm<Goal> value) {
+    protected Feature instantiate(String sv, ProjectionToTerm value) {
         return instantiate(new Name(sv), value);
     }
 

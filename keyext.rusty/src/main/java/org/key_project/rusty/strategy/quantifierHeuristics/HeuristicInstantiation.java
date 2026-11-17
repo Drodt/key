@@ -12,6 +12,7 @@ import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
@@ -20,15 +21,16 @@ import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Goal;
 
-public class HeuristicInstantiation implements TermGenerator<Goal> {
-    public final static TermGenerator<Goal> INSTANCE = new HeuristicInstantiation();
+public class HeuristicInstantiation implements TermGenerator {
+    public final static TermGenerator INSTANCE = new HeuristicInstantiation();
 
     private HeuristicInstantiation() {}
 
     @Override
-    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
+    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, ProofGoal<?> p_goal,
             MutableState mState) {
         assert pos != null : "Feature is only applicable to rules with find";
+        final var goal = (Goal) p_goal;
 
         final Term qf = pos.sequentFormula().formula();
 

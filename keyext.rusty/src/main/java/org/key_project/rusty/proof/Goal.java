@@ -19,6 +19,7 @@ import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.prover.strategy.DelegationBasedRuleApplicationManager;
 import org.key_project.prover.strategy.RuleApplicationManager;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.op.ProgramVariable;
@@ -29,7 +30,8 @@ import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.strategy.QueueRuleApplicationManager;
-import org.key_project.rusty.strategy.Strategy;
+import org.key_project.rusty.util.MapProperties;
+import org.key_project.util.Properties;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -53,6 +55,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     private List<GoalListener> listeners = new ArrayList<>(10);
     /// this object manages the tags for all formulas of the sequent
     private FormulaTagManager tagManager;
+    /// If an application of a rule added some information for the strategy, then this information
+    /// is
+    /// stored in this map.
+    private final Properties strategyInfos;
 
     /// creates a new goal referencing the given node
     public Goal(Node n, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
@@ -62,6 +68,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         appliedRuleApps = ImmutableList.nil();
         localNamespaces =
             node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
+        this.strategyInfos = new MapProperties();
         tagManager = new FormulaTagManager(this);
         setRuleAppManager(new QueueRuleApplicationManager());
     }
@@ -69,12 +76,13 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
     /// copy constructor
     private Goal(Node node, RuleAppIndex ruleAppIndex, ImmutableList<RuleApp> appliedRuleApps,
             @Nullable FormulaTagManager tagManager, RuleApplicationManager<Goal> ruleAppManager,
-            NamespaceSet localNamespace) {
+            Properties strategyInfos, NamespaceSet localNamespace) {
         this.node = node;
         this.ruleAppIndex = ruleAppIndex.copy(this);
         this.appliedRuleApps = appliedRuleApps;
         this.localNamespaces = localNamespace;
         this.tagManager = tagManager == null ? new FormulaTagManager(this) : tagManager;
+        this.strategyInfos = strategyInfos;
         setRuleAppManager(ruleAppManager);
     }
 
@@ -236,11 +244,11 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         Goal clone;
         if (node.sequent() != this.node.sequent()) {
             clone = new Goal(node, ruleAppIndex, appliedRuleApps, null, ruleAppManager.copy(),
-                localNamespaces);
+                strategyInfos.clone(), localNamespaces);
         } else {
             clone = new Goal(node, ruleAppIndex, appliedRuleApps, getFormulaTagManager().copy(),
                 ruleAppManager.copy(),
-                localNamespaces);
+                strategyInfos.clone(), localNamespaces);
         }
         clone.listeners = (List<GoalListener>) ((ArrayList<GoalListener>) listeners).clone();
         // clone.automatic = this.automatic;
@@ -462,4 +470,17 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         localNamespaces = newNS.copyWithParent();
     }
 
+    public <T> @Nullable T getStrategyInfo(Properties.Property<T> property) {
+        return strategyInfos.get(property);
+    }
+
+    public <T> void addStrategyInfo(Properties.Property<T> property, T info,
+            StrategyInfoUndoMethod undoMethod) {
+        strategyInfos.put(property, info);
+        node.addStrategyInfoUndoMethod(undoMethod);
+    }
+
+    public void undoStrategyInfoAdd(StrategyInfoUndoMethod undoMethod) {
+        undoMethod.undo(strategyInfos);
+    }
 }

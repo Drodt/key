@@ -78,6 +78,9 @@ public class Node implements Iterable<Node> {
 
     private String cachedName = null;
 
+    /// Holds the undo methods for the information added by rules to the `Goal.strategyInfos`.
+    private final List<StrategyInfoUndoMethod> undoInfoForStrategyInfo = new ArrayList<>();
+
     /// creates an empty node that is root and leaf.
     private Node(Proof proof) {
         this.proof = proof;
@@ -440,5 +443,13 @@ public class Node implements Iterable<Node> {
 
     public int countBranches() {
         return getLeaves().size();
+    }
+
+    public List<StrategyInfoUndoMethod> getStrategyInfoUndoMethods() {
+        return undoInfoForStrategyInfo;
+    }
+
+    public void addStrategyInfoUndoMethod(StrategyInfoUndoMethod undoMethod) {
+        undoInfoForStrategyInfo.add(undoMethod);
     }
 }

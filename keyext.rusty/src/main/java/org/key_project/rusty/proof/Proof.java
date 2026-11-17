@@ -12,6 +12,7 @@ import org.key_project.logic.Term;
 import org.key_project.prover.proof.ProofObject;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
@@ -20,7 +21,6 @@ import org.key_project.rusty.proof.init.Profile;
 import org.key_project.rusty.proof.mgt.ProofCorrectnessMgt;
 import org.key_project.rusty.proof.mgt.ProofEnvironment;
 import org.key_project.rusty.settings.ProofSettings;
-import org.key_project.rusty.strategy.Strategy;
 import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
 

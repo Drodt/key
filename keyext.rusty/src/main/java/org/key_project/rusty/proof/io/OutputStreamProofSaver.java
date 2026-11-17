@@ -452,7 +452,8 @@ public class OutputStreamProofSaver {
     private void printRuleJustification(IBuiltInRuleApp appliedRuleApp, Appendable output)
             throws IOException {
         final RuleJustification ruleJusti = proof.getInitConfig().getJustifInfo()
-                .getJustification(appliedRuleApp, proof.getServices());
+                .getJustification((org.key_project.rusty.rule.RuleApp) appliedRuleApp,
+                    proof.getServices());
 
         assert ruleJusti instanceof RuleJustificationBySpec
                 : "Please consult bug #1111 if this fails.";

@@ -14,17 +14,18 @@ import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Monomial;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Polynomial;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.PrefixTermTacletAppIndexCacheImpl.CacheKey;
 import org.key_project.rusty.proof.TermTacletAppIndex;
-import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
-import org.key_project.rusty.rule.metaconstruct.arith.Polynomial;
 import org.key_project.rusty.strategy.CostReuse;
 import org.key_project.rusty.strategy.feature.AbstractBetaFeature.TermInfo;
 import org.key_project.rusty.strategy.feature.AppliedRuleAppsNameCache;
 import org.key_project.rusty.strategy.quantifierHeuristics.Metavariable;
 import org.key_project.rusty.strategy.quantifierHeuristics.TriggersSet;
 import org.key_project.util.ConcurrentLruCache;
+import org.key_project.util.GenerationalCache;
 import org.key_project.util.collection.ImmutableSet;
 import org.key_project.util.collection.Pair;
 
@@ -89,8 +90,8 @@ public class ServiceCaches implements SessionCaches {
     private final ConcurrentLruCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> provedByArithSndCache =
         new ConcurrentLruCache<>(5000);
 
-    private final ConcurrentLruCache<@NonNull Term, @NonNull Polynomial> polynomialCache =
-        new ConcurrentLruCache<>(2000);
+    private final GenerationalCache<@NonNull Term, @NonNull Polynomial> polynomialCache =
+        new GenerationalCache<>(2000);
     private ConcurrentLruCache<@NonNull Term, @NonNull ImmutableSet<@NonNull Metavariable>> mvCache =
         new ConcurrentLruCache<>(2000);
     private final AssumesInstantiationCachePool<Node> assumesInstantiationCache =
@@ -139,7 +140,7 @@ public class ServiceCaches implements SessionCaches {
         return provedByArithFstCache;
     }
 
-    public ConcurrentLruCache<@NonNull Term, @NonNull Polynomial> getPolynomialCache() {
+    public GenerationalCache<@NonNull Term, @NonNull Polynomial> getPolynomialCache() {
         return polynomialCache;
     }
 

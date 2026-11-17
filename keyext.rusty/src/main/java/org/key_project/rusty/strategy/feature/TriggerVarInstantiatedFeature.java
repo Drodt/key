@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.strategy.feature;
 
+import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
-import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.rule.TacletApp;
-import org.key_project.rusty.strategy.termProjection.SVInstantiationProjection;
+import org.key_project.prover.strategy.costbased.feature.BinaryTacletAppFeature;
+import org.key_project.prover.strategy.costbased.termProjection.SVInstantiationProjection;
 
 public class TriggerVarInstantiatedFeature extends BinaryTacletAppFeature {
     public static final TriggerVarInstantiatedFeature INSTANCE =
@@ -17,7 +18,7 @@ public class TriggerVarInstantiatedFeature extends BinaryTacletAppFeature {
     private TriggerVarInstantiatedFeature() {}
 
     @Override
-    protected boolean filter(TacletApp app, PosInOccurrence pos, Goal goal,
+    protected boolean filter(ITacletApp app, PosInOccurrence pos, ProofGoal<?> goal,
             MutableState mState) {
         assert app.taclet().hasTrigger();
 

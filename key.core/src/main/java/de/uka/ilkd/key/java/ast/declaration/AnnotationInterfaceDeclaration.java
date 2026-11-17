@@ -12,6 +12,7 @@ import de.uka.ilkd.key.java.visitor.Visitor;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLConstruct;
 
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -25,9 +26,9 @@ import org.jspecify.annotations.NonNull;
 public class AnnotationInterfaceDeclaration extends TypeDeclaration {
     public AnnotationInterfaceDeclaration(
             PositionInfo pi, List<Comment> comments,
-            @NonNull ImmutableList<Modifier> modArray,
+            @NonNull ImmutableArray<Modifier> modArray,
             ProgramElementName name, ProgramElementName fullName,
-            ImmutableList<MemberDeclaration> members, boolean parentIsInterfaceDeclaration,
+            ImmutableArray<MemberDeclaration> members, boolean parentIsInterfaceDeclaration,
             boolean isLibrary, List<TextualJMLConstruct> jmlAttachments) {
         super(pi, comments, modArray, name, fullName, members, parentIsInterfaceDeclaration,
             isLibrary, ImmutableList.fromList(jmlAttachments));

@@ -7,12 +7,12 @@ package de.uka.ilkd.key.java.ast.reference;
 import de.uka.ilkd.key.java.ast.Statement;
 import de.uka.ilkd.key.java.ast.expression.Expression;
 
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 public interface MethodOrConstructorReference extends MemberReference, ReferencePrefix, Statement {
 
     /**
      * @return the array wrapper of the argument expressions .
      */
-    ImmutableList<? extends Expression> getArguments();
+    ImmutableArray<? extends Expression> getArguments();
 }

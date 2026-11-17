@@ -11,7 +11,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -50,7 +50,7 @@ public class AssumesFormulaInstSeq
     }
 
     /// Create a list with all formulas of a given semi-sequent
-    private static ImmutableList<AssumesFormulaInstantiation> createListHelp(Sequent p_s,
+    private static ImmutableArray<AssumesFormulaInstantiation> createListHelp(Sequent p_s,
             Semisequent semi,
             boolean inAntecedent) {
         final AssumesFormulaInstSeq[] assumesInstFromSeq =
@@ -62,18 +62,18 @@ public class AssumesFormulaInstSeq
             --i;
         }
 
-        return ImmutableList.fromArray(assumesInstFromSeq);
+        return new ImmutableArray(assumesInstFromSeq);
     }
 
     /// Retrieves a list with all formulas of a given semi-sequent
-    public static ImmutableList<AssumesFormulaInstantiation> createList(Sequent p_s,
+    public static ImmutableArray<AssumesFormulaInstantiation> createList(Sequent p_s,
             boolean inAntecedent,
             ProofServices services) {
         final AssumesFormulaInstantiationCache cache =
             services.getCaches().getAssumesFormulaInstantiationCache();
         final Semisequent semi = inAntecedent ? p_s.antecedent() : p_s.succedent();
 
-        ImmutableList<AssumesFormulaInstantiation> val = cache.get(inAntecedent, semi);
+        ImmutableArray<AssumesFormulaInstantiation> val = cache.get(inAntecedent, semi);
 
         if (val == null) {
             val = createListHelp(p_s, semi, inAntecedent);

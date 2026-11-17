@@ -50,6 +50,7 @@ import org.key_project.rusty.parser.hir.ty.TyConst;
 import org.key_project.rusty.speclang.FnSpecConverter;
 import org.key_project.rusty.speclang.LoopSpecConverter;
 import org.key_project.rusty.speclang.spec.FnSpec;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -918,7 +919,7 @@ public class HirConverter {
                         }
                         RFunction ctor =
                             new RFunction(new Name(def.pathStr() + "::" + value.name()), sort,
-                                ImmutableList.fromArray(argSorts), null, true);
+                                new ImmutableArray<>(argSorts), null, true);
                         variants[e.getKey()] =
                             new Variant(new Name(value.name()),
                                 fields, ctor);

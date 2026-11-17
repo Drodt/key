@@ -21,7 +21,7 @@ import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.rusty.logic.sort.TermArg;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableSet;
 
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
@@ -31,19 +31,19 @@ import org.jspecify.annotations.Nullable;
 // TODO: Basically everything here can be moved to ncore.
 public class TermImpl implements Term {
     /// A static empty list of terms used for memory reasons.
-    private static final ImmutableList<Term> EMPTY_TERM_LIST = ImmutableList.nil();
+    private static final ImmutableArray<Term> EMPTY_TERM_LIST = new ImmutableArray<>();
 
     /// A static empty list of quantifiable variables used for memory reasons.
-    private static final ImmutableList<QuantifiableVariable> EMPTY_VAR_LIST =
-        ImmutableList.nil();
+    private static final ImmutableArray<QuantifiableVariable> EMPTY_VAR_LIST =
+        new ImmutableArray<>();
 
     private static final AtomicInteger serialNumberCounter = new AtomicInteger();
     private final int serialNumber = serialNumberCounter.incrementAndGet();
 
     // content
     private final Operator op;
-    private final ImmutableList<Term> subs;
-    private final ImmutableList<QuantifiableVariable> boundVars;
+    private final ImmutableArray<Term> subs;
+    private final ImmutableArray<QuantifiableVariable> boundVars;
 
     private @MonotonicNonNull Sort sort;
     private int depth = -1;
@@ -76,8 +76,8 @@ public class TermImpl implements Term {
     /// @param subs the sub terms of the constructed term (whose type is constrained by the used
     /// operator)
     /// @param boundVars the bounded variables (if applicable), e.g., for quantifiers
-    public TermImpl(Operator op, ImmutableList<Term> subs,
-            @Nullable ImmutableList<QuantifiableVariable> boundVars) {
+    public TermImpl(Operator op, ImmutableArray<Term> subs,
+            @Nullable ImmutableArray<QuantifiableVariable> boundVars) {
         assert op != null;
         assert subs != null;
         this.op = op;
@@ -127,7 +127,7 @@ public class TermImpl implements Term {
     }
 
     @Override
-    public @NonNull ImmutableList<Term> subs() {
+    public @NonNull ImmutableArray<Term> subs() {
         return subs;
     }
 
@@ -139,13 +139,13 @@ public class TermImpl implements Term {
 
 
     @Override
-    public @NonNull ImmutableList<QuantifiableVariable> boundVars() {
+    public @NonNull ImmutableArray<QuantifiableVariable> boundVars() {
         return boundVars;
     }
 
 
     @Override
-    public @NonNull ImmutableList<QuantifiableVariable> varsBoundHere(int n) {
+    public @NonNull ImmutableArray<QuantifiableVariable> varsBoundHere(int n) {
         return op.bindVarsAt(n) ? boundVars : EMPTY_VAR_LIST;
     }
 

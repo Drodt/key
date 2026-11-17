@@ -6,6 +6,7 @@ package org.key_project.rusty.rule.metaconstruct.arith;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Monomial;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.rule.inst.SVInstantiations;
@@ -21,10 +22,10 @@ public final class DivideMonomials extends AbstractTermTransformer {
         final Term arg1 = term.sub(0);
         final Term arg2 = term.sub(1);
 
-        final Monomial m1 = Monomial.create(arg1, services);
-        final Monomial m2 = Monomial.create(arg2, services);
+        final Monomial m1 = RMonomial.create(arg1, services);
+        final Monomial m2 = RMonomial.create(arg2, services);
 
         final Monomial res = m2.reduce(m1);
-        return res.toTerm(services);
+        return RMonomial.toTerm(res, services);
     }
 }

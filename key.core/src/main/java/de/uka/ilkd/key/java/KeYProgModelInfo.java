@@ -20,6 +20,7 @@ import de.uka.ilkd.key.logic.op.IProgramMethod;
 import de.uka.ilkd.key.logic.op.ProgramMethod;
 import de.uka.ilkd.key.util.Debug;
 
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import com.github.javaparser.ast.AccessSpecifier;
@@ -379,7 +380,7 @@ public class KeYProgModelInfo {
             }
         }
         TypeDeclaration cd = (TypeDeclaration) ct.getJavaType();
-        ImmutableList<MemberDeclaration> members = cd.getMembers();
+        ImmutableArray<MemberDeclaration> members = cd.getMembers();
         for (int i = 0; i < members.size(); i++) {
             final MemberDeclaration member = members.get(i);
             if (member instanceof IProgramMethod pm
@@ -523,12 +524,12 @@ public class KeYProgModelInfo {
      * @return the list of visible fields
      */
     private List<Field> getVisibleArrayFields(KeYJavaType arrayType) {
-        final ImmutableList<MemberDeclaration> members =
+        final ImmutableArray<MemberDeclaration> members =
             ((ArrayDeclaration) arrayType.getJavaType()).getMembers();
         List<Field> result = new ArrayList<>();
         for (MemberDeclaration member : members) {
             if (member instanceof FieldDeclaration) {
-                final ImmutableList<FieldSpecification> specs =
+                final ImmutableArray<FieldSpecification> specs =
                     ((FieldDeclaration) member).getFieldSpecifications();
                 for (FieldSpecification spec : specs) {
                     result.add(spec);

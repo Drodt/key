@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.ldt;
 
+import org.key_project.ldt.IIntLdt;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Function;
@@ -20,7 +21,7 @@ import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class IntLDT extends LDT {
+public class IntLDT extends LDT implements IIntLdt {
     public static final Name NAME = new Name("int");
 
     public static final Name NUMBERS_NAME = new Name("Z");

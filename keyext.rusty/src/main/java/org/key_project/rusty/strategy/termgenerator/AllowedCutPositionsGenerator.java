@@ -8,22 +8,22 @@ import java.util.ArrayDeque;
 import java.util.Iterator;
 
 import org.key_project.logic.Term;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.logic.op.Junctor;
-import org.key_project.rusty.proof.Goal;
 
 /// Enumerate potential subformulas of a formula that could be used for a cut (taclet cut_direct).
 /// This term-generator does not descend below quantifiers, only below propositional junctors
-public class AllowedCutPositionsGenerator implements TermGenerator<Goal> {
+public class AllowedCutPositionsGenerator implements TermGenerator {
     private AllowedCutPositionsGenerator() {}
 
-    public final static TermGenerator<Goal> INSTANCE = new AllowedCutPositionsGenerator();
+    public final static TermGenerator INSTANCE = new AllowedCutPositionsGenerator();
 
     @Override
-    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
+    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, ProofGoal<?> goal,
             MutableState mState) {
         return new ACPIterator(pos.sequentFormula().formula(), pos.isInAntec());
     }

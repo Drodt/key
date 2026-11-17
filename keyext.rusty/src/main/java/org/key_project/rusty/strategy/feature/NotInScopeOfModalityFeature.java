@@ -14,7 +14,6 @@ import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.rusty.logic.op.RModality;
 import org.key_project.rusty.logic.op.UpdateApplication;
 
-import org.jspecify.annotations.NonNull;
 
 /// Returns zero iff the position of a rule application is not in the scope of a modal operator (a
 /// program block or an update). Note that terms and formulas within (but not behind) updates are
@@ -26,8 +25,8 @@ public class NotInScopeOfModalityFeature extends BinaryFeature {
     private NotInScopeOfModalityFeature() {}
 
     @Override
-    protected <Goal extends ProofGoal<@NonNull Goal>> boolean filter(RuleApp app,
-            PosInOccurrence pos, Goal goal, MutableState mState) {
+    protected boolean filter(RuleApp app,
+            PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
         assert pos != null : "Feature is only applicable to rules with find";
 
         return !inScopeOfModality(pos);

@@ -12,13 +12,13 @@ import org.key_project.prover.engine.ProverCore;
 import org.key_project.prover.engine.ProverTaskListener;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.RuleApplicationManager;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.rusty.control.UserInterfaceControl;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.prover.impl.ApplyStrategy;
 import org.key_project.rusty.strategy.FocussedRuleApplicationManager;
-import org.key_project.rusty.strategy.Strategy;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;

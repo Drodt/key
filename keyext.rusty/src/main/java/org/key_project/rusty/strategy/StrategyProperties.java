@@ -44,6 +44,17 @@ public final class StrategyProperties extends Properties {
         "QUANTIFIERS_NON_SPLITTING_WITH_PROGS";
     public static final String QUANTIFIERS_INSTANTIATE = "QUANTIFIERS_INSTANTIATE";
 
+    /// The quantifier instantiation treatment. [#TRIGGERS_BEST] and [#TRIGGERS_GOOD]
+    /// both select triggers with knowledge of the heap and of array reads, and order tied
+    /// candidates, `BEST` by their connection to the sequent, `GOOD` more cheaply. Only
+    /// `BEST` matches a trigger against reads over another heap, which is how a property
+    /// established before a method call is used after it. [#TRIGGERS_CLASSIC] selects with
+    /// equality and integer knowledge only and does not order candidates.
+    public static final String TRIGGERS_OPTIONS_KEY = "TRIGGERS_OPTIONS_KEY";
+    public static final String TRIGGERS_BEST = "TRIGGERS_BEST";
+    public static final String TRIGGERS_GOOD = "TRIGGERS_GOOD";
+    public static final String TRIGGERS_CLASSIC = "TRIGGERS_CLASSIC";
+
     public static final String AUTO_INDUCTION_OPTIONS_KEY = "AUTO_INDUCTION_OPTIONS_KEY";
     public static final String AUTO_INDUCTION_OFF = "AUTO_INDUCTION_OFF";
     public static final String AUTO_INDUCTION_RESTRICTED = "AUTO_INDUCTION_RESTRICTED";

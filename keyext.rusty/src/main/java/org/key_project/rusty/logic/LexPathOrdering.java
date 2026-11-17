@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.util.*;
 
 import org.key_project.logic.Term;
+import org.key_project.logic.TermOrdering;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;

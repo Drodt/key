@@ -13,14 +13,15 @@ import org.key_project.logic.Name;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.RuleAppCostCollector;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.strategy.RuleAppCostCollector;
-import org.key_project.rusty.strategy.Strategy;
+import org.key_project.rusty.strategy.RustStrategy;
 
 import org.jspecify.annotations.NonNull;
 
@@ -47,8 +48,7 @@ public abstract class AbstractPropositionalExpansionMacro extends StrategyProofM
 
     /// This strategy accepts all rule apps for which the rule name is in the admitted set and
     /// rejects everything else.
-    private static class PropExpansionStrategy implements Strategy<Goal> {
-
+    private static class PropExpansionStrategy implements RustStrategy {
         private final Name NAME = new Name(PropExpansionStrategy.class.getSimpleName());
 
         private final Set<String> admittedRuleNames;
@@ -66,8 +66,8 @@ public abstract class AbstractPropositionalExpansionMacro extends StrategyProofM
         }
 
         @Override
-        public <G extends ProofGoal<@NonNull G>> RuleAppCost computeCost(RuleApp ruleApp,
-                PosInOccurrence pio, G goal,
+        public RuleAppCost computeCost(RuleApp ruleApp,
+                PosInOccurrence pio, ProofGoal<?> goal,
                 MutableState mState) {
             String name = ruleApp.rule().name().toString();
             if (admittedRuleNames.contains(name)) {

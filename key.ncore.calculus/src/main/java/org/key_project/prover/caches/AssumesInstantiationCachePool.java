@@ -12,7 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
 import org.key_project.util.GenerationalCache;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /// Direct-mapped cache of lists of formulas (potential instantiations of if-formulas of taclets)
 /// that were modified after a certain point of time
@@ -67,20 +67,19 @@ public class AssumesInstantiationCachePool<Node> {
     }
 
     public static class AssumesInstantiationCache {
-
-        private final HashMap<Long, ImmutableList<AssumesFormulaInstantiation>> antecCache =
+        private final HashMap<Long, ImmutableArray<AssumesFormulaInstantiation>> antecCache =
             new LinkedHashMap<>();
-        private final HashMap<Long, ImmutableList<AssumesFormulaInstantiation>> succCache =
+        private final HashMap<Long, ImmutableArray<AssumesFormulaInstantiation>> succCache =
             new LinkedHashMap<>();
 
         private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
         private final ReadLock readLock = lock.readLock();
         private final WriteLock writeLock = lock.writeLock();
 
-        public ImmutableList<AssumesFormulaInstantiation> get(boolean antec, Long key) {
+        public ImmutableArray<AssumesFormulaInstantiation> get(boolean antec, Long key) {
             try {
                 readLock.lock();
-                final HashMap<Long, ImmutableList<AssumesFormulaInstantiation>> cache =
+                final HashMap<Long, ImmutableArray<AssumesFormulaInstantiation>> cache =
                     antec ? antecCache : succCache;
                 return cache.get(key);
             } finally {
@@ -89,8 +88,8 @@ public class AssumesInstantiationCachePool<Node> {
         }
 
         public void put(boolean antec, Long key,
-                ImmutableList<AssumesFormulaInstantiation> value) {
-            final HashMap<Long, ImmutableList<AssumesFormulaInstantiation>> cache =
+                ImmutableArray<AssumesFormulaInstantiation> value) {
+            final HashMap<Long, ImmutableArray<AssumesFormulaInstantiation>> cache =
                 antec ? antecCache : succCache;
             try {
                 writeLock.lock();

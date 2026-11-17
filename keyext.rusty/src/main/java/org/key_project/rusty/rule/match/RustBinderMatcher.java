@@ -9,6 +9,7 @@ import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.rules.matcher.compiler.BinderMatcher;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.rule.MatchConditions;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import static org.key_project.rusty.rule.match.instructions.RustyDLMatchVMInstructionSet.matchAndBindVariables;
@@ -26,13 +27,13 @@ public final class RustBinderMatcher implements BinderMatcher {
 
     @SuppressWarnings("unchecked")
     @Override
-    public MatchInstruction binder(ImmutableList<? extends QuantifiableVariable> boundVars) {
+    public MatchInstruction binder(ImmutableArray<? extends QuantifiableVariable> boundVars) {
         return matchAndBindVariables((ImmutableList<QuantifiableVariable>) boundVars);
     }
 
     @Override
     public MatchResultInfo unbind(MatchResultInfo mc,
-            ImmutableList<? extends QuantifiableVariable> boundVars) {
+            ImmutableArray<? extends QuantifiableVariable> boundVars) {
         return ((MatchConditions) mc).shrinkLogicVarTable();
     }
 }

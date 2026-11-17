@@ -20,7 +20,7 @@ import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.sv.UpdateSV;
 import org.key_project.rusty.rule.inst.SVInstantiations;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.NonNull;
 
@@ -79,7 +79,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
             }
 
             return services.getTermFactory().createTerm(phi.op(), updatedSubs,
-                (ImmutableList<QuantifiableVariable>) phi.boundVars());
+                (ImmutableArray<QuantifiableVariable>) phi.boundVars());
         }
 
         // Here we have to check for name collisions as there are free variables in u
@@ -127,7 +127,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
                 final Term[] neededSubs = neededSubs(visitedOp.arity());
                 if (!subStack.empty() && subStack.peek() == newMarker) {
                     final Term newTerm = tb.tf().createTerm(visitedOp, neededSubs,
-                        (ImmutableList<QuantifiableVariable>) visited.boundVars());
+                        (ImmutableArray<QuantifiableVariable>) visited.boundVars());
                     pushNew(newTerm);
                 } else {
                     subStack.push(visited);
@@ -160,7 +160,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
         });
 
         return services.getTermFactory().createTerm(phi.op(), updatedSubs,
-            (ImmutableList<QuantifiableVariable>) phi.boundVars());
+            (ImmutableArray<QuantifiableVariable>) phi.boundVars());
     }
 
     @Override

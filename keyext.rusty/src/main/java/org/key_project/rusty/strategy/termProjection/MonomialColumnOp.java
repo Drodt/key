@@ -8,21 +8,21 @@ import java.math.BigInteger;
 
 import org.key_project.logic.Term;
 import org.key_project.prover.strategy.costbased.feature.StableCost;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Monomial;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.LexPathOrdering;
-import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
+import org.key_project.rusty.rule.metaconstruct.arith.RMonomial;
 
 @StableCost
 public class MonomialColumnOp extends AbstractDividePolynomialsProjection {
-    private MonomialColumnOp(ProjectionToTerm<Goal> leftCoefficient,
-            ProjectionToTerm<Goal> polynomial) {
+    private MonomialColumnOp(ProjectionToTerm leftCoefficient,
+            ProjectionToTerm polynomial) {
         super(leftCoefficient, polynomial);
     }
 
-    public static ProjectionToTerm<Goal> create(ProjectionToTerm<Goal> leftCoefficient,
-            ProjectionToTerm<Goal> polynomial) {
+    public static ProjectionToTerm create(ProjectionToTerm leftCoefficient,
+            ProjectionToTerm polynomial) {
         return new MonomialColumnOp(leftCoefficient, polynomial);
     }
 
@@ -30,6 +30,6 @@ public class MonomialColumnOp extends AbstractDividePolynomialsProjection {
     protected Term divide(Monomial numerator, BigInteger denominator, Services services) {
         final BigInteger newRightCoeff =
             LexPathOrdering.divide(numerator.getCoefficient(), denominator);
-        return numerator.setCoefficient(newRightCoeff).toTerm(services);
+        return RMonomial.toTerm(numerator.setCoefficient(newRightCoeff), services);
     }
 }

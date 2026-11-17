@@ -17,6 +17,7 @@ import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.rusty.rule.inst.SVInstantiations;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -34,8 +35,8 @@ public final class RustListSVMatcher implements ListSVMatcher {
     public static final RustListSVMatcher INSTANCE = new RustListSVMatcher();
 
     /// the instantiation of a list schema variable that matched no source children
-    private static final ImmutableList<RustyProgramElement> EMPTY_LIST_INSTANTIATION =
-        ImmutableList.fromArray(new RustyProgramElement[0]);
+    private static final ImmutableArray<RustyProgramElement> EMPTY_LIST_INSTANTIATION =
+        new ImmutableArray<>(new RustyProgramElement[0]);
 
     private RustListSVMatcher() {}
 
@@ -50,8 +51,8 @@ public final class RustListSVMatcher implements ListSVMatcher {
     @Override
     public @Nullable MatchResultInfo bindRun(SchemaVariable listSV,
             List<? extends SyntaxElement> run, MatchResultInfo mc, LogicServices services) {
-        final ImmutableList<RustyProgramElement> list = run.isEmpty() ? EMPTY_LIST_INSTANTIATION
-                : ImmutableList.fromArray(run.toArray(new RustyProgramElement[0]));
+        final ImmutableArray<RustyProgramElement> list = run.isEmpty() ? EMPTY_LIST_INSTANTIATION
+                : new ImmutableArray<>(run.toArray(new RustyProgramElement[0]));
         final MatchConditions matchCond = (MatchConditions) mc;
         SVInstantiations insts = matchCond.getInstantiations();
         final ImmutableList<RustyProgramElement> pl = insts.getInstantiation(listSV);

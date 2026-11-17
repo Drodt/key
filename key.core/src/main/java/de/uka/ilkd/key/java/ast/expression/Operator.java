@@ -12,7 +12,7 @@ import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.ast.reference.ExecutionContext;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /**
  * Operator base class.
@@ -24,7 +24,7 @@ import org.key_project.util.collection.ImmutableList;
                                  // API
 public abstract class Operator extends JavaNonTerminalProgramElement
         implements Expression, ExpressionContainer {
-    protected final ImmutableList<Expression> children;
+    protected final ImmutableArray<Expression> children;
 
     /**
      * Relative positioning of the operator.
@@ -46,7 +46,7 @@ public abstract class Operator extends JavaNonTerminalProgramElement
      *        an expression.
      */
     protected Operator(Expression lhs, Expression rhs) {
-        this.children = ImmutableList.of(lhs, rhs);
+        this.children = new ImmutableArray<>(lhs, rhs);
     }
 
     /**
@@ -60,7 +60,7 @@ public abstract class Operator extends JavaNonTerminalProgramElement
      */
     protected Operator(ExtList children) {
         super(children);
-        this.children = ImmutableList.fromArray(children.collect(Expression.class));
+        this.children = new ImmutableArray<>(children.collect(Expression.class));
     }
 
     /**
@@ -71,7 +71,7 @@ public abstract class Operator extends JavaNonTerminalProgramElement
      */
 
     protected Operator(Expression unaryChild) {
-        this.children = ImmutableList.singleton(unaryChild);
+        this.children = new ImmutableArray<>(unaryChild);
     }
 
     /**
@@ -82,16 +82,16 @@ public abstract class Operator extends JavaNonTerminalProgramElement
      */
 
     protected Operator(Expression[] arguments) {
-        this.children = ImmutableList.fromArray(arguments);
+        this.children = new ImmutableArray<>(arguments);
     }
 
-    public Operator(PositionInfo pi, List<Comment> comments, ImmutableList<Expression> children) {
+    public Operator(PositionInfo pi, List<Comment> comments, ImmutableArray<Expression> children) {
         super(pi, comments);
         this.children = children;
     }
 
     public Operator(PositionInfo pi, List<Comment> c, Expression lhs, Expression rhs) {
-        this(pi, c, ImmutableList.of(lhs, rhs));
+        this(pi, c, new ImmutableArray<>(lhs, rhs));
     }
 
     /**
@@ -205,7 +205,7 @@ public abstract class Operator extends JavaNonTerminalProgramElement
     }
 
     /** return arguments */
-    public ImmutableList<Expression> getArguments() {
+    public ImmutableArray<Expression> getArguments() {
         return children;
     }
 

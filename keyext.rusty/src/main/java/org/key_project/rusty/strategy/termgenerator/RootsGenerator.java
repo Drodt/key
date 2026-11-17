@@ -7,10 +7,13 @@ package org.key_project.rusty.strategy.termgenerator;
 import java.math.BigInteger;
 import java.util.Iterator;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.Term;
+import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Monomial;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.Services;
@@ -19,7 +22,7 @@ import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.AbstractTermTransformer;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.rule.metaconstruct.arith.Monomial;
+import org.key_project.rusty.rule.metaconstruct.arith.RMonomial;
 import org.key_project.util.collection.ImmutableList;
 
 /// Term generator for inferring the range of values that a variable can have from a given
@@ -28,26 +31,27 @@ import org.key_project.util.collection.ImmutableList;
 /// `v^n <= l`, `v^n >= l`, where `v` is an atomic term (does not start with
 /// addition or multiplication) and `l` is a literal. The generator will then produce at most
 /// one formula that describes the solutions of the formula using linear (in)equations.
-public class RootsGenerator implements TermGenerator<Goal> {
-    private final ProjectionToTerm<Goal> powerRelation;
+public class RootsGenerator implements TermGenerator {
+    private final ProjectionToTerm powerRelation;
 
     private final TermBuilder tb;
     private final BigInteger one = BigInteger.ONE;
     private final BigInteger two = BigInteger.valueOf(2);
 
-    public static TermGenerator<Goal> create(ProjectionToTerm<Goal> powerRelation,
-            Services services) {
-        return new RootsGenerator(powerRelation, services.getTermBuilder());
+    public static TermGenerator create(ProjectionToTerm powerRelation,
+            LogicServices services) {
+        return new RootsGenerator(powerRelation, ((Services) services).getTermBuilder());
     }
 
-    private RootsGenerator(ProjectionToTerm<Goal> powerRelation, TermBuilder tb) {
+    private RootsGenerator(ProjectionToTerm powerRelation, TermBuilder tb) {
         this.powerRelation = powerRelation;
         this.tb = tb;
     }
 
     @Override
-    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, Goal goal,
+    public Iterator<Term> generate(RuleApp app, PosInOccurrence pos, ProofGoal<?> p_goal,
             MutableState mState) {
+        final var goal = (Goal) p_goal;
         final Services services = goal.proof().getServices();
         final IntLDT numbers = services.getLDTs().getIntLDT();
 
@@ -60,7 +64,7 @@ public class RootsGenerator implements TermGenerator<Goal> {
         final BigInteger lit = new BigInteger(
             AbstractTermTransformer.convertToDecimalString(powerRel.sub(1), services));
 
-        final Monomial mon = Monomial.create(powerRel.sub(0), services);
+        final Monomial mon = RMonomial.create(powerRel.sub(0), services);
         final int pow = mon.getParts().size();
         if (pow <= 1 || !mon.getCoefficient().equals(one)) {
             return emptyIterator();

@@ -12,6 +12,8 @@ import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleSet;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.sequent.PosInOccurrence;
+import org.key_project.prover.strategy.RuleAppCostCollector;
+import org.key_project.prover.strategy.Strategy;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
@@ -19,8 +21,7 @@ import org.key_project.prover.strategy.costbased.TopRuleAppCost;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.rule.Rule;
-import org.key_project.rusty.strategy.RuleAppCostCollector;
-import org.key_project.rusty.strategy.Strategy;
+import org.key_project.rusty.strategy.RustStrategy;
 
 import org.jspecify.annotations.NonNull;
 
@@ -69,7 +70,7 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
         return false;
     }
 
-    private static class AutoPilotStrategy implements Strategy<Goal> {
+    private static class AutoPilotStrategy implements RustStrategy {
         private static final Name NAME = new Name("Autopilot filter strategy");
         private final Strategy<@NonNull Goal> delegate;
         /// the modality cache used by this strategy
@@ -101,10 +102,9 @@ public class AutoPilotPrepareProofMacro extends StrategyProofMacro {
         }
 
         @Override
-        public <G extends ProofGoal<@NonNull G>> RuleAppCost computeCost(RuleApp app,
-                PosInOccurrence pio, G p_goal,
+        public RuleAppCost computeCost(RuleApp app,
+                PosInOccurrence pio, ProofGoal<?> p_goal,
                 MutableState mState) {
-
             final var goal = (Goal) p_goal;
             Rule rule = (Rule) app.rule();
             if (FinishSymbolicExecutionMacro.isForbiddenRule(rule)) {

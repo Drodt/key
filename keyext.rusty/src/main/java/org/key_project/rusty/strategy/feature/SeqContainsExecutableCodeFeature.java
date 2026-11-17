@@ -18,7 +18,6 @@ import org.key_project.prover.strategy.costbased.termfeature.TermFeature;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.strategy.termfeature.ContainsExecutableCodeTermFeature;
 
-import org.jspecify.annotations.NonNull;
 
 public class SeqContainsExecutableCodeFeature extends BinaryFeature {
     private final TermFeature tf;
@@ -36,8 +35,8 @@ public class SeqContainsExecutableCodeFeature extends BinaryFeature {
         new SeqContainsExecutableCodeFeature(true);
 
     @Override
-    protected <Goal extends ProofGoal<@NonNull Goal>> boolean filter(RuleApp app,
-            PosInOccurrence pos, Goal goal, MutableState mState) {
+    protected boolean filter(RuleApp app,
+            PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
         final Services services = (Services) goal.proof().getServices();
         return containsExec(goal.sequent().succedent().iterator(), mState, services)
                 || containsExec(goal.sequent().antecedent().iterator(), mState, services);
