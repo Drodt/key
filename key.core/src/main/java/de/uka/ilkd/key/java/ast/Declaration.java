@@ -6,7 +6,7 @@ package de.uka.ilkd.key.java.ast;
 
 import de.uka.ilkd.key.java.ast.declaration.Modifier;
 
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 
 /**
@@ -19,5 +19,6 @@ public interface Declaration extends NonTerminalProgramElement {
      *
      * @return the (original) list of modifiers wrapped .
      */
-    ImmutableList<Modifier> getModifiers();
+    @SuppressWarnings("deprecation") // getModifiers() declaration references deprecated elements
+    ImmutableArray<Modifier> getModifiers();
 }

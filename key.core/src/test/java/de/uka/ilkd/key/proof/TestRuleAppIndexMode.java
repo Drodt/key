@@ -13,6 +13,7 @@ import de.uka.ilkd.key.rule.TacletApp;
 import de.uka.ilkd.key.util.ProofStarter;
 
 import org.key_project.logic.PosInTerm;
+import org.key_project.prover.indexing.RuleAppIndexMode;
 import org.key_project.prover.proof.rulefilter.TacletFilter;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
@@ -58,6 +59,7 @@ public class TestRuleAppIndexMode {
     }
 
     @Test
+    @SuppressWarnings("try") // unused auto-closeable resources
     void scopesRestoreThePreviousMode(@TempDir Path dir) throws Exception {
         final KeYEnvironment<DefaultUserInterfaceControl> env = load(dir);
         try {
@@ -76,6 +78,7 @@ public class TestRuleAppIndexMode {
     }
 
     @Test
+    @SuppressWarnings("try") // unused auto-closeable resources
     void anInteractiveQueryReportsTacletsWithoutRuleSetInAutomaticMode(@TempDir Path dir)
             throws Exception {
         final KeYEnvironment<DefaultUserInterfaceControl> env = load(dir);

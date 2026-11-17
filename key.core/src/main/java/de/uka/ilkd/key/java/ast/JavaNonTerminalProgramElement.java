@@ -9,7 +9,7 @@ import java.util.List;
 import de.uka.ilkd.key.rule.MatchConditions;
 
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 import org.jspecify.annotations.Nullable;
 
@@ -57,7 +57,8 @@ public abstract class JavaNonTerminalProgramElement extends JavaProgramElement
      *        the element to look for
      * @return the index of the element (-1 if not found)
      */
-    protected int getArrayPos(ImmutableList<ProgramElement> arr, ProgramElement el) {
+    @SuppressWarnings("deprecation") // helper operates on the program-element list representation
+    protected int getArrayPos(ImmutableArray<ProgramElement> arr, ProgramElement el) {
         for (int i = 0, sz = arr.size(); i < sz; i++) {
             if (arr.get(i) == el) {
                 return i;

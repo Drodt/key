@@ -12,11 +12,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import de.uka.ilkd.key.logic.JTerm;
 import de.uka.ilkd.key.logic.label.OriginTermLabel.Origin;
-import de.uka.ilkd.key.proof.*;
+import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.PrefixTermTacletAppIndexCacheImpl.CacheKey;
-import de.uka.ilkd.key.rule.metaconstruct.arith.Monomial;
-import de.uka.ilkd.key.rule.metaconstruct.arith.Polynomial;
+import de.uka.ilkd.key.proof.Proof;
+import de.uka.ilkd.key.proof.TermTacletAppIndex;
+import de.uka.ilkd.key.proof.TermTacletAppIndexCacheSet;
 import de.uka.ilkd.key.strategy.CostReuse;
+import de.uka.ilkd.key.strategy.IfInstantiationCachePool;
 import de.uka.ilkd.key.strategy.feature.AbstractBetaFeature.TermInfo;
 import de.uka.ilkd.key.strategy.feature.AppliedRuleAppsNameCache;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.ClausesGraph;
@@ -24,12 +26,13 @@ import de.uka.ilkd.key.strategy.quantifierHeuristics.TriggersSet;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.constraint.Metavariable;
 
 import org.key_project.logic.sort.Sort;
-import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Monomial;
+import org.key_project.prover.strategy.costbased.feature.helper.arith.Polynomial;
 import org.key_project.util.ConcurrentLruCache;
 import org.key_project.util.GenerationalCache;
 import org.key_project.util.collection.ImmutableSet;
@@ -179,8 +182,7 @@ public class ServiceCaches implements SessionCaches {
         Collections.synchronizedMap(new WeakHashMap<>());
 
     /** Cache used by the ifinstantiator */
-    private final AssumesInstantiationCachePool<Node> assumesInstantiationCachePool =
-        new AssumesInstantiationCachePool<>();
+    private final IfInstantiationCachePool ifInstantiationCache = new IfInstantiationCachePool();
 
     /** Cache used IfFormulaInstSeq */
     private final AssumesFormulaInstantiationCache assumesFormulaInstantiationCache =
@@ -274,8 +276,8 @@ public class ServiceCaches implements SessionCaches {
         return exhaustiveMacroCache;
     }
 
-    public final AssumesInstantiationCachePool<Node> getAssumesInstantiationCachePool() {
-        return assumesInstantiationCachePool;
+    public final IfInstantiationCachePool getIfInstantiationCache() {
+        return ifInstantiationCache;
     }
 
     public final AssumesFormulaInstantiationCache getAssumesFormulaInstantiationCache() {

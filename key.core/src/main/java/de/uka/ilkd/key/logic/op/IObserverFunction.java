@@ -9,7 +9,7 @@ import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.SortedOperator;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 public interface IObserverFunction extends SortedOperator, Operator {
 
@@ -56,6 +56,7 @@ public interface IObserverFunction extends SortedOperator, Operator {
      * Returns the parameter types of this observer symbol. "Parameters" here includes only the
      * *explicit* parameters, not the heap and the receiver object.
      */
-    ImmutableList<KeYJavaType> getParamTypes();
+    @SuppressWarnings("deprecation") // getParamTypes() declaration references deprecated elements
+    ImmutableArray<KeYJavaType> getParamTypes();
 
 }

@@ -9,6 +9,7 @@ import de.uka.ilkd.key.java.ast.abstraction.KeYJavaType;
 import de.uka.ilkd.key.java.ast.declaration.*;
 import de.uka.ilkd.key.logic.ProgramElementName;
 
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 public interface IProgramMethod
@@ -73,10 +74,12 @@ public interface IProgramMethod
 
     int getParameterDeclarationCount();
 
-    ImmutableList<ParameterDeclaration> getParameters();
+    @SuppressWarnings("deprecation") // getParameters() declaration references deprecated elements
+    ImmutableArray<ParameterDeclaration> getParameters();
 
     // Methods from OberverFunction, TODO Create interface for ObersverFunction
-    ImmutableList<KeYJavaType> getParamTypes();
+    @SuppressWarnings("deprecation") // getParamTypes() declaration references deprecated elements
+    ImmutableArray<KeYJavaType> getParamTypes();
 
     /**
      * @return The list of {@link LocationVariable}s passed as parameters to this

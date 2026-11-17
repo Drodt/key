@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.java.loader;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.*;
 import java.util.function.Predicate;
@@ -34,7 +36,6 @@ import de.uka.ilkd.key.ldt.JavaDLTheory;
 import de.uka.ilkd.key.logic.ProgramElementName;
 import de.uka.ilkd.key.logic.VariableNamer;
 import de.uka.ilkd.key.logic.op.*;
-import de.uka.ilkd.key.logic.sort.ProgramSVSort;
 import de.uka.ilkd.key.nparser.KeyAst;
 import de.uka.ilkd.key.parser.ParserException;
 import de.uka.ilkd.key.rule.metaconstruct.*;
@@ -46,9 +47,9 @@ import de.uka.ilkd.key.speclang.jml.pretranslation.TextualJMLMergePointDecl;
 import org.key_project.logic.MetaSpace;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
-import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.parsing.Position;
 
@@ -181,7 +182,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         Expression expr = accept(n.getIndex());
         Expression prefix = accept(n.getName());
         // TODO weigl how to express (new int[0])[0] in Java-KeY-AST?
-        return new ArrayReference(pi, c, (ReferencePrefix) prefix, ImmutableList.singleton(expr));
+        return new ArrayReference(pi, c, (ReferencePrefix) prefix, new ImmutableArray<>(expr));
     }
 
     @Override
@@ -191,7 +192,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         TypeReference type = requireTypeReference(n.getElementType());
         // TODO javaparser how should int[5][4][][] be encoded in the key ast?
         ArrayInitializer ai;
-        ImmutableList<Expression> children;
+        ImmutableArray<Expression> children;
         if (n.getInitializer().isPresent()) {
             ai = visitArrayInitializerExpr(n.getInitializer().get(), type.getKeYJavaType());
             children = null;
@@ -221,7 +222,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             }
             list.add(expr);
         }
-        ImmutableList<Expression> children = ImmutableList.fromList(list);
+        ImmutableArray<Expression> children = new ImmutableArray<>(list);
         return new ArrayInitializer(pi, c, children, type);
     }
 
@@ -289,7 +290,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(BlockStmt n, Void arg) {
-        ImmutableList<Statement> body = map(n.getStatements());
+        ImmutableArray<Statement> body = map(n.getStatements());
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
         return new StatementBlock(pi, c, body, getSpec(n));
@@ -351,13 +352,13 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         ProgramElementName name = createProgramElementName(n.getName());
         ProgramElementName fullName = new ProgramElementName(n.getFullyQualifiedName().get());
         boolean isLibrary = mapping.isParsingLibraries();
-        ImmutableList<de.uka.ilkd.key.java.ast.declaration.Modifier> modArray =
+        ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modArray =
             map(n.getModifiers());
-        ImmutableList<MemberDeclaration> members = map(n.getMembers());
+        ImmutableArray<MemberDeclaration> members = map(n.getMembers());
         boolean parentIsInterface = false;
 
-        ImmutableList<TypeReference> e = map(n.getExtendedTypes());
-        ImmutableList<TypeReference> i = map(n.getImplementedTypes());
+        ImmutableArray<TypeReference> e = map(n.getExtendedTypes());
+        ImmutableArray<TypeReference> i = map(n.getImplementedTypes());
         Extends extending = new Extends(e);
         Implements implementing = new Implements(i);
 
@@ -385,11 +386,14 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     }
 
     @NonNull
+    @SuppressWarnings("unchecked") // the visitor API is untyped; the caller determines the target
+    // type from the visited node
     private <T> T accept(@NonNull Node check) {
         return Objects.requireNonNull((T) check.accept(this, null));
     }
 
     @Nullable
+    @SuppressWarnings("unchecked") // see accept: the target type T is determined by the caller
     private <T> T acceptn(@Nullable Node check) {
         return check != null ? (T) accept(check) : null;
     }
@@ -454,22 +458,150 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         return comments;
     }
 
+    /**
+     * Instantiates a registered transformer by matching one of its public constructors against the
+     * converted meta-construct arguments. See {@link #getMatchingConstructor} for the matching
+     * rules.
+     */
+    private ProgramTransformer instantiate(Class<? extends ProgramTransformer> transformer,
+            List<?> args, Node n) {
+        final Constructor<?> ctor = getMatchingConstructor(transformer, args, n);
+        try {
+            return (ProgramTransformer) ctor.newInstance(args.toArray());
+        } catch (IllegalAccessException | InstantiationException e) {
+            return reportError(n, "Cannot instantiate " + transformer.getSimpleName() + ": " + e);
+        } catch (InvocationTargetException e) {
+            return reportError(n, "Cannot instantiate " + transformer.getSimpleName() + ": "
+                + e.getCause());
+        }
+    }
+
+    /**
+     * Selects the constructor of {@code transformer} that fits {@code args}: it must have the same
+     * arity and every parameter must accept the corresponding argument ({@code null} arguments
+     * match any non-primitive parameter). If several constructors fit, the most specific one wins:
+     * fewer widening steps from the runtime argument types to the parameter types, then more
+     * {@link SchemaVariable} parameters (the taclet-facing constructors), and finally a
+     * deterministic order via the parameter type names.
+     */
+    private Constructor<?> getMatchingConstructor(Class<? extends ProgramTransformer> transformer,
+            List<?> args, Node n) {
+        final List<Constructor<?>> candidates = new ArrayList<>();
+        for (Constructor<?> ctor : transformer.getConstructors()) {
+            final Class<?>[] params = ctor.getParameterTypes();
+            if (params.length != args.size()) {
+                continue;
+            }
+            boolean matches = true;
+            for (int i = 0; i < params.length; i++) {
+                final Object a = args.get(i);
+                if (a != null && !params[i].isInstance(a)) {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches) {
+                candidates.add(ctor);
+            }
+        }
+        if (candidates.isEmpty()) {
+            return reportError(n, "No constructor of " + transformer.getSimpleName()
+                + " accepts " + args.size() + " meta-construct arguments " + args);
+        }
+        candidates.sort((a, b) -> {
+            // Prefer the taclet-facing constructor, which takes the schema variable(s) directly,
+            // e.g. PostWork(SchemaVariable) over PostWork(ProgramVariable).
+            int cmp = Integer.compare(schemaVariableParams(b), schemaVariableParams(a));
+            if (cmp != 0) {
+                return cmp;
+            }
+            cmp = Integer.compare(wideningSteps(a, args), wideningSteps(b, args));
+            if (cmp != 0) {
+                return cmp;
+            }
+            return Arrays.toString(a.getParameterTypes())
+                    .compareTo(Arrays.toString(b.getParameterTypes()));
+        });
+        return candidates.get(0);
+    }
+
+    /**
+     * @return the number of parameters that accept a {@link SchemaVariable}
+     */
+    private static int schemaVariableParams(Constructor<?> ctor) {
+        return (int) Arrays.stream(ctor.getParameterTypes())
+                .filter(SchemaVariable.class::isAssignableFrom).count();
+    }
+
+    /**
+     * @return the total number of widening steps from the runtime type of each argument to the
+     *         corresponding constructor parameter type
+     */
+    private static int wideningSteps(Constructor<?> ctor, List<?> args) {
+        final Class<?>[] params = ctor.getParameterTypes();
+        int steps = 0;
+        for (int i = 0; i < params.length; i++) {
+            final Object a = args.get(i);
+            if (a != null) {
+                steps += wideningSteps(a.getClass(), params[i]);
+            }
+        }
+        return steps;
+    }
+
+    /**
+     * @return the minimal number of steps from {@code from} to {@code to} in the class/interface
+     *         hierarchy
+     */
+    private static int wideningSteps(Class<?> from, Class<?> to) {
+        if (from == to) {
+            return 0;
+        }
+        final ArrayDeque<Class<?>> work = new ArrayDeque<>();
+        final Map<Class<?>, Integer> dist = new HashMap<>();
+        work.add(from);
+        dist.put(from, 0);
+        while (!work.isEmpty()) {
+            final Class<?> current = work.removeFirst();
+            final int d = dist.get(current);
+            if (current == to) {
+                return d;
+            }
+            for (Class<?> next : supertypes(current)) {
+                if (!dist.containsKey(next)) {
+                    dist.put(next, d + 1);
+                    work.add(next);
+                }
+            }
+        }
+        return Integer.MAX_VALUE; // unreachable: assignability was checked before
+    }
+
+    private static Collection<Class<?>> supertypes(Class<?> c) {
+        final Collection<Class<?>> result = new ArrayList<>();
+        if (c.getSuperclass() != null) {
+            result.add(c.getSuperclass());
+        }
+        Collections.addAll(result, c.getInterfaces());
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
-    private <T> ImmutableList<T> map(NodeList<? extends Visitable> nodes) {
+    private <T> ImmutableArray<T> map(NodeList<? extends Visitable> nodes) {
         ArrayList<T> list = new ArrayList<T>(nodes.size());
         for (Node node : nodes) {
             Object res = node.accept(this, null);
             list.add((T) Objects.requireNonNull(res));
         }
-        return ImmutableList.fromList(list);
+        return new ImmutableArray<>(list);
     }
 
     @SuppressWarnings("unchecked")
-    private <T> ImmutableList<T> flatMap(NodeList<? extends Visitable> nodes) {
+    private <T> ImmutableArray<T> flatMap(NodeList<? extends Visitable> nodes) {
         List<T> seq = nodes.stream()
                 .flatMap(it -> ((List<T>) Objects.requireNonNull(it.accept(this, null))).stream())
                 .collect(Collectors.toList());
-        return ImmutableList.fromList(seq);
+        return new ImmutableArray<>(seq);
     }
 
     @Nullable
@@ -492,7 +624,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         boolean isInInterface = parentIsInterface(n);
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
-        ImmutableList<TypeReference> exc = map(n.getThrownExceptions());
+        ImmutableArray<TypeReference> exc = map(n.getThrownExceptions());
         Throws thr = exc.isEmpty() ? null : new Throws(null, null, exc);
         final BlockStmt body = n.body();
         de.uka.ilkd.key.java.ast.declaration.ConstructorDeclaration cd =
@@ -615,7 +747,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     public Object visit(ExplicitConstructorInvocationStmt n, Void arg) {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
-        ImmutableList<Expression> args = map(n.getArguments());
+        ImmutableArray<Expression> args = map(n.getArguments());
         return n.isThis() ? new ThisConstructorReference(args, pi, c)
                 : new SuperConstructorReference(args, pi, c);
     }
@@ -704,8 +836,11 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             boolean isModel = fldDecl.hasModifier(JML_MODEL);
             boolean isGhost = fldDecl.hasModifier(JML_GHOST);
 
-            final FullVariableDeclarator decl = new FullVariableDeclarator(varDecl,
-                varDecl.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null),
+            @SuppressWarnings("unchecked") // findAncestor takes a parameterized Class... vararg,
+            // which requires an unchecked generic array creation
+            final ClassOrInterfaceDeclaration ancestor =
+                varDecl.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null);
+            final FullVariableDeclarator decl = new FullVariableDeclarator(varDecl, ancestor,
                 fldDecl.isFinal(), fldDecl.isStatic(),
                 isModel, isGhost);
             final ProgramVariable variable = getProgramVariableForFieldSpecification(decl);
@@ -733,8 +868,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     public Object visit(TypeExpr n, Void arg) {
         ResolvedType rt = n.calculateResolvedType();
         KeYJavaType kjt = getKeYJavaType(rt);
-        ImmutableList<Annotation> annots = map(n.getType().getAnnotations());
-        return new TypeRef(kjt, annots, 0);
+        ImmutableArray<Annotation> annots = map(n.getType().getAnnotations());
+        return new TypeRef(kjt, annots.toImmutableList(), 0);
     }
 
     private KeYJavaType getCachedKeYJavaType(ResolvedType rtype) {
@@ -787,7 +922,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
         boolean isInInterface = parentIsInterface(n);
-        ImmutableList<de.uka.ilkd.key.java.ast.declaration.Modifier> modArray =
+        ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modArray =
             map(n.getModifiers());
         TypeReference type = requireTypeReference(n.getVariables().get(0).getType());
         ArrayList<FieldSpecification> varsList =
@@ -798,14 +933,17 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             boolean isFinal = n.hasModifier(FINAL) || (isInInterface && !isInstance);
             boolean isModel = n.hasModifier(JML_MODEL);
             boolean isGhost = n.hasModifier(JML_GHOST);
-            FullVariableDeclarator decl = new FullVariableDeclarator(v,
-                v.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null), isFinal, isStatic,
+            @SuppressWarnings("unchecked") // findAncestor takes a parameterized Class... vararg,
+            // which requires an unchecked generic array creation
+            final ClassOrInterfaceDeclaration ancestor =
+                v.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null);
+            FullVariableDeclarator decl = new FullVariableDeclarator(v, ancestor, isFinal, isStatic,
                 isModel, isGhost);
             final FieldSpecification fs = visitFieldSpecification(decl);
             varsList.add(fs);
             mapping.put(v, fs);
         }
-        ImmutableList<FieldSpecification> fieldSpecs = ImmutableList.fromList(varsList);
+        ImmutableArray<FieldSpecification> fieldSpecs = new ImmutableArray<>(varsList);
         final de.uka.ilkd.key.java.ast.declaration.FieldDeclaration decl =
             new de.uka.ilkd.key.java.ast.declaration.FieldDeclaration(pi, c, modArray, type,
                 isInInterface, fieldSpecs);
@@ -829,8 +967,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     public Object visit(ForStmt n, Void arg) {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
-        ImmutableList<LoopInitializer> inits = map(n.getInitialization());
-        ImmutableList<Expression> updates = map(n.getUpdate());
+        ImmutableArray<LoopInitializer> inits = map(n.getInitialization());
+        ImmutableArray<Expression> updates = map(n.getUpdate());
         Object guard = accepto(n.getCompare());
 
         IGuard forGuard;
@@ -949,6 +1087,19 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         if (n.getNameAsString().startsWith("\\")) {
             return handleSpecialFunctionInvocation(n, n.getNameAsString(), n.getArguments());
         }
+        // Expression-position transformers have no grammar token; they parse as ordinary method
+        // calls and are resolved through the expression registry. Every registered expression
+        // transformer takes a single argument, so any other arity is rejected by the constructor
+        // matching below (reported as a positioned parse error).
+        final Class<? extends ProgramTransformer> expressionTransformer =
+            ProgramTransformerRegistry.expressionByName(n.getNameAsString());
+        if (expressionTransformer != null) {
+            final List<Object> args = new ArrayList<>(n.getArguments().size());
+            for (var a : n.getArguments()) {
+                args.add(accept(a));
+            }
+            return instantiate(expressionTransformer, args, n);
+        }
 
         MethodName name;
         if (n.getName().asString().startsWith("#")) {
@@ -957,7 +1108,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             name = createProgramElementName(n.getName());
         }
         ReferencePrefix prefix = accepto(n.getScope());
-        ImmutableList<Expression> args = map(n.getArguments());
+        ImmutableArray<Expression> args = map(n.getArguments());
         return new MethodReference(pi, c, prefix, name, args);
     }
 
@@ -966,7 +1117,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
 
-        ImmutableList<TypeReference> t = map(n.getThrownExceptions());
+        ImmutableArray<TypeReference> t = map(n.getThrownExceptions());
         Throws thr = t.isEmpty() ? null : new Throws(null, null, t);
         boolean isInInterface = parentIsInterface(n);
         TypeReference returnType = requireTypeReference(n.getType());
@@ -1079,14 +1230,14 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     public Object visit(ObjectCreationExpr n, Void arg) {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
-        ImmutableList<Expression> args = map(n.getArguments());
+        ImmutableArray<Expression> args = map(n.getArguments());
         TypeReference type = requireTypeReference(n.getType());
 
         ClassDeclaration decl = null;
         if (n.getAnonymousClassBody().isPresent()) {
             // TODO: Add pipeline step for anonymous classes
-            ImmutableList<MemberDeclaration> bodies = map(n.getAnonymousClassBody().get());
-            decl = new ClassDeclaration(pi, c, ImmutableList.nil(), null, null,
+            ImmutableArray<MemberDeclaration> bodies = map(n.getAnonymousClassBody().get());
+            decl = new ClassDeclaration(pi, c, new ImmutableArray<>(), null, null,
                 bodies, true, false, null, null,
                 true, false, true, ImmutableList.of());
         }
@@ -1144,12 +1295,12 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             type.getScope().map(JP2KeYVisitor::convertScopeToReferencePrefix).orElse(null);
         ProgramElementName name = createProgramElementName(type.getName());
         KeYJavaType resolvedType = getKeYJavaType(type.resolve());
-        ImmutableList<Annotation> annots = map(type.getAnnotations());
-        return new TypeRef(name, annots, 0, prefix, resolvedType);
+        ImmutableArray<Annotation> annots = map(type.getAnnotations());
+        return new TypeRef(name, annots.toImmutableList(), 0, prefix, resolvedType);
     }
 
     private ParameterDeclaration visitNoMap(Parameter n) {
-        ImmutableList<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
+        ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
             map(n.getModifiers());
         boolean va = n.isVarArgs();
         // Var arg expects an array type later on but JP gives us "normal" type
@@ -1173,7 +1324,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         VariableSpecification spec =
             new VariableSpecification(pi, c, null, pv, 0, type.getKeYJavaType());
         boolean isInInterface = parentIsInterface(n);
-        return new ParameterDeclaration(ImmutableList.singleton(spec), pi, c, modifiers,
+        return new ParameterDeclaration(new ImmutableArray<>(spec), pi, c, modifiers,
             type, isInInterface, va);
     }
 
@@ -1185,8 +1336,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public TypeReference visit(PrimitiveType n, Void arg) {
-        ImmutableList<Annotation> annots = map(n.getAnnotations());
-        return new TypeRef(getKeYJavaType(n.resolve()), annots, 0);
+        ImmutableArray<Annotation> annots = map(n.getAnnotations());
+        return new TypeRef(getKeYJavaType(n.resolve()), annots.toImmutableList(), 0);
     }
 
     @Override
@@ -1212,8 +1363,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             System.out.println(e);
         }
 
-        ImmutableList<Annotation> annots = map(n.getAnnotations());
-        return new TypeRef(getKeYJavaType(n.resolve()), annots, 0);
+        ImmutableArray<Annotation> annots = map(n.getAnnotations());
+        return new TypeRef(getKeYJavaType(n.resolve()), annots.toImmutableList(), 0);
     }
 
     @Override
@@ -1259,7 +1410,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     public Object visit(SwitchEntry n, Void arg) {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
-        ImmutableList<Statement> body = map(n.getStatements());
+        ImmutableArray<Statement> body = map(n.getStatements());
         if (n.getLabels().isEmpty()) {
             // Default branch
             return List.of(new Default(body, pi, c));
@@ -1279,7 +1430,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
         Expression expr = accept(n.getSelector());
-        ImmutableList<Branch> branches = flatMap(n.getEntries());
+        ImmutableArray<Branch> branches = flatMap(n.getEntries());
         return new Switch(pi, c, expr, branches);
     }
 
@@ -1314,13 +1465,13 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
         StatementBlock body = accept(n.getTryBlock());
-        ImmutableList<Branch> branches = map(n.getCatchClauses());
+        ImmutableArray<Branch> branches = map(n.getCatchClauses());
         if (n.getFinallyBlock().isPresent()) {
             StatementBlock block = accept(n.getFinallyBlock().get());
             Finally fin = new Finally(block);
             List<Branch> list = branches.toList();
             list.add(fin);
-            branches = ImmutableList.fromList(list);
+            branches = new ImmutableArray<>(list);
         }
         return new Try(pi, c, body, branches, null, 0);
     }
@@ -1378,8 +1529,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         for (VariableDeclarator v : n.getVariables()) {
             varsList.add(visitVariableSpecification(type, v, n));
         }
-        ImmutableList<VariableSpecification> vars = ImmutableList.fromList(varsList);
-        ImmutableList<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
+        ImmutableArray<VariableSpecification> vars = new ImmutableArray<>(varsList);
+        ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
             map(n.getModifiers());
         PositionInfo pi = createPositionInfo(n);
         List<Comment> c = createComments(n);
@@ -1536,8 +1687,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
 
     @Override
     public Object visit(VoidType n, Void arg) {
-        ImmutableList<Annotation> annots = map(n.annotations());
-        return new TypeRef(getKeYJavaType(ResolvedVoidType.INSTANCE), annots, 0);
+        ImmutableArray<Annotation> annots = map(n.annotations());
+        return new TypeRef(getKeYJavaType(ResolvedVoidType.INSTANCE), annots.toImmutableList(), 0);
     }
 
     @Override
@@ -1737,7 +1888,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
             }
         }
 
-        ImmutableList<Expression> args = map(arguments);
+        ImmutableArray<Expression> args = map(arguments);
 
         var fn = switch (name) {
             case "\\all_objects" -> AllObjects;
@@ -1775,10 +1926,10 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         return new DLEmbeddedExpression(pi, c, (JFunction) named, args);
     }
 
-    private ImmutableList<Expression> map(
+    private ImmutableArray<Expression> map(
             Optional<NodeList<com.github.javaparser.ast.expr.Expression>> arguments) {
-        return arguments.<ImmutableList<Expression>>map(this::map)
-                .orElseGet(ImmutableList::nil);
+        return arguments.<ImmutableArray<Expression>>map(this::map)
+                .orElseGet(ImmutableArray::new);
     }
 
     @Override
@@ -1786,7 +1937,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         PositionInfo pi = createPositionInfo(n);
         var c = createComments(n);
         StatementBlock body = accept(n.getExecBlock());
-        ImmutableList<Branch> branches = map(n.getBranches());
+        ImmutableArray<Branch> branches = map(n.getBranches());
         return new Exec(pi, c, body, branches, null, 0);
     }
 
@@ -1870,7 +2021,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     private IProgramMethod resolveMethodSignature(KeYJavaType type, KeyMethodSignature sig,
             KeYJavaType context) {
         final String name = sig.getName().asString();
-        final ImmutableList<TypeReference> params = map(sig.getParamTypes());
+        final ImmutableArray<TypeReference> params = map(sig.getParamTypes());
         List<KeYJavaType> paramTypes = params.stream().map(TypeReference::getKeYJavaType).toList();
         return services.getJavaInfo().getProgramMethod(type, name, paramTypes, context);
     }
@@ -1918,7 +2069,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
          * }
          */
 
-        ImmutableList<? extends Statement> body = map(n.getStatements());
+        ImmutableArray<? extends Statement> body = map(n.getStatements());
         return new ContextStatementBlock(pi, c, body, execContext);
     }
 
@@ -1928,89 +2079,34 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     }
 
     @Override
-    public Object visit(KeyMetaConstructExpression n, Void arg) {
-        String mcName = n.getText();
-        Expression child = accept(n.getChild());
-        return switch (mcName) {
-            case "#create-object" -> new CreateObject(child);
-            case "#isstatic" -> new IsStatic(child);
-            case "#length-reference" -> new ArrayLength(child);
-            default -> reportError(n, "Program meta construct " + mcName + " unknown.");
-        };
-    }
-
-
-    @Override
     public Object visit(KeyMetaConstruct n, Void arg) {
-        String mcName = n.getKind();
-        final ImmutableList<SchemaVariable> labels = map(n.getSchemas());
-        return switch (mcName) {
-            case "#switch-to-if" -> new SwitchToIf(accept(n.getChild()));
-            case "#unwind-loop" ->
-                new UnwindLoop(labels.get(0), labels.get(1), accept(n.getChild()));
-            case "#unpack" -> new Unpack(accept(n.getChild()));
-            case "#forInitUnfoldTransformer" ->
-                new ForInitUnfoldTransformer((ProgramSV) accept(n.getChild()));
-            case "#for-to-while" ->
-                new ForToWhile(labels.get(0), labels.get(1), accept(n.getChild()));
-            case "#enhancedfor-elim" -> {
-                EnhancedFor efor = acceptn(n.getChild());
-                if (efor == null) {
-
-                    yield reportError(n,
-                        "#enhancedfor-elim requires an enhanced for loop as argument");
-                }
-
-                ProgramSV execSV = null;
-                for (SchemaVariable programSV : labels) {
-                    if (((OperatorSV) programSV).sort() == ProgramSVSort.EXECUTIONCONTEXT) {
-                        execSV = (ProgramSV) programSV;
-                        break;
-                    }
-                }
-                yield new EnhancedForElimination(execSV, efor);
-            }
-            case "#do-break" -> new DoBreak(accept(n.getChild()));
-            case "#expand-method-body" ->
-                new ExpandMethodBody((SchemaVariable) accept(n.getChild()));
-            case "#method-call" -> {
-                ProgramSV execSV = null;
-                ProgramSV returnSV = null;
-                for (int i = 0; i < labels.size(); i++) {
-                    final OperatorSV sv = (OperatorSV) labels.get(i);
-                    if (sv.sort() == ProgramSVSort.VARIABLE) {
-                        returnSV = (ProgramSV) sv;
-                    }
-                    if (sv.sort() == ProgramSVSort.EXECUTIONCONTEXT) {
-                        execSV = (ProgramSV) sv;
-                    }
-                }
-                yield new MethodCall(execSV, returnSV, accept(n.getChild()));
-            }
-            case "#evaluate-arguments" -> new EvaluateArgs(accept(n.getChild()));
-            case "#constructor-call" -> new ConstructorCall(labels.get(0), accept(n.getChild()));
-            case "#special-constructor-call" -> new SpecialConstructorCall(accept(n.getChild()));
-            case "#post-work" -> new PostWork((SchemaVariable) accept(n.getChild()));
-            case "#static-initialisation" -> new StaticInitialisation(accept(n.getChild()));
-            case "#resolve-multiple-var-decl" ->
-                new MultipleVarDecl((SchemaVariable) n.getChild().accept(this, arg));
-            case "#array-post-declaration" ->
-                new ArrayPostDecl((SchemaVariable) n.getChild().accept(this, arg));
-            case "#init-array-creation" ->
-                new InitArrayCreation(labels.get(0), accept(n.getChild()));
-            case "#reattachLoopInvariant" -> new ReattachLoopInvariant(accept(n.getChild()));
-            default -> reportError(n, "Program meta construct " + n.getKind() + " unknown.");
-        };
+        final String kind = n.getKind();
+        final Class<? extends ProgramTransformer> transformer =
+            ProgramTransformerRegistry.byName(kind);
+        if (transformer == null) {
+            return reportError(n, "Program meta construct " + kind + " unknown or unsupported.");
+        }
+        // One child per comma-separated argument: bare schema variables resolve to
+        // SchemaVariables, statements and expressions are converted as usual.
+        final ImmutableArray<Object> converted = map(n.getChildren());
+        final List<Object> args = new ArrayList<>(converted.size());
+        for (Object a : converted) {
+            args.add(a);
+        }
+        return instantiate(transformer, args, n);
     }
 
     @Override
     public Object visit(KeyMetaConstructType n, Void arg) {
-        Expression child = accept(n.getExpr());
-        if ("#typeof".equals(n.getKind())) {
-            return new TypeOf(child);
-        } else {
-            return reportError(n, "Program meta construct " + n.getKind() + " unknown.");
+        final Class<? extends ProgramTransformer> transformer =
+            ProgramTransformerRegistry.expressionByName(n.getKind());
+        if (transformer == null) {
+            return reportError(n,
+                "Program meta construct " + n.getKind() + " unknown or unsupported.");
         }
+        final List<Object> args = new ArrayList<>(1);
+        args.add(accept(n.getExpr()));
+        return instantiate(transformer, args, n);
     }
 
 
@@ -2050,9 +2146,9 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         ProgramElementName name = createProgramElementName(n.getName());
         ProgramElementName fullName = new ProgramElementName(n.getFullyQualifiedName().get());
         boolean isLibrary = mapping.isParsingLibraries();
-        ImmutableList<de.uka.ilkd.key.java.ast.declaration.Modifier> modArray =
+        ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modArray =
             map(n.getModifiers());
-        ImmutableList<MemberDeclaration> members = map(n.getMembers());
+        ImmutableArray<MemberDeclaration> members = map(n.getMembers());
         boolean parentIsInterface = false;
 
         TypeDeclaration td = new AnnotationInterfaceDeclaration(
@@ -2072,7 +2168,7 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
         }
 
         TypeReference typeRef = requireTypeReference(n.getType());
-        ImmutableList<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
+        ImmutableArray<de.uka.ilkd.key.java.ast.declaration.Modifier> modifiers =
             map(n.getModifiers());
         ProgramElementName name = createProgramElementName(n.getName());
         var decl = new AnnotationInterfaceMemberDeclaration(typeRef, name, modifiers);
@@ -2185,8 +2281,8 @@ class JP2KeYVisitor extends GenericVisitorAdapter<Object, Void> {
     @Override
     public Object visit(VarType n, Void arg) {
         var kjt = getKeYJavaType(n.resolve());
-        ImmutableList<Annotation> annots = map(n.getAnnotations());
-        return new TypeRef(kjt, annots, 0);
+        ImmutableArray<Annotation> annots = map(n.getAnnotations());
+        return new TypeRef(kjt, annots.toImmutableList(), 0);
     }
 
     @Override

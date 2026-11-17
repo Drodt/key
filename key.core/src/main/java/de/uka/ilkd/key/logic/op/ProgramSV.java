@@ -28,6 +28,7 @@ import de.uka.ilkd.key.speclang.HeapContext;
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.UpdateableOperator;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.parsing.Position;
 
@@ -42,8 +43,8 @@ public final class ProgramSV extends JOperatorSV
         implements ProgramConstruct, UpdateableOperator {
     public static final Logger LOGGER = LoggerFactory.getLogger(ProgramSV.class);
 
-    private static final ImmutableList<ProgramElement> EMPTY_LIST_INSTANTIATION =
-        ImmutableList.fromArray(new ProgramElement[0]);
+    private static final ImmutableArray<ProgramElement> EMPTY_LIST_INSTANTIATION =
+        new ImmutableArray<>(new ProgramElement[0]);
 
     private final boolean isListSV;
 
@@ -167,12 +168,12 @@ public final class ProgramSV extends JOperatorSV
     }
 
     @Override
-    public ImmutableList<Expression> getUpdates() {
+    public ImmutableArray<Expression> getUpdates() {
         return null;
     }
 
     @Override
-    public ImmutableList<LoopInitializer> getInits() {
+    public ImmutableArray<LoopInitializer> getInits() {
         return null;
     }
 
@@ -263,7 +264,9 @@ public final class ProgramSV extends JOperatorSV
      * @return the updated match conditions including mapping <code>var</code> to <code>list</code>
      *         or null if some variable condition would be hurt by the mapping
      */
-    private MatchConditions addProgramInstantiation(ImmutableList<ProgramElement> list,
+    @SuppressWarnings("unchecked") // the stored instantiation was put with this schema variable's
+    // element type; the runtime element type of insts cannot be checked statically
+    private MatchConditions addProgramInstantiation(ImmutableArray<ProgramElement> list,
             MatchConditions matchCond,
             Services services) {
         if (matchCond == null) {
@@ -271,7 +274,7 @@ public final class ProgramSV extends JOperatorSV
         }
 
         SVInstantiations insts = matchCond.getInstantiations();
-        final var pl = (ImmutableList<ProgramElement>) insts.getInstantiation(this);
+        final var pl = (ImmutableArray<ProgramElement>) insts.getInstantiation(this);
         if (pl != null) {
             if (pl.equals(list)) {
                 return matchCond;
@@ -308,8 +311,7 @@ public final class ProgramSV extends JOperatorSV
             src = source.getSource();
         }
 
-        return addProgramInstantiation(ImmutableList.fromList(matchedElements), matchCond,
-            services);
+        return addProgramInstantiation(new ImmutableArray<>(matchedElements), matchCond, services);
     }
 
     /**
@@ -470,7 +472,7 @@ public final class ProgramSV extends JOperatorSV
     }
 
     @Override
-    public ImmutableList<ParameterDeclaration> getParameters() {
+    public ImmutableArray<ParameterDeclaration> getParameters() {
         return null;
     }
 
@@ -505,12 +507,12 @@ public final class ProgramSV extends JOperatorSV
     }
 
     @Override
-    public ImmutableList<Modifier> getModifiers() {
+    public ImmutableArray<Modifier> getModifiers() {
         return null;
     }
 
     @Override
-    public ImmutableList<KeYJavaType> getParamTypes() {
+    public ImmutableArray<KeYJavaType> getParamTypes() {
         return null;
     }
 

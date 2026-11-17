@@ -34,6 +34,7 @@ import de.uka.ilkd.key.rule.inst.SVInstantiations;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /**
@@ -43,14 +44,21 @@ import org.key_project.util.collection.ImmutableList;
  *
  * This meta construct delivers the creation expression
  */
+@TransformerMeta(name = "#initArrayCreation")
 public class InitArrayCreation extends InitArray {
 
     private final SchemaVariable newObjectSV;
     private final static String createArrayName = "$createArray";
 
     public InitArrayCreation(SchemaVariable newObjectSV, ProgramElement newExpr) {
-        super("init-array-creation", newExpr);
+        super("#initArrayCreation", newExpr);
         this.newObjectSV = newObjectSV;
+    }
+
+    @Override
+    public ImmutableList<ProgramElement> getArguments() {
+        return newObjectSV == null ? ImmutableList.of(body())
+                : ImmutableList.of((ProgramElement) newObjectSV, body());
     }
 
     /**
@@ -85,7 +93,7 @@ public class InitArrayCreation extends InitArray {
      * @param services the Services object
      */
     private ProgramVariable[] evaluateAndCheckDimensionExpressions(LinkedList<Statement> bodyStmnts,
-            ImmutableList<Expression> dimExpr, Services services) {
+            ImmutableArray<Expression> dimExpr, Services services) {
 
         Expression checkDimensions = BooleanLiteral.FALSE;
         ProgramVariable[] pvars = new ProgramVariable[dimExpr.size()];

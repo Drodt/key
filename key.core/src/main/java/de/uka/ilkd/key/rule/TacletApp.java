@@ -26,8 +26,6 @@ import de.uka.ilkd.key.proof.VariableNameProposer;
 import de.uka.ilkd.key.rule.inst.GenericSortCondition;
 import de.uka.ilkd.key.rule.inst.GenericSortException;
 import de.uka.ilkd.key.rule.inst.SVInstantiations.UpdateLabelPair;
-import de.uka.ilkd.key.strategy.BuiltInRuleAppContainer;
-import de.uka.ilkd.key.strategy.TacletAppContainer;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.*;
@@ -37,11 +35,9 @@ import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.prover.proof.ProofGoal;
-import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.rules.instantiation.*;
 import org.key_project.prover.sequent.*;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
@@ -50,7 +46,7 @@ import org.jspecify.annotations.Nullable;
 import static org.key_project.logic.op.Function.FunctionKind.*;
 
 /**
- * A TacletApp object contains information required for a concrete application. These information
+ * A ITacletApp object contains information required for a concrete application. These information
  * may consist of
  * <ul>
  * <li>instantiations of the schemavariables</li>
@@ -60,7 +56,7 @@ import static org.key_project.logic.op.Function.FunctionKind.*;
  * the information is complete or at least sufficient (can be completed using meta variables)
  * complete, so that is can be applied.
  */
-public abstract class TacletApp implements RuleApp {
+public abstract class TacletApp implements ITacletApp {
     public static final AtomicLong PERF_EXECUTE = new AtomicLong();
     public static final AtomicLong PERF_SET_SEQUENT = new AtomicLong();
     public static final AtomicLong PERF_PRE = new AtomicLong();
@@ -96,7 +92,7 @@ public abstract class TacletApp implements RuleApp {
     protected boolean updateContextFixed = false;
 
     /**
-     * constructs a TacletApp for the given taclet, with an empty instantiation map
+     * constructs a ITacletApp for the given taclet, with an empty instantiation map
      */
     TacletApp(org.key_project.prover.rules.Taclet taclet) {
         this(taclet, de.uka.ilkd.key.rule.inst.SVInstantiations.EMPTY_SVINSTANTIATIONS, null);
@@ -272,7 +268,8 @@ public abstract class TacletApp implements RuleApp {
      *        SchemaVariables
      * @return true iff the instantiation of a Bound Schemavariable contains the given Logicvariable
      */
-    private static boolean contains(ImmutableList<QuantifiableVariable> boundVars,
+    @SuppressWarnings("deprecation") // bound-schema-variable matching uses deprecated API elements
+    private static boolean contains(ImmutableArray<QuantifiableVariable> boundVars,
             LogicVariable x,
             SVInstantiations insts) {
         for (int i = 0; i < boundVars.size(); i++) {
@@ -427,6 +424,11 @@ public abstract class TacletApp implements RuleApp {
         return missingSorts;
     }
 
+    @Override
+    public ITacletApp addCheckedInstantiation(SchemaVariable sv, Term term, LogicServices services,
+            boolean interesting) {
+        return addCheckedInstantiation(sv, (JTerm) term, (Services) services, interesting);
+    }
 
     /**
      * creates a new Tacletapp where the SchemaVariable sv is instantiated with the given term.
@@ -437,7 +439,7 @@ public abstract class TacletApp implements RuleApp {
      * @param services the services object
      * @param interesting whether instantiations for this schema variable should be kept in the list
      *        of "interesting" instantiations
-     * @return the new TacletApp
+     * @return the new ITacletApp
      */
     public TacletApp addCheckedInstantiation(SchemaVariable sv, JTerm term, Services services,
             boolean interesting) {
@@ -471,6 +473,7 @@ public abstract class TacletApp implements RuleApp {
      *
      * @return ImmutableSet<SchemaVariable> with SchemaVariables that have not been instantiated yet
      */
+    @Override
     public @NonNull ImmutableSet<SchemaVariable> uninstantiatedVars() {
         return calculateNonInstantiatedSV();
     }
@@ -518,7 +521,7 @@ public abstract class TacletApp implements RuleApp {
     }
 
     /**
-     * @return A TacletApp with this.sufficientlyComplete() or null
+     * @return A ITacletApp with this.sufficientlyComplete() or null
      */
     public final @Nullable TacletApp tryToInstantiate(Services services) {
         TacletApp app = instantiationHelper(true, services);
@@ -700,7 +703,6 @@ public abstract class TacletApp implements RuleApp {
      * later (by "createSkolemFunctions") be replaced by a function having the occurring
      * metavariables as arguments
      *
-     * @param services the Services class allowing access to the type model
      */
     public TacletApp createSkolemConstant(String instantiation, JOperatorSV sv,
             boolean interesting, Goal goal) {
@@ -790,7 +792,7 @@ public abstract class TacletApp implements RuleApp {
     }
 
     /**
-     * adds a new instantiation to this TacletApp. This method does not check (beside some very
+     * adds a new instantiation to this ITacletApp. This method does not check (beside some very
      * rudimentary tests) if the instantiation is possible. If you cannot guarantee that adding the
      * entry <code>(sv, se)</code> will result in a valid taclet instantiation, you have to use
      * {@link #addCheckedInstantiation(SchemaVariable, ProgramElement, Services, boolean)} instead
@@ -927,7 +929,7 @@ public abstract class TacletApp implements RuleApp {
             return ImmutableList.<TacletApp>singleton(this);
         }
 
-        return findAssumesFormulaInstantiationsHelp(
+        return findIfFormulaInstantiationsHelp(
             createSemisequentList(taclet().assumesSequent().succedent()),
             createSemisequentList(taclet().assumesSequent().antecedent()),
             AssumesFormulaInstSeq.createList(seq, false, services),
@@ -936,7 +938,7 @@ public abstract class TacletApp implements RuleApp {
     }
 
     /**
-     * Recursive function for matching the remaining tail of an assumes sequent
+     * Recursive function for matching the remaining tail of an if sequent
      *
      * @param ruleSuccTail tail of the current uninstantiated semisequent as list (i.e. if
      *        succedent)
@@ -951,11 +953,12 @@ public abstract class TacletApp implements RuleApp {
      *        program model
      * @return a list of tacletapps with the found if formula instantiations
      */
-    private ImmutableList<TacletApp> findAssumesFormulaInstantiationsHelp(
+    @SuppressWarnings("deprecation") // assume-formula instantiations reference deprecated elements
+    private ImmutableList<TacletApp> findIfFormulaInstantiationsHelp(
             ImmutableList<SequentFormula> ruleSuccTail,
             ImmutableList<SequentFormula> ruleAntecTail,
-            ImmutableList<AssumesFormulaInstantiation> instSucc,
-            ImmutableList<AssumesFormulaInstantiation> instAntec,
+            ImmutableArray<AssumesFormulaInstantiation> instSucc,
+            ImmutableArray<AssumesFormulaInstantiation> instAntec,
             ImmutableList<AssumesFormulaInstantiation> instAlreadyMatched,
             MatchResultInfo matchCond,
             Services services) {
@@ -987,10 +990,9 @@ public abstract class TacletApp implements RuleApp {
         Iterator<MatchResultInfo> itMC = mr.matchConditions().iterator();
         ruleSuccTail = ruleSuccTail.tail();
         for (final AssumesFormulaInstantiation instantiationCandidate : mr.candidates()) {
-            res = res.prepend(
-                findAssumesFormulaInstantiationsHelp(ruleSuccTail, ruleAntecTail, instSucc,
-                    instAntec, instAlreadyMatched.prepend(instantiationCandidate),
-                    itMC.next(), services));
+            res = res.prepend(findIfFormulaInstantiationsHelp(ruleSuccTail, ruleAntecTail, instSucc,
+                instAntec, instAlreadyMatched.prepend(instantiationCandidate),
+                itMC.next(), services));
         }
 
         return res;
@@ -1008,18 +1010,19 @@ public abstract class TacletApp implements RuleApp {
     }
 
     /**
-     * returns a new PosTacletApp that is equal to this TacletApp except that the position is set to
+     * returns a new PosTacletApp that is equal to this ITacletApp except that the position is set
+     * to
      * the given PosInOccurrence.
      *
      * <p>
      * <b>CAUTION:</b> If you call this method, consider to call
      * {@link NoPosTacletApp#matchFind(PosInOccurrence, LogicServices)}
      * first (if applicable) as
-     * otherwise the TacletApp may become invalid. (This happened sometimes during interactive
+     * otherwise the ITacletApp may become invalid. (This happened sometimes during interactive
      * proofs).
      *
      * @param pos the PosInOccurrence of the newl created PosTacletApp
-     * @return the new TacletApp
+     * @return the new ITacletApp
      */
     public PosTacletApp setPosInOccurrence(PosInOccurrence pos,
             Services services) {
@@ -1033,12 +1036,13 @@ public abstract class TacletApp implements RuleApp {
     /**
      * @return true iff the if-instantiation list is not null or no if sequent is needed
      */
+    @Override
     public boolean assumesInstantionsComplete() {
         return assumesFormulaInstantiations != null || taclet().assumesSequent().isEmpty();
     }
 
     /**
-     * compares the given Object with this one and returns true iff both are from type TacletApp
+     * compares the given Object with this one and returns true iff both are from type ITacletApp
      * with equal taclets, instantiations and positions.
      */
     @Override
@@ -1073,12 +1077,13 @@ public abstract class TacletApp implements RuleApp {
 
     /**
      * checks if there are name conflicts (i.e. there are two matched bound SchemaVariable that are
-     * matched to variables with an equal name); if yes a new TacletApp is returned that equals this
-     * TacletApp except that the name conflict is resolved by replacing the instantiation of one of
+     * matched to variables with an equal name); if yes a new ITacletApp is returned that equals
+     * this
+     * ITacletApp except that the name conflict is resolved by replacing the instantiation of one of
      * the conflict-causing SchemaVariables by a bound SchemaVariable with a new name; if the check
-     * is negative, the same TacletApp is returned.
+     * is negative, the same ITacletApp is returned.
      *
-     * @return a conflict resolved TacletApp, remainder equal to this TacletApp
+     * @return a conflict resolved ITacletApp, remainder equal to this ITacletApp
      */
     public TacletApp prepareUserInstantiation(Services services) {
         TacletApp result = this;
@@ -1095,7 +1100,7 @@ public abstract class TacletApp implements RuleApp {
 
     /**
      * creates a new variable namespace by adding names of the instantiations of the schema
-     * variables in the context of the given schema variable and (if the TacletApp's prefix has the
+     * variables in the context of the given schema variable and (if the ITacletApp's prefix has the
      * context flag set) by adding names of the logic variables of the context.
      *
      * @param sv the schema variable to be considered
@@ -1297,15 +1302,4 @@ public abstract class TacletApp implements RuleApp {
         return result;
     }
 
-    @Override
-    public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
-            ProofGoal<G> goal, boolean initial) {
-        if (this instanceof NoPosTacletApp npa)
-            return TacletAppContainer.createAppContainers(npa, pos, (Goal) goal);
-        if (this instanceof IBuiltInRuleApp ba) {
-            return BuiltInRuleAppContainer.createAppContainer(ba, pos,
-                goal);
-        }
-        throw new UnsupportedOperationException("Not supported for taclet app " + getClass());
-    }
 }

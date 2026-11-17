@@ -20,7 +20,7 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Node;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.rule.merge.MergeRule;
-import de.uka.ilkd.key.strategy.Strategy;
+import de.uka.ilkd.key.strategy.JavaStrategy;
 import de.uka.ilkd.key.util.mergerule.MergeRuleUtils;
 
 import org.key_project.logic.Name;
@@ -31,6 +31,8 @@ import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.prover.strategy.Strategy;
+import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -41,7 +43,8 @@ import org.jspecify.annotations.NonNull;
  * more modality on the sequent.
  * <p>
  *
- * This is done by implementing a delegation {@link Strategy} which assigns to any rule application
+ * This is done by implementing a delegation {@link JavaStrategy} which assigns to any rule
+ * application
  * infinite costs if there is no modality on the sequent.
  *
  * @author Mattias Ulbrich
@@ -258,9 +261,9 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
         private HashSet<ProgramElement> findMergePoints(StatementBlock toSearch,
                 Services services) {
             HashSet<ProgramElement> result = new HashSet<>();
-            ImmutableList<? extends Statement> stmts = toSearch.getBody();
+            ImmutableArray<? extends Statement> stmts = toSearch.getBody();
 
-            if (!stmts.isEmpty()) {
+            if (stmts.size() > 0) {
                 // Recursive step: Go deeper in the first statement
                 // (the other statements will be objects to future
                 // rule applications) and try to find breakpoints.
@@ -308,7 +311,7 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
          * Visitor for finding out whether there is a break statement contained in a program
          * element.
          */
-        private static class FindBreakVisitor extends JavaASTVisitor {
+        private class FindBreakVisitor extends JavaASTVisitor {
             private boolean containsBreak = false;
 
             public FindBreakVisitor(ProgramElement root, Services services) {
@@ -431,13 +434,13 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
         private LinkedList<StatementBlock> getBodies(Try elem) {
             LinkedList<StatementBlock> result = new LinkedList<>();
 
-            if (elem != null) {
+            if (elem instanceof Try) {
                 StatementBlock tryBody = elem.getBody();
-                if (tryBody != null) {
+                if (tryBody instanceof StatementBlock) {
                     result.add(tryBody);
                 }
 
-                ImmutableList<Branch> branches = elem.getBranchList();
+                ImmutableArray<Branch> branches = elem.getBranchList();
                 for (Branch branch : branches) {
                     result.addAll(getBodies(branch));
                 }
@@ -456,7 +459,7 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
             LinkedList<StatementBlock> result = new LinkedList<>();
 
             StatementBlock catchBody = elem.getBody();
-            if (catchBody != null) {
+            if (catchBody instanceof StatementBlock) {
                 result.add(catchBody);
             }
 
@@ -473,7 +476,7 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
             LinkedList<StatementBlock> result = new LinkedList<>();
 
             StatementBlock finallyBody = elem.getBody();
-            if (finallyBody != null) {
+            if (finallyBody instanceof StatementBlock) {
                 result.add(finallyBody);
             }
 
@@ -490,7 +493,7 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
             LinkedList<StatementBlock> result = new LinkedList<>();
 
             StatementBlock methodFrameBody = elem.getBody();
-            if (methodFrameBody != null) {
+            if (methodFrameBody instanceof StatementBlock) {
                 result.add(methodFrameBody);
             }
 
@@ -506,7 +509,7 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
         private LinkedList<StatementBlock> getBodies(Case elem) {
             LinkedList<StatementBlock> result = new LinkedList<>();
 
-            ImmutableList<Statement> caseBodies = elem.getBody();
+            ImmutableArray<Statement> caseBodies = elem.getBody();
             for (Statement body : caseBodies) {
                 if (body instanceof StatementBlock) {
                     result.add((StatementBlock) body);
@@ -577,7 +580,7 @@ public class FinishSymbolicExecutionUntilMergePointMacro extends StrategyProofMa
             LinkedList<StatementBlock> result = new LinkedList<>();
 
             StatementBlock thenBody = elem.getBody();
-            if (thenBody != null) {
+            if (thenBody instanceof StatementBlock) {
                 result.add(thenBody);
             }
 

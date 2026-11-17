@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 public class PerfScope {
     private static final Logger LOGGER = LoggerFactory.getLogger(PerfScope.class);
+    @SuppressWarnings({ "unchecked", "rawtypes" }) // generic array creation requires the raw Pair
+    // array type; the element type Pair<String, AtomicLong> is fixed by the initializer
     private static final Pair<String, AtomicLong>[] PERF_COUNTERS = new Pair[] {
         new Pair<>("JavaCardDLStrategy approve", JavaCardDLStrategy.PERF_APPROVE),
         new Pair<>("JavaCardDLStrategy instantiate", JavaCardDLStrategy.PERF_INSTANTIATE),
@@ -47,9 +49,9 @@ public class PerfScope {
         new Pair<>("Semi Taclet app index update update", SemisequentTacletAppIndex.PERF_UPDATE),
         new Pair<>("Taclet app index create all", TacletAppIndex.PERF_CREATE_ALL),
         new Pair<>("Goal update listeners", Goal.PERF_UPDATE_LISTENERS),
-        new Pair<>("TacletApp execute", TacletApp.PERF_EXECUTE),
-        new Pair<>("TacletApp pre", TacletApp.PERF_PRE),
-        new Pair<>("TacletApp Goal setSequent", TacletApp.PERF_SET_SEQUENT),
+        new Pair<>("ITacletApp execute", TacletApp.PERF_EXECUTE),
+        new Pair<>("ITacletApp pre", TacletApp.PERF_PRE),
+        new Pair<>("ITacletApp Goal setSequent", TacletApp.PERF_SET_SEQUENT),
         new Pair<>("NoFindTacletExecutor apply", NoFindTacletExecutor.PERF_APPLY),
         new Pair<>("NoFindTacletExecutor setSequent", NoFindTacletExecutor.PERF_SET_SEQUENT),
         new Pair<>("NoFindTacletExecutor term labels", NoFindTacletExecutor.PERF_TERM_LABELS),
