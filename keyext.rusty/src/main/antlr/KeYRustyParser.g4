@@ -77,9 +77,9 @@ parametric_sort_decl
 ;
 
 formal_sort_param_decls
-: OPENTYPEPARAMS
+: LESS
       formal_sort_param_decl (COMMA formal_sort_param_decl)*
-      CLOSETYPEPARAMS ;
+      GREATER ;
 
 formal_sort_param_decl
 :
@@ -116,12 +116,12 @@ sortId
 
 formal_sort_args
 :
-    OPENTYPEPARAMS
+    LESS
     formal_sort_arg (COMMA formal_sort_arg)*
-    CLOSETYPEPARAMS
+    (GREATER | GREATER_CONTD)
 ;
 
-formal_sort_arg : sortId | CONST term ;
+formal_sort_arg : sortId | CONST LPAREN term RPAREN;
 
 func_decl
 :

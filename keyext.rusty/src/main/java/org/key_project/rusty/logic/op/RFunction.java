@@ -104,7 +104,7 @@ public class RFunction extends Function {
         }
         final Sort s = sub.sort();
         final Sort argSort = argSort(at);
-        // A generic argument sort (e.g. the `E` of a parametric `ghost<[E]>`) accepts any term: the
+        // A generic argument sort (e.g. the `E` of a parametric `ghost<E>`) accepts any term: the
         // generic is bound to a concrete sort at application time, where matching does the check.
         return argSort instanceof GenericSort
                 || s == RustyDLTheory.ANY

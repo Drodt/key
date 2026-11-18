@@ -63,7 +63,6 @@ public class TacletPrefixBuilder {
             SchemaVariable v = it.next();
             if (v == sv) {
                 result -= 1;
-                break;
             }
         }
         return Math.max(0, result);

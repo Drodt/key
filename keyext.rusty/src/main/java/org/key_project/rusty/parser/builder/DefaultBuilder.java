@@ -266,7 +266,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
     protected ImmutableList<GenericArgument> getParamSortArgs(
             KeYRustyParser.Formal_sort_argsContext ctx, ImmutableList<GenericParameter> params) {
         if (ctx.formal_sort_arg().size() != params.size()) {
-            semanticError(ctx, "Expected %d sort arguments, got only %d",
+            semanticError(ctx, "Expected %d sort arguments, got %d",
                 params.size(), ctx.formal_sort_arg().size());
         }
         List<GenericArgument> args = new LinkedList<>();

@@ -10,7 +10,6 @@ import org.key_project.prover.rules.matcher.compiler.BinderMatcher;
 import org.key_project.prover.rules.matcher.vm.instruction.MatchInstruction;
 import org.key_project.rusty.rule.MatchConditions;
 import org.key_project.util.collection.ImmutableArray;
-import org.key_project.util.collection.ImmutableList;
 
 import static org.key_project.rusty.rule.match.instructions.RustyDLMatchVMInstructionSet.matchAndBindVariables;
 
@@ -28,7 +27,7 @@ public final class RustBinderMatcher implements BinderMatcher {
     @SuppressWarnings("unchecked")
     @Override
     public MatchInstruction binder(ImmutableArray<? extends QuantifiableVariable> boundVars) {
-        return matchAndBindVariables((ImmutableList<QuantifiableVariable>) boundVars);
+        return matchAndBindVariables((ImmutableArray<QuantifiableVariable>) boundVars);
     }
 
     @Override

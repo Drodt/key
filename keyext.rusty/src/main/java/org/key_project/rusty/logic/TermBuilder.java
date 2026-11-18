@@ -55,7 +55,7 @@ public class TermBuilder {
 
     private static final Name CAST_NAME = new Name("cast");
 
-    /// Builds `cast<[sort]>(term)`, reinterpreting `term` as `sort` via the parametric `cast`
+    /// Builds `cast<sort>(term)`, reinterpreting `term` as `sort` via the parametric `cast`
     /// function (see cast.key). Returns `term` unchanged when it already has that sort, or when the
     /// `cast` operator is not declared.
     public Term cast(Sort sort, Term term) {

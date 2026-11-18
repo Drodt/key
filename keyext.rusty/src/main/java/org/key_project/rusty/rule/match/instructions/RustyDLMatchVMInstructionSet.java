@@ -15,7 +15,7 @@ import org.key_project.rusty.logic.op.sv.ModalOperatorSV;
 import org.key_project.rusty.logic.op.sv.ProgramSV;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.logic.sort.*;
-import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableArray;
 
 /// The factory for the Java-DL match instructions: static creation methods for every instruction
 /// kind used when a find pattern's matcher is built (schema variables by kind, term labels,
@@ -66,7 +66,7 @@ public class RustyDLMatchVMInstructionSet {
     }
 
     public static MatchInstruction matchAndBindVariables(
-            ImmutableList<QuantifiableVariable> boundVars) {
+            ImmutableArray<QuantifiableVariable> boundVars) {
         return new BindVariablesInstruction(boundVars);
     }
 

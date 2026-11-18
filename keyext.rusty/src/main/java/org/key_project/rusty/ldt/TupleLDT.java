@@ -20,35 +20,25 @@ import org.jspecify.annotations.Nullable;
 public class TupleLDT extends ParametricLDT {
     public static final Name NAME = new Name("Tuple");
 
-    private final ParametricSortDecl[] tupleSorts = new ParametricSortDecl[12];
-    private final ParametricFunctionDecl[] tupleFunctions = new ParametricFunctionDecl[12];
-    private final ParametricFunctionDecl[] fieldFunctions = new ParametricFunctionDecl[12];
+    private final ParametricFunctionDecl tupleFunction;
+    private final ParametricFunctionDecl fieldFunction;
 
-    public TupleLDT(Services services) {
-        super(NAME, services);
+    public TupleLDT(int size, Services services) {
+        super(new Name(NAME.toString() + size), services);
 
-        var paraSorts = services.getNamespaces().parametricSorts();
+        assert size >= 0;
+
         var paraFns = services.getNamespaces().parametricFunctions();
-
-        for (int i = 0; i < 12; i++) {
-            tupleSorts[i] = paraSorts.lookup("Tuple" + (i + 1));
-
-            tupleFunctions[i] = paraFns.lookup("tpl" + (i + 1));
-
-            fieldFunctions[i] = paraFns.lookup("Tuple$" + i);
-        }
+        tupleFunction = paraFns.lookup("tpl" + size);
+        fieldFunction = paraFns.lookup("Tuple$" + size);
     }
 
-    public @NonNull ParametricSortDecl getTupleSort(int i) {
-        return tupleSorts[i];
+    public @NonNull ParametricFunctionDecl getTupleFunction() {
+        return tupleFunction;
     }
 
-    public @NonNull ParametricFunctionDecl getTupleFunction(int i) {
-        return tupleFunctions[i];
-    }
-
-    public @NonNull ParametricFunctionDecl getFieldFunctions(int i) {
-        return fieldFunctions[i];
+    public @NonNull ParametricFunctionDecl getFieldFunctions() {
+        return fieldFunction;
     }
 
     @Override

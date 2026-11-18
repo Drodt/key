@@ -34,19 +34,16 @@ public abstract class ParametricLDT extends AbstractLDT {
         }
     }
 
-    /*
-     * Use this method to instantiate all LDTs. It returns a map that takes as input the name of an
-     * LDT and returns an instance of the corresponding LDT.
-     *
-     * Is it possible to implement LDTs as singletons? (Kai Wallisch 04/2014)
-     */
     public static Map<Name, ParametricLDT> getNewLDTInstances(Services s) {
         // TreeMap ensures the map is sorted according to the natural order of its keys.
         Map<Name, ParametricLDT> ret = new TreeMap<>();
 
         ret.put(ArrayLDT.NAME, new ArrayLDT(s));
         ret.put(FieldLDT.NAME, new FieldLDT(s));
-        ret.put(TupleLDT.NAME, new TupleLDT(s));
+        for (int i = 1; i <= 12; ++i) {
+            var t = new TupleLDT(i, s);
+            ret.put(t.name(), t);
+        }
         ret.put(SRefLDT.NAME, new SRefLDT(s));
         ret.put(MRefLDT.NAME, new MRefLDT(s));
         ret.put(GhostLDT.NAME, new GhostLDT(s));
@@ -60,9 +57,7 @@ public abstract class ParametricLDT extends AbstractLDT {
         return "Parametric LDT " + name() + " (" + targetSort() + ")";
     }
 
-    /**
-     * Returns the sort associated with the LDT.
-     */
+    /// Returns the sort associated with the LDT.
     public final ParametricSortDecl targetSort() {
         return sort;
     }

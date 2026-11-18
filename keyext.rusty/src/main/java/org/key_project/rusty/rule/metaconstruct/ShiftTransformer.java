@@ -13,7 +13,6 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 
 
 public class ShiftTransformer extends AbstractTermTransformer {
-
     public ShiftTransformer() {
         super(new Name("#logicShift"), 2);
     }

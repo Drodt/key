@@ -42,11 +42,11 @@ public class TupleType implements Type {
     private TupleType(List<Type> types, Services services) {
         this.types = types;
 
-        var tupleLDT = services.getLDTs().getTupleLDT();
+        var ldts = services.getLDTs();
         var fields = new Field[types.size()];
         var name = new StringBuilder().append('(');
         for (int i = 0; i < types.size(); i++) {
-            var fn = tupleLDT.getFieldFunctions(i);
+            var fn = ldts.getTupleLDT(i).getFieldFunctions();
             Type type = types.get(i);
             name.append(type.name());
             if (i != types.size() - 1) {

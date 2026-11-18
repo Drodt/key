@@ -24,7 +24,7 @@ public class LDTs implements Iterable<AbstractLDT> {
     private final NeverLDT neverLDT;
     private final ArrayLDT arrayLDT;
     private final FieldLDT fieldLDT;
-    private final TupleLDT tupleLDT;
+    private final TupleLDT[] tupleLDTs;
     private final SRefLDT sRefLDT;
     private final MRefLDT mRefLDT;
     private final GhostLDT ghostLDT;
@@ -45,7 +45,10 @@ public class LDTs implements Iterable<AbstractLDT> {
         map.putAll(ParametricLDT.getNewLDTInstances(services));
         arrayLDT = (ArrayLDT) map.get(ArrayLDT.NAME);
         fieldLDT = (FieldLDT) map.get(FieldLDT.NAME);
-        tupleLDT = (TupleLDT) map.get(TupleLDT.NAME);
+        tupleLDTs = new TupleLDT[12];
+        for (int i = 0; i < 12; ++i) {
+            tupleLDTs[i] = (TupleLDT) map.get(new Name(TupleLDT.NAME.toString() + (i + 1)));
+        }
         sRefLDT = (SRefLDT) map.get(SRefLDT.NAME);
         mRefLDT = (MRefLDT) map.get(MRefLDT.NAME);
         ghostLDT = (GhostLDT) map.get(GhostLDT.NAME);
@@ -80,8 +83,8 @@ public class LDTs implements Iterable<AbstractLDT> {
         return fieldLDT;
     }
 
-    public TupleLDT getTupleLDT() {
-        return tupleLDT;
+    public TupleLDT getTupleLDT(int i) {
+        return tupleLDTs[i - 1];
     }
 
     public SRefLDT getsRefLDT() {

@@ -25,9 +25,6 @@ DROP_EFFECTLESS_MUTATING: '\\dropEffectlessMutating';
 APPLY_ELEMENTARIES_ON_DEREF_M: '\\applyElementariesOnDerefM';
 NEW_DEPENDING_ON: '\\newDependingOn';
 
-OPENTYPEPARAMS:'<' '[';
-CLOSETYPEPARAMS:']' '>';
-
 CONST : 'const';
 
 SORT: '\\sort';
