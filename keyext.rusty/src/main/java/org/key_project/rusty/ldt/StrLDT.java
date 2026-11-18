@@ -47,9 +47,4 @@ public class StrLDT extends LDT {
             Services services) {
         return false;
     }
-
-    @Override
-    public Name name() {
-        return NAME;
-    }
 }

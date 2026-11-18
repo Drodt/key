@@ -14,6 +14,7 @@ import org.key_project.prover.caches.AssumesInstantiationCachePool;
 import org.key_project.prover.proof.SessionCaches;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.caches.AssumesFormulaInstantiationCache;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.prover.strategy.costbased.feature.helper.arith.Monomial;
 import org.key_project.prover.strategy.costbased.feature.helper.arith.Polynomial;
 import org.key_project.rusty.proof.Node;
@@ -85,10 +86,19 @@ public class ServiceCaches implements SessionCaches {
         new ConcurrentLruCache<>(MAX_TERM_TACLET_APP_INDEX_ENTRIES);
 
     /// Caches used by HandleArith to cache proof results
-    private final ConcurrentLruCache<@NonNull Term, @NonNull Term> provedByArithFstCache =
-        new ConcurrentLruCache<>(5000);
-    private final ConcurrentLruCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> provedByArithSndCache =
-        new ConcurrentLruCache<>(5000);
+    private final GenerationalCache<@NonNull Term, @NonNull Term> provedByArithFstCache =
+        new GenerationalCache<>(5000);
+    private final GenerationalCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> provedByArithSndCache =
+        new GenerationalCache<>(5000);
+
+    /// Per-formula operator-occurrence summary for the quantifier instantiation tie-break (which
+    /// operators occur in a sequent formula, and which at proving polarity). A sequent step
+    /// replaces few formulas, and the [SequentFormula] objects
+    /// are immutable and shared across the sequents of a branch, so the summary is memoised per
+    /// formula rather than recomputed per sequent. The value is opaque here (an
+    /// `Instantiation.OccInfo`) to keep this package independent of the strategy package.
+    private final Map<SequentFormula, Object> formulaOccurrenceCache =
+        new ConcurrentLruCache<>(10000);
 
     private final GenerationalCache<@NonNull Term, @NonNull Polynomial> polynomialCache =
         new GenerationalCache<>(2000);
@@ -103,8 +113,8 @@ public class ServiceCaches implements SessionCaches {
         return monomialCache;
     }
 
-    private final ConcurrentLruCache<@NonNull Term, @NonNull Term> formattedTermCache =
-        new ConcurrentLruCache<>(5000);
+    private final GenerationalCache<@NonNull Term, @NonNull Term> formattedTermCache =
+        new GenerationalCache<>(5000);
 
     private final ConcurrentLruCache<@NonNull Term, @NonNull TermInfo> betaCandidates =
         new ConcurrentLruCache<>(1000);
@@ -136,7 +146,7 @@ public class ServiceCaches implements SessionCaches {
         return appliedRuleAppsNameCache;
     }
 
-    public ConcurrentLruCache<@NonNull Term, @NonNull Term> getProvedByArithFstCache() {
+    public GenerationalCache<@NonNull Term, @NonNull Term> getProvedByArithFstCache() {
         return provedByArithFstCache;
     }
 
@@ -144,11 +154,11 @@ public class ServiceCaches implements SessionCaches {
         return polynomialCache;
     }
 
-    public ConcurrentLruCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> getProvedByArithSndCache() {
+    public GenerationalCache<@NonNull Pair<@NonNull Term, @NonNull Term>, @NonNull Term> getProvedByArithSndCache() {
         return provedByArithSndCache;
     }
 
-    public ConcurrentLruCache<@NonNull Term, @NonNull Term> getFormattedTermCache() {
+    public GenerationalCache<@NonNull Term, @NonNull Term> getFormattedTermCache() {
         return formattedTermCache;
     }
 
@@ -181,5 +191,9 @@ public class ServiceCaches implements SessionCaches {
 
     public Map<Taclet, CostReuse.ConditionalEligibility> getCostReuseClassificationCache() {
         return costReuseClassificationCache;
+    }
+
+    public Map<SequentFormula, Object> getFormulaOccurrenceCache() {
+        return formulaOccurrenceCache;
     }
 }

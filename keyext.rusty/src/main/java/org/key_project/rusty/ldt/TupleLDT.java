@@ -17,15 +17,15 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 
-public class TupleLDT extends LDT {
-    private static final Name NAME = new Name("Tuple");
+public class TupleLDT extends ParametricLDT {
+    public static final Name NAME = new Name("Tuple");
 
     private final ParametricSortDecl[] tupleSorts = new ParametricSortDecl[12];
     private final ParametricFunctionDecl[] tupleFunctions = new ParametricFunctionDecl[12];
     private final ParametricFunctionDecl[] fieldFunctions = new ParametricFunctionDecl[12];
 
     public TupleLDT(Services services) {
-        super(NAME);
+        super(NAME, services);
 
         var paraSorts = services.getNamespaces().parametricSorts();
         var paraFns = services.getNamespaces().parametricFunctions();
@@ -75,10 +75,5 @@ public class TupleLDT extends LDT {
     public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
             Services services) {
         return false;
-    }
-
-    @Override
-    public @NonNull Name name() {
-        return NAME;
     }
 }

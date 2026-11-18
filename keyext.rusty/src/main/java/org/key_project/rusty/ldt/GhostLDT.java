@@ -12,10 +12,9 @@ import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class GhostLDT extends LDT {
+public class GhostLDT extends ParametricLDT {
     public static final Name NAME = new Name("Ghost");
 
     private final ParametricFunctionDecl ghost;
@@ -60,10 +59,5 @@ public class GhostLDT extends LDT {
     public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
             Services services) {
         return false;
-    }
-
-    @Override
-    public @NonNull Name name() {
-        return NAME;
     }
 }

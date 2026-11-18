@@ -12,12 +12,11 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.TermBuilder;
-import org.key_project.rusty.logic.op.Equality;
+import org.key_project.rusty.logic.TermFactory;
 import org.key_project.rusty.logic.op.Junctor;
+import org.key_project.rusty.strategy.quantifierHeuristics.theory.TheoryReasoning;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableSet;
-
-import static org.key_project.rusty.logic.equality.RenamingTermProperty.RENAMING_TERM_PROPERTY;
 
 /// TODO: rewrite, this seems pretty inefficient ...
 public class PredictCostProver {
@@ -33,8 +32,15 @@ public class PredictCostProver {
 
     private final Services services;
 
-    private PredictCostProver(Term instance, ImmutableSet<Term> assertList, Services services) {
+    /// Equality reasoning over the sequent's assumed equalities, built once and shared across the
+    /// cost predictions of all candidate instantiations. Lets a clause literal already satisfied by
+    /// an assumed equality be recognized, so the instance is not proposed as a useful step.
+    private final Congruence congruence;
+
+    private PredictCostProver(Term instance, ImmutableSet<Term> assertList, Congruence congruence,
+            Services services) {
         this.assertLiterals = assertList;
+        this.congruence = congruence;
         this.services = services;
         this.tb = services.getTermBuilder();
         this.trueT = tb.tt();
@@ -42,20 +48,91 @@ public class PredictCostProver {
         initClauses(instance);
     }
 
+    /// Predicts the cost of instantiating a quantified formula's matrix with a candidate
+    /// substitution.
+    ///
+    /// @param sub a ground substitution for the quantified variables
+    /// @param matrix the matrix of the quantified formula
+    /// @param assertList the literals assumed to be true on the sequent, already normalised through
+    /// `congruence`
+    ///
+    /// @param congruence equality reasoning over the sequent's assumed equalities
+    /// @param services access to the theory operators
+    /// @return the predicted cost, or -1 if the substitution is not ground or every clause is
+    /// proved
+    /// true
     public static long computerInstanceCost(Substitution sub, Term matrix,
-            ImmutableSet<Term> assertList, Services services) {
+            ImmutableSet<Term> assertList, Congruence congruence, Services services) {
 
         if (!sub.isGround()) {
             // non-ground substitutions not supported yet
             return -1;
         } else {
             final PredictCostProver prover = new PredictCostProver(
-                sub.applyWithoutCasts(matrix, services), assertList, services);
+                sub.applyWithoutCasts(matrix, services), assertList, congruence, services);
             return prover.cost();
         }
     }
 
-    // init context
+    /// The axioms of one sequent prepared for repeated predictions: the congruence built from
+    /// them and the literals normalized by it. Opaque outside this package, so the congruence
+    /// type stays internal; build once per sequent and reuse for every candidate instance.
+    public static final class PreparedAxioms {
+        private final Congruence congruence;
+        private final ImmutableSet<Term> normalized;
+
+        private PreparedAxioms(Congruence congruence, ImmutableSet<Term> normalized) {
+            this.congruence = congruence;
+            this.normalized = normalized;
+        }
+    }
+
+    /// Prepares the given literals for repeated predictions over one sequent.
+    ///
+    /// @param assertList the literals assumed to be true on the sequent
+    /// @param services access to the theory operators
+    /// @return the prepared axioms
+    public static PreparedAxioms prepare(ImmutableSet<Term> assertList, Services services) {
+        final Congruence congruence = new Congruence(assertList, services);
+        ImmutableSet<Term> normalized = assertList;
+        if (!congruence.isTrivial()) {
+            final TermFactory tf = services.getTermFactory();
+            ImmutableSet<Term> res = DefaultImmutableSet.nil();
+            for (final Term lit : assertList) {
+                res = res.add(congruence.normalize(lit, tf));
+            }
+            normalized = res;
+        }
+        return new PreparedAxioms(congruence, normalized);
+    }
+
+    /// As the congruence-taking entry point, with the axioms prepared by [#prepare].
+    ///
+    /// @param sub a ground substitution for the quantified variables
+    /// @param matrix the matrix of the quantified formula
+    /// @param axioms the prepared axioms of the sequent
+    /// @param services access to the theory operators
+    /// @return the predicted cost, or -1 if the substitution is not ground or every clause is
+    /// proved true
+    public static long computerInstanceCost(Substitution sub, Term matrix, PreparedAxioms axioms,
+            Services services) {
+        return computerInstanceCost(sub, matrix, axioms.normalized, axioms.congruence, services);
+    }
+
+    /// Convenience entry point for callers without a shared congruence: builds one from
+    /// `assertList` and normalises the literals, then predicts the cost. The quantifier
+    /// instantiation path shares one congruence per sequent instead and calls the overload above.
+    ///
+    /// @param sub a ground substitution for the quantified variables
+    /// @param matrix the matrix of the quantified formula
+    /// @param assertList the literals assumed to be true on the sequent
+    /// @param services access to the theory operators
+    /// @return the predicted cost
+    public static long computerInstanceCost(Substitution sub, Term matrix,
+            ImmutableSet<Term> assertList, Services services) {
+        return computerInstanceCost(sub, matrix, prepare(assertList, services), services);
+    }
+
     private void initClauses(Term instance) {
         for (var t : TriggerUtils.setByOperator(instance, Junctor.AND)) {
             for (ImmutableSet<Term> lit : createClause(
@@ -79,114 +156,105 @@ public class PredictCostProver {
         return res;
     }
 
-    // end
-
-    // (2)self-proved rule
-    /// If the given <code>problem</code>'s operation is equal,or mathmetic operation(=,>=, <=),
-    // this
-    /// method will try to prove it by finding the relation between its two subterms.
+    /// Checks whether `problem` holds on its own. The literal is stripped of its leading
+    /// negations and offered to each theory support; the first support that reaches a verdict wins,
+    /// and the stripped negations are re-applied to it.
+    ///
+    /// @param problem the literal to decide
+    /// @return `trueT` if the literal is proved true, `falseT` if proved
+    /// false,
+    /// and `problem` if undecided
     private Term provedBySelf(Term problem) {
         boolean negated = false;
         Term pro = problem;
-        Operator op = pro.op();
-        while (op == Junctor.NOT) {
-            negated = !negated;
-            pro = pro.sub(0);
-            op = pro.op();
-        }
-        if ((op == Equality.EQUALS || op == Equality.EQV)) {
-            Term term = pro.sub(0);
-            Term formula = pro.sub(1);
-            if (RENAMING_TERM_PROPERTY.equalsModThisProperty(term, formula)) {
-                return negated ? falseT : trueT;
-            }
-        }
-        Term arithRes = HandleArith.provedByArith(pro, services);
-        if (TriggerUtils.isTrueOrFalse(arithRes)) {
-            return negated ? tb.not(arithRes) : arithRes;
-        } else {
-            return problem;
-        }
-    }
-
-    // (3)equal rule
-    /// *
-    /// @return trueT if problem is equal axiom, false if problem's negation is equal axiom.
-    /// Otherwise, retrun problem.
-    private Term directConsequenceOrContradictionOfAxiom(Term problem, Term axiom) {
-        boolean negated = false;
-        Term pro = problem;
         while (pro.op() == Junctor.NOT) {
+            negated = !negated;
             pro = pro.sub(0);
-            negated = !negated;
         }
-        Term ax = axiom;
-        while (ax.op() == Junctor.NOT) {
-            ax = ax.sub(0);
-            negated = !negated;
-        }
-        if (RENAMING_TERM_PROPERTY.equalsModThisProperty(pro, ax)) {
-            return negated ? falseT : trueT;
+        for (final TheoryReasoning support : services.getProfile().getTheorySupports(false)) {
+            TheoryReasoning.LiteralDecision decision =
+                support.decideStrippedSelf(pro, services);
+            if (decision != TheoryReasoning.LiteralDecision.UNKNOWN) {
+                if (negated) {
+                    decision = decision.negate();
+                }
+                return decision == TheoryReasoning.LiteralDecision.PROVED ? trueT : falseT;
+            }
         }
         return problem;
     }
 
-    // (4)combine provedByequal and provedByArith .
-    /// @param problem
-    /// @param axiom
-    /// @return if axiom conduct problem then return trueT. If axiom conduct negation of problem
-    /// return fastT. Otherwise, return problem
+    /// Checks whether `problem` follows from the assumed-true `axiom` by
+    /// offering both to each theory support. The first support that reaches a verdict wins.
+    ///
+    /// @param problem the literal to decide
+    /// @param axiom a literal assumed to be true
+    /// @return `trueT` if the axiom proves the problem, `falseT` if it proves
+    /// the problem's negation, and `problem` if undecided
     private Term provedByAnother(Term problem, Term axiom) {
-        Term res = directConsequenceOrContradictionOfAxiom(problem, axiom);
-        if (TriggerUtils.isTrueOrFalse(res)) {
-            return res;
+        for (final TheoryReasoning support : services.getProfile().getTheorySupports(false)) {
+            final TheoryReasoning.LiteralDecision decision =
+                support.decideFromAxiom(problem, axiom, services);
+            if (decision != TheoryReasoning.LiteralDecision.UNKNOWN) {
+                return decision == TheoryReasoning.LiteralDecision.PROVED ? trueT : falseT;
+            }
         }
-        return HandleArith.provedByArith(problem, axiom, services);
+        return problem;
     }
 
-    // (5) combine rules
-    /// try to prove <code>problem</code> by know <code>assertLits</code>
+    /// Checks whether `problem` holds, first on its own and then from each assumed
+    /// literal
+    /// in turn.
     ///
-    /// @param problem a literal to be proved
-    /// @param assertLits a set of term assertLiterals in which all literals are true
-    /// @return return <code>trueT</code> if if formu is proved to true, <code> falseT</code> if
-    /// false, and <code>atom</code> if it can't be proved.
-    private Term proveLiteral(Term problem, Iterable<? extends Term> assertLits) {
-        Term res;
-        /*
-         * res = provedFromCache(problem, cache); if (res.equals(trueT) || res.equals(falseT)) {
-         * return res; }
-         */
-        res = provedBySelf(problem);
+    /// @param problem a literal to decide
+    /// @param assertLits literals assumed to be true
+    /// @return `trueT` if the literal is proved true, `falseT` if proved
+    /// false,
+    /// and the literal itself if neither
+    private Term proveLiteral(Term problem, Iterable<Term> assertLits) {
+        final Term normProblem = congruence.normalize(problem, services.getTermFactory());
+        Term res = provedBySelf(normProblem);
         if (TriggerUtils.isTrueOrFalse(res)) {
-            // addToCache(problem,res,cache);
             return res;
         }
         for (Term t : assertLits) {
-            res = provedByAnother(problem, t);
+            res = provedByAnother(normProblem, t);
             if (TriggerUtils.isTrueOrFalse(res)) {
-                // addToCache(problem, res,cache);
                 return res;
             }
         }
         return problem;
     }
 
-    // end
+    /// Normalizes the literals of a clause reduced to a single literal, before it is assumed for
+    /// the
+    /// remaining clauses, so later decisions match it modulo the congruence.
+    ///
+    /// @param lits the literals to normalize
+    /// @return the normalized literals, or `lits` unchanged when the congruence is trivial
+    private ImmutableSet<Term> normalizeLiterals(ImmutableSet<Term> lits) {
+        if (congruence.isTrivial()) {
+            return lits;
+        }
+        ImmutableSet<Term> res = DefaultImmutableSet.nil();
+        for (final Term l : lits) {
+            res = res.add(congruence.normalize(l, services.getTermFactory()));
+        }
+        return res;
+    }
 
-    // cost computation
     /// do two-step refinement and return the cost
     private long cost() {
         return firstRefine();
     }
 
-    /// refine every clause, by assume assertList are true and if a clause's cost is 0 which means
-    /// it
-    /// is refined to false, then cost 0 returned. If every clause's cost is -1 which means every
-    /// clause is refined to true, cost -1 returned. Otherwise, multiply of every cost is return.
-    /// Beside, if a clause is refined to a situation that only one literal is left, the literal
-    /// will
-    /// be add to assertLiterals.
+    /// Refines every clause against the asserted literals and combines the results into a cost. A
+    /// clause refined to false makes the whole instance cost 0. Clauses refined to true are
+    /// dropped.
+    /// The sizes of the remaining clauses are multiplied. A clause left with a single literal adds
+    /// that literal to the asserted literals. When every clause is dropped and nothing was added
+    /// the
+    /// instance is trivially true and the cost is -1.
     private long firstRefine() {
         long cost = 1;
         boolean assertChanged = false;
@@ -220,22 +288,7 @@ public class PredictCostProver {
         return cost;
     }
 
-    /// A sat() procedure with back searching
-    /*
-     * private long secondRefineX(SetOf<Term> assertLits, Map cache, Object[] cls, int index) { long
-     * cost = 1; for ( int i = index; i < cls.length; i++ ) { Clause c = (Clause)cls[i]; final
-     * SetOf<Term> ls = c.refine ( assertLits, cache ); if ( ls.contains ( falseT ) ) return 0; if (
-     * ls.contains ( trueT ) ) return secondRefine ( assertLits, cache, cls, i + 1 ); final
-     * Iterator<Term> it = ls.iterator (); while ( it.hasNext () ) { SetOf<Term> nextLits =
-     * SetAsListOf.<Term>nil().union ( assertLits ); nextLits = nextLits.add ( it.next () ); final
-     * Map nextCache = new HashMap (); nextCache.putAll ( cache ); long nextCost = secondRefine (
-     * nextLits, nextCache, cls, i + 1 ); cost = cost + nextCost;
-     *
-     * } } return cost; }
-     */
-
     private class Clause implements Iterable<Term> {
-
         /// all literals contained in this clause
         private ImmutableSet<Term> literals;
 
@@ -279,16 +332,12 @@ public class PredictCostProver {
         /// Refine this clause in two process, first try to refined by itself, @see selfRefine.
         /// Second refine this clause by assuming assertLiteras are true
         public void firstRefine() {
-            // if (selfRefine(literals)) {
-            // literals = SetAsListOf.<Term>nil().add(trueT);
-            // return;
-            // }
             literals = this.refine(assertLiterals);
         }
 
         /// Refine literals in this clause, but it does not change literlas, only return literals
         /// that can't be removed by refining
-        public ImmutableSet<Term> refine(Iterable<? extends Term> assertLits) {
+        public ImmutableSet<Term> refine(Iterable<Term> assertLits) {
             ImmutableSet<Term> res = DefaultImmutableSet.nil();
             for (final Term lit : this) {
                 final Operator op = proveLiteral(lit, assertLits).op();
@@ -305,34 +354,6 @@ public class PredictCostProver {
                 res = res.add(falseT);
             }
             return res;
-        }
-
-        /// This method is used for detect where a clause can be simply refined to true. And it is
-        /// implemented like this. Assume that the clause contains two literals Li and Lj. If
-        /// (!Li->Lj) which is actually (Li|Lj), is true, and the clause is true.
-        /// provedByAnother(Lj,!Li) is used to proved (!Li->Lj). Some examples are (!a|a) which is
-        /// (!!a->a) and (a>=1|a<=0) which is !a>=1->a<=0
-        public boolean selfRefine(ImmutableSet<Term> lits) {
-            if (lits.size() <= 1) {
-                return false;
-            }
-            Term[] terms = lits.toArray(new Term[lits.size()]);
-            ImmutableSet<Term> next = lits.remove(terms[0]);
-            boolean opNot = terms[0].op() == Junctor.NOT;
-            Term axiom = opNot ? terms[0].sub(0) : tb.not(terms[0]);
-            for (int j = 1; j < terms.length; j++) {
-                Term pro = provedByAnother(terms[j], axiom);
-                final Operator op = pro.op();
-                if (op == Junctor.TRUE) {
-                    return true;
-                }
-                if (op == Junctor.FALSE
-                        && terms[0].equals(terms[j])) {
-                    next = next.remove(terms[j]);
-                    literals = literals.remove(terms[j]);
-                }
-            }
-            return selfRefine(next);
         }
 
         @Override

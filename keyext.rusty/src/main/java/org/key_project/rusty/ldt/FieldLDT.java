@@ -20,10 +20,9 @@ import org.key_project.rusty.logic.sort.SortArg;
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
-public class FieldLDT extends LDT {
+public class FieldLDT extends ParametricLDT {
     public static final Name NAME = new Name("Field");
     private final ParametricSortDecl fieldSort;
 
@@ -32,7 +31,7 @@ public class FieldLDT extends LDT {
 
     public FieldLDT(Services services) {
         super(NAME, services);
-        fieldSort = parametricSort();
+        fieldSort = targetSort();
         get = addParametricFunction(services, "get");
         set = addParametricFunction(services, "set");
     }
@@ -91,10 +90,5 @@ public class FieldLDT extends LDT {
     public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
             Services services) {
         return false;
-    }
-
-    @Override
-    public @NonNull Name name() {
-        return NAME;
     }
 }

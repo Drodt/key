@@ -12,7 +12,6 @@ import org.key_project.rusty.ast.expr.BinaryExpression;
 import org.key_project.rusty.ast.expr.BooleanLiteralExpression;
 import org.key_project.rusty.ast.expr.LiteralExpression;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class BoolLDT extends LDT {
@@ -66,12 +65,6 @@ public class BoolLDT extends LDT {
 
 
     @Override
-    public @NonNull Name name() {
-        return NAME;
-    }
-
-
-    @Override
     public @Nullable Term translateLiteral(LiteralExpression lit, Services services) {
         if (lit instanceof BooleanLiteralExpression b) {
             return b.getValue() ? term_bool_true : term_bool_false;
@@ -107,6 +100,4 @@ public class BoolLDT extends LDT {
             Services services) {
         return false;
     }
-
-
 }

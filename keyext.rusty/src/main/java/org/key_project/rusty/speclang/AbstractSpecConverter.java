@@ -209,10 +209,10 @@ public abstract class AbstractSpecConverter {
 
     private Term constructIndexTerm(Term indexed, Term idx) {
         if (indexed.sort() instanceof ParametricSortInstance psi) {
-            if (psi.getBase() == services.getLDTs().getArrayLDT().parametricSort()) {
+            if (psi.getBase() == services.getLDTs().getArrayLDT().targetSort()) {
                 return tb.arrayGet(indexed, idx);
             }
-            if (psi.getBase() == services.getLDTs().getsRefLDT().parametricSort()) {
+            if (psi.getBase() == services.getLDTs().getsRefLDT().targetSort()) {
                 var base = services.getLDTs().getsRefLDT().getDerefS();
                 var deref = ParametricFunctionInstance.get(base, psi.getArgs());
                 return constructIndexTerm(tb.func(deref, indexed), idx);

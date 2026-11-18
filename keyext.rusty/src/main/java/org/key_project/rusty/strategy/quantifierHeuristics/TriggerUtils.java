@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
+import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.logic.op.Junctor;
 import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.Quantifier;
@@ -54,13 +55,13 @@ public class TriggerUtils {
 
     /// @return a set of quantifiableVariable which are belonged to both set0 and set1 have
     public static ImmutableSet<LogicVariable> intersect(
-            ImmutableSet<LogicVariable> set0,
+            ImmutableSet<? extends QuantifiableVariable> set0,
             ImmutableSet<LogicVariable> set1) {
         ImmutableSet<LogicVariable> res = DefaultImmutableSet.nil();
         if (!set0.isEmpty() && !set1.isEmpty()) {
-            for (LogicVariable el : set0) {
+            for (var el : set0) {
                 if (set1.contains(el)) {
-                    res = res.add(el);
+                    res = res.add((LogicVariable) el);
                 }
             }
         }

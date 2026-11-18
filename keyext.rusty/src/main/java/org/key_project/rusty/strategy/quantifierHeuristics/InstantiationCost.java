@@ -11,6 +11,7 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.feature.Feature;
+import org.key_project.prover.strategy.costbased.quantifierHeuristics.TriggerTreatment;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.rusty.Services;
 
@@ -19,12 +20,16 @@ import org.key_project.rusty.Services;
 public class InstantiationCost implements Feature {
     final private ProjectionToTerm varInst;
 
-    private InstantiationCost(ProjectionToTerm var) {
+    /// how much the prediction is told about the theories
+    private final TriggerTreatment treatment;
+
+    private InstantiationCost(ProjectionToTerm var, TriggerTreatment treatment) {
         varInst = var;
+        this.treatment = treatment;
     }
 
-    public static Feature create(ProjectionToTerm varInst) {
-        return new InstantiationCost(varInst);
+    public static Feature create(ProjectionToTerm varInst, TriggerTreatment treatment) {
+        return new InstantiationCost(varInst, treatment);
     }
 
     /// Compute the cost of a RuleApp.
@@ -38,6 +43,6 @@ public class InstantiationCost implements Feature {
             varInst.toTerm(app, pos, (org.key_project.rusty.proof.Goal) goal, mState);
 
         return Instantiation.computeCost(instance, formula, goal.sequent(),
-            (Services) goal.proof().getServices());
+            (Services) goal.proof().getServices(), treatment);
     }
 }

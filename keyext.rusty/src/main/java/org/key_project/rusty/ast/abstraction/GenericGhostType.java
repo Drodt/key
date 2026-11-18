@@ -18,7 +18,7 @@ public class GenericGhostType implements GenericAdt {
     private final Name name = new Name("rml_contracts::Ghost");
 
     public GenericGhostType(ImmutableList<GenericParam> params, Services services) {
-        ghostSort = services.getLDTs().getGhostLDT().parametricSort();
+        ghostSort = services.getLDTs().getGhostLDT().targetSort();
         this.params = params;
     }
 

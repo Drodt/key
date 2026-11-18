@@ -18,7 +18,6 @@ import org.key_project.rusty.ast.expr.LiteralExpression;
 import org.key_project.rusty.logic.TermBuilder;
 
 import org.checkerframework.checker.initialization.qual.UnknownInitialization;
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class IntLDT extends LDT implements IIntLdt {
@@ -118,11 +117,6 @@ public class IntLDT extends LDT implements IIntLdt {
     private Term makeDigit(@UnknownInitialization IntLDT this, int digit, TermBuilder tb) {
         return tb.func(getNumberSymbol(),
             tb.func(getNumberLiteralFor(digit), tb.func(getNumberTerminator())));
-    }
-
-    @Override
-    public @NonNull Name name() {
-        return NAME;
     }
 
     // -------------------------------------------------------------------------

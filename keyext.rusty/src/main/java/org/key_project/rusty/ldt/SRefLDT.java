@@ -14,7 +14,7 @@ import org.key_project.rusty.logic.op.ParametricFunctionDecl;
 
 import org.jspecify.annotations.Nullable;
 
-public class SRefLDT extends LDT {
+public class SRefLDT extends ParametricLDT {
     public static final Name NAME = new Name("SRef");
 
     private final ParametricFunctionDecl refS;
@@ -59,10 +59,5 @@ public class SRefLDT extends LDT {
     public boolean isResponsible(BinaryExpression.Operator op, Term left, Term right,
             Services services) {
         return false;
-    }
-
-    @Override
-    public Name name() {
-        return NAME;
     }
 }

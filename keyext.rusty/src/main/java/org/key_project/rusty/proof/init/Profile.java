@@ -5,6 +5,8 @@
 package org.key_project.rusty.proof.init;
 
 
+import java.util.List;
+
 import org.key_project.logic.Name;
 import org.key_project.prover.engine.GoalChooserFactory;
 import org.key_project.prover.proof.ProofGoal;
@@ -12,6 +14,8 @@ import org.key_project.prover.proof.ProofObject;
 import org.key_project.rusty.proof.mgt.RuleJustification;
 import org.key_project.rusty.rule.Rule;
 import org.key_project.rusty.strategy.StrategyFactory;
+import org.key_project.rusty.strategy.quantifierHeuristics.theory.QuantifierTheorySupport;
+import org.key_project.rusty.strategy.quantifierHeuristics.theory.QuantifierTheorySupports;
 
 import org.jspecify.annotations.NonNull;
 
@@ -43,4 +47,13 @@ public interface Profile {
 
     /// returns a new builder instance for the selected goal choooser
     <P extends @NonNull ProofObject<G>, G extends @NonNull ProofGoal<@NonNull G>> GoalChooserFactory<P, G> getSelectedGoalChooserBuilder();
+
+    /// The theories the quantifier heuristic consults for the terms of this profile, in the order
+    /// it consults them. A profile over other terms returns its own.
+    ///
+    /// @param classic whether the classic trigger selection is in effect
+    /// @return the theories, never empty
+    default List<QuantifierTheorySupport> getTheorySupports(boolean classic) {
+        return classic ? QuantifierTheorySupports.CLASSIC : QuantifierTheorySupports.RUSTY_DL;
+    }
 }

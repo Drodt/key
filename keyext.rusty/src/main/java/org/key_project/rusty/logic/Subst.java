@@ -25,6 +25,8 @@ public class Subst {
 
     /// substitute <code>s</code> for <code>v</code> in <code>t</code>.
     public Term apply(Term t) {
+        if (t.freeVars().isEmpty())
+            return t;
         return apply1(t);
     }
 

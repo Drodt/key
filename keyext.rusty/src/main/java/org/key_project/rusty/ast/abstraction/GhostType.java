@@ -38,8 +38,7 @@ public class GhostType implements Type {
     @Override
     public @Nullable Sort getSort(Services services) {
         Sort inner = this.inner.getSort(services);
-        ParametricSortDecl pSort = services.getLDTs().getGhostLDT().parametricSort();
-        assert pSort != null;
+        ParametricSortDecl pSort = services.getLDTs().getGhostLDT().targetSort();
         return ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(inner)));
     }
 

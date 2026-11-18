@@ -18,7 +18,7 @@ import org.key_project.rusty.ast.abstraction.ForeignFnType;
 import org.key_project.rusty.ast.abstraction.GenericConstParam;
 import org.key_project.rusty.ast.abstraction.Type;
 import org.key_project.rusty.ast.expr.*;
-import org.key_project.rusty.ldt.LDT;
+import org.key_project.rusty.ldt.AbstractLDT;
 import org.key_project.rusty.ldt.LDTs;
 import org.key_project.rusty.logic.*;
 import org.key_project.rusty.logic.op.ParametricFunctionDecl;
@@ -281,9 +281,9 @@ public class Services implements LogicServices, ProofServices {
         throw new IllegalArgumentException("could not handle this tuple: " + te);
     }
 
-    public static @Nullable LDT getResponsibleLDT(BinaryExpression.Operator op, Term[] subs,
+    public static @Nullable AbstractLDT getResponsibleLDT(BinaryExpression.Operator op, Term[] subs,
             Services services) {
-        for (LDT ldt : services.getLDTs()) {
+        for (AbstractLDT ldt : services.getLDTs()) {
             if (ldt.isResponsible(op, subs, services)) {
                 return ldt;
             }
@@ -293,7 +293,7 @@ public class Services implements LogicServices, ProofServices {
 
     public static @Nullable Term convertLiteralExpression(LiteralExpression lit,
             Services services) {
-        LDT ldt = services.getLDTs().get(lit.getLDTName());
+        AbstractLDT ldt = services.getLDTs().get(lit.getLDTName());
         if (ldt != null) {
             return ldt.translateLiteral(lit, services);
         } else {

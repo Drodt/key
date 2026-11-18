@@ -68,8 +68,9 @@ public final class PrimitiveType implements Type {
 
     @Override
     public Sort getSort(Services services) {
-        return Objects.requireNonNull(services.getLDTs().get(ldtName), "unknown ldt " + ldtName)
-                .targetSort();
+        AbstractLDT abstractLDT =
+            Objects.requireNonNull(services.getLDTs().get(ldtName), "unknown ldt " + ldtName);
+        return ((LDT) abstractLDT).targetSort();
     }
 
     /// Gets the name of the LDT corresponding to this primitive type.

@@ -47,9 +47,4 @@ public class CharLDT extends LDT {
             Services services) {
         return false;
     }
-
-    @Override
-    public Name name() {
-        return NAME;
-    }
 }

@@ -20,6 +20,7 @@ import org.key_project.rusty.logic.equality.RenamingTermProperty;
 import org.key_project.rusty.strategy.feature.*;
 import org.key_project.rusty.strategy.quantifierHeuristics.HeuristicInstantiation;
 import org.key_project.rusty.strategy.quantifierHeuristics.InstantiationCost;
+import org.key_project.rusty.strategy.quantifierHeuristics.InstantiationTieBreakFeature;
 import org.key_project.rusty.strategy.quantifierHeuristics.SplittableQuantifiedFormulaFeature;
 import org.key_project.rusty.strategy.termProjection.TermConstructionProjection;
 import org.key_project.rusty.strategy.termfeature.ContainsExecutableCodeTermFeature;
@@ -27,6 +28,7 @@ import org.key_project.rusty.strategy.termgenerator.AllowedCutPositionsGenerator
 import org.key_project.rusty.strategy.termgenerator.SuperTermGenerator;
 import org.key_project.rusty.strategy.termgenerator.TriggeredInstantiations;
 
+import static org.key_project.prover.strategy.StaticFeatureCollection.inftyTermConst;
 import static org.key_project.prover.strategy.StaticFeatureCollection.op;
 
 public final class RustFeatureConstants implements FeatureConstants {
@@ -134,11 +136,6 @@ public final class RustFeatureConstants implements FeatureConstants {
     }
 
     @Override
-    public TermFeature selectSkolemConstant() {
-        return RustStaticFeatureCollection.selectSkolemConstantTermFeature();
-    }
-
-    @Override
     public Feature countOccurrences(ProjectionToTerm target) {
         return CountOccurrencesFeature.create(target, RenamingTermProperty.RENAMING_TERM_PROPERTY);
     }
@@ -162,5 +159,10 @@ public final class RustFeatureConstants implements FeatureConstants {
     @Override
     public Feature getInstantiationTieBreakFeature(TermBuffer varInst, String s) {
         return InstantiationTieBreakFeature.create(varInst, s);
+    }
+
+    @Override
+    public TermFeature selectSkolemConstant() {
+        return inftyTermConst();
     }
 }
