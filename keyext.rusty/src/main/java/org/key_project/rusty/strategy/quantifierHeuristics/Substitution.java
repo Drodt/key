@@ -15,7 +15,6 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.Subst;
 import org.key_project.rusty.logic.TermBuilder;
 import org.key_project.rusty.logic.op.LogicVariable;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableMap;
 import org.key_project.util.collection.ImmutableSet;
@@ -155,7 +154,7 @@ public class Substitution {
             return t;
         }
         return tb.tf().createTerm(t.op(), newSubs,
-            (ImmutableArray<QuantifiableVariable>) t.boundVars());
+            (ImmutableList<QuantifiableVariable>) t.boundVars());
     }
 
     /** Whether any variable of {@link #varMap} occurs free in {@code t}. */

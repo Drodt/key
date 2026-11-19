@@ -21,7 +21,7 @@ import org.key_project.rusty.speclang.LoopSpecImpl;
 import org.key_project.rusty.speclang.LoopSpecification;
 import org.key_project.rusty.util.MiscTools;
 import org.key_project.util.ExtList;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
 
@@ -149,7 +149,7 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
                 }
             }
             return changed ? services.getTermFactory().createTerm(op, subTerms,
-                (ImmutableArray<QuantifiableVariable>) t.boundVars()) : t;
+                (ImmutableList<QuantifiableVariable>) t.boundVars()) : t;
         }
     }
 }

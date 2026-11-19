@@ -136,7 +136,7 @@ public abstract class TacletApp implements RuleApp {
 
         PIOPathIterator it = pos.iterator();
         int i;
-        ImmutableArray<? extends QuantifiableVariable> vars;
+        ImmutableList<? extends QuantifiableVariable> vars;
 
         while ((i = it.next()) != -1) {
             vars = it.getSubTerm().varsBoundHere(i);
@@ -607,8 +607,8 @@ public abstract class TacletApp implements RuleApp {
     /// @return a list of tacletapps with the found if formula instantiations
     private ImmutableList<TacletApp> findAssumesFormulaInstantiationsHelp(
             ImmutableList<SequentFormula> ruleSuccTail, ImmutableList<SequentFormula> ruleAntecTail,
-            ImmutableArray<AssumesFormulaInstantiation> instSucc,
-            ImmutableArray<AssumesFormulaInstantiation> instAntec,
+            ImmutableList<AssumesFormulaInstantiation> instSucc,
+            ImmutableList<AssumesFormulaInstantiation> instAntec,
             ImmutableList<AssumesFormulaInstantiation> instAlreadyMatched,
             MatchResultInfo matchCond,
             Services services) {

@@ -129,7 +129,7 @@ public final class ProgVarReplacer {
                     }
 
                     if (changedSomething) {
-                        ImmutableArray<RustyProgramElement> newA = new ImmutableArray<>(array);
+                        ImmutableList<RustyProgramElement> newA = ImmutableList.of(array);
                         result = result.replace(sv, newA, services);
                     }
                 }
@@ -191,7 +191,7 @@ public final class ProgVarReplacer {
 
         if (changedSubTerm || changedOp) {
             result = services.getTermFactory().createTerm(op, newSubTerms,
-                (ImmutableArray<QuantifiableVariable>) t.boundVars());
+                (ImmutableList<QuantifiableVariable>) t.boundVars());
         }
         return result;
     }

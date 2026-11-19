@@ -12,7 +12,6 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.Operator;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.logic.TermFactory;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 /// Replaces operators in a term by other operators with the same signature, or subterms of the term
@@ -133,13 +132,12 @@ public class OpReplacer {
                 changedSubTerm = true;
             }
         }
-        final ImmutableArray<QuantifiableVariable> newBoundVars =
+        final ImmutableList<QuantifiableVariable> newBoundVars =
             replaceQuantVars(term.boundVars());
 
         final Term result;
         if (newOp != term.op() || changedSubTerm || newBoundVars != term.boundVars()) {
-            result =
-                tf.createTerm(newOp, newSubTerms, newBoundVars);
+            result = tf.createTerm(newOp, newSubTerms, newBoundVars);
         } else {
             result = term;
         }
@@ -159,12 +157,12 @@ public class OpReplacer {
         return result;
     }
 
-    /// Replaces in an ImmutableArray<QuantifiableVariable>.
+    /// Replaces in an ImmutableList<QuantifiableVariable>.
     ///
     /// @param vars the array in which to perform the replacement.
     /// @return the list of transformed variables.
-    public ImmutableArray<QuantifiableVariable> replaceQuantVars(
-            ImmutableArray<? extends QuantifiableVariable> vars) {
+    public ImmutableList<QuantifiableVariable> replaceQuantVars(
+            ImmutableList<? extends QuantifiableVariable> vars) {
         QuantifiableVariable[] result = new QuantifiableVariable[vars.size()];
         boolean changed = false;
         for (int i = 0, n = vars.size(); i < n; i++) {
@@ -175,7 +173,7 @@ public class OpReplacer {
                 changed = true;
             }
         }
-        return changed ? new ImmutableArray<>(result)
-                : (ImmutableArray<QuantifiableVariable>) vars;
+        return changed ? ImmutableList.of(result)
+                : (ImmutableList<QuantifiableVariable>) vars;
     }
 }

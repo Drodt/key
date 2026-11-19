@@ -7,7 +7,6 @@ package org.key_project.rusty.logic;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.rusty.logic.op.LogicVariable;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -47,7 +46,7 @@ public class Shift {
             applyOnSubterm(t, i, newSubterms);
         }
         return tb.tf().createTerm(t.op(), newSubterms,
-            (ImmutableArray<QuantifiableVariable>) t.boundVars());
+            (ImmutableList<QuantifiableVariable>) t.boundVars());
     }
 
     /// Apply the substitution of the subterm <code>subtermIndex</code> of term/formula

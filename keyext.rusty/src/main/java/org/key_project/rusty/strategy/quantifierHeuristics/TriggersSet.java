@@ -19,7 +19,6 @@ import org.key_project.rusty.strategy.quantifierHeuristics.theory.ClauseTriggers
 import org.key_project.rusty.strategy.quantifierHeuristics.theory.LiteralTriggers;
 import org.key_project.rusty.strategy.quantifierHeuristics.theory.TriggerSupport;
 import org.key_project.util.collection.DefaultImmutableSet;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
@@ -375,12 +374,12 @@ public class TriggersSet {
         }
 
         private Set<Term> combineSubterms(Term originalTerm, Set<Term>[] possibleSubs,
-                Term[] chosenSubs, ImmutableArray<? extends QuantifiableVariable> boundVars, int i,
+                Term[] chosenSubs, ImmutableList<? extends QuantifiableVariable> boundVars, int i,
                 Services services) {
             final Set<Term> result = new LinkedHashSet<>();
             if (i >= possibleSubs.length) {
                 final Term combined = services.getTermFactory().createTerm(originalTerm.op(),
-                    chosenSubs, (ImmutableArray<QuantifiableVariable>) boundVars);
+                    chosenSubs, (ImmutableList<QuantifiableVariable>) boundVars);
                 result.add(combined);
                 return result;
             }

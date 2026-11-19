@@ -33,7 +33,6 @@ import org.key_project.rusty.rule.*;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.RewriteTacletGoalTemplate;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
@@ -98,7 +97,7 @@ public class LogicPrinter {
         layouter = layouter.cloneArgs();
     }
 
-    public void addBoundVars(ImmutableArray<? extends QuantifiableVariable> boundVars) {
+    public void addBoundVars(ImmutableList<? extends QuantifiableVariable> boundVars) {
         for (QuantifiableVariable qv : boundVars) {
             if (qv instanceof BoundVariable bv) {
                 this.boundVars.add(bv);
@@ -1127,7 +1126,7 @@ public class LogicPrinter {
                     final RModality m =
                         RModality.getModality(kind, mod.programBlock());
                     final Term term = services.getTermFactory().createTerm(m, ta,
-                        (ImmutableArray<QuantifiableVariable>) phi.boundVars());
+                        (ImmutableList<QuantifiableVariable>) phi.boundVars());
                     notationInfo.getNotation(m).print(term, this);
                     return;
                 }

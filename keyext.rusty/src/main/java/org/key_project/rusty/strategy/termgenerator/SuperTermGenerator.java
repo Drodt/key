@@ -26,7 +26,7 @@ import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.proof.Goal;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
 
@@ -151,7 +151,7 @@ public abstract class SuperTermGenerator implements TermGenerator {
             }
 
             @Override
-            public ImmutableArray<Sort> argSorts() {
+            public ImmutableList<Sort> argSorts() {
                 return null;
             }
 

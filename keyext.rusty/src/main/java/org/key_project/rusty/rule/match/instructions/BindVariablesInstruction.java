@@ -15,7 +15,7 @@ import org.key_project.rusty.logic.LogicVariableTable;
 import org.key_project.rusty.logic.op.BoundVariable;
 import org.key_project.rusty.logic.op.sv.VariableSV;
 import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
 
 /// Opens a binding scope for a term with bound variables (a quantifier, a substitution, ...): it
 /// extends the renaming table and matches the pattern's bound variables pairwise against the source
@@ -26,7 +26,7 @@ import org.key_project.util.collection.ImmutableArray;
 public class BindVariablesInstruction implements MatchInstruction {
     private final VariableBinderSubinstruction[] boundVarBinders;
 
-    public BindVariablesInstruction(ImmutableArray<QuantifiableVariable> boundVars) {
+    public BindVariablesInstruction(ImmutableList<QuantifiableVariable> boundVars) {
         boundVarBinders = new VariableBinderSubinstruction[boundVars.size()];
         int i = 0;
         for (QuantifiableVariable boundVar : boundVars) {
