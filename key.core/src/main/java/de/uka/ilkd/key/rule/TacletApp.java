@@ -1299,5 +1299,4 @@ public abstract class TacletApp implements ITacletApp {
         }
         return result;
     }
-
 }

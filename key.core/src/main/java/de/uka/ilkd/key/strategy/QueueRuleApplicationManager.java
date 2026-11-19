@@ -24,7 +24,6 @@ import org.key_project.prover.strategy.RuleApplicationManager;
 import org.key_project.prover.strategy.costbased.MutableState;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.util.collection.ImmutableHeap;
 import org.key_project.util.collection.ImmutableLeftistHeap;
@@ -133,7 +132,7 @@ public class QueueRuleApplicationManager implements RuleApplicationManager<Goal>
         previousMinimum = null;
         parking = new ParkedBases();
         if (goal != null) {
-            goal.proof().getServices().getCaches().getAssumesInstantiationCachePool().releaseAll();
+            goal.proof().getServices().getCaches().getAssumesInstantiationCache().releaseAll();
         }
         clearNextRuleApp();
     }

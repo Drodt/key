@@ -9,14 +9,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import de.uka.ilkd.key.logic.op.LocationVariable;
 import de.uka.ilkd.key.proof.Goal;
-import de.uka.ilkd.key.strategy.BuiltInRuleAppContainer;
 
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
-import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.sequent.PosInOccurrence;
-import org.key_project.prover.strategy.costbased.RuleAppCost;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -135,13 +131,5 @@ public abstract class AbstractBuiltInRuleApp<T extends BuiltInRule> implements I
     public String toString() {
         return "BuiltInRule: " + rule().name() + " at pos "
             + (pio != null ? pio.subTerm() : "[pio is null]");
-    }
-
-    @Override
-    public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
-            ProofGoal<G> p_goal, boolean initial) {
-        var goal = (Goal) p_goal;
-        final RuleAppCost cost = goal.getGoalStrategy().computeCost(this, pio, goal);
-        return new BuiltInRuleAppContainer(this, pio, cost, goal);
     }
 }

@@ -5,57 +5,79 @@
 package org.key_project.rusty.rule;
 
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
-import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.sequent.PosInOccurrence;
-import org.key_project.prover.strategy.costbased.RuleAppCost;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.rusty.proof.Goal;
-import org.key_project.rusty.strategy.BuiltInRuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 
-public abstract class AbstractBuiltInRuleApp implements IBuiltInRuleApp {
-    protected final BuiltInRule builtInRule;
+@NullMarked
+public abstract class AbstractBuiltInRuleApp<T extends BuiltInRule> implements IBuiltInRuleApp {
+    public static final AtomicLong PERF_EXECUTE = new AtomicLong();
+    public static final AtomicLong PERF_SET_SEQUENT = new AtomicLong();
 
-    protected final PosInOccurrence pio;
-    protected ImmutableList<PosInOccurrence> ifInsts;
+    protected final T builtInRule;
 
-    protected AbstractBuiltInRuleApp(BuiltInRule rule, PosInOccurrence pio,
-            ImmutableList<PosInOccurrence> ifInsts) {
+    protected final @Nullable PosInOccurrence pio;
+    protected @Nullable ImmutableList<PosInOccurrence> ifInsts;
+
+    protected AbstractBuiltInRuleApp(T rule, @Nullable PosInOccurrence pio,
+            @Nullable ImmutableList<PosInOccurrence> ifInsts) {
         this.builtInRule = rule;
         this.pio = pio;
         this.ifInsts = (ifInsts == null ? ImmutableList.nil() : ifInsts);
     }
 
-    protected AbstractBuiltInRuleApp(BuiltInRule rule, PosInOccurrence pio) {
+    protected AbstractBuiltInRuleApp(T rule, @Nullable PosInOccurrence pio) {
         this(rule, pio, null);
     }
 
-    /// HACK: but strategies do not work otherwise at the moment; I need to have a closer look on
-    /// what is going on there This restores the behaviour as it was before my previous commit for
-    /// the moment
+    /**
+     * HACK: but strategies do not work otherwise in the moment; I need to have a closer look on
+     * what is going on there This restores the behaviour as it was before my previous commit for
+     * the moment
+     */
     public void setMutable(ImmutableList<PosInOccurrence> ifInsts) {
         this.ifInsts = ifInsts;
     }
 
-    /// returns the rule of this rule application
+    /**
+     * returns the rule of this rule application
+     */
     @Override
-    public BuiltInRule rule() {
+    public T rule() {
         return builtInRule;
     }
 
-    /// returns the PositionInOccurrence (representing a SequentFormula and a position in the
-    /// corresponding formula) of this rule application
+    /**
+     * returns the PositionInOccurrence (representing a SequentFormula and a position in the
+     * corresponding formula) of this rule application
+     */
     @Override
-    public PosInOccurrence posInOccurrence() {
+    public @Nullable PosInOccurrence posInOccurrence() {
         return pio;
     }
 
-    public abstract AbstractBuiltInRuleApp replacePos(PosInOccurrence newPos);
+    /**
+     * applies the specified rule at the specified position if all schema variables have been
+     * instantiated
+     */
+    @Override
+    public void checkApplicability() {
+    }
+
+    @Override
+    public void registerSkolemConstants(Namespace<@NonNull Function> fns) {
+    }
+
+    public abstract AbstractBuiltInRuleApp<T> replacePos(PosInOccurrence newPos);
 
     @Override
     public abstract IBuiltInRuleApp setAssumesInsts(ImmutableList<PosInOccurrence> ifInsts);
@@ -66,24 +88,23 @@ public abstract class AbstractBuiltInRuleApp implements IBuiltInRuleApp {
     }
 
     @Override
-    public void checkApplicability() {
-    }
+    public abstract AbstractBuiltInRuleApp<T> tryToInstantiate(Goal goal);
 
     @Override
-    public void registerSkolemConstants(Namespace<@NonNull Function> fns) {
-    }
-
-    @Override
-    public abstract AbstractBuiltInRuleApp tryToInstantiate(Goal goal);
-
-    @Override
-    public AbstractBuiltInRuleApp forceInstantiate(Goal goal) {
+    public AbstractBuiltInRuleApp<T> forceInstantiate(Goal goal) {
         return tryToInstantiate(goal);
     }
 
-    /// returns true if all variables are instantiated
-    ///
-    /// @return true if all variables are instantiated
+    @Override
+    public boolean isSufficientlyComplete() {
+        return complete();
+    }
+
+    /**
+     * returns true if all variables are instantiated
+     *
+     * @return true if all variables are instantiated
+     */
     @Override
     public boolean complete() {
         return true;
@@ -91,14 +112,7 @@ public abstract class AbstractBuiltInRuleApp implements IBuiltInRuleApp {
 
     @Override
     public String toString() {
-        return "BuiltInRule: " + rule().name() + " at pos " + pio.subTerm();
-    }
-
-    @Override
-    public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
-            ProofGoal<G> p_goal, boolean initial) {
-        var goal = (Goal) p_goal;
-        final RuleAppCost cost = goal.getGoalStrategy().computeCost(this, pio, goal);
-        return new BuiltInRuleAppContainer(this, pio, cost, goal);
+        return "BuiltInRule: " + rule().name() + " at pos "
+            + (pio != null ? pio.subTerm() : "[pio is null]");
     }
 }

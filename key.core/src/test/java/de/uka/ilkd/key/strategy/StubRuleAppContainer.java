@@ -4,11 +4,10 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.strategy;
 
+import de.uka.ilkd.key.proof.Goal;
 
-import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.strategy.costbased.NumberRuleAppCost;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 
 /** A contentless container for tests that drive the parked map without a rule application. */
@@ -19,12 +18,12 @@ final class StubRuleAppContainer extends RuleAppContainer {
     }
 
     @Override
-    public ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> goal) {
+    public ImmutableList<RuleAppContainer> createFurtherApps(Goal goal) {
         return ImmutableList.nil();
     }
 
     @Override
-    public RuleApp completeRuleApp(ProofGoal<?> goal) {
+    public RuleApp completeRuleApp(Goal goal) {
         throw new UnsupportedOperationException("stub");
     }
 }

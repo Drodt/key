@@ -348,7 +348,7 @@ public class IntermediateProofReplayer {
         }
 
         if (!ourApp.complete()) {
-            ourApp = ourApp.tryToInstantiate(currGoal);
+            ourApp = ourApp.tryToInstantiate(currGoal.getOverlayServices());
         }
 
         if (ourApp == null) {

@@ -14,12 +14,10 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
-import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.*;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.sequent.*;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.ast.abstraction.KeYRustyType;
@@ -36,8 +34,6 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.VariableNameProposer;
 import org.key_project.rusty.rule.inst.GenericSortCondition;
 import org.key_project.rusty.rule.inst.GenericSortException;
-import org.key_project.rusty.strategy.BuiltInRuleAppContainer;
-import org.key_project.rusty.strategy.TacletAppContainer;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;
@@ -420,9 +416,8 @@ public abstract class TacletApp implements RuleApp {
     }
 
     /// @return A TacletApp with this.sufficientlyComplete() or null
-    public final @Nullable TacletApp tryToInstantiate(Goal goal) {
-        final var services = goal.getOverlayServices();
-        TacletApp app = instantiationHelper(true, goal);
+    public final @Nullable TacletApp tryToInstantiate(Services services) {
+        TacletApp app = instantiationHelper(true, services);
         if (app == null)
             return null;
 
@@ -442,8 +437,7 @@ public abstract class TacletApp implements RuleApp {
         return app;
     }
 
-    private TacletApp instantiationHelper(boolean force, Goal goal) {
-        final var services = goal.getOverlayServices();
+    private TacletApp instantiationHelper(boolean force, Services services) {
         final VariableNamer varNamer = services.getVariableNamer();
 
         TacletApp app = this;
@@ -891,18 +885,6 @@ public abstract class TacletApp implements RuleApp {
     /// @return true if sv must be instantiated
     public boolean isInstantiationRequired(SchemaVariable sv) {
         return !(sv instanceof SkolemTermSV || sv instanceof VariableSV);
-    }
-
-    @Override
-    public <G extends ProofGoal<G>> RuleAppContainer createRuleAppContainer(PosInOccurrence pos,
-            ProofGoal<G> goal, boolean initial) {
-        if (this instanceof NoPosTacletApp npa)
-            return TacletAppContainer.createAppContainers(npa, pos, (Goal) goal);
-        if (this instanceof IBuiltInRuleApp ba) {
-            return BuiltInRuleAppContainer.createAppContainer(ba, pos,
-                goal);
-        }
-        throw new UnsupportedOperationException("Not supported for taclet app " + getClass());
     }
 
     /**

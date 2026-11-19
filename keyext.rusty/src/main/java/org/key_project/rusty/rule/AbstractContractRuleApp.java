@@ -12,18 +12,19 @@ import org.key_project.rusty.proof.mgt.SpecificationRepository;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.util.collection.ImmutableList;
 
-public abstract class AbstractContractRuleApp extends AbstractBuiltInRuleApp {
+public abstract class AbstractContractRuleApp<T extends BuiltInRule>
+        extends AbstractBuiltInRuleApp<T> {
     protected final Contract instantiation;
 
-    protected AbstractContractRuleApp(BuiltInRule rule, PosInOccurrence pio) {
+    protected AbstractContractRuleApp(T rule, PosInOccurrence pio) {
         this(rule, pio, null);
     }
 
-    protected AbstractContractRuleApp(BuiltInRule rule, PosInOccurrence pio, Contract contract) {
+    protected AbstractContractRuleApp(T rule, PosInOccurrence pio, Contract contract) {
         this(rule, pio, ImmutableList.nil(), contract);
     }
 
-    protected AbstractContractRuleApp(BuiltInRule rule, PosInOccurrence pio,
+    protected AbstractContractRuleApp(T rule, PosInOccurrence pio,
             ImmutableList<PosInOccurrence> ifInsts, Contract contract) {
         super(rule, pio, ifInsts);
         this.instantiation = contract;
@@ -33,7 +34,7 @@ public abstract class AbstractContractRuleApp extends AbstractBuiltInRuleApp {
         return instantiation;
     }
 
-    public AbstractContractRuleApp check(Services services) {
+    public AbstractContractRuleApp<T> check(Services services) {
         if (instantiation != null && posInOccurrence() != null) {
             IObserverFunction target = instantiation.getTarget();
             IObserverFunction observerFunctionAtPos = getObserverFunction(services);
@@ -50,10 +51,10 @@ public abstract class AbstractContractRuleApp extends AbstractBuiltInRuleApp {
     }
 
     @Override
-    public abstract AbstractContractRuleApp tryToInstantiate(Goal goal);
+    public abstract AbstractContractRuleApp<T> tryToInstantiate(Goal goal);
 
 
-    public abstract AbstractContractRuleApp setContract(Contract contract);
+    public abstract AbstractContractRuleApp<T> setContract(Contract contract);
 
     public boolean complete() {
         return super.complete() && pio != null && instantiation != null;

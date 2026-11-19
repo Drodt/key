@@ -9,12 +9,10 @@ import de.uka.ilkd.key.rule.BuiltInRule;
 import de.uka.ilkd.key.rule.IBuiltInRuleApp;
 
 import org.key_project.prover.indexing.FormulaTag;
-import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.costbased.RuleAppCost;
 import org.key_project.prover.strategy.costbased.TopRuleAppCost;
-import org.key_project.prover.strategy.costbased.appcontainer.RuleAppContainer;
 import org.key_project.util.collection.ImmutableList;
 
 
@@ -22,6 +20,7 @@ import org.key_project.util.collection.ImmutableList;
  * Instances of this class are immutable
  */
 public class BuiltInRuleAppContainer extends RuleAppContainer {
+
     /**
      * The position of the rule app in two different representations: <code>positionTag</code>
      * denotes the concerned formula and survives modifications of the sequent and of parts of the
@@ -39,7 +38,7 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // constructors
     // -------------------------------------------------------------------------
 
-    public BuiltInRuleAppContainer(IBuiltInRuleApp bir,
+    private BuiltInRuleAppContainer(IBuiltInRuleApp bir,
             PosInOccurrence pio, RuleAppCost cost,
             Goal goal) {
         super(bir, cost);
@@ -128,8 +127,7 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
 
 
     @Override
-    public ImmutableList<RuleAppContainer> createFurtherApps(ProofGoal<?> p_goal) {
-        var goal = (Goal) p_goal;
+    public ImmutableList<RuleAppContainer> createFurtherApps(Goal goal) {
         if (!isStillApplicable(goal)) {
             return ImmutableList.nil();
         }
@@ -140,13 +138,12 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         if (container.getCost() instanceof TopRuleAppCost) {
             return ImmutableList.nil();
         }
-        return ImmutableList.singleton(container);
+        return ImmutableList.<RuleAppContainer>singleton(container);
     }
 
 
     @Override
-    public RuleApp completeRuleApp(ProofGoal<?> p_goal) {
-        var goal = (Goal) p_goal;
+    public RuleApp completeRuleApp(Goal goal) {
         if (!isStillApplicable(goal)) {
             return null;
         }

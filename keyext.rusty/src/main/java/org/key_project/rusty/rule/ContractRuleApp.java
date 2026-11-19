@@ -20,12 +20,13 @@ import org.key_project.util.collection.ImmutableSet;
 /// in from a proof file; fresh applications are represented as regular BuiltInRuleApps. (yes, I
 /// know
 /// that this is ugly - BW)
-public class ContractRuleApp extends AbstractContractRuleApp {
-    ContractRuleApp(BuiltInRule rule, PosInOccurrence pio) {
+public class ContractRuleApp extends AbstractContractRuleApp<UseOperationContractRule> {
+    ContractRuleApp(UseOperationContractRule rule, PosInOccurrence pio) {
         this(rule, pio, null);
     }
 
-    private ContractRuleApp(BuiltInRule rule, PosInOccurrence pio, Contract instantiation) {
+    private ContractRuleApp(UseOperationContractRule rule, PosInOccurrence pio,
+            Contract instantiation) {
         super(rule, pio, instantiation);
     }
 
@@ -38,7 +39,7 @@ public class ContractRuleApp extends AbstractContractRuleApp {
     }
 
     public UseOperationContractRule rule() {
-        return (UseOperationContractRule) super.rule();
+        return super.rule();
     }
 
     public boolean isSufficientlyComplete() {

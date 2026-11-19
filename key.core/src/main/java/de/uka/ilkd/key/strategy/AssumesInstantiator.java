@@ -12,10 +12,10 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.MatchConditions;
 import de.uka.ilkd.key.rule.NoPosTacletApp;
 import de.uka.ilkd.key.rule.Taclet;
-import de.uka.ilkd.key.strategy.IfInstantiationCachePool.AssumesInstantiationCache;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.PosInTerm;
+import org.key_project.prover.caches.AssumesInstantiationCachePool.AssumesInstantiationCache;
 import org.key_project.prover.indexing.FormulaTagManager;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -45,7 +45,8 @@ public class AssumesInstantiator {
         this.goal = goal;
         this.tacletAppContainer = tacletAppContainer;
         this.ifInstCache =
-            goal.proof().getServices().getCaches().getIfInstantiationCache().getCache(goal.node());
+            goal.proof().getServices().getCaches().getAssumesInstantiationCache()
+                    .getCache(goal.node());
     }
 
     private void addResult(NoPosTacletApp app) {
