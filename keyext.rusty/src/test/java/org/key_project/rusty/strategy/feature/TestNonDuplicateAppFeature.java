@@ -5,6 +5,7 @@
 package org.key_project.rusty.strategy.feature;
 
 import org.key_project.logic.PosInTerm;
+import org.key_project.prover.proof.rulefilter.TacletFilter;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
@@ -54,7 +55,7 @@ class TestNonDuplicateAppFeature {
     }
 
     private static TacletApp appAt(Goal goal, PosInOccurrence pos) {
-        return goal.ruleAppIndex().getTacletAppAt(pos, null).head();
+        return goal.ruleAppIndex().getTacletAppAt(TacletFilter.TRUE, pos, null).head();
     }
 
     /// Build `root --(imp_right at succedent #applyIdx)--> child(leaf)` and return the feature

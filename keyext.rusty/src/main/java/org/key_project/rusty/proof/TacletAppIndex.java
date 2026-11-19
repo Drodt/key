@@ -7,6 +7,10 @@ package org.key_project.rusty.proof;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.key_project.prover.proof.rulefilter.AndRuleFilter;
+import org.key_project.prover.proof.rulefilter.RuleFilter;
+import org.key_project.prover.proof.rulefilter.SetRuleFilter;
+import org.key_project.prover.proof.rulefilter.TacletFilter;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
@@ -37,23 +41,31 @@ public class TacletAppIndex {
     /// Object to which the appearance of new taclet apps is reported
     private NewRuleListener newRuleListener = NullNewRuleListener.INSTANCE;
 
+    /**
+     * Filter that is used to restrict the set of taclets that are considered as possible members of
+     * this index. This is used to distinguish between <code>TacletAppIndex</code> s exclusively for
+     * automatic or interactive taclets.
+     */
+    private RuleFilter ruleFilter;
+
     private final Map<CacheKey, TermTacletAppIndex> cache;
 
     public TacletAppIndex(TacletIndex tacletIndex, Goal goal, Services services) {
-        this(tacletIndex, null, null, goal, null,
+        this(tacletIndex, null, null, goal, null, TacletFilter.TRUE,
             new TermTacletAppIndexCacheSet(services.getCaches().getTermTacletAppIndexCache()),
             services.getCaches().getTermTacletAppIndexCache());
     }
 
     private TacletAppIndex(TacletIndex tacletIndex, SemisequentTacletAppIndex antecIndex,
             SemisequentTacletAppIndex succIndex, @NonNull Goal goal,
-            Sequent seq, TermTacletAppIndexCacheSet indexCaches,
+            Sequent seq, RuleFilter ruleFilter, TermTacletAppIndexCacheSet indexCaches,
             Map<CacheKey, TermTacletAppIndex> cache) {
         this.tacletIndex = tacletIndex;
         this.antecIndex = antecIndex;
         this.succIndex = succIndex;
         this.goal = goal;
         this.seq = seq;
+        this.ruleFilter = ruleFilter;
         this.indexCaches = indexCaches;
         this.cache = cache;
     }
@@ -71,41 +83,56 @@ public class TacletAppIndex {
         return tacletIndex;
     }
 
-    public ImmutableList<TacletApp> getTacletAppAt(PosInOccurrence pos, Services services) {
-        return prepend(getFindTacletWithPos(pos, services), getNoFindTaclet(services));
+    /**
+     * returns the set of rule applications at the given position of the given sequent.
+     *
+     * @param pos the PosInOccurrence to focus
+     */
+    public ImmutableList<TacletApp> getTacletAppAt(
+            PosInOccurrence pos, TacletFilter filter,
+            Services services) {
+        ImmutableList<TacletApp> sal = getFindTacletWithPos(pos, filter, services);
+        return prepend(sal, getNoFindTaclet(filter, services));
     }
 
-    private ImmutableList<TacletApp> getFindTacletWithPos(PosInOccurrence pos,
+    private ImmutableList<TacletApp> getFindTacletWithPos(
+            PosInOccurrence pos, TacletFilter filter,
             Services services) {
-        ImmutableList<NoPosTacletApp> tacletInsts = getFindTaclet(pos);
+        assert pos != null;
+        ImmutableList<NoPosTacletApp> tacletInsts = getFindTaclet(pos, filter);
         return createTacletApps(tacletInsts, pos, services);
     }
 
-
-    /// collects all NoFindTacletInstantiations
-    ///
-    /// @param services the Services object encapsulating information about the Rust datastructures
-    /// like (static)types etc.
-    /// @return list of all possible instantiations
-    public ImmutableList<NoPosTacletApp> getNoFindTaclet(Services services) {
-        return tacletIndex().getNoFindTaclet(services);
+    /**
+     * collects all NoFindTacletInstantiations
+     *
+     * @param services the Services object encapsulating information about the java datastructures
+     *        like (static)types etc.
+     * @return list of all possible instantiations
+     */
+    public ImmutableList<NoPosTacletApp> getNoFindTaclet(TacletFilter filter, Services services) {
+        RuleFilter effectiveFilter = new AndRuleFilter(filter, ruleFilter);
+        return tacletIndex().getNoFindTaclet(effectiveFilter, services);
     }
 
-    /// collects all RewriteTacletInstantiations in a subterm of the constrainedFormula described by
-    /// a PosInOccurrence. RewriteTaclets with wrong prefix are filtered out.
-    ///
-    /// @param pos the PosInOccurrence to focus
-    /// @return list of all possible instantiations
+    /**
+     * collects all RewriteTacletInstantiations in a subterm of the constrainedFormula described by
+     * a PosInOccurrence. RewriteTaclets with wrong prefix are filtered out.
+     *
+     * @param pos the PosInOccurrence to focus
+     * @return list of all possible instantiations
+     */
     public ImmutableList<NoPosTacletApp> getRewriteTaclet(
-            PosInOccurrence pos) {
+            PosInOccurrence pos,
+            TacletFilter filter) {
 
-        final Iterator<NoPosTacletApp> it = getFindTaclet(pos).iterator();
+        final Iterator<NoPosTacletApp> it = getFindTaclet(pos, filter).iterator();
 
         ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
 
         while (it.hasNext()) {
             final NoPosTacletApp tacletApp = it.next();
-            final var t = tacletApp.taclet();
+            final Taclet t = (Taclet) tacletApp.taclet();
             if (t instanceof RewriteTaclet && ((RewriteTaclet) t).checkPrefix(pos,
                 MatchConditions.EMPTY_MATCHCONDITIONS) != null) {
                 result = result.prepend(tacletApp);
@@ -115,12 +142,15 @@ public class TacletAppIndex {
         return result;
     }
 
-    /// collects all FindTaclets with instantiations and position
-    ///
-    /// @param pos the PosInOccurrence to focus
-    /// @return list of all possible instantiations
-    public ImmutableList<NoPosTacletApp> getFindTaclet(PosInOccurrence pos) {
-        return getIndex(pos).getTacletAppAt(pos);
+    /**
+     * collects all FindTaclets with instantiations and position
+     *
+     * @param pos the PosInOccurrence to focus
+     * @return list of all possible instantiations
+     */
+    public ImmutableList<NoPosTacletApp> getFindTaclet(
+            PosInOccurrence pos, TacletFilter filter) {
+        return getIndex(pos).getTacletAppAt(pos, filter);
     }
 
     private void ensureIndicesExist() {
@@ -135,10 +165,10 @@ public class TacletAppIndex {
 
         antecIndex =
             new SemisequentTacletAppIndex(getSequent(), true, getServices(), tacletIndex(),
-                newRuleListener, indexCaches);
+                newRuleListener, ruleFilter, indexCaches);
         succIndex =
             new SemisequentTacletAppIndex(getSequent(), false, getServices(), tacletIndex(),
-                newRuleListener, indexCaches);
+                newRuleListener, ruleFilter, indexCaches);
     }
 
     private Services getServices() {
@@ -207,10 +237,12 @@ public class TacletAppIndex {
         return result;
     }
 
-    /// returns a new TacletAppIndex with a given TacletIndex
+    /**
+     * returns a new TacletAppIndex with a given TacletIndex
+     */
     TacletAppIndex copyWith(TacletIndex p_tacletIndex, Goal goal) {
         return new TacletAppIndex(p_tacletIndex, antecIndex, succIndex, goal, getSequent(),
-            indexCaches, cache);
+            ruleFilter, indexCaches, cache);
     }
 
     /// called if a formula has been replaced
@@ -253,19 +285,49 @@ public class TacletAppIndex {
             clearIndexes();
             return;
         }
+
         if (tacletApp.taclet() instanceof NoFindTaclet) {
-            newRuleListener.ruleAdded(tacletApp, null);
+            if (ruleFilter.filter(tacletApp.taclet())) {
+                newRuleListener.ruleAdded(tacletApp, null);
+            }
             return;
         }
 
-        updateIndices(tacletApp);
+        // Re-index only the freshly added taclet: feed the walk a one-taclet index instead of
+        // filtering the full operator buckets per position (see updateIndices(TacletIndex)). The
+        // single-threaded index is used deliberately -- the multi-threaded matcher only
+        // parallelizes
+        // above 256 taclets, so a one-taclet index always takes its sequential path anyway;
+        // building
+        // the lightweight single-threaded index directly makes that explicit and is robust if that
+        // threshold ever changes.
+        final TacletIndex newTacletsIndex = new TacletIndex();
+        newTacletsIndex.add(tacletApp);
+
+        updateIndices(newTacletsIndex);
     }
 
-    private void updateIndices(final NoPosTacletApp newTaclet) {
+    private void updateIndices(final SetRuleFilter newTaclets) {
         antecIndex =
-            antecIndex.addSingleTaclet(newTaclet, getServices(), tacletIndex, newRuleListener);
+            antecIndex.addTaclets(newTaclets, getServices(), tacletIndex, newRuleListener);
         succIndex =
-            succIndex.addSingleTaclet(newTaclet, getServices(), tacletIndex, newRuleListener);
+            succIndex.addTaclets(newTaclets, getServices(), tacletIndex, newRuleListener);
+    }
+
+    /**
+     * Like {@link #updateIndices(SetRuleFilter)}, but the freshly added taclets are supplied as a
+     * small dedicated index rather than as a membership filter over the full {@link #tacletIndex}.
+     * The re-index walk then sees only those taclets as match candidates -- avoiding the
+     * per-position scan of the full operator bucket through {@link SetRuleFilter#filter} -- while
+     * reusing the identical {@code getList}/match logic, so the resulting apps are unchanged. Used
+     * for the common single-taclet add; the goal's rule filter is still applied (the candidate
+     * filter passed here is {@link TacletFilter#TRUE}).
+     */
+    private void updateIndices(final TacletIndex newTacletsIndex) {
+        antecIndex = antecIndex.addTaclets(TacletFilter.TRUE, getServices(), newTacletsIndex,
+            newRuleListener);
+        succIndex = succIndex.addTaclets(TacletFilter.TRUE, getServices(), newTacletsIndex,
+            newRuleListener);
     }
 
     public void clearIndexes() {
@@ -284,22 +346,26 @@ public class TacletAppIndex {
         }
     }
 
-    /// returns the rule applications at the given PosInOccurrence and at all Positions below this.
-    /// The method calls getTacletAppAt for all the Positions below.
-    ///
-    /// @param pos the position where to start from
-    /// @param services the Services object encapsulating information about the java datastructures
-    /// like (static)types etc.
-    /// @return the possible rule applications
-    public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos,
+    /**
+     * returns the rule applications at the given PosInOccurrence and at all Positions below this.
+     * The method calls getTacletAppAt for all the Positions below.
+     *
+     * @param pos the position where to start from
+     * @param services the Services object encapsulating information about the java datastructures
+     *        like (static)types etc.
+     * @return the possible rule applications
+     */
+    public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos, TacletFilter filter,
             Services services) {
         final ImmutableList<TacletApp> findTaclets =
-            getIndex(pos).getTacletAppAtAndBelow(pos, services);
-        return prepend(findTaclets, getNoFindTaclet(services));
+            getIndex(pos).getTacletAppAtAndBelow(pos, filter, services);
+        return prepend(findTaclets, getNoFindTaclet(filter, services));
     }
 
-    /// Reports all cached rule apps. Calls ruleAdded on the given NewRuleListener for every cached
-    /// taclet app.
+    /**
+     * Reports all cached rule apps. Calls ruleAdded on the given NewRuleListener for every cached
+     * taclet app.
+     */
     public void reportRuleApps(NewRuleListener l, Services services) {
         if (antecIndex != null) {
             antecIndex.reportRuleApps(l);
@@ -308,7 +374,7 @@ public class TacletAppIndex {
             succIndex.reportRuleApps(l);
         }
 
-        l.rulesAdded(getNoFindTaclet(services), null);
+        l.rulesAdded(getNoFindTaclet(TacletFilter.TRUE, services), null);
     }
 
     /// Forces all delayed computations to be performed, so that the cache is fully up-to-date

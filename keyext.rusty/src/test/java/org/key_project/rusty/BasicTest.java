@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.PosInTerm;
+import org.key_project.prover.proof.rulefilter.TacletFilter;
 import org.key_project.prover.sequent.*;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.proof.*;
@@ -62,7 +63,7 @@ public class BasicTest {
         }
         proof.setOpenGoals(newGoals);
         ImmutableList<TacletApp> rApplist =
-            goal.ruleAppIndex().getTacletAppAt(pos, null);
+            goal.ruleAppIndex().getTacletAppAt(TacletFilter.TRUE, pos, null);
         assertEquals(1, rApplist.size(), "Too many or zero rule applications.");
         RuleApp rApp = rApplist.head();
         assertTrue(rApp.complete(), "Rule App should be complete");

@@ -394,7 +394,7 @@ public abstract class TacletApp implements RuleApp {
         while (svIt.hasNext()) {
             final SchemaVariable sv = svIt.next();
             if (sv instanceof SkolemTermSV) {
-                final Term inst = (Term) insts.getInstantiation(sv);
+                final Term inst = insts.getInstantiation(sv);
 
                 // skolem constant might already be registered in
                 // case it is used in the \addrules() section of a rule
@@ -472,13 +472,6 @@ public abstract class TacletApp implements RuleApp {
                 if (app == null) {
                     return null;
                 }
-
-                String proposal = VariableNameProposer.DEFAULT.getProposal(app, operatorSv,
-                    services, null, proposals);
-
-                proposals = proposals.append(proposal);
-
-                app = app.createSkolemConstant(proposal, operatorSv, true, goal);
             } else if (operatorSv instanceof VariableSV) {
                 // if the sort of the schema variable is generic,
                 // ensure that it is instantiated
@@ -910,5 +903,24 @@ public abstract class TacletApp implements RuleApp {
                 goal);
         }
         throw new UnsupportedOperationException("Not supported for taclet app " + getClass());
+    }
+
+    /**
+     * Creates the skolem constants of the still uninstantiated skolem term schema variables.
+     * Called when the rule is applied, on the goal it is applied to, so every constant records
+     * the point of its introduction.
+     */
+    public TacletApp createSkolemConstants(Goal goal) {
+        TacletApp app = this;
+        ImmutableList<String> proposals = ImmutableList.nil();
+        for (final SchemaVariable sv : uninstantiatedVars()) {
+            if (sv instanceof SkolemTermSV skolemSV) {
+                final String proposal = VariableNameProposer.DEFAULT.getProposal(app, skolemSV,
+                    goal.getOverlayServices(), null, proposals);
+                proposals = proposals.append(proposal);
+                app = app.createSkolemConstant(proposal, skolemSV, true, goal);
+            }
+        }
+        return app;
     }
 }

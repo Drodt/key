@@ -114,7 +114,13 @@ public class ApplyStrategy extends DefaultProver<@NonNull Proof, Goal> {
         this.stopAtFirstNonClosableGoal = stopAtFirstNonCloseableGoal;
 
         ProofTreeListener treeListener = prepareStrategy(proof, goals, maxSteps, timeout);
-        ApplyStrategyInfo<@NonNull Proof, Goal> result = executeStrategy(treeListener);
+        ApplyStrategyInfo<Proof, Goal> result;
+        try (var ignored =
+            proof.setRuleAppIndexMode(proof.getActiveStrategy().getRuleAppIndexMode())) {
+            result = executeStrategy(treeListener);
+        } catch (Exception e) { // should never be reached
+            throw new RuntimeException(e);
+        }
         finishStrategy(result);
         return result;
     }

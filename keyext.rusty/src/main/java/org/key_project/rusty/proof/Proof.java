@@ -5,10 +5,12 @@
 package org.key_project.rusty.proof;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.Term;
+import org.key_project.prover.indexing.RuleAppIndexMode;
 import org.key_project.prover.proof.ProofObject;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
@@ -53,6 +55,17 @@ public class Proof implements ProofObject<Goal>, Named {
     /// If the list needs too much memory, pruning can be disabled via the command line option
     /// "--no-pruning-closed". In this case the list will not be filled.
     private ImmutableList<Goal> closedGoals = ImmutableList.nil();
+
+    /**
+     * Mode specifying the rule app index to use. The field is read by the prover threads, hence,
+     * volatile.
+     */
+    private volatile RuleAppIndexMode ruleAppIndexMode = RuleAppIndexMode.INTERACTIVE;
+
+    /**
+     * the number of open scopes of the rule app index mode
+     */
+    private final AtomicInteger openRuleAppIndexModeScopes = new AtomicInteger();
 
     /// the logic configuration for this proof, i.e., logic signature, rules etc.
     private InitConfig initConfig;
@@ -697,5 +710,31 @@ public class Proof implements ProofObject<Goal>, Named {
     /// @return the list of enabled goals of the subtree starting with node
     public ImmutableList<Goal> getSubtreeEnabledGoals(Node node) {
         return filterEnabledGoals(getSubtreeGoals(node));
+    }
+
+    public RuleAppIndexMode getRuleAppIndexMode() {
+        return ruleAppIndexMode;
+    }
+
+    /**
+     * Sets the mode of the rule app indices of the proof.
+     * It returns a closeable that restores the previous mode, hence, this method should
+     * only be called using the pattern {@code try(var mode = setRuleAppIndexMode())  ... }
+     * Closing the last open scope resets <strong>always</strong> to the interactive mode.
+     *
+     * Precaution to enable always all rules in the GUI, no matter in which order
+     * threads close the scope. In general it should never happen that two provers using a different
+     * rule application index run at the same time.
+     *
+     * @param mode the mode of the rule app indices
+     * @return the mode's scope
+     */
+    public AutoCloseable setRuleAppIndexMode(RuleAppIndexMode mode) {
+        final RuleAppIndexMode previous = ruleAppIndexMode;
+        openRuleAppIndexModeScopes.incrementAndGet();
+        ruleAppIndexMode = mode;
+        return () -> ruleAppIndexMode = openRuleAppIndexModeScopes.decrementAndGet() == 0
+                ? RuleAppIndexMode.INTERACTIVE
+                : previous;
     }
 }

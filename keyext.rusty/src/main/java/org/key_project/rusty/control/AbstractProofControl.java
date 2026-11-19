@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.key_project.prover.engine.ProverTaskListener;
+import org.key_project.prover.proof.rulefilter.TacletFilter;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -115,7 +116,7 @@ public abstract class AbstractProofControl implements ProofControl {
     @Override
     public ImmutableList<TacletApp> getNoFindTaclet(Goal focusedGoal) {
         return filterTaclet(focusedGoal, focusedGoal.ruleAppIndex()
-                .getNoFindTaclet(focusedGoal.proof().getServices()),
+                .getNoFindTaclet(TacletFilter.TRUE, focusedGoal.proof().getServices()),
             null);
     }
 
@@ -124,16 +125,17 @@ public abstract class AbstractProofControl implements ProofControl {
             PosInOccurrence pos) {
         if (pos != null && focusedGoal != null) {
             return filterTaclet(focusedGoal,
-                focusedGoal.ruleAppIndex().getFindTaclet(pos), pos);
+                focusedGoal.ruleAppIndex().getFindTaclet(TacletFilter.TRUE, pos), pos);
         }
         return ImmutableList.nil();
     }
 
     @Override
-    public ImmutableList<TacletApp> getRewriteTaclet(Goal focusedGoal, PosInOccurrence pos) {
+    public ImmutableList<TacletApp> getRewriteTaclet(Goal focusedGoal,
+            PosInOccurrence pos) {
         if (pos != null) {
             return filterTaclet(focusedGoal,
-                focusedGoal.ruleAppIndex().getRewriteTaclet(pos), pos);
+                focusedGoal.ruleAppIndex().getRewriteTaclet(TacletFilter.TRUE, pos), pos);
         }
 
         return ImmutableList.nil();

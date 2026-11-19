@@ -4,15 +4,18 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.proof;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import org.key_project.logic.PosInTerm;
 import org.key_project.logic.op.Function;
 import org.key_project.prover.indexing.FormulaTagManager;
 import org.key_project.prover.proof.ProofGoal;
+import org.key_project.prover.proof.rulefilter.TacletFilter;
 import org.key_project.prover.rules.RuleAbortException;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
@@ -23,10 +26,12 @@ import org.key_project.prover.strategy.Strategy;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.NamespaceSet;
 import org.key_project.rusty.logic.op.ProgramVariable;
+import org.key_project.rusty.pp.LogicPrinter;
+import org.key_project.rusty.pp.NotationInfo;
 import org.key_project.rusty.proof.proofevent.NodeChangeJournal;
 import org.key_project.rusty.proof.proofevent.RuleAppInfo;
+import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.rusty.rule.NoPosTacletApp;
-import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.TacletApp;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.rusty.strategy.QueueRuleApplicationManager;
@@ -37,66 +42,120 @@ import org.key_project.util.collection.ImmutableList;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import static org.key_project.prover.indexing.RuleAppIndexMode.INTERACTIVE;
+
 
 public final class Goal implements ProofGoal<@NonNull Goal> {
-    private Node node;
-    /// The namespaces local to this goal. This may evolve over time.
-    private NamespaceSet localNamespaces;
-    /// list of all applied rule applications at this branch
-    private ImmutableList<RuleApp> appliedRuleApps = ImmutableList.nil();
-
-    private final RuleAppIndex ruleAppIndex;
-
-    /// the strategy object that determines automated application of rules
-    private @Nullable Strategy<@NonNull Goal> goalStrategy = null;
-    /// This is the object which keeps book about all applicable rules.
-    private @Nullable RuleApplicationManager<Goal> ruleAppManager;
-    /// goal listeners
-    private List<GoalListener> listeners = new ArrayList<>(10);
-    /// this object manages the tags for all formulas of the sequent
-    private FormulaTagManager tagManager;
-    /// If an application of a rule added some information for the strategy, then this information
-    /// is
-    /// stored in this map.
+    /**
+     * If an application of a rule added some information for the strategy, then this information is
+     * stored in this map.
+     */
     private final Properties strategyInfos;
+    private Node node;
+    /**
+     * all possible rule applications at this node are managed with this index
+     */
+    private final RuleAppIndex ruleAppIndex;
+    /**
+     * list of all applied rule applications at this branch
+     */
+    private ImmutableList<RuleApp> appliedRuleApps =
+        ImmutableList.nil();
+    /**
+     * this object manages the tags for all formulas of the sequent
+     */
+    private FormulaTagManager tagManager;
+    /**
+     * the strategy object that determines automated application of rules
+     */
+    private @Nullable Strategy<Goal> goalStrategy = null;
+    /**
+     * This is the object which keeps book about all applicable rules.
+     */
+    private @Nullable RuleApplicationManager<Goal> ruleAppManager;
+    /**
+     * goal listeners
+     */
+    private List<GoalListener> listeners = new ArrayList<>(10);
+    /**
+     * a goal has been excluded from automatic rule application iff automatic == false
+     */
+    private boolean automatic = true;
+    /**
+     * The namespaces local to this goal. This may evolve over time.
+     */
+    private NamespaceSet localNamespaces;
 
-    /// creates a new goal referencing the given node
-    public Goal(Node n, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
-            Services services) {
-        this.node = n;
-        this.ruleAppIndex = new RuleAppIndex(tacletIndex, builtInRuleAppIndex, this, services);
-        appliedRuleApps = ImmutableList.nil();
-        localNamespaces =
-            node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
-        this.strategyInfos = new MapProperties();
-        tagManager = new FormulaTagManager(this);
-        setRuleAppManager(new QueueRuleApplicationManager());
-    }
-
-    /// copy constructor
-    private Goal(Node node, RuleAppIndex ruleAppIndex, ImmutableList<RuleApp> appliedRuleApps,
+    /**
+     * copy constructor
+     */
+    private Goal(Node node, RuleAppIndex ruleAppIndex,
+            ImmutableList<RuleApp> appliedRuleApps,
             @Nullable FormulaTagManager tagManager, RuleApplicationManager<Goal> ruleAppManager,
             Properties strategyInfos, NamespaceSet localNamespace) {
         this.node = node;
         this.ruleAppIndex = ruleAppIndex.copy(this);
         this.appliedRuleApps = appliedRuleApps;
-        this.localNamespaces = localNamespace;
         this.tagManager = tagManager == null ? new FormulaTagManager(this) : tagManager;
+        this.goalStrategy = null;
         this.strategyInfos = strategyInfos;
         setRuleAppManager(ruleAppManager);
+        this.localNamespaces = localNamespace;
     }
 
-    public Node getNode() {
-        return node;
+    /**
+     * creates a new goal referencing the given node
+     */
+    public Goal(Node node, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
+            Services services) {
+        this.node = node;
+        this.ruleAppIndex = new RuleAppIndex(tacletIndex, builtInRuleAppIndex, this, services);
+        this.appliedRuleApps = ImmutableList.nil();
+        this.goalStrategy = null;
+        this.strategyInfos = new MapProperties();
+        this.tagManager = new FormulaTagManager(this);
+        setRuleAppManager(new QueueRuleApplicationManager());
+        this.localNamespaces =
+            node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
     }
 
-    public void setNode(Node node) {
-        if (this.node.sequent() != node.sequent()) {
-            this.node = node;
-            tagManager = new FormulaTagManager(this);
-        } else {
-            this.node = node;
+    /**
+     * Checks if the {@link Goal} has applicable rules.
+     *
+     * @param goal The {@link Goal} to check.
+     * @return {@code true} has applicable rules, {@code false} no rules are applicable.
+     */
+    public static boolean hasApplicableRules(Goal goal) {
+        return goal.getRuleAppManager().peekNext() != null;
+    }
+
+    /**
+     * this object manages the tags for all formulas of the sequent
+     */
+    public FormulaTagManager getFormulaTagManager() {
+        return tagManager;
+    }
+
+    /**
+     * @return the strategy that determines automated rule applications for this goal
+     */
+    public Strategy<Goal> getGoalStrategy() {
+        if (goalStrategy == null) {
+            goalStrategy = proof().getActiveStrategy();
         }
+        return goalStrategy;
+    }
+
+    public void setGoalStrategy(Strategy<Goal> p_goalStrategy) {
+        goalStrategy = p_goalStrategy;
+        if (ruleAppManager != null) {
+            ruleAppManager.clearCache();
+        }
+    }
+
+    @Override
+    public @Nullable RuleApplicationManager<Goal> getRuleAppManager() {
+        return ruleAppManager;
     }
 
     public void setRuleAppManager(@Nullable RuleApplicationManager<Goal> manager) {
@@ -113,85 +172,347 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
     }
 
-    /// returns the namespaces for this goal.
-    ///
-    /// @return an up-to-date non-null namespaces-set.
+    /**
+     * returns the referenced node
+     */
+    public Node getNode() {
+        return node;
+    }
+
+    /**
+     * returns the namespaces for this goal.
+     *
+     * @return an up-to-date non-null namespaces-set.
+     */
     public NamespaceSet getLocalNamespaces() {
         return localNamespaces;
     }
 
+    /**
+     * adds the listener l to the list of goal listeners. Attention: A listener added to this goal
+     * will be taken over when splitting into subgoals.
+     *
+     * @param l the GoalListener to be added
+     */
+    public void addGoalListener(GoalListener l) {
+        listeners.add(l);
+    }
+
+    /**
+     * removes the listener l from the list of goal listeners. Attention: The listener is just
+     * removed from 'this' goal not from the other goals. (All goals can be accessed via proof
+     * openGoals())
+     *
+     * @param l the GoalListener to be removed
+     */
+    public void removeGoalListener(GoalListener l) {
+        listeners.remove(l);
+    }
+
+    /**
+     * Returns a snapshot of the goal listeners currently registered on this goal. Used by
+     * {@link Proof#suspendNonEssentialListeners()} to detach non-essential (e.g. GUI) goal
+     * listeners
+     * for the duration of a parallel run, so they do not fire on worker threads.
+     *
+     * @return a copy of this goal's registered {@link GoalListener}s
+     */
+    public List<GoalListener> getGoalListeners() {
+        return new ArrayList<>(listeners);
+    }
+
+    /**
+     * informs all goal listeners about a change of the sequent to reduce unnecessary object
+     * creation the necessary information is passed to the listener as parameters and not through an
+     * event object.
+     */
+    private void fireSequentChanged(SequentChangeInfo sci) {
+        getFormulaTagManager().sequentChanged(sci, getTime());
+        ruleAppIndex.sequentChanged(sci);
+        // Feed the change to the (possibly delegation-wrapped) queue manager so it can wake parked
+        // assumes-bases on their matching round (see the parked field of
+        // QueueRuleApplicationManager).
+        RuleApplicationManager<Goal> m = ruleAppManager;
+        while (m instanceof DelegationBasedRuleApplicationManager<Goal> d) {
+            m = d.getDelegate();
+        }
+        if (m instanceof QueueRuleApplicationManager qm) {
+            qm.sequentChanged(sci);
+        }
+        for (GoalListener listener : listeners) {
+            listener.sequentChanged(this, sci);
+        }
+    }
+
+    private void fireGoalReplaced(Goal goal, Node parent, ImmutableList<Goal> newGoals) {
+        for (GoalListener listener : listeners) {
+            listener.goalReplaced(goal, parent, newGoals);
+        }
+    }
+
+    private void fireAutomaticStateChanged(boolean oldAutomatic, boolean newAutomatic) {
+        for (GoalListener listener : listeners) {
+            listener.automaticStateChanged(this, oldAutomatic, newAutomatic);
+        }
+    }
+
+    /**
+     * set the node the goal is related to
+     *
+     * @param p_node the Node in the proof tree to which this goal refers to
+     */
+    private void setNode(Node p_node) {
+        if (getNode().sequent() != p_node.sequent()) {
+            node = p_node;
+            tagManager = new FormulaTagManager(this);
+        } else {
+            node = p_node;
+        }
+    }
+
+    /**
+     * returns the index of possible rule applications at this node
+     */
     public RuleAppIndex ruleAppIndex() {
         return ruleAppIndex;
     }
 
-    /// puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node
-    /// of
-    /// the goal
-    ///
-    /// @param app the applied rule app
+    /**
+     * returns the Taclet index for this goal. This is just a shortcut to the Taclet index of the
+     * RuleAppIndex
+     *
+     * @return the Taclet index assigned to this goal
+     */
+    public TacletIndex indexOfTaclets() {
+        return ruleAppIndex.tacletIndex();
+    }
+
+    /**
+     * returns set of rules applied at this branch
+     *
+     * @return IList<RuleApp> applied rule applications
+     */
+    public ImmutableList<RuleApp> appliedRuleApps() {
+        return appliedRuleApps;
+    }
+
+    /**
+     * @return the current time of this goal (which is just the number of applied rules)
+     */
+    public long getTime() {
+        return appliedRuleApps().size();
+    }
+
+    /**
+     * returns the proof the goal belongs to
+     *
+     * @return the Proof the goal belongs to
+     */
+    @Override
+    public Proof proof() {
+        return getNode().proof();
+    }
+
+    /**
+     * returns the sequent of the node
+     *
+     * @return the Sequent to be proved
+     */
+    @Override
+    public Sequent sequent() {
+        return getNode().sequent();
+    }
+
+    /**
+     * Checks if is an automatic goal.
+     *
+     * @return true, if is automatic
+     */
+    public boolean isAutomatic() {
+        return automatic;
+    }
+
+    /**
+     * Sets the automatic status of this goal.
+     *
+     * @param t the new status: true for automatic, false for interactive
+     */
+    public void setEnabled(boolean t) {
+        boolean oldAutomatic = automatic;
+        automatic = t;
+        getNode().clearNameCache();
+        fireAutomaticStateChanged(oldAutomatic, automatic);
+    }
+
+    /**
+     * sets the sequent of the node
+     *
+     * @param sci SequentChangeInfo containing the sequent to be set and describing the applied
+     *        changes to the sequent of the node currently pointed to by this goal
+     */
+    public void setSequent(SequentChangeInfo sci) {
+        assert sci.getOriginalSequent() == getNode().sequent();
+        if (!sci.hasChanged()) {
+            assert sci.sequent().equals(sci.getOriginalSequent());
+            return;
+        }
+        getNode().setSequent(sci.sequent());
+        getNode().getNodeInfo().setSequentChangeInfo(sci);
+        // updates the index
+        fireSequentChanged(sci);
+    }
+
+    /**
+     * adds a formula to the sequent before the given position and informs the rule application
+     * index about this change
+     *
+     * @param cf the SequentFormula to be added
+     * @param p PosInOccurrence encodes the position
+     */
+    public void addFormula(SequentFormula cf, PosInOccurrence p) {
+        setSequent(sequent().addFormula(cf, p));
+    }
+
+    /**
+     * adds a formula to the antecedent or succedent of a sequent. Either at its front or back and
+     * informs the rule application index about this change
+     *
+     * @param cf the SequentFormula to be added
+     * @param inAntec boolean true(false) if SequentFormula has to be added to antecedent
+     *        (succedent)
+     * @param first boolean true if at the front, if false then cf is added at the back
+     */
+    public void addFormula(SequentFormula cf, boolean inAntec,
+            boolean first) {
+        setSequent(sequent().addFormula(cf, inAntec, first));
+    }
+
+    /**
+     * replaces a formula at the given position and informs the rule application index about this
+     * change
+     *
+     * @param cf the SequentFormula replacing the old one
+     * @param p the PosInOccurrence encoding the position
+     */
+    public void changeFormula(SequentFormula cf, PosInOccurrence p) {
+        setSequent(sequent().changeFormula(cf, p));
+    }
+
+    /**
+     * removes a formula at the given position from the sequent and informs the rule appliccation
+     * index about this change
+     *
+     * @param p PosInOccurrence encodes the position
+     */
+    public void removeFormula(PosInOccurrence p) {
+        setSequent(sequent().removeFormula(p));
+    }
+
+    /**
+     * puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current
+     * RuleAppIndex.
+     *
+     * @param app the ITacletApp
+     */
+    public void addNoPosTacletApp(NoPosTacletApp app) {
+        getNode().addNoPosTacletApp(app);
+        ruleAppIndex.addNoPosTacletApp(app);
+    }
+
+    /**
+     * creates a new ITacletApp and puts it to the set of TacletApps at the node of the goal and to
+     * the current RuleAppIndex.
+     *
+     * @param rule the Taclet of the ITacletApp to create
+     * @param insts the given instantiations of the ITacletApp to be created
+     */
+    public void addTaclet(org.key_project.prover.rules.Taclet rule, SVInstantiations insts,
+            boolean isAxiom) {
+        NoPosTacletApp tacletApp =
+            NoPosTacletApp.createFixedNoPosTacletApp(rule, insts, proof().getServices());
+        if (tacletApp != null) {
+            addNoPosTacletApp(tacletApp);
+            if (proof().getInitConfig() != null) { // do not break everything
+                // because of ProofMgt
+                proof().getInitConfig().registerRuleIntroducedAtNode(tacletApp,
+                    node.parent() != null ? node.parent() : node, isAxiom);
+            }
+        }
+    }
+
+    /**
+     * Rebuild all rule caches
+     */
+    public void clearAndDetachRuleAppIndex() {
+        getRuleAppManager().clearCache();
+        ruleAppIndex.clearAndDetachCache();
+    }
+
+    public void addProgramVariable(ProgramVariable pv) {
+        localNamespaces.programVariables().addSafely(pv);
+    }
+
+    /**
+     * clones the goal (with copy of tacletindex and ruleAppIndex).
+     * <p>
+     * The local symbols are reused. This is taken care of later.
+     *
+     * @param node the new Node to which the goal is attached
+     * @return Object the clone
+     */
+    @SuppressWarnings("unchecked")
+    public Goal clone(Node node) {
+        Goal clone;
+        if (node.sequent() != this.node.sequent()) {
+            clone = new Goal(node, ruleAppIndex, appliedRuleApps, null, ruleAppManager.copy(),
+                strategyInfos.clone(), localNamespaces);
+        } else {
+            clone =
+                new Goal(node, ruleAppIndex, appliedRuleApps, getFormulaTagManager().copy(),
+                    ruleAppManager.copy(), strategyInfos.clone(), localNamespaces);
+        }
+        clone.listeners = (List<GoalListener>) ((ArrayList<GoalListener>) listeners).clone();
+        clone.automatic = this.automatic;
+        return clone;
+    }
+
+    /**
+     * like the clone method but returns right type
+     *
+     * @return Goal clone of this Goal
+     * @throws CloneNotSupportedException
+     */
+    public Goal copy() throws CloneNotSupportedException {
+        return (Goal) clone();
+    }
+
+    /**
+     * puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node of
+     * the goal
+     *
+     * @param app the applied rule app
+     */
     public void addAppliedRuleApp(RuleApp app) {
         // Last app first makes inserting and searching faster
         appliedRuleApps = appliedRuleApps.prepend(app);
         getNode().setAppliedRuleApp(app);
     }
 
-    public Sequent sequent() {
-        return getNode().sequent();
+    /**
+     * PRECONDITION: appliedRuleApps.size () > 0
+     */
+    public void removeLastAppliedRuleApp() {
+        appliedRuleApps = appliedRuleApps.tail();
+        // node ().setAppliedRuleApp ( null );
     }
 
-    @Override
-    public @Nullable ImmutableList<@NonNull Goal> apply(
-            @NonNull RuleApp ruleApp) {
-        final Proof proof = proof();
-
-        final NodeChangeJournal journal = new NodeChangeJournal(proof, this);
-        addGoalListener(journal);
-        final Node n = node;
-
-        /*
-         * wrap the services object into an overlay such that any addition to local symbols is
-         * caught.
-         */
-        final ImmutableList<Goal> goalList;
-        ruleApp.checkApplicability();
-        ruleApp.registerSkolemConstants(localNamespaces.functions());
-        addAppliedRuleApp(ruleApp);
-        try {
-            goalList = ruleApp.rule().<Goal>getExecutor().apply(this, ruleApp);
-        } catch (RuleAbortException rae) {
-            removeLastAppliedRuleApp();
-            getNode().setAppliedRuleApp(null);
-            return null;
-        }
-
-        proof.getServices().saveNameRecorder(n);
-
-        if (goalList.isEmpty()) {
-            proof.closeGoal(this);
-        } else {
-            proof.replace(this, goalList);
-            if (ruleApp instanceof TacletApp tacletApp && tacletApp.taclet().closeGoal()) {
-                // the first new goal is the one to be closed
-                proof.closeGoal(goalList.head());
-            }
-        }
-
-        adaptNamespacesNewGoals(goalList);
-        final RuleAppInfo ruleAppInfo = journal.getRuleAppInfo(ruleApp);
-        proof.fireRuleApplied(new ProofEvent(proof, ruleAppInfo, goalList));
-        return goalList;
-    }
-
-    @Override
-    public RuleApplicationManager<@NonNull Goal> getRuleAppManager() {
-        return ruleAppManager;
-    }
-
-    /// creates n new nodes as children of the referenced node and new n goals that have references
-    /// to these new nodes.
-    ///
-    /// @param n number of goals to create
-    /// @return the list of new created goals.
+    /**
+     * creates n new nodes as children of the referenced node and new n goals that have references
+     * to these new nodes.
+     *
+     * @param n number of goals to create
+     * @return the list of new created goals.
+     */
     public ImmutableList<Goal> split(int n) {
         ImmutableList<Goal> goalList = ImmutableList.nil();
 
@@ -228,228 +549,32 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return goalList;
     }
 
-    /// PRECONDITION: appliedRuleApps.size () > 0
-    public void removeLastAppliedRuleApp() {
-        appliedRuleApps = appliedRuleApps.tail();
-        // node ().setAppliedRuleApp ( null );
-    }
-
-    /// clones the goal (with copy of tacletindex and ruleAppIndex).
+    /// Creates new nodes as children of the referenced node and apply each given
+    /// non-null goal transformer to each proof.
     ///
-    /// The local symbols are reused. This is taken care of later.
-    ///
-    /// @param node the new Node to which the goal is attached
-    /// @return Object the clone
-    public Goal clone(Node node) {
-        Goal clone;
-        if (node.sequent() != this.node.sequent()) {
-            clone = new Goal(node, ruleAppIndex, appliedRuleApps, null, ruleAppManager.copy(),
-                strategyInfos.clone(), localNamespaces);
-        } else {
-            clone = new Goal(node, ruleAppIndex, appliedRuleApps, getFormulaTagManager().copy(),
-                ruleAppManager.copy(),
-                strategyInfos.clone(), localNamespaces);
+    /// @return the list of new created goals, manipulated by funcs
+    public ImmutableList<Goal> splitAndTransform(List<@Nullable Consumer<Goal>> funcs) {
+        final var nonNullFuncs = funcs.stream().filter(Objects::nonNull).toList();
+        var n = nonNullFuncs.size();
+        var goals = split(n);
+        for (int i = 0; i < n; i++) {
+            nonNullFuncs.get(i).accept(goals.get(i));
         }
-        clone.listeners = (List<GoalListener>) ((ArrayList<GoalListener>) listeners).clone();
-        // clone.automatic = this.automatic;
-        return clone;
+        return goals;
     }
 
-    public @NonNull Proof proof() {
-        return node.proof();
+    public void setBranchLabel(String s) {
+        node.getNodeInfo().setBranchLabel(s);
     }
 
-    /// sets the sequent of the node
-    ///
-    /// @param sci SequentChangeInfo containing the sequent to be set and describing the applied
-    /// changes to the sequent of the node currently pointed to by this goal
-    public void setSequent(SequentChangeInfo sci) {
-        assert sci.getOriginalSequent() == getNode().sequent();
-        if (!sci.hasChanged()) {
-            assert sci.sequent().equals(sci.getOriginalSequent());
-            return;
-        }
-        getNode().setSequent(sci.sequent());
-        // getNode().getNodeInfo().setSequentChangeInfo(sci);
-        fireSequentChanged(sci);
-    }
-
-    /// informs all goal listeners about a change of the sequent to reduce unnecessary object
-    /// creation the necessary information is passed to the listener as parameters and not through
-    /// an
-    /// event object.
-    private void fireSequentChanged(SequentChangeInfo sci) {
-        getFormulaTagManager().sequentChanged(sci, getTime());
-        ruleAppIndex.sequentChanged(sci);
-        RuleApplicationManager<Goal> m = ruleAppManager;
-        while (m instanceof DelegationBasedRuleApplicationManager<Goal> d) {
-            m = d.getDelegate();
-        }
-        if (m instanceof QueueRuleApplicationManager qm) {
-            qm.sequentChanged(sci);
-        }
-        for (GoalListener listener : listeners) {
-            listener.sequentChanged(this, sci);
-        }
-    }
-
-    private void fireGoalReplaced(Goal goal, Node parent, ImmutableList<Goal> newGoals) {
-        for (GoalListener listener : listeners) {
-            listener.goalReplaced(goal, parent, newGoals);
-        }
-    }
-
-    public void setBranchLabel(String name) {
-        node.getNodeInfo().setBranchLabel(name);
-    }
-
-    /// puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current
-    /// RuleAppIndex.
-    ///
-    /// @param app the TacletApp
-    public void addNoPosTacletApp(NoPosTacletApp app) {
-        getNode().addNoPosTacletApp(app);
-        ruleAppIndex.addNoPosTacletApp(app);
-    }
-
-    /// creates a new TacletApp and puts it to the set of TacletApps at the node of the goal and to
-    /// the current RuleAppIndex.
-    ///
-    /// @param rule the Taclet of the TacletApp to create
-    /// @param insts the given instantiations of the TacletApp to be created
-    public void addTaclet(Taclet rule, SVInstantiations insts, boolean isAxiom) {
-        NoPosTacletApp tacletApp =
-            NoPosTacletApp.createFixedNoPosTacletApp(rule, insts, proof().getServices());
-        if (tacletApp != null) {
-            addNoPosTacletApp(tacletApp);
-
-            if (proof().getInitConfig() != null) { // do not break everything
-                // because of ProofMgt
-                proof().getInitConfig().registerRuleIntroducedAtNode(tacletApp,
-                    node.parent() != null ? node.parent() : node, isAxiom);
-            }
-        }
-    }
-
-    public TacletIndex indexOfTaclets() {
-        return ruleAppIndex.tacletIndex();
-    }
-
-    public Services getOverlayServices() {
-        return proof().getServices().getOverlay(getLocalNamespaces());
-    }
-
-    /*
-     * when the new goals are created during splitting, their namespaces cannot be fixed yet as new
-     * symbols may still be added.
+    /**
+     * Sets the branch label lazily: {@code labelSupplier} is evaluated only when the label is first
+     * read (display/save), keeping term stringification off the proof-search path.
      *
-     * Now, remember the freshly created symbols in the nodes and set fresh local namespaces.
-     *
-     * The
+     * @param labelSupplier supplies the branch label on demand
      */
-    private void adaptNamespacesNewGoals(final ImmutableList<Goal> goalList) {
-        Collection<ProgramVariable> newProgVars = localNamespaces.programVariables().elements();
-        Collection<Function> newFunctions = localNamespaces.functions().elements();
-
-        localNamespaces.flushToParent();
-
-        boolean first = true;
-        for (Goal goal : goalList) {
-            goal.getNode().addLocalProgVars(newProgVars);
-            goal.getNode().addLocalFunctions(newFunctions);
-
-            if (first) {
-                first = false;
-            } else {
-                goal.localNamespaces = localNamespaces.getParent().copy().copyWithParent();
-            }
-
-        }
-    }
-
-    @Override
-    public String toString() {
-        return node.sequent().toString();
-    }
-
-    public void addProgramVariable(ProgramVariable pv) {
-        localNamespaces.programVariables().addSafely(pv);
-    }
-
-    /// Update the local namespaces from a namespace set.
-    ///
-    /// The parameter is copied and stored locally.
-    ///
-    /// @param ns a non-null set of namesspaces which applies to this goal.
-    public void makeLocalNamespacesFrom(NamespaceSet ns) {
-        this.localNamespaces = ns.copyWithParent().copyWithParent();
-    }
-
-    /// adds a formula to the antecedent or succedent of a sequent. Either at its front or back and
-    /// informs the rule application index about this change
-    ///
-    /// @param sf the SequentFormula to be added
-    /// @param inAntec boolean true(false) if SequentFormula has to be added to antecedent
-    /// (succedent)
-    /// @param first boolean true if at the front, if false then sf is added at the back
-    public void addFormula(SequentFormula sf, boolean inAntec, boolean first) {
-        setSequent(sequent().addFormula(sf, inAntec, first));
-    }
-
-    /// replaces a formula at the given position and informs the rule application index about this
-    /// change
-    ///
-    /// @param sf the SequentFormula replacing the old one
-    /// @param p the PosInOccurrence encoding the position
-    public void changeFormula(SequentFormula sf, PosInOccurrence p) {
-        setSequent(sequent().changeFormula(sf, p));
-    }
-
-    @Override
-    public long getTime() {
-        return appliedRuleApps.size();
-    }
-
-    public ImmutableList<RuleApp> appliedRuleApps() {
-        return appliedRuleApps;
-    }
-
-    public void setGoalStrategy(Strategy<@NonNull Goal> p_goalStrategy) {
-        goalStrategy = p_goalStrategy;
-        ruleAppManager.clearCache();
-    }
-
-    public Strategy<@NonNull Goal> getGoalStrategy() {
-        if (goalStrategy == null) {
-            goalStrategy = proof().getActiveStrategy();
-        }
-        return goalStrategy;
-    }
-
-    public FormulaTagManager getFormulaTagManager() {
-        return tagManager;
-    }
-
-    public boolean isAutomatic() {
-        // TODO
-        return true;
-    }
-
-    /// adds the listener l to the list of goal listeners. Attention: A listener added to this goal
-    /// will be taken over when splitting into subgoals.
-    ///
-    /// @param l the GoalListener to be added
-    public void addGoalListener(GoalListener l) {
-        listeners.add(l);
-    }
-
-    /// removes the listener l from the list of goal listeners. Attention: The listener is just
-    /// removed from 'this' goal not from the other goals. (All goals can be accessed via proof
-    /// openGoals())
-    ///
-    /// @param l the GoalListener to be removed
-    public void removeGoalListener(GoalListener l) {
-        listeners.remove(l);
+    public void setBranchLabel(Supplier<String> labelSupplier) {
+        node.getNodeInfo().setBranchLabel(labelSupplier);
     }
 
     void pruneToParent() {
@@ -458,6 +583,9 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         resetLocalSymbols();
     }
 
+    /*
+     * Set up the local namespaces table from the stored local symbols
+     */
     private void resetLocalSymbols() {
         NamespaceSet newNS = proof().getServices().getNamespaces().copyWithParent();
         for (ProgramVariable pv : node.getLocalProgVars()) {
@@ -468,6 +596,165 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
 
         localNamespaces = newNS.copyWithParent();
+    }
+
+    /**
+     * Perform the provided rule application on this goal.
+     * Returns the new goal(s), if any.
+     * This will also populate a {@link RuleAppInfo} object and fire the corresponding event.
+     * The state of the proof is also updated.
+     *
+     * @param ruleApp the rule app
+     * @return new goal(s)
+     */
+    @Override
+    public ImmutableList<Goal> apply(final RuleApp ruleApp) {
+        final PendingRuleApp pending = computeRuleApp(ruleApp);
+        if (pending == null) {
+            return null;
+        }
+        return commitRuleApp(pending);
+    }
+
+    /**
+     * The result of {@link #computeRuleApp(RuleApp)}: everything a rule application produced that
+     * has
+     * not yet been committed to the (shared) proof. Created on the worker thread, consumed by
+     * {@link #commitRuleApp(PendingRuleApp)}.
+     */
+    public static final class PendingRuleApp {
+        private final RuleApp ruleApp;
+        private final NodeChangeJournal journal;
+        private final Node originalNode;
+        private final ImmutableList<Goal> goalList;
+
+        private PendingRuleApp(RuleApp ruleApp, NodeChangeJournal journal, Node originalNode,
+                ImmutableList<Goal> goalList) {
+            this.ruleApp = ruleApp;
+            this.journal = journal;
+            this.originalNode = originalNode;
+            this.goalList = goalList;
+        }
+    }
+
+    /**
+     * Compute phase of a rule application: run the rule executor (term construction, node
+     * splitting)
+     * without touching shared proof state. Safe to run concurrently for distinct goals &mdash; it
+     * mutates only this goal's own node subtree, the atomic node counter and the thread-safe
+     * strategy caches. The
+     * {@link #commitRuleApp(PendingRuleApp)} step then performs the shared mutation under the
+     * prover's commit lock. The plain {@link #apply(RuleApp)} runs the two back to back, so the
+     * single-threaded behaviour is unchanged.
+     *
+     * @param p_ruleApp the rule application to perform
+     * @return the pending application to be committed, or {@code null} if the rule aborted
+     */
+    public @Nullable PendingRuleApp computeRuleApp(final RuleApp p_ruleApp) {
+        final RuleApp ruleApp = p_ruleApp instanceof TacletApp tacletApp
+                ? tacletApp.createSkolemConstants(this)
+                : p_ruleApp;
+        final Proof proof = proof();
+
+        final NodeChangeJournal journal = new NodeChangeJournal(proof, this);
+        addGoalListener(journal);
+
+        final Node n = node;
+
+        final ImmutableList<Goal> goalList;
+        ruleApp.checkApplicability();
+        ruleApp.registerSkolemConstants(localNamespaces.functions());
+        addAppliedRuleApp(ruleApp);
+        try {
+            goalList = ruleApp.rule().<Goal>getExecutor().apply(this, ruleApp);
+        } catch (RuleAbortException rae) {
+            removeLastAppliedRuleApp();
+            getNode().setAppliedRuleApp(null);
+            // detach the journal: only the success path (via getRuleAppInfo) removes it, so an
+            // aborted application would otherwise leak the listener (inherited by subgoals on
+            // split)
+            removeGoalListener(journal);
+            return null;
+        } catch (IndexOutOfBoundsException e) {
+            removeLastAppliedRuleApp();
+            getNode().setAppliedRuleApp(null);
+            removeGoalListener(journal);
+            return null;
+        }
+
+        return new PendingRuleApp(ruleApp, journal, n, goalList);
+    }
+
+    /**
+     * Commit phase of a rule application: the shared-state mutation (proof-tree update,
+     * name-recorder
+     * stashing and the {@code ruleApplied} event). The parallel prover runs this under its commit
+     * lock; the order of operations is identical to the original monolithic {@code apply}.
+     *
+     * @param pending the result of {@link #computeRuleApp(RuleApp)}
+     * @return the new goals
+     */
+    public ImmutableList<Goal> commitRuleApp(final PendingRuleApp pending) {
+        final Proof proof = proof();
+        final ImmutableList<Goal> goalList = pending.goalList;
+
+        proof.getServices().saveNameRecorder(pending.originalNode);
+
+        if (goalList.isEmpty()) {
+            proof.closeGoal(this);
+        } else {
+            proof.replace(this, goalList);
+            if (pending.ruleApp instanceof TacletApp tacletApp && tacletApp.taclet().closeGoal()) {
+                // the first new goal is the one to be closed
+                proof.closeGoal(goalList.head());
+            }
+        }
+
+        adaptNamespacesNewGoals(goalList);
+        final RuleAppInfo ruleAppInfo = pending.journal.getRuleAppInfo(pending.ruleApp);
+        proof.fireRuleApplied(new ProofEvent(proof, ruleAppInfo, goalList));
+        return goalList;
+    }
+
+    public Services getOverlayServices() {
+        return proof().getServices().getOverlay(getLocalNamespaces());
+    }
+
+    /*
+     * When the new goals are created during splitting, their namespaces cannot be fixed yet as new
+     * symbols may still be added; this finalizes them once the rule application has committed.
+     *
+     * The symbols introduced by this step are recorded in each new goal's node-local storage (which
+     * accumulates down the branch, see {@link Node}, this is also what proof saving/reloading
+     * uses), and
+     * each goal's local namespaces are then rebuilt from the immutable shared base plus that
+     * node-local storage: exactly the reconstruction resetLocalSymbols performs on pruning.
+     * The shared proof namespace is never modified, so under the parallel prover the
+     * workers' concurrent matching can read it lock-free; fresh names stay branch-locally unique by
+     * construction (finding unused names searches the goal-local namespaces), global uniqueness is
+     * not
+     * required, sibling branches reuse names by design.
+     */
+    private void adaptNamespacesNewGoals(final ImmutableList<Goal> goalList) {
+        // Only program variables and functions are harvested: these are the only namespace kinds
+        // rules register in a goal's local namespaces (logical variables, in particular, are
+        // registered proof-globally or occur only bound inside terms). A rule that registered a
+        // symbol of another kind goal-locally would lose it in the rebuild below.
+        Collection<ProgramVariable> newProgVars = localNamespaces.programVariables().elements();
+        Collection<Function> newFunctions = localNamespaces.functions().elements();
+
+        for (Goal goal : goalList) {
+            goal.getNode().addLocalProgVars(newProgVars);
+            goal.getNode().addLocalFunctions(newFunctions);
+            goal.resetLocalSymbols();
+        }
+    }
+
+    @Override
+    public String toString() {
+        LogicPrinter lp = LogicPrinter.purePrinter(new NotationInfo(), proof().getServices());
+        lp.printSequent(node.sequent());
+        return lp.result();
     }
 
     public <T> @Nullable T getStrategyInfo(Properties.Property<T> property) {
@@ -482,5 +769,55 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
 
     public void undoStrategyInfoAdd(StrategyInfoUndoMethod undoMethod) {
         undoMethod.undo(strategyInfos);
+    }
+
+    /**
+     * Update the local namespaces from a namespace set.
+     * <p>
+     * The parameter is copied and stored locally.
+     *
+     * @param ns a non-null set of namesspaces which applies to this goal.
+     */
+    public void makeLocalNamespacesFrom(NamespaceSet ns) {
+        this.localNamespaces = ns.copyWithParent().copyWithParent();
+    }
+
+    public List<RuleApp> getAllBuiltInRuleApps() {
+        final BuiltInRuleAppIndex index = ruleAppIndex().builtInRuleAppIndex();
+        LinkedList<RuleApp> ruleApps = new LinkedList<>();
+        for (SequentFormula sf : getNode().sequent().antecedent()) {
+            ImmutableList<IBuiltInRuleApp> t =
+                index.getBuiltInRule(this, new PosInOccurrence(sf, PosInTerm.getTopLevel(), true));
+            t.forEach(ruleApps::add);
+        }
+        for (SequentFormula sf : getNode().sequent().succedent()) {
+            ImmutableList<IBuiltInRuleApp> t =
+                index.getBuiltInRule(this, new PosInOccurrence(sf, PosInTerm.getTopLevel(), false));
+            t.forEach(ruleApps::add);
+        }
+        return ruleApps;
+    }
+
+    public List<TacletApp> getAllTacletApps(Services services) {
+        RuleAppIndex index = ruleAppIndex();
+        List<TacletApp> allApps = new LinkedList<>();
+        TacletFilter filter = new TacletFilter() {
+            @Override
+            protected boolean filter(Taclet taclet) {
+                return true;
+            }
+        };
+        for (SequentFormula sf : getNode().sequent().antecedent()) {
+            ImmutableList<TacletApp> tacletAppAtAndBelow = index.getTacletAppAtAndBelow(filter,
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), true), services, INTERACTIVE);
+            tacletAppAtAndBelow.forEach(allApps::add);
+        }
+
+        for (SequentFormula sf : getNode().sequent().succedent()) {
+            ImmutableList<TacletApp> tacletAppAtAndBelow = index.getTacletAppAtAndBelow(filter,
+                new PosInOccurrence(sf, PosInTerm.getTopLevel(), false), services, INTERACTIVE);
+            tacletAppAtAndBelow.forEach(allApps::add);
+        }
+        return allApps;
     }
 }

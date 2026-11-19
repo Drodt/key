@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.proof;
 
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,7 +36,15 @@ public class NodeInfo {
     /// has the rule app of the node been applied interactively?
     private boolean interactiveApplication = false;
 
+    /** Raw taclet-template label whose {@code #sv} placeholders are substituted lazily. */
+    private @Nullable String rawBranchLabel = null;
     private String branchLabel = null;
+    /**
+     * Lazy source for labels that stringify terms; evaluated on first {@link #getBranchLabel()}.
+     */
+    private @Nullable Supplier<String> branchLabelSupplier = null;
+    /** Whether {@link #branchLabel} has already been resolved from the raw label / supplier. */
+    private boolean branchLabelResolved = false;
     /// the node this info object belongs to
     private final Node node;
 
@@ -62,17 +71,58 @@ public class NodeInfo {
         return branchLabel;
     }
 
-    /// sets the branch label of a node. Schema variables occurring in string <tt>s</tt> are
-    /// replaced
-    /// by their instantiations if possible
-    ///
-    /// @param s the String to be set
-    public void setBranchLabel(@Nullable String s) {
+    /**
+     * sets the branch label of a node. Schema variables occurring in string <tt>s</tt> are replaced
+     * by their instantiations if possible
+     *
+     * @param s the String to be set
+     */
+    public synchronized void setBranchLabel(String s) {
+        // Store only the raw label; the #sv substitution / term pretty-printing below is deferred
+        // to
+        // getBranchLabel() (display/save). setBranchLabel is called during rule application for
+        // named
+        // branches, and nothing on the proof-search path reads the label, so doing that work here
+        // was
+        // wasteful and a thread-safety hazard for the parallel prover.
         if (s == null) {
             return;
         }
-        if (node.parent() == null) {
+        rawBranchLabel = s;
+        branchLabelSupplier = null;
+        branchLabel = null;
+        branchLabelResolved = false;
+    }
+
+    /**
+     * Lazy variant of {@link #setBranchLabel(String)} for labels that stringify terms: the supplier
+     * is evaluated (and its result substituted) only when {@link #getBranchLabel()} is first
+     * called,
+     * i.e. on display/save, never on the proof-search path.
+     *
+     * @param labelSupplier supplies the raw branch label on demand
+     */
+    public synchronized void setBranchLabel(Supplier<String> labelSupplier) {
+        if (labelSupplier == null) {
             return;
+        }
+        branchLabelSupplier = labelSupplier;
+        rawBranchLabel = null;
+        branchLabel = null;
+        branchLabelResolved = false;
+    }
+
+    /**
+     * Resolves a raw branch label: schema variables occurring as {@code #sv} are replaced by their
+     * (pretty-printed) instantiations if the parent rule is a taclet application. Runs lazily from
+     * {@link #getBranchLabel()}, never on the proof-search path.
+     *
+     * @param s the raw label, or {@code null}
+     * @return the resolved label, or {@code null}
+     */
+    private @Nullable String resolveBranchLabel(@Nullable String s) {
+        if (s == null || node.parent() == null) {
+            return null;
         }
         RuleApp ruleApp = node.parent().getAppliedRuleApp();
         if (ruleApp instanceof TacletApp tacletApp) {
@@ -94,19 +144,21 @@ public class NodeInfo {
                         tacletApp.rule().name());
                     res = arg; // use sv name instead
                 } else {
-                    // if (val instanceof ProgramVariable pv) {
-                    // var originTracker = node.proof().lookup(LocationVariableTracker.class);
-                    // if (originTracker != null) {
-                    // var origin = originTracker.getCreatedBy(pv);
-                    // if (origin instanceof PosTacletApp posTacletApp) {
-                    // var name = posTacletApp.taclet().displayName();
-                    // if (name.equals("ifElseUnfold") || name.equals("ifUnfold")) {
-                    // val =
-                    // posTacletApp.instantiations().lookupValue(new Name("#nse"));
-                    // }
-                    // }
-                    // }
-                    // }
+                    /*
+                     * if (val instanceof ProgramVariable locVar) {
+                     * var originTracker = node.proof().lookup(LocationVariableTracker.class);
+                     * if (originTracker != null) {
+                     * var origin = originTracker.getCreatedBy(locVar);
+                     * if (origin instanceof PosTacletApp posTacletApp) {
+                     * var name = posTacletApp.taclet().displayName();
+                     * if (name.equals("ifElseUnfold") || name.equals("ifUnfold")) {
+                     * val =
+                     * posTacletApp.instantiations().lookupValue(new Name("#nse"));
+                     * }
+                     * }
+                     * }
+                     * }
+                     */
                     res = ProofSaver.printAnything(val, node.proof().getServices());
                 }
                 m.appendReplacement(sb, res.replace("$", "\\$"));
@@ -115,9 +167,9 @@ public class NodeInfo {
             // eliminate annoying whitespaces
             Pattern whiteSpacePattern = Pattern.compile("\\s+");
             Matcher whiteSpaceMatcher = whiteSpacePattern.matcher(sb);
-            branchLabel = whiteSpaceMatcher.replaceAll(" ");
+            return whiteSpaceMatcher.replaceAll(" ");
         } else {
-            branchLabel = s;
+            return s;
         }
     }
 

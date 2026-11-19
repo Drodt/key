@@ -14,7 +14,6 @@ import org.key_project.prover.rules.instantiation.MatchResultInfo;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
-import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.pat.BindingPattern;
 import org.key_project.rusty.logic.*;
@@ -220,11 +219,5 @@ public abstract class TacletExecutor extends
             LogicServices p_services,
             MatchResultInfo matchCond) {
         // TODO
-    }
-
-
-    @Override
-    protected SequentFormula createSequentFormula(Term form) {
-        return new SequentFormula(form);
     }
 }

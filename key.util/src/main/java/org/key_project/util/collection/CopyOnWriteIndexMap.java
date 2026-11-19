@@ -2,19 +2,19 @@
  * KeY is licensed under the GNU General Public License Version 2, 
  * or (at your option) any later version.
  * SPDX-License-Identifier: GPL-2.0-or-later */
-package de.uka.ilkd.key.proof;
+package org.key_project.util.collection;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
 /**
- * A copy-on-write map used for the {@link TacletIndex}'s find-taclet lists. {@link #copy()} shares
+ * A copy-on-write map used for the {@code TacletIndex}'s find-taclet lists. {@link #copy()} shares
  * the backing map in O(1); the first mutating call ({@link #put}/{@link #remove}) clones it, so a
  * shared map is never written in place. Reads delegate straight through.
  *
  * <p>
- * The point is memory: every proof {@link Goal} gets its own {@link TacletIndex} via
- * {@link TacletIndex#copy()}, but the find-taclet lists are only changed by a few operations
+ * The point is memory: every proof goal gets its own {@code TacletIndex} via
+ * {@code TacletIndex#copy()}, but the find-taclet lists are only changed by a few operations
  * (\addrules, program-variable renaming). Sharing until first write means the (large) base index is
  * physically duplicated only when a goal actually modifies it, instead of on every branch.
  *
@@ -26,14 +26,14 @@ import java.util.LinkedHashMap;
  * @param <K> key type
  * @param <V> value type
  */
-final class CopyOnWriteIndexMap<K, V> {
+final public class CopyOnWriteIndexMap<K, V> {
     private LinkedHashMap<K, V> map;
     /**
      * {@code true} while {@link #map} may be shared with another instance (see {@link #copy()}).
      */
     private boolean shared;
 
-    CopyOnWriteIndexMap() {
+    public CopyOnWriteIndexMap() {
         this.map = new LinkedHashMap<>();
     }
 
@@ -45,7 +45,7 @@ final class CopyOnWriteIndexMap<K, V> {
     /**
      * Returns a copy that shares this map's backing store until one of them is written. O(1).
      */
-    CopyOnWriteIndexMap<K, V> copy() {
+    public CopyOnWriteIndexMap<K, V> copy() {
         this.shared = true;
         return new CopyOnWriteIndexMap<>(this.map);
     }
@@ -58,20 +58,20 @@ final class CopyOnWriteIndexMap<K, V> {
         }
     }
 
-    V get(Object key) {
+    public V get(Object key) {
         return map.get(key);
     }
 
-    Collection<V> values() {
+    public Collection<V> values() {
         return map.values();
     }
 
-    V put(K key, V value) {
+    public V put(K key, V value) {
         ensureExclusive();
         return map.put(key, value);
     }
 
-    V remove(Object key) {
+    public V remove(Object key) {
         ensureExclusive();
         return map.remove(key);
     }
