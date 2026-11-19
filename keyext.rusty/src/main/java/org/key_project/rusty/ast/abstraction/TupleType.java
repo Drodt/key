@@ -46,7 +46,7 @@ public class TupleType implements Type {
         var fields = new Field[types.size()];
         var name = new StringBuilder().append('(');
         for (int i = 0; i < types.size(); i++) {
-            var fn = ldts.getTupleLDT(i).getFieldFunctions();
+            var fn = ldts.getTupleLDT(i + 1).getFieldFunctions();
             Type type = types.get(i);
             name.append(type.name());
             if (i != types.size() - 1) {
