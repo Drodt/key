@@ -30,7 +30,6 @@ import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.rule.BuiltInRule;
-import org.key_project.rusty.strategy.feature.AgeFeature;
 import org.key_project.rusty.strategy.feature.NonDuplicateAppFeature;
 
 import org.jspecify.annotations.NonNull;
@@ -94,7 +93,7 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
         // the feature for the cost computation
         totalCost =
             add(AutomatedRuleFeature.getInstance(), ifMatchedF, NonDuplicateAppFeature.INSTANCE,
-                reduceCostTillMaxF, conflictCostDispatcher, AgeFeature.INSTANCE);
+                reduceCostTillMaxF, conflictCostDispatcher);
 
         // The feature for instantiateApp, built once instead of on every call.
         // Note that no conflict dispatcher takes part in this sum: resolveConflicts()
@@ -104,7 +103,7 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
         enableInstantiate();
         totalInstCost =
             add(AutomatedRuleFeature.getInstance(), ifMatchedF, NonDuplicateAppFeature.INSTANCE,
-                reduceInstTillMaxF, AgeFeature.INSTANCE);
+                reduceInstTillMaxF);
         disableInstantiate();
     }
 

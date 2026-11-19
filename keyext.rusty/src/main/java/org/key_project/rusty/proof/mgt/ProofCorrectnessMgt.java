@@ -7,8 +7,8 @@ package org.key_project.rusty.proof.mgt;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.util.collection.ImmutableList;
 
@@ -16,7 +16,7 @@ public final class ProofCorrectnessMgt {
     private final Proof proof;
     private final SpecificationRepository specRepos;
 
-    private final Set<RuleApp> cachedRuleApps = new LinkedHashSet<>();
+    private final Set<org.key_project.prover.rules.RuleApp> cachedRuleApps = new LinkedHashSet<>();
     private ProofStatus proofStatus = ProofStatus.OPEN;
 
     // -------------------------------------------------------------------------

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.proof.mgt;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.rule.RuleApp;
 
 public interface ComplexRuleJustification extends RuleJustification {
     RuleJustification getSpecificJustification(RuleApp app, Services services);

@@ -11,6 +11,7 @@ import org.key_project.logic.PosInTerm;
 import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.proof.rulefilter.TacletFilter;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstDirect;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -97,7 +98,7 @@ public class TestApplyTaclet {
         ImmutableList<TacletApp> rApplist =
             goal.ruleAppIndex().getTacletAppAt(TacletFilter.TRUE, applyPos, null);
         assertEquals(1, rApplist.size(), "Too many or zero rule applications.");
-        RuleApp rApp = rApplist.head();
+        org.key_project.prover.rules.RuleApp rApp = rApplist.head();
         assertTrue(rApp.complete(), "Rule App should be complete");
         ImmutableList<Goal> goals = goal.apply(rApp);
         assertEquals(1, goals.size(), "Too many or zero goals for imp-right.");
@@ -121,7 +122,7 @@ public class TestApplyTaclet {
         ImmutableList<TacletApp> rApplist =
             goal.ruleAppIndex().getTacletAppAt(TacletFilter.TRUE, applyPos, null);
         assertEquals(1, rApplist.size(), "Too many or zero rule applications.");
-        RuleApp rApp = rApplist.head();
+        org.key_project.prover.rules.RuleApp rApp = rApplist.head();
         assertTrue(rApp.complete(), "Rule App should be complete");
         ImmutableList<Goal> goals = goal.apply(rApp);
         assertEquals(1, goals.size(), "Too many or zero goals for imp_right_add.");
@@ -228,7 +229,7 @@ public class TestApplyTaclet {
         ImmutableList<TacletApp> rApplist =
             goal.ruleAppIndex().getTacletAppAt(TacletFilter.TRUE, applyPos, null);
         assertEquals(1, rApplist.size(), "Too many or zero rule applications.");
-        RuleApp rApp = rApplist.head();
+        org.key_project.prover.rules.RuleApp rApp = rApplist.head();
         assertTrue(rApp.complete(), "Rule App should be complete");
         ImmutableList<Goal> goals = goal.apply(rApp);
         assertEquals(2, goals.size(), "Too many or zero goals for imp-left.");

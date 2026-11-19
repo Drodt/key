@@ -6,6 +6,7 @@ package org.key_project.rusty.rule;
 
 import java.util.*;
 
+import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
 import org.key_project.logic.Term;
@@ -14,6 +15,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.OperatorSV;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.ITacletApp;
 import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.*;
 import org.key_project.prover.rules.instantiation.MatchResultInfo;
@@ -42,7 +44,7 @@ import org.jspecify.annotations.Nullable;
 import static org.key_project.logic.op.Function.FunctionKind.DEFINITIONAL_SKOLEM;
 import static org.key_project.logic.op.Function.FunctionKind.SKOLEM;
 
-public abstract class TacletApp implements RuleApp {
+public abstract class TacletApp implements ITacletApp {
     /// the taclet for which the application information is collected
     private final @NonNull Taclet taclet;
 
@@ -734,6 +736,13 @@ public abstract class TacletApp implements RuleApp {
         Semisequent antec = taclet().assumesSequent().antecedent();
         Semisequent succ = taclet().assumesSequent().succedent();
         return list.size() == (antec.size() + succ.size());
+    }
+
+    @Override
+    public @NonNull ITacletApp addCheckedInstantiation(SchemaVariable sv, Term term,
+            LogicServices services,
+            boolean interesting) {
+        return addCheckedInstantiation(sv, term, (Services) services, interesting);
     }
 
     /// creates a new Tacletapp where the SchemaVariable sv is instantiated with the given term.

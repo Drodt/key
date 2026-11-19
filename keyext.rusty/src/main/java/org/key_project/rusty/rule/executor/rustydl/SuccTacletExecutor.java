@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.rule.executor.rustydl;
 
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentChangeInfo;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.rule.MatchConditions;
-import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.Taclet;
 import org.key_project.rusty.rule.tacletbuilder.AntecSuccTacletGoalTemplate;
 import org.key_project.rusty.rule.tacletbuilder.TacletGoalTemplate;
@@ -26,7 +26,7 @@ public class SuccTacletExecutor
     protected void applyAdd(org.key_project.prover.sequent.Sequent add,
             SequentChangeInfo currentSequent,
             PosInOccurrence whereToAdd, PosInOccurrence posOfFind, MatchConditions matchCond,
-            Goal goal, RuleApp ruleApp, Services services) {
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services) {
         addToAntec(add.antecedent(),
             currentSequent, null,
             posOfFind, matchCond, goal, ruleApp, services);

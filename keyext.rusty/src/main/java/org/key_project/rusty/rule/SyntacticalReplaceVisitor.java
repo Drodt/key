@@ -13,6 +13,7 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.UpdateableOperator;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ast.RustyProgramElement;
@@ -43,7 +44,7 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     protected final PosInOccurrence applicationPosInOccurrence;
     protected final Rule rule;
     protected final Goal goal;
-    protected final RuleApp ruleApp;
+    protected final org.key_project.prover.rules.RuleApp ruleApp;
 
 
     /// the stack contains the subterms that will be added in the next step of execPostOrder in Term
@@ -67,7 +68,8 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     /// @param termBuilder the TermBuilder to use (allows to use the non cached version)
     private SyntacticalReplaceVisitor(
             PosInOccurrence applicationPosInOccurrence, SVInstantiations svInst, Goal goal,
-            Rule rule, RuleApp ruleApp, Services services, TermBuilder termBuilder) {
+            Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Services services,
+            TermBuilder termBuilder) {
         this.services = services;
         this.tb = termBuilder;
         this.svInst = svInst;
@@ -89,13 +91,14 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     /// @param services the Services
     public SyntacticalReplaceVisitor(
             PosInOccurrence applicationPosInOccurrence, SVInstantiations svInst, Goal goal,
-            Rule rule, RuleApp ruleApp, Services services) {
+            Rule rule, org.key_project.prover.rules.RuleApp ruleApp, Services services) {
         this(applicationPosInOccurrence, svInst, goal, rule, ruleApp,
             services, services.getTermBuilder());
     }
 
     public SyntacticalReplaceVisitor(
-            PosInOccurrence applicationPosInOccurrence, Goal goal, Rule rule, RuleApp ruleApp,
+            PosInOccurrence applicationPosInOccurrence, Goal goal, Rule rule,
+            org.key_project.prover.rules.RuleApp ruleApp,
             Services services, TermBuilder termBuilder) {
         this(applicationPosInOccurrence,
             SVInstantiations.EMPTY_SVINSTANTIATIONS, goal, rule, ruleApp, services);

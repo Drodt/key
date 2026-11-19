@@ -103,7 +103,8 @@ public abstract class FindTacletExecutor
     protected abstract void applyAdd(org.key_project.prover.sequent.Sequent add,
             SequentChangeInfo currentSequent,
             PosInOccurrence whereToAdd, PosInOccurrence posOfFind,
-            MatchConditions matchCond, Goal goal, RuleApp ruleApp, Services services);
+            MatchConditions matchCond, Goal goal, org.key_project.prover.rules.RuleApp ruleApp,
+            Services services);
 
     /// applies the `replacewith`-expression of taclet goal descriptions
     ///
@@ -118,7 +119,7 @@ public abstract class FindTacletExecutor
     /// @param services the [Services] encapsulating all Rust model information
     protected abstract void applyReplacewith(TacletGoalTemplate gt,
             SequentChangeInfo currentSequent, PosInOccurrence posOfFind, MatchConditions matchCond,
-            Goal goal, RuleApp ruleApp, Services services);
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp, Services services);
 
     /// creates a new position information object, describing where to add the formulas or
     /// `null` if it should just be added to the beginning

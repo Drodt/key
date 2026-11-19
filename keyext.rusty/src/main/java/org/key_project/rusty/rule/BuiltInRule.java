@@ -7,6 +7,7 @@ package org.key_project.rusty.rule;
 import org.key_project.logic.LogicServices;
 import org.key_project.prover.rules.IBuiltInRule;
 import org.key_project.prover.rules.RuleAbortException;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.rules.RuleExecutor;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.proof.Goal;
@@ -26,13 +27,9 @@ public interface BuiltInRule extends Rule, IBuiltInRule<Goal> {
     /// application
     /// @throws RuleAbortException when this rule was aborted
     @NonNull
+    @Override
     ImmutableList<Goal> apply(Goal goal, RuleApp ruleApp)
             throws RuleAbortException;
-
-    @Override
-    default ImmutableList<Goal> apply(Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
-        return apply(goal, (RuleApp) ruleApp);
-    }
 
     @Override
     default RuleExecutor getExecutor() {

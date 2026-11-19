@@ -8,8 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.key_project.prover.rules.Rule;
+import org.key_project.prover.rules.RuleApp;
 import org.key_project.rusty.Services;
-import org.key_project.rusty.rule.RuleApp;
 import org.key_project.rusty.rule.RuleKey;
 
 import org.jspecify.annotations.Nullable;

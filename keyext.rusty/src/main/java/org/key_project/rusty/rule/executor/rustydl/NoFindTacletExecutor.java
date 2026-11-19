@@ -73,7 +73,7 @@ public class NoFindTacletExecutor extends TacletExecutor {
     /// @param matchCond the MatchConditions with all required instantiations
     protected void applyAdd(Sequent add,
             SequentChangeInfo currentSequent, Services services, MatchConditions matchCond,
-            Goal goal, RuleApp ruleApp) {
+            Goal goal, org.key_project.prover.rules.RuleApp ruleApp) {
         addToAntec(add.antecedent(),
             currentSequent, null, null,
             matchCond, goal, ruleApp, services);
