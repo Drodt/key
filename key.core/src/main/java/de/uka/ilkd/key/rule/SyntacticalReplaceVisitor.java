@@ -316,7 +316,7 @@ public class SyntacticalReplaceVisitor implements DefaultVisitor {
             }
 
             if (varsChanged) {
-                vBoundVars = ImmutableList.fromArray(newVars);
+                vBoundVars = ImmutableList.of(newVars);
             }
         }
         return vBoundVars;
@@ -361,7 +361,7 @@ public class SyntacticalReplaceVisitor implements DefaultVisitor {
             if (boundVars != visited.boundVars() || jblockChanged || (newOp != visitedOp)
                     || (!subStack.isEmpty() && subStack.peek() == newMarker)) {
                 final ImmutableList<TermLabel> labels = instantiateLabels(visited, newOp,
-                    ImmutableList.fromArray(neededsubs), boundVars, visited.getLabels());
+                    ImmutableList.of(neededsubs), boundVars, visited.getLabels());
                 final JTerm newTerm = tb.tf().createTerm(newOp, neededsubs, boundVars, labels);
                 pushNew(resolveSubst(newTerm));
             } else {

@@ -253,7 +253,8 @@ public class OpReplacer {
                 changedSubTerm = true;
             }
         }
-        final ImmutableList<QuantifiableVariable> newBoundVars = replaceBoundVars(term.boundVars());
+        final ImmutableList<QuantifiableVariable> newBoundVars =
+            replaceQuantifiableVariables(term.boundVars());
 
         final JTerm result;
         if (newOp != term.op() || changedSubTerm || newBoundVars != term.boundVars()) {
@@ -336,12 +337,12 @@ public class OpReplacer {
 
 
     /**
-     * Replaces in an ImmutableArray<QuantifiableVariable>.
+     * Replaces in an ImmutableList<QuantifiableVariable>.
      *
      * @param vars the array in which to perform the replacement.
      * @return the list of transformed variables.
      */
-    public ImmutableList<QuantifiableVariable> replaceBoundVars(
+    public ImmutableList<QuantifiableVariable> replaceQuantifiableVariables(
             ImmutableList<QuantifiableVariable> vars) {
         QuantifiableVariable[] result = new QuantifiableVariable[vars.size()];
         boolean changed = false;
@@ -353,6 +354,6 @@ public class OpReplacer {
                 changed = true;
             }
         }
-        return changed ? ImmutableList.fromArray(result) : vars;
+        return changed ? ImmutableList.of(result) : vars;
     }
 }

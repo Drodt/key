@@ -215,7 +215,7 @@ final class HeapArrayTheorySupport implements QuantifierTheorySupport {
         if (subs == null) {
             return term;
         }
-        return services.getTermFactory().createTerm(term.op(), ImmutableList.fromArray(subs),
+        return services.getTermFactory().createTerm(term.op(), ImmutableList.ofFixedSize(subs),
             term.boundVars(), null);
     }
 }

@@ -108,7 +108,7 @@ public class ProofObligationVars {
             newLabels[labels.size()] = ParameterlessTermLabel.ANON_HEAP_LABEL;
             StateVars newPre =
                 new StateVars(pre.self, pre.guard, pre.localVars, pre.result, pre.exception,
-                    tb.label(pre.heap, ImmutableList.fromArray(newLabels)), pre.mbyAtPre);
+                    tb.label(pre.heap, ImmutableList.of(newLabels)), pre.mbyAtPre);
             return new ProofObligationVars(newPre, post, exceptionParameter, formalParams, tb);
         } else {
             return this;

@@ -150,9 +150,9 @@ public class EqualityModuloProofIrrelevancy {
     /**
      * Compares two arrays of {@link Sort}s for equality based on their name
      *
-     * @param thisSorts The first {@code ImmutableArray<Sort>} object to compare.
-     * @param thatSorts The second {@code ImmutableArray<Sort>} object to compare.
-     * @return {@code true} if the two {@code ImmutableArray<Sort>} objects are considered equal;
+     * @param thisSorts The first {@code ImmutableList<Sort>} object to compare.
+     * @param thatSorts The second {@code ImmutableList<Sort>} object to compare.
+     * @return {@code true} if the two {@code ImmutableList<Sort>} objects are considered equal;
      *         {@code false} otherwise.
      */
     public static boolean equalsModProofIrrelevancy(ImmutableList<Sort> thisSorts,

@@ -86,7 +86,7 @@ public final class ModalOperatorSV extends JModality.JavaModalityKind
 
     @Override
     public @NonNull ImmutableList<Sort> argSorts() {
-        return ImmutableList.nil();
+        return ImmutableList.of();
     }
 
     @Override

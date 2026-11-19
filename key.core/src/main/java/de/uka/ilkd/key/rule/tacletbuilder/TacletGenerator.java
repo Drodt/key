@@ -599,7 +599,7 @@ public class TacletGenerator {
             ((ProgramMethod) target).getName(), sig, kjt);
 
         final MethodBodyStatement mbs = new MethodBodyStatement(targetImpl, selfProgSV,
-            resultProgSV, ImmutableList.fromArray(paramProgSVs));
+            resultProgSV, ImmutableList.of(paramProgSVs));
         final JavaBlock findBlock = JavaBlock.createJavaBlock(new ContextStatementBlock(mbs, null));
 
         final var modalitySV =
@@ -903,7 +903,7 @@ public class TacletGenerator {
             newTerm = t;
         } else {
             newTerm = services.getTermBuilder().tf().createTerm(t.op(), newSubs,
-                ImmutableList.fromArray(newBoundVars), null);
+                ImmutableList.of(newBoundVars), null);
         }
 
         return new TermAndBoundVarPair(newTerm, svs);

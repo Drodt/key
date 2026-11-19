@@ -43,6 +43,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableListArray;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,14 +67,14 @@ public final class MethodCall extends ProgramTransformer {
 
     private final SchemaVariable resultVar;
 
-    private MethodReference methRef;
+    protected MethodReference methRef;
     private IProgramMethod pm;
-    private ReferencePrefix newContext;
-    private ProgramVariable pvar;
+    protected ReferencePrefix newContext;
+    protected ProgramVariable pvar;
     private final IExecutionContext execContextSV;
     private ExecutionContext execContext;
-    private ImmutableList<Expression> arguments;
-    private KeYJavaType staticPrefixType;
+    protected ImmutableListArray<Expression> arguments;
+    protected KeYJavaType staticPrefixType;
 
     /**
      * creates the methodcall-MetaConstruct
@@ -127,7 +128,7 @@ public final class MethodCall extends ProgramTransformer {
      * @param name Method name.
      * @param ec The Schema Variable.
      */
-    private MethodCall(Name name, ProgramSV ec, SchemaVariable result, ProgramElement body) {
+    protected MethodCall(Name name, ProgramSV ec, SchemaVariable result, ProgramElement body) {
         super(name, body);
         this.resultVar = result;
         this.execContextSV = ec;
@@ -291,7 +292,7 @@ public final class MethodCall extends ProgramTransformer {
 
         VariableSpecification[] paramSpecs = createParamSpecs(services);
         Statement[] paramDecl = createParamAssignments(paramSpecs);
-        arguments = getVariables(paramSpecs);
+        arguments = ImmutableList.asArray(getVariables(paramSpecs));
 
         Statement result = null;
         if (pm.isStatic()) { // Static invocation mode
@@ -524,7 +525,7 @@ public final class MethodCall extends ProgramTransformer {
         for (int i = 0; i < varspecs.length; i++) {
             vars[i] = (Expression) varspecs[i].getProgramVariable();
         }
-        return ImmutableList.fromArray(vars);
+        return ImmutableList.of(vars);
     }
 
     /**

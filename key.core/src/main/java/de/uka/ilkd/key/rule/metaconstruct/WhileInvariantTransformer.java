@@ -256,7 +256,7 @@ public final class WhileInvariantTransformer {
         return TermLabelManager.instantiateLabels(termLabelState, services, applicationPos, rule,
             ruleApp, goal, "LoopBodyModality", null,
             tf.createTerm(loopBodyModality,
-                ImmutableList.singleton(result), null, newTermOriginalLabels));
+                ImmutableList.of(result), null, newTermOriginalLabels));
     }
 
     /**
@@ -345,7 +345,7 @@ public final class WhileInvariantTransformer {
             TermLabelManager.instantiateLabels(termLabelState, services, applicationPos, rule,
                 ruleApp, goal, "ReturnCaseModality", null,
                 tf.createTerm(JModality.getModality(modality.kind(), returnJavaBlock),
-                    ImmutableList.singleton(post),
+                    ImmutableList.of(post),
                     null, post.getLabels())));
 
         return services.getTermBuilder()
@@ -373,7 +373,7 @@ public final class WhileInvariantTransformer {
             TermLabelManager.instantiateLabels(termLabelState, services, applicationPos, rule,
                 ruleApp, goal, "BreakCaseModality", null,
                 tf.createTerm(JModality.getModality(modality.kind(), executeJavaBlock),
-                    ImmutableList.singleton(post),
+                    ImmutableList.of(post),
                     null, post.getLabels())));
         return services.getTermBuilder()
                 .imp(services.getTermBuilder().equals(typeConv.convertToLogicElement(breakFlag),
@@ -461,7 +461,7 @@ public final class WhileInvariantTransformer {
             TermLabelManager.instantiateLabels(termLabelState, services, applicationPos, rule,
                 ruleApp, goal, "ThrowCaseModality", null,
                 tf.createTerm(JModality.getModality(modality.kind(), throwJavaBlock),
-                    ImmutableList.singleton(post), null,
+                    ImmutableList.of(post), null,
                     post.getLabels())));
         return TB.imp(TB.equals(typeConv.convertToLogicElement(excFlag),
             typeConv.getBooleanLDT().getTrueTerm()), throwException);

@@ -53,7 +53,7 @@ public final class StaticMethodCondition extends VariableConditionAdapter {
         for (int i = 0; i < a.size(); i++) {
             result[i] = (Expression) a.get(i);
         }
-        return ImmutableList.fromArray(result);
+        return ImmutableList.of(result);
     }
 
 
@@ -65,7 +65,7 @@ public final class StaticMethodCondition extends VariableConditionAdapter {
         ReferencePrefix rp = (ReferencePrefix) svInst.getInstantiation(caller);
         MethodName mn = (MethodName) svInst.getInstantiation(methname);
         ImmutableList<ProgramElement> ape =
-            svInst.getInstantiation(args);
+            (ImmutableList<ProgramElement>) svInst.getInstantiation(args);
 
         if (rp != null && mn != null && ape != null) {
             ImmutableList<Expression> ar =

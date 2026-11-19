@@ -25,7 +25,10 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.prover.rules.instantiation.IllegalInstantiationException;
 import org.key_project.prover.rules.instantiation.InstantiationEntry;
 import org.key_project.prover.rules.instantiation.ListInstantiation;
-import org.key_project.util.collection.*;
+import org.key_project.util.collection.DefaultImmutableMap;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableMap;
+import org.key_project.util.collection.ImmutableMapEntry;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -144,7 +147,7 @@ public class SVInstantiations
         return addInteresting(sv, new InstantiationEntry<>(subst), services);
     }
 
-    public <T> SVInstantiations add(SchemaVariable sv, ImmutableArray<T> pes, Class<T> type,
+    public <T> SVInstantiations add(SchemaVariable sv, ImmutableList<T> pes, Class<T> type,
             LogicServices services) {
         return add(sv, new ListInstantiation<>(pes, type), services);
     }
@@ -402,7 +405,7 @@ public class SVInstantiations
      * @param updateApplicationlabels the TermLabels attached to the application operator term
      */
     public SVInstantiations addUpdate(@NonNull JTerm update,
-            ImmutableArray<TermLabel> updateApplicationlabels) {
+            ImmutableList<TermLabel> updateApplicationlabels) {
         assert update.sort() == JavaDLTheory.UPDATE;
         return new SVInstantiations(map, interesting(),
             updateContext.append(new UpdateLabelPair(update, updateApplicationlabels)),
@@ -622,6 +625,6 @@ public class SVInstantiations
     }
 
     public record UpdateLabelPair(@NonNull JTerm update,
-            ImmutableArray<TermLabel> updateApplicationlabels) {
+            ImmutableList<TermLabel> updateApplicationlabels) {
     }
 }

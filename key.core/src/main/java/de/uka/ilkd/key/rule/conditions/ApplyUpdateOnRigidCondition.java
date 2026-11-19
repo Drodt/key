@@ -146,7 +146,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
         }
 
         return services.getTermFactory().createTerm(phi.op(), updatedSubs,
-            ImmutableList.fromArray(boundVarsInPhi), null);
+            ImmutableList.of(boundVarsInPhi), null);
     }
 
     /**

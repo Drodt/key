@@ -195,7 +195,7 @@ public final class LightweightSyntacticalReplaceVisitor implements DefaultVisito
             }
 
             if (varsChanged) {
-                vBoundVars = ImmutableList.fromArray(newVars);
+                vBoundVars = ImmutableList.of(newVars);
             }
         }
         return vBoundVars;

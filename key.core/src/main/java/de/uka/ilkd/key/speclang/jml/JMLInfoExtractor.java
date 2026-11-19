@@ -148,7 +148,7 @@ public final class JMLInfoExtractor {
                 }
             }
         }
-        return ImmutableList.nil();
+        return ImmutableList.of();
     }
 
     // -------------------------------------------------------------------------

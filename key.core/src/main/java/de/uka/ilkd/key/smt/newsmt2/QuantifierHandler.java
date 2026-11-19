@@ -115,7 +115,7 @@ public class QuantifierHandler implements SMTHandler {
             current = current.sub(0);
         }
 
-        ImmutableList<JTerm> subs = ImmutableList.singleton(current);
+        ImmutableList<JTerm> subs = ImmutableList.of(current);
         ImmutableList<QuantifiableVariable> bvars = ImmutableList.fromList(boundVars);
         return services.getTermFactory().createTerm(type, subs, bvars, null);
     }

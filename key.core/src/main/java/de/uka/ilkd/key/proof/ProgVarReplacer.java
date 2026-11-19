@@ -145,7 +145,7 @@ public final class ProgVarReplacer {
                 }
 
                 if (changedSomething) {
-                    result = result.replace(sv, ImmutableList.fromArray(array), services);
+                    result = result.replace(sv, ImmutableList.of(array), services);
                 }
             } else {
                 assert false : "unexpected subtype of InstantiationEntry<?>";

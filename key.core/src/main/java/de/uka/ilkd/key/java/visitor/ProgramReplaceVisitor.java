@@ -115,7 +115,7 @@ public class ProgramReplaceVisitor extends CreatingASTVisitor {
              */
             addChild(null);
         } else {
-            addChildren(ImmutableList.fromArray(transformResult));
+            addChildren(ImmutableList.of(transformResult));
         }
         changed();
     }

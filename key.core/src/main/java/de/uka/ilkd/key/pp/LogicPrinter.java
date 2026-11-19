@@ -1689,7 +1689,7 @@ public class LogicPrinter {
     public void printSubstTerm(String l, QuantifiableVariable v, JTerm t, int ass2, String r,
             JTerm phi, int ass3) {
         layouter.beginC().print(l);
-        printVariables(ImmutableList.singleton(v), quantifiableVariablePrintMode);
+        printVariables(ImmutableList.of(v), quantifiableVariablePrintMode);
         layouter.startTerm(2);
         maybeParens(t, ass2);
         layouter.print(r).brk(0);

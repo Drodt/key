@@ -139,7 +139,7 @@ public class TermWithHoles {
         GenericParameter p = new GenericParameter(g, GenericParameter.Variance.INVARIANT);
         final var decl = new ParametricFunctionDecl(HOLE_SORT_DEP_NAME,
             ImmutableList.singleton(p),
-            ImmutableList.nil(),
+            ImmutableList.of(),
             g, null, false, false, false);
         ns.parametricFunctions().addSafely(decl);
         return ns;

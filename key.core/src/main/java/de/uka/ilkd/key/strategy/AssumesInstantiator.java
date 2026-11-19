@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package de.uka.ilkd.key.strategy;
 
-import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import de.uka.ilkd.key.java.Services;
@@ -12,10 +12,10 @@ import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.rule.MatchConditions;
 import de.uka.ilkd.key.rule.NoPosTacletApp;
 import de.uka.ilkd.key.rule.Taclet;
+import de.uka.ilkd.key.strategy.IfInstantiationCachePool.AssumesInstantiationCache;
 import de.uka.ilkd.key.util.Debug;
 
 import org.key_project.logic.PosInTerm;
-import org.key_project.prover.caches.AssumesInstantiationCachePool.AssumesInstantiationCache;
 import org.key_project.prover.indexing.FormulaTagManager;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstSeq;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
@@ -25,16 +25,17 @@ import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.sequent.Sequent;
 import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableListArray;
 
 /**
  * This class implements custom instantiation of if-formulas.
  */
 public class AssumesInstantiator {
     private final Goal goal;
-    private final AssumesInstantiationCache assumesInstCache;
+    private final AssumesInstantiationCache ifInstCache;
 
-    private ImmutableList<AssumesFormulaInstantiation> allAntecFormulas;
-    private ImmutableList<AssumesFormulaInstantiation> allSuccFormulas;
+    private ImmutableListArray<AssumesFormulaInstantiation> allAntecFormulas;
+    private ImmutableListArray<AssumesFormulaInstantiation> allSuccFormulas;
 
     private ImmutableList<NoPosTacletApp> results = ImmutableList.nil();
 
@@ -43,9 +44,8 @@ public class AssumesInstantiator {
     AssumesInstantiator(TacletAppContainer tacletAppContainer, final Goal goal) {
         this.goal = goal;
         this.tacletAppContainer = tacletAppContainer;
-        this.assumesInstCache =
-            goal.proof().getServices().getCaches().getAssumesInstantiationCachePool()
-                    .getCache(goal.node());
+        this.ifInstCache =
+            goal.proof().getServices().getCaches().getIfInstantiationCache().getCache(goal.node());
     }
 
     private void addResult(NoPosTacletApp app) {
@@ -74,8 +74,10 @@ public class AssumesInstantiator {
             addResult(tacletAppContainer.getTacletApp());
         } else {
             final Services services = getServices();
-            allAntecFormulas = AssumesFormulaInstSeq.createList(p_seq, true, services);
-            allSuccFormulas = AssumesFormulaInstSeq.createList(p_seq, false, services);
+            allAntecFormulas =
+                ImmutableList.asArray(AssumesFormulaInstSeq.createList(p_seq, true, services));
+            allSuccFormulas =
+                ImmutableList.asArray(AssumesFormulaInstSeq.createList(p_seq, false, services));
             findIfFormulaInstantiationsHelp(ifSequent.succedent().asList().reverse(), //// Matching
                                                                                       //// with the
                                                                                       //// last
@@ -128,16 +130,13 @@ public class AssumesInstantiator {
             new AssumesFormulaInstantiation[allSequentFormulas.size()];
 
         int i = 0;
-        for (final AssumesFormulaInstantiation assumesInstantiation : allSequentFormulas) {
-            if (isNewFormulaDirect((AssumesFormulaInstSeq) assumesInstantiation)) {
-                res[i] = assumesInstantiation;
+        for (final AssumesFormulaInstantiation ifInstantiation : allSequentFormulas) {
+            if (isNewFormulaDirect((AssumesFormulaInstSeq) ifInstantiation)) {
+                res[i] = ifInstantiation;
                 ++i;
             }
         }
-        var content =
-            (AssumesFormulaInstantiation[]) Array.newInstance(AssumesFormulaInstantiation.class, i);
-        System.arraycopy(res, 0, content, 0, i);
-        return ImmutableList.fromArray(content);
+        return ImmutableList.ofFixedSize(Arrays.copyOfRange(res, 0, i));
     }
 
     /**
@@ -183,12 +182,12 @@ public class AssumesInstantiator {
 
     private ImmutableList<AssumesFormulaInstantiation> getNewSequentFormulasFromCache(
             boolean p_antec) {
-        return assumesInstCache.get(p_antec, tacletAppContainer.getAge());
+        return ifInstCache.get(p_antec, tacletAppContainer.getAge());
     }
 
     private void addNewSequentFormulasToCache(ImmutableList<AssumesFormulaInstantiation> p_list,
             boolean p_antec) {
-        assumesInstCache.put(p_antec, tacletAppContainer.getAge(), p_list);
+        ifInstCache.put(p_antec, tacletAppContainer.getAge(), p_list);
     }
 
 

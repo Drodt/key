@@ -182,7 +182,7 @@ public final class QueryAxiom extends ClassAxiom {
         }
 
         final MethodBodyStatement mbs = new MethodBodyStatement(targetImpl, selfProgSV,
-            resultProgSV, ImmutableList.fromArray(paramProgSVs));
+            resultProgSV, ImmutableList.of(paramProgSVs));
         final StatementBlock sb = new StatementBlock(mbs);
         final JavaBlock jb = JavaBlock.createJavaBlock(sb);
 

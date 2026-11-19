@@ -95,8 +95,8 @@ public class BoundVariableTools {
      */
     // public Term resolveCollisions (Term t,
     // ImmutableSet<QuantifiableVariable> criticalVars) {
-    // final ImmutableArray<QuantifiableVariable>[] newBoundVars =
-    // new ImmutableArray<QuantifiableVariable> [t.arity ()];
+    // final ImmutableList<QuantifiableVariable>[] newBoundVars =
+    // new ImmutableList<QuantifiableVariable> [t.arity ()];
     // final Term[] newSubs = new Term [t.arity ()];
     //
     // if ( !resolveCollisions ( t, criticalVars, newBoundVars, newSubs ) )
@@ -127,7 +127,7 @@ public class BoundVariableTools {
             final QuantifiableVariable[] newVars = new QuantifiableVariable[oldVars.size()];
             if (resolveCollisions(oldVars, newVars, criticalVars)) {
                 changed = true;
-                newBoundVars[i] = ImmutableList.fromArray(newVars);
+                newBoundVars[i] = ImmutableList.ofFixedSize(newVars);
                 newSubs[i] =
                     renameVariables(originalTerm.sub(i), oldVars, newBoundVars[i], services);
             } else {
@@ -209,7 +209,7 @@ public class BoundVariableTools {
         if (!consistentVariableArrays(vars0, vars1)) {
             return false;
         }
-        if (vars0.isEmpty()) {
+        if (vars0.size() == 0) {
             return RENAMING_TERM_PROPERTY.equalsModThisProperty(term0, term1);
         }
 
@@ -253,6 +253,6 @@ public class BoundVariableTools {
             }
         }
 
-        return ImmutableList.fromArray(res);
+        return ImmutableList.ofFixedSize(res);
     }
 }

@@ -215,7 +215,7 @@ public class StrategySettingsDefinition {
         this.propertiesTitle = propertiesTitle;
         this.defaultPropertiesFactory = defaultPropertiesFactory;
         this.furtherDefaults = furtherDefaults;
-        this.properties = ImmutableList.fromArray(properties);
+        this.properties = ImmutableList.of(properties);
     }
 
     /**

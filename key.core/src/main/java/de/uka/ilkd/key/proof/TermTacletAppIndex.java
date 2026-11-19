@@ -20,6 +20,7 @@ import org.key_project.prover.sequent.PIOPathIterator;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.prover.strategy.NewRuleListener;
 import org.key_project.util.collection.*;
+import org.key_project.util.collection.ImmutableListArray;
 
 /**
  * Class whose objects represent an index of taclet apps for one particular position within a
@@ -31,7 +32,7 @@ public class TermTacletAppIndex {
     /** NoPosTacletApps for this term */
     private final ImmutableList<NoPosTacletApp> localTacletApps;
     /** indices for subterms */
-    private final ImmutableList<TermTacletAppIndex> subtermIndices;
+    private final ImmutableListArray<TermTacletAppIndex> subtermIndices;
     /** */
     private final RuleFilter ruleFilter;
 
@@ -41,7 +42,7 @@ public class TermTacletAppIndex {
     private TermTacletAppIndex(Term term, ImmutableList<NoPosTacletApp> localTacletApps,
             ImmutableList<TermTacletAppIndex> subtermIndices, RuleFilter ruleFilter) {
         this.term = term;
-        this.subtermIndices = subtermIndices;
+        this.subtermIndices = ImmutableList.asArray(subtermIndices);
         this.localTacletApps = localTacletApps;
         this.ruleFilter = ruleFilter;
     }
@@ -141,7 +142,7 @@ public class TermTacletAppIndex {
                 indexCache.descend(localTerm, i));
         }
 
-        return ImmutableList.fromArray(result);
+        return ImmutableList.of(result);
     }
 
 
@@ -249,7 +250,7 @@ public class TermTacletAppIndex {
             result[i] = newSubIndex;
         }
 
-        return ImmutableList.fromArray(result);
+        return ImmutableList.of(result);
     }
 
 
@@ -410,7 +411,7 @@ public class TermTacletAppIndex {
             int at, TermTacletAppIndex newIndex) {
         final TermTacletAppIndex[] result = src.toArray(new TermTacletAppIndex[src.size()]);
         result[at] = newIndex;
-        return ImmutableList.fromArray(result);
+        return ImmutableList.of(result);
     }
 
     /**

@@ -243,7 +243,7 @@ public class StateVars {
     public static StateVars buildMethodContractPreVars(IProgramMethod pm, TypeReference typeRef,
             Services services) {
         ImmutableList<TermLabel> heapLabels =
-            ImmutableList.singleton(ParameterlessTermLabel.ANON_HEAP_LABEL);
+            ImmutableList.of(ParameterlessTermLabel.ANON_HEAP_LABEL);
         return new StateVars(buildSelfVar(services, pm, typeRef, ""),
             buildParamVars(services, "", pm),
             buildResultVar(pm, services, ""), buildExceptionVar(services, "", pm),
@@ -257,7 +257,7 @@ public class StateVars {
         // preVars.localVars: no local out variables
         return new StateVars(buildSelfVar(services, pm, typeRef, postfix), preVars.localVars,
             buildResultVar(pm, services, postfix), buildExceptionVar(services, postfix, pm),
-            buildHeapFunc(postfix, ImmutableList.nil(), services), preVars.mbyAtPre);
+            buildHeapFunc(postfix, ImmutableList.of(), services), preVars.mbyAtPre);
     }
 
 

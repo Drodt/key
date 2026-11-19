@@ -98,7 +98,7 @@ class BasicBlockExecutionSnippet extends ReplaceAndRegisterMethod implements Fac
 
         // create block call
         final Label[] labelsArray = (Label[]) d.get(BasicSnippetData.Key.LABELS);
-        final ImmutableList<Label> labels = ImmutableList.fromArray(labelsArray);
+        final ImmutableList<Label> labels = ImmutableList.of(labelsArray);
         final AuxiliaryContract.Variables variables =
             (AuxiliaryContract.Variables) d.get(BasicSnippetData.Key.BLOCK_VARS);
         final StatementBlock block = (StatementBlock) d.get(BasicSnippetData.Key.TARGET_BLOCK);

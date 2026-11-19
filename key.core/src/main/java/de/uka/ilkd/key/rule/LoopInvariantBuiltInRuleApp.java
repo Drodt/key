@@ -167,7 +167,7 @@ public class LoopInvariantBuiltInRuleApp<T extends BuiltInRule>
                     for (int i = 0; i < subs.size(); i++) {
                         newSubs[i] = replace(subs.get(i));
                     }
-                    return tb.tf().createTerm(visited.op(), ImmutableList.fromArray(newSubs),
+                    return tb.tf().createTerm(visited.op(), ImmutableList.of(newSubs),
                         visited.boundVars(), visited.getLabels());
                 }
             }
@@ -198,7 +198,7 @@ public class LoopInvariantBuiltInRuleApp<T extends BuiltInRule>
                     for (int i = 0; i < subs.size(); i++) {
                         newSubs[i] = replace(subs.get(i));
                     }
-                    return tb.tf().createTerm(visited.op(), ImmutableList.fromArray(newSubs),
+                    return tb.tf().createTerm(visited.op(), ImmutableList.of(newSubs),
                         visited.boundVars(), visited.getLabels());
                 }
             }

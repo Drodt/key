@@ -758,9 +758,11 @@ public abstract class KeYJavaASTFactory {
 
         Statement[] block = new Statement[b.getStatementCount() + stmnt.length];
         System.arraycopy(stmnt, 0, block, 0, stmnt.length);
-        System.arraycopy(b.getBody().toArray(Statement.class), 0, block, stmnt.length,
-            b.getStatementCount());
-        return new StatementBlock(ImmutableList.fromArray(block));
+        int j = stmnt.length;
+        for (Statement s : b.getBody()) {
+            block[j++] = s;
+        }
+        return new StatementBlock(ImmutableList.of(block));
     }
 
     /**
@@ -1137,7 +1139,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static IForUpdates forUpdates(final Expression update) {
 
-        return new ForUpdates(ImmutableList.singleton(update));
+        return new ForUpdates(ImmutableList.of(update));
     }
 
     /**
@@ -1383,7 +1385,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static LocalVariableDeclaration declare(final Modifier modifier,
             final IProgramVariable variable, final Expression init, final TypeReference typeRef) {
-        final ImmutableList<Modifier> modifiers = ImmutableList.singleton(modifier);
+        final ImmutableList<Modifier> modifiers = ImmutableList.of(modifier);
 
         return declare(modifiers, variable, init, typeRef);
     }
@@ -1404,7 +1406,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static LocalVariableDeclaration declare(final Modifier[] modifiers,
             final IProgramVariable variable, final Expression init, final TypeReference typeRef) {
-        final ImmutableList<Modifier> m = ImmutableList.fromArray(modifiers);
+        final ImmutableList<Modifier> m = ImmutableList.of(modifiers);
 
         return declare(m, variable, init, typeRef);
     }
@@ -1563,7 +1565,7 @@ public abstract class KeYJavaASTFactory {
      *         <code>type</code> with arguments <code>args</code>
      */
     public static MethodReference methodCall(final KeYJavaType type, final String name) {
-        final ImmutableList<? extends Expression> args = ImmutableList.nil();
+        final ImmutableList<? extends Expression> args = ImmutableList.of();
 
         return methodCall(type, name, args);
     }
@@ -1581,7 +1583,7 @@ public abstract class KeYJavaASTFactory {
      *         <code>reference</code> with no arguments
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final String name) {
-        final ImmutableList<Expression> args = ImmutableList.nil();
+        final ImmutableList<Expression> args = ImmutableList.of();
 
         return methodCall(reference, name, args);
     }
@@ -1601,7 +1603,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final String name,
             final Expression... args) {
-        final ImmutableList<? extends Expression> a = ImmutableList.fromArray(args);
+        final ImmutableList<? extends Expression> a = ImmutableList.of(args);
 
         return methodCall(reference, name, a);
     }
@@ -1621,7 +1623,7 @@ public abstract class KeYJavaASTFactory {
      */
     public static MethodReference methodCall(final ReferencePrefix reference, final MethodName name,
             final Expression... args) {
-        final ImmutableList<Expression> a = ImmutableList.fromArray(args);
+        final ImmutableList<Expression> a = ImmutableList.of(args);
 
         return methodCall(reference, name, a);
     }
@@ -1825,7 +1827,7 @@ public abstract class KeYJavaASTFactory {
             final Expression[] arguments) {
 
         return methodBody(result, reference,
-            method, ImmutableList.fromArray(arguments));
+            method, ImmutableList.of(arguments));
     }
 
     /**
@@ -2384,7 +2386,7 @@ public abstract class KeYJavaASTFactory {
      *
      * @param type the base {@link KeYJavaType}
      * @param dimensions the number of dimensions
-     * @param annotations the {@link ImmutableList} of {@link Annotation}s
+     * @param annotations the {@link ImmutableList} of {@link AnnotationExpression}s
      * @return a new {@link TypeRef} for <code>dimensions</code> dimensions of <code>type</code>
      */
     public static TypeRef typeRef(final KeYJavaType type, final int dimensions,

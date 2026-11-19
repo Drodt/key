@@ -48,9 +48,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Martin Hentschel
  */
-// The TermLabelManager API under test still hands around the deprecated ImmutableArray
-// label container, so it is used throughout this test class on purpose.
-@SuppressWarnings("deprecation")
 public class TestTermLabelManager {
     private static InitConfig CONFIG = null;
 
@@ -437,7 +434,7 @@ public class TestTermLabelManager {
         JTerm update = TB.label(TB.elementary(TB.var(heap), TB.var(heap)),
             new ParameterlessTermLabel(new Name("UPDATE")));
         JTerm updateApp = TB.apply(update, modality,
-            ImmutableList.singleton(new ParameterlessTermLabel(new Name("UPDATE-APPLICATION"))));
+            ImmutableList.of(new ParameterlessTermLabel(new Name("UPDATE-APPLICATION"))));
         PosInOccurrence pos =
             new PosInOccurrence(new SequentFormula(updateApp), PosInTerm.getTopLevel(), true);
         JTerm taclet = TB.tt();
@@ -485,7 +482,7 @@ public class TestTermLabelManager {
         PosInOccurrence pos = createTestPosInOccurrence(services);
         Rule rule = new DummyRule("rule");
         JTerm taclet = services.getTermBuilder().label(services.getTermBuilder().tt(),
-            ImmutableList.singleton(new ParameterlessTermLabel(new Name("TACLET"))));
+            ImmutableList.of(new ParameterlessTermLabel(new Name("TACLET"))));
         ImmutableList<TermLabel> labels = TermLabelManager.instantiateLabels(new TermLabelState(),
             services, pos, rule, null, null, null, taclet, null);
         assertNotNull(labels);

@@ -273,8 +273,7 @@ public final class ObserverToUpdateRule implements BuiltInRule {
             tb.prog(inst.modality().kind(), postJavaBlock, inst.progPost().sub(0),
                 TermLabelManager.instantiateLabels(termLabelState, services,
                     ruleApp.posInOccurrence(), this, ruleApp, contGoal, "PostModality", null,
-                    tb.tf().createTerm(modality, ImmutableList.singleton(inst.progPost().sub(0)),
-                        null,
+                    tb.tf().createTerm(modality, ImmutableList.of(inst.progPost().sub(0)), null,
                         inst.progPost().getLabels())));
         JTerm lhs = tb.var((ProgramVariable) inst.actualResult());
         JTerm update =

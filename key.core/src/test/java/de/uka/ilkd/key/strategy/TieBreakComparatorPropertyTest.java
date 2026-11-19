@@ -36,7 +36,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TieBreakComparatorPropertyTest {
 
     private static int cmp(Term a, Term b) {
-        return TacletAppContainer.compareByName(a, b);
+        return RuleAppContainer.compareByName(a, b);
     }
 
     private static JTerm t(TermFactory tf, Function f, JTerm... subs) {
@@ -157,8 +157,8 @@ public class TieBreakComparatorPropertyTest {
             for (int j = 0; j < terms.size(); j++) {
                 final Term a = terms.get(i);
                 final Term b = copies.get(j);
-                final int full = TacletAppContainer.compareFormulasByName(a, b);
-                final int back = TacletAppContainer.compareFormulasByName(b, a);
+                final int full = RuleAppContainer.compareFormulasByName(a, b);
+                final int back = RuleAppContainer.compareFormulasByName(b, a);
                 assertEquals(Integer.signum(full), -Integer.signum(back),
                     "antisymmetry violated for [" + a + "] vs [" + b + "]");
                 if (full == 0) {
@@ -180,7 +180,6 @@ public class TieBreakComparatorPropertyTest {
      * not equal.
      */
     @Test
-    @SuppressWarnings("deprecation") // labels are passed via the deprecated ImmutableArray
     void orderingHashesIgnoreLabels() {
         final var services = de.uka.ilkd.key.rule.TacletForTests.services();
         final TermFactory tf = services.getTermFactory();
@@ -189,14 +188,14 @@ public class TieBreakComparatorPropertyTest {
         final Function f = new JFunction(new Name("f"), s, s);
         final JTerm plain = t(tf, f, t(tf, a));
         final JTerm labeled = tf.createTerm(f, new JTerm[] { t(tf, a) },
-            ImmutableList.singleton(ParameterlessTermLabel.ANON_HEAP_LABEL));
+            ImmutableList.of(ParameterlessTermLabel.ANON_HEAP_LABEL));
 
         assertTrue(!plain.equals(labeled), "the label must matter for equality");
         assertEquals(plain.nameHash(), labeled.nameHash(), "nameHash must ignore labels");
         assertEquals(plain.labelAgnosticHash(), labeled.labelAgnosticHash(),
             "labelAgnosticHash must ignore labels");
         assertEquals(0, cmp(plain, labeled), "the walk must ignore labels");
-        assertEquals(0, TacletAppContainer.compareFormulasByName(plain, labeled),
+        assertEquals(0, RuleAppContainer.compareFormulasByName(plain, labeled),
             "the production comparator must ignore labels");
     }
 

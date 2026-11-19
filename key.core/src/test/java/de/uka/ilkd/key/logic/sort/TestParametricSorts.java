@@ -68,15 +68,13 @@ class TestParametricSorts {
     }
 
     @Test
-    // ParametricFunctionDecl is created with the deprecated ImmutableArray argument container
-    @SuppressWarnings("deprecation")
     public void testParametricFunctionInstantiation() {
         ParametricSortDecl psd = addParametricSort("List", GenericParameter.Variance.COVARIANT);
         Sort intSort = nss.sorts().lookup("int");
 
         var someConst = new ParametricFunctionDecl(new Name("someConst"),
             ImmutableList.of(new GenericParameter(g1, GenericParameter.Variance.INVARIANT)),
-            ImmutableList.nil(), g1, null, false, true, false);
+            ImmutableList.of(), g1, null, false, true, false);
         nss.parametricFunctions().add(someConst);
 
         var listOfInt =
@@ -87,7 +85,7 @@ class TestParametricSorts {
 
         var head = new ParametricFunctionDecl(new Name("head"),
             ImmutableList.of(new GenericParameter(g1, GenericParameter.Variance.INVARIANT)),
-            ImmutableList.singleton(listOfG1), g1, null, false, true, false);
+            ImmutableList.of(listOfG1), g1, null, false, true, false);
         nss.parametricFunctions().add(head);
 
         var headInst =

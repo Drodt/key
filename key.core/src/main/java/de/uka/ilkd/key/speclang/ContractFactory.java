@@ -29,7 +29,6 @@ import de.uka.ilkd.key.speclang.translation.SLTranslationException;
 import de.uka.ilkd.key.util.InfFlowSpec;
 
 import org.key_project.logic.op.Operator;
-import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.Nullable;
@@ -569,7 +568,7 @@ public class ContractFactory {
             }
         }
         // update (overwrite) the labels of the uniform modifiable with the found ones
-        return tb.label(uniformModifiable, new ImmutableArray<>(newLabels));
+        return tb.label(uniformModifiable, ImmutableList.fromList(newLabels));
     }
 
     private static Map<LocationVariable, JTerm> joinDependencies(FunctionalOperationContractImpl t,

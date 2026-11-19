@@ -39,9 +39,6 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author Tobias Reinhold
  */
-// The equality properties under test receive terms built with the deprecated ImmutableArray
-// label container, so the deprecated type is used throughout this test class on purpose.
-@SuppressWarnings("deprecation")
 public class TestEqualsModProperty {
     private TermBuilder tb;
 
@@ -88,7 +85,7 @@ public class TestEqualsModProperty {
             tf.createTerm(Junctor.AND, tf.createTerm(Junctor.TRUE), tf.createTerm(Junctor.FALSE));
         term2 =
             tf.createTerm(Junctor.AND, tf.createTerm(Junctor.TRUE), tf.createTerm(Junctor.FALSE));
-        ImmutableList<TermLabel> labels1 = ImmutableList.singleton(irrelevantLabel);
+        ImmutableList<TermLabel> labels1 = ImmutableList.of(irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertTrue(RENAMING_TERM_PROPERTY.equalsModThisProperty(term1, term2),
             "Should be true as labels do not matter");
@@ -99,7 +96,7 @@ public class TestEqualsModProperty {
             "Hash codes should be equal as labels do not matter (0)");
 
 
-        labels1 = ImmutableList.singleton(relevantLabel1);
+        labels1 = ImmutableList.of(relevantLabel1);
         term1 = tb.label(term1, labels1);
         assertTrue(RENAMING_TERM_PROPERTY.equalsModThisProperty(term1, term2),
             "Should be true as labels do not matter");
@@ -109,7 +106,7 @@ public class TestEqualsModProperty {
             term2.hashCodeModProperty(RENAMING_TERM_PROPERTY),
             "Hash codes should be equal as labels do not matter (1)");
 
-        ImmutableList<TermLabel> labels2 = ImmutableList.singleton(relevantLabel2);
+        ImmutableList<TermLabel> labels2 = ImmutableList.of(relevantLabel2);
         term2 = tb.label(term2, labels2);
         assertTrue(RENAMING_TERM_PROPERTY.equalsModThisProperty(term1, term2),
             "Should be true as labels do not matter");
@@ -152,7 +149,7 @@ public class TestEqualsModProperty {
         assertFalse(term2.equalsModProperty(term1, IRRELEVANT_TERM_LABELS_PROPERTY),
             "Should be false as term1 has a proof relevant term label, but term2 does not have any labels");
 
-        labels1 = ImmutableList.singleton(irrelevantLabel);
+        labels1 = ImmutableList.of(irrelevantLabel);
         term1 = tb.label(term1, labels1);
         assertTrue(term1.equalsModProperty(term2, IRRELEVANT_TERM_LABELS_PROPERTY),
             "Should be true as term1 has no relevant term labels and term2 does not have any labels");

@@ -34,7 +34,7 @@ public class PositionedLabeledString extends PositionedString {
     }
 
     public PositionedLabeledString(String text, Location location, TermLabel label) {
-        this(text, location, ImmutableList.singleton(label));
+        this(text, location, ImmutableList.of(label));
     }
 
     /**
