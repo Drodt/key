@@ -44,6 +44,7 @@ public class RenamingProgramElementProperty implements Property<RustyProgramElem
     /// modulo renaming
     /// @param <V> is supposed to be [NameAbstractionTable] for this equality check
     @Override
+    @SuppressWarnings({ "unchecked" })
     public <V> boolean equalsModThisProperty(RustyProgramElement rpe1, RustyProgramElement rpe2,
             V... v) {
         NameAbstractionTable nat;

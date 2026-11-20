@@ -140,12 +140,11 @@ final class EqualityTheorySupport implements QuantifierTheorySupport {
 
     // Constraint is deprecated wholesale (quantifierHeuristics.constraint); no replacement API
     // exists.
-    @SuppressWarnings("deprecation")
     private List<Term> solveEquation(Set<Metavariable> mvs, Substitution qv2mv,
             OpReplacer mv2qv, Term lit,
             Services services) {
         final TermBuilder tb = services.getTermBuilder();
-        final Term litWithMV = (Term) qv2mv.applyWithoutCasts(lit, services);
+        final Term litWithMV = qv2mv.applyWithoutCasts(lit, services);
         final Constraint c =
             EqualityConstraint.BOTTOM.unify(litWithMV.sub(0), litWithMV.sub(1), services);
         List<Term> solvedEquations = new ArrayList<>();

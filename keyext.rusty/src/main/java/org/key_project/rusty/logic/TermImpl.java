@@ -86,6 +86,7 @@ public class TermImpl implements Term {
     }
 
     // TODO Remove
+    @SuppressWarnings("unchecked")
     @Deprecated
     private ImmutableSet<LogicVariable> determineFreeVars() {
         ImmutableSet<LogicVariable> localFreeVars =
@@ -216,6 +217,7 @@ public class TermImpl implements Term {
     }
 
     @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void execPostOrder(@NonNull Visitor visitor) {
         visitor.subtreeEntered(this);
         if (visitor.visitSubtree(this)) {
@@ -229,6 +231,7 @@ public class TermImpl implements Term {
 
 
     @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void execPreOrder(@NonNull Visitor visitor) {
         visitor.subtreeEntered(this);
         visitor.visit(this);

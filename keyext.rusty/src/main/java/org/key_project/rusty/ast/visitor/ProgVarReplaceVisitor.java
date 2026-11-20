@@ -123,6 +123,7 @@ public class ProgVarReplaceVisitor extends CreatingASTVisitor {
         services.getSpecificationRepository().addLoopSpec(newSpec);
     }
 
+    @SuppressWarnings("unchecked")
     private @Nullable Term replaceVariablesInTerm(@Nullable Term t) {
         if (t == null)
             return null;

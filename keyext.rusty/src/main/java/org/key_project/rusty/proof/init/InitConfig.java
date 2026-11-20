@@ -230,6 +230,7 @@ public class InitConfig {
         return copyWithServices(services.copyPreservesLDTInformation());
     }
 
+    @SuppressWarnings("unchecked")
     public InitConfig copyWithServices(Services services) {
         InitConfig ic = new InitConfig(services);
         if (settings != null) {

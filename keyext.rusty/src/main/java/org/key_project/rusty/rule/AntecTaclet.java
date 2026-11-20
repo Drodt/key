@@ -24,6 +24,7 @@ import org.jspecify.annotations.NonNull;
 
 /// An AntecTaclet represents a taclet whose find part has to match a top level formula in the
 /// antecedent of the sequent.
+@SuppressWarnings("unchecked")
 public class AntecTaclet extends FindTaclet {
     /// creates a Schematic Theory Specific Rule (Taclet) with the given parameters.
     ///
@@ -51,7 +52,7 @@ public class AntecTaclet extends FindTaclet {
 
     @Override
     public Term find() {
-        return (Term) ((Sequent) find).antecedent().getFirst().formula();
+        return ((Sequent) find).antecedent().getFirst().formula();
     }
 
     /// toString for the find part

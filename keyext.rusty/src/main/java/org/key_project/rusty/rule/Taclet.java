@@ -12,10 +12,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.prover.rules.RuleSet;
-import org.key_project.prover.rules.TacletAnnotation;
-import org.key_project.prover.rules.TacletApplPart;
-import org.key_project.prover.rules.TacletAttributes;
+import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.TacletExecutor;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
 import org.key_project.prover.sequent.Sequent;
@@ -23,6 +20,7 @@ import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.BoundVarsVisitor;
 import org.key_project.rusty.logic.OpCollector;
+import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.mgt.AxiomJustification;
 import org.key_project.rusty.proof.mgt.LemmaJustification;
 import org.key_project.rusty.proof.mgt.RuleJustification;
@@ -80,6 +78,7 @@ import org.jspecify.annotations.NonNull;
 /// [TacletAppIndex][TacletAppIndex] or
 /// [TacletApp][TacletApp]
 ///
+@SuppressWarnings("unchecked")
 public abstract class Taclet extends org.key_project.prover.rules.Taclet implements Rule {
     /// This map contains (a, b) if there is a substitution {b a} somewhere in this taclet
     private ImmutableMap<@NonNull SchemaVariable, SchemaVariable> svNameCorrespondences = null;
@@ -188,8 +187,8 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
     protected abstract ImmutableSet<QuantifiableVariable> getBoundVariablesHelper();
 
     @Override
-    public @NonNull TacletExecutor getExecutor() {
-        return executor;
+    public @NonNull TacletExecutor<Goal, RuleApp> getExecutor() {
+        return (TacletExecutor<Goal, RuleApp>) executor;
     }
 
     /// return true if <code>o</code> is a taclet of the same name and <code>o</code> and

@@ -18,6 +18,7 @@ import org.jspecify.annotations.NonNull;
 /// Built-in rule interface. As applications of this rule kind may not be successful in each case
 /// one
 /// has to ensure that the goal split is done only iff the application was successful.
+@SuppressWarnings("unchecked")
 public interface BuiltInRule extends Rule, IBuiltInRule<Goal> {
     /// the rule is applied on the given goal using the information of rule application.
     ///
@@ -32,7 +33,7 @@ public interface BuiltInRule extends Rule, IBuiltInRule<Goal> {
             throws RuleAbortException;
 
     @Override
-    default RuleExecutor getExecutor() {
+    default @NonNull RuleExecutor<Goal> getExecutor() {
         return this;
     }
 

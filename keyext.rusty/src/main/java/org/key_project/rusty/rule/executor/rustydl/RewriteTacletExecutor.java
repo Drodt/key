@@ -98,6 +98,7 @@ public class RewriteTacletExecutor
     }
 
     /// does the work for applyReplacewith (wraps recursion)
+    @SuppressWarnings("unchecked")
     private Term replace(Term term, Term with, PosInOccurrence posOfFind, IntIterator it,
             MatchConditions mc, Sort maxSort, Goal goal, Services services, RuleApp ruleApp) {
         if (it.hasNext()) {

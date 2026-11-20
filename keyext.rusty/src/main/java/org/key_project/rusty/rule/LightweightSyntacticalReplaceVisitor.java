@@ -85,6 +85,7 @@ public class LightweightSyntacticalReplaceVisitor implements Visitor<Term> {
         return o;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void visit(Term visited) {
         // Sort equality has to be ensured before calling this method

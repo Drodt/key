@@ -26,6 +26,7 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.NonNull;
 
+@SuppressWarnings("unchecked")
 public class RustProfile implements Profile {
     public static final String NAME = "Rust Profile";
 
@@ -112,6 +113,7 @@ public class RustProfile implements Profile {
     }
 
     /// returns a copy of the selected goal chooser builder
+    @SuppressWarnings("unchecked")
     @Override
     public GoalChooserFactory<@NonNull Proof, @NonNull Goal> getSelectedGoalChooserBuilder() {
         return prototype.copy();

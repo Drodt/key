@@ -41,6 +41,7 @@ public class WaryClashFreeSubst {
         return apply1(body, 1, false);
     }
 
+    @SuppressWarnings("unchecked")
     private Term apply1(Term t, int index, boolean below) {
         if (t.op() instanceof LogicVariable lv && lv.getIndex() == index) {
             if (below) {

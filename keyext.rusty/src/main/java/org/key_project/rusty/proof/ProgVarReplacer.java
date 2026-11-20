@@ -160,6 +160,7 @@ public final class ProgVarReplacer {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Term standardReplace(Term t) {
         Term result = t;
 

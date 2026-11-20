@@ -264,6 +264,7 @@ public final class ParallelProver extends DefaultProver<Proof, Goal> {
     /// @param maxSteps the run-wide limit on rule applications
     /// @param perTaskSteps the budget each goal is assigned, or `0` when the
     /// step budget applies to all as a whole
+    @SuppressWarnings("try")
     private ApplyStrategyInfo<Proof, Goal> run(Proof proof, ImmutableList<Goal> goals, int maxSteps,
             long timeout, boolean stopAtFirstNonCloseableGoal, int perTaskSteps) {
         assert proof != null;

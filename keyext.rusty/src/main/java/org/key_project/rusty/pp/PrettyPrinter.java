@@ -231,6 +231,7 @@ public class PrettyPrinter implements Visitor {
         layouter.print(x.toString());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void performActionOnSchemaVariable(SchemaVariable x) {
         if (!(x instanceof ProgramSV)) {

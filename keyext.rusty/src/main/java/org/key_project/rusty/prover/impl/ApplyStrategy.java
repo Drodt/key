@@ -106,6 +106,7 @@ public class ApplyStrategy extends DefaultProver<@NonNull Proof, Goal> {
     }
 
     @Override
+    @SuppressWarnings("try")
     public synchronized @NonNull ApplyStrategyInfo<@NonNull Proof, Goal> start(Proof proof,
             @NonNull ImmutableList<Goal> goals, int maxSteps, long timeout,
             boolean stopAtFirstNonCloseableGoal) {

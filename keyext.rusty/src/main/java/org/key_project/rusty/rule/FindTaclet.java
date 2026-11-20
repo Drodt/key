@@ -27,6 +27,7 @@ import org.jspecify.annotations.NonNull;
 /// between taclets that have to attached to a top level formula of the antecedent
 /// ([AntecTaclet]), to the succedent ([SuccTaclet]) or to an arbitrary term that matches
 /// the find part somewhere in the sequent ([RewriteTaclet]).
+@SuppressWarnings("unchecked")
 public abstract class FindTaclet extends Taclet {
     /// Set of schema variables of the assumes sequent and the (optional) find expression/sequent
     private ImmutableSet<SchemaVariable> assumesAndFindSchemaVariables = null;

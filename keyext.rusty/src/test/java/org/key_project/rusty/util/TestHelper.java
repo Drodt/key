@@ -23,6 +23,7 @@ public class TestHelper {
         Objects.requireNonNull(FindResources.getTestCasesDirectory());
     public static final Path DUMMY_KEY_FILE = TESTCASE_DIRECTORY.resolve("dummyTrue.key");
 
+    @SuppressWarnings("unchecked")
     public static final Profile profile = new RustProfile() {
         @Override
         public RuleCollection getStandardRules() {

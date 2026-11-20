@@ -116,6 +116,7 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
     }
 
     /// performs the syntactic replacement of schemavariables with their instantiations
+    @SuppressWarnings("unchecked")
     @Override
     public void visit(final Term visited) {
         // Sort equality has to be ensured before calling this method

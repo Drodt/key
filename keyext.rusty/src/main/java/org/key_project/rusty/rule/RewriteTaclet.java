@@ -31,6 +31,7 @@ import org.jspecify.annotations.NonNull;
 /// no
 /// matter where it occurs. The only constraint to be fulfilled is that the term matches the
 /// structure described by the term of the find-part.
+@SuppressWarnings("unchecked")
 public class RewriteTaclet extends FindTaclet {
     /// creates a Schematic Theory Specific Rule (Taclet) with the given parameters that represents
     /// a

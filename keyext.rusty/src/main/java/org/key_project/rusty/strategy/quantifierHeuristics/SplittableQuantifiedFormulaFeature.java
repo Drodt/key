@@ -24,6 +24,7 @@ public class SplittableQuantifiedFormulaFeature extends BinaryFeature {
 
     public static final Feature INSTANCE = new SplittableQuantifiedFormulaFeature();
 
+    @SuppressWarnings("unchecked")
     @Override
     protected boolean filter(RuleApp app,
             PosInOccurrence pos, ProofGoal<?> goal, MutableState mState) {
@@ -40,7 +41,7 @@ public class SplittableQuantifiedFormulaFeature extends BinaryFeature {
                     .isEmpty();
         } else if (analyser.binOp == Junctor.OR) {
             return TriggerUtils
-                    .intersect((ImmutableSet<LogicVariable>) analyser.left.freeVars(),
+                    .intersect(analyser.left.freeVars(),
                         (ImmutableSet<LogicVariable>) analyser.right.freeVars())
                     .union(analyser.existentialVars).size() == analyser.existentialVars.size();
         }

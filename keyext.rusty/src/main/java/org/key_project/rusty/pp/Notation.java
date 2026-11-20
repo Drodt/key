@@ -114,6 +114,7 @@ public abstract class Notation {
             this.ass = ass;
         }
 
+        @SuppressWarnings("unchecked")
         public void print(Term t, LogicPrinter sp) {
             sp.addBoundVars(t.boundVars());
             sp.printQuantifierTerm(name, (ImmutableList<QuantifiableVariable>) t.varsBoundHere(0),

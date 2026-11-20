@@ -420,7 +420,7 @@ public class IntermediateProofReplayer {
         }
 
         if (currContract != null) {
-            AbstractContractRuleApp contractApp = null;
+            AbstractContractRuleApp<? extends BuiltInRule> contractApp = null;
 
             BuiltInRule useContractRule;
             if (currContract instanceof OperationContract) {

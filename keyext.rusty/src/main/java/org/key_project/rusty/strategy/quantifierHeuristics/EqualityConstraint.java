@@ -85,6 +85,7 @@ public class EqualityConstraint implements Constraint {
         return metaVars;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected synchronized Object clone() {
         EqualityConstraint res = new EqualityConstraint((HashMap<Metavariable, Term>) map.clone());
@@ -532,6 +533,7 @@ public class EqualityConstraint implements Constraint {
         return newConstraint;
     }
 
+    @SuppressWarnings("unchecked")
     private EqualityConstraint getMutableConstraint(boolean modifyThis) {
         if (modifyThis) {
             return this;

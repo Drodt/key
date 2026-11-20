@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.strategy.quantifierHeuristics;
 
+import java.util.Objects;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.TerminalSyntaxElement;
@@ -80,6 +82,11 @@ public final class Metavariable extends AbstractSortedOperator
             return false;
         }
         return compareTo((Metavariable) o) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name().toString(), isTemporaryVariable);
     }
 
     /// @return Returns the isTemporaryVariable.

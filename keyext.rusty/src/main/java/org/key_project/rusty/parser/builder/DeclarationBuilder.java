@@ -51,6 +51,7 @@ public class DeclarationBuilder extends DefaultBuilder {
         super(services, nss);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object visitDecls(KeYRustyParser.DeclsContext ctx) {
         mapMapOf(ctx.option_decls(), ctx.options_choice(), ctx.ruleset_decls(),

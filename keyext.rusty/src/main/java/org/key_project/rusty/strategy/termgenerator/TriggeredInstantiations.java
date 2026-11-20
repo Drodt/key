@@ -6,6 +6,7 @@ package org.key_project.rusty.strategy.termgenerator;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.key_project.logic.Name;
@@ -25,7 +26,6 @@ import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.TermImpl;
 import org.key_project.rusty.logic.op.Equality;
 import org.key_project.rusty.logic.sort.GenericSort;
-import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.calculus.RustySequentKit;
 import org.key_project.rusty.rule.SyntacticalReplaceVisitor;
 import org.key_project.rusty.rule.Taclet;
@@ -39,9 +39,18 @@ public class TriggeredInstantiations implements TermGenerator {
         return new TriggeredInstantiations(skipConditions);
     }
 
-    private Sequent last = RustySequentKit.getInstance().getEmptySequent();
-    private Set<Term> lastCandidates = new HashSet<>();
-    private ImmutableSet<Term> lastAxioms = DefaultImmutableSet.nil();
+    private record CandidateCache(Sequent last, Set<Term> candidates, ImmutableSet<Term> axioms) {
+    }
+
+    /// Per-thread candidate cache. This term generator is shared across the parallel prover's
+    /// workers
+    /// (one instance per strategy) and [#generate] runs concurrently off the commit lock, so a
+    /// shared cache would race -- and a check-then-act on the sequent could hand back another
+    /// goal's
+    /// candidates. ThreadLocal keeps the per-thread caching without any sharing.
+    private final ThreadLocal<CandidateCache> candidateCache = ThreadLocal.withInitial(
+        () -> new CandidateCache(RustySequentKit.getInstance().getEmptySequent(), new HashSet<>(),
+            DefaultImmutableSet.nil()));
 
     private final boolean checkConditions;
 
@@ -53,12 +62,10 @@ public class TriggeredInstantiations implements TermGenerator {
     /// Generates all instances
     @Override
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos,
-            ProofGoal<?> p_goal,
+            ProofGoal<?> goal,
             MutableState mState) {
-        final var goal = (Goal) p_goal;
         if (app instanceof TacletApp tapp) {
-
-            final Services services = goal.proof().getServices();
+            final Services services = (Services) goal.proof().getServices();
             final Taclet taclet = (Taclet) tapp.taclet();
 
             final Set<Term> terms;
@@ -67,29 +74,22 @@ public class TriggeredInstantiations implements TermGenerator {
 
 
             final Sequent seq = goal.sequent();
-            if (seq != last) {
-                terms = new HashSet<>();
-                axiomSet = new HashSet<>();
+            final CandidateCache cached = candidateCache.get();
+            if (seq != cached.last()) {
+                terms = new LinkedHashSet<>();
+                axiomSet = new LinkedHashSet<>();
                 computeAxiomAndCandidateSets(seq, terms, axiomSet, services);
                 for (Term axiom : axiomSet) {
                     axioms = axioms.add(axiom);
                 }
-
-                synchronized (this) {
-                    last = seq;
-                    lastCandidates = terms;
-                    lastAxioms = axioms;
-                }
+                candidateCache.set(new CandidateCache(seq, terms, axioms));
             } else {
-                synchronized (this) {
-                    terms = lastCandidates;
-                    axioms = lastAxioms;
-                }
+                terms = cached.candidates();
+                axioms = cached.axioms();
             }
 
             if (taclet.hasTrigger()) {
-
-                final Term comprehension = (Term) pos.subTerm();
+                final Term comprehension = pos.subTerm();
 
                 if (tapp.uninstantiatedVars().size() <= 1) {
                     SVInstantiations svInst = tapp.instantiations();
@@ -105,20 +105,20 @@ public class TriggeredInstantiations implements TermGenerator {
                     final Metavariable mv = new Metavariable(new Name("$MV$" + sv.name()), svSort);
 
                     final Term trigger =
-                        instantiateTerm((Term) taclet.getTrigger().trigger(), services,
+                        instantiateTerm(taclet.getTrigger().trigger(), services,
                             svInst.replace(sv, services.getTermFactory().createTerm(mv), services));
 
-                    final Set<org.key_project.logic.Term> instances =
-                        computeInstances(services, mv, trigger, terms, axioms, tapp);
+                    final Set<Term> instances =
+                        computeInstances(services, comprehension, mv, trigger, terms, axioms, tapp);
 
                     return instances.iterator();
                 } else {
                     // at the moment instantiations with more than one
                     // missing taclet variable not supported
-                    return ImmutableList.<org.key_project.logic.Term>nil().iterator();
+                    return ImmutableList.<Term>nil().iterator();
                 }
             } else {
-                return ImmutableList.<org.key_project.logic.Term>nil().iterator();
+                return ImmutableList.<Term>nil().iterator();
             }
 
         } else {
@@ -136,7 +136,7 @@ public class TriggeredInstantiations implements TermGenerator {
 
     private void computeAxiomAndCandidateSets(final Sequent seq, final Set<Term> terms,
             final Set<Term> axioms, Services services) {
-        final var integerLDT = services.getLDTs().getIntLDT();
+        final IntLDT integerLDT = services.getLDTs().getIntLDT();
         collectAxiomsAndCandidateTerms(terms, axioms, integerLDT, seq.antecedent(), true, services);
         collectAxiomsAndCandidateTerms(terms, axioms, integerLDT, seq.succedent(), false, services);
     }
@@ -144,7 +144,6 @@ public class TriggeredInstantiations implements TermGenerator {
     private void collectAxiomsAndCandidateTerms(final Set<Term> terms, final Set<Term> axioms,
             final IntLDT integerLDT, Semisequent antecedent, boolean inAntecedent,
             Services services) {
-
         for (SequentFormula sf : antecedent) {
             Term formula = sf.formula();
             collectTerms(formula, terms, integerLDT);
@@ -156,24 +155,29 @@ public class TriggeredInstantiations implements TermGenerator {
         }
     }
 
-    private boolean isAvoidConditionProvable(Term cond, ImmutableSet<Term> axioms,
-            Services services) {
-
+    private boolean isAvoidConditionProvable(Term cond,
+            PredictCostProver.PreparedAxioms axioms, Services services) {
         long cost = PredictCostProver.computerInstanceCost(
             new Substitution(DefaultImmutableMap.nilMap()), cond,
             axioms, services);
-
-
         return cost == -1;
     }
 
-    private HashSet<org.key_project.logic.Term> computeInstances(Services services,
+    // Constraint is deprecated wholesale (quantifierHeuristics.constraint); no replacement API
+    // exists.
+    @SuppressWarnings("deprecation")
+    private HashSet<Term> computeInstances(Services services,
+            final Term comprehension,
             final Metavariable mv, final Term trigger, Set<Term> terms,
             ImmutableSet<Term> axioms,
             TacletApp app) {
 
-        final HashSet<org.key_project.logic.Term> instances = new HashSet<>();
+        final LinkedHashSet<Term> instances = new LinkedHashSet<>();
         final HashSet<Term> alreadyChecked = new HashSet<>();
+        // The axioms are fixed for the sequent, so the congruence and the normalization are
+        // built once here instead of once per avoid condition per candidate.
+        final PredictCostProver.PreparedAxioms prepared =
+            PredictCostProver.prepare(axioms, services);
 
         for (final Term t : terms) {
             boolean addToInstances = true;
@@ -186,7 +190,7 @@ public class TriggeredInstantiations implements TermGenerator {
                         ImmutableList<Term> conditions =
                             instantiateConditions(services, app, middle);
                         for (Term condition : conditions) {
-                            if (isAvoidConditionProvable(condition, axioms, services)) {
+                            if (isAvoidConditionProvable(condition, prepared, services)) {
                                 addToInstances = false;
                                 break;
                             }

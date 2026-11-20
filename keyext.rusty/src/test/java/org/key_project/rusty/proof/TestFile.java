@@ -30,7 +30,6 @@ public class TestFile {
     /// @param pathName Path whose associated [File] object will be returned.
     /// @return [File] object pointing to given path name relative to given base directory.
     static File getAbsoluteFile(File baseDirectory, String pathName) {
-
         /*
          * Caller of this method must provide an absolute path as base directory.
          */

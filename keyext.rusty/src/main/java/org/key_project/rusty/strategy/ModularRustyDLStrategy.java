@@ -129,7 +129,7 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
     public List<RuleSetDispatchFeature> costRuleSetDispatchers() {
         final List<RuleSetDispatchFeature> result = new ArrayList<>();
         result.add(conflictCostDispatcher);
-        for (ComponentStrategy s : strategies) {
+        for (ComponentStrategy<Goal> s : strategies) {
             final RuleSetDispatchFeature d = s.getDispatcher(StrategyAspect.Cost);
             if (d != null) {
                 result.add(d);
@@ -138,7 +138,7 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
         return result;
     }
 
-    private record StratAndDispatcher(ComponentStrategy strategy,
+    private record StratAndDispatcher(ComponentStrategy<Goal> strategy,
             RuleSetDispatchFeature dispatcher) {
     }
 

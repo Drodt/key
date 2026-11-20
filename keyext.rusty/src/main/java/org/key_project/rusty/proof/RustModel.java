@@ -95,6 +95,15 @@ public final class RustModel {
         return getModelTag().equals(other.getModelTag());
     }
 
+    @Override
+    public int hashCode() {
+        if (getModelTag() == null) {
+            return 42;
+        } else {
+            return getModelTag().hashCode();
+        }
+    }
+
     /// Transform the current state into a string with valid declarations inside a KeY file.
     /// In particular, it uses `\programSource` and `\includes`
     /// directive

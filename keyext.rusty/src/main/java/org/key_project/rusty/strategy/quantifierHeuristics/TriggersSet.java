@@ -367,6 +367,7 @@ public class TriggersSet {
             return expansions;
         }
 
+        @SuppressWarnings("unchecked")
         private Set<Term> combineSubterms(Term originalTerm, Set<Term>[] possibleSubs,
                 Term[] chosenSubs, ImmutableList<? extends QuantifiableVariable> boundVars, int i,
                 Services services) {

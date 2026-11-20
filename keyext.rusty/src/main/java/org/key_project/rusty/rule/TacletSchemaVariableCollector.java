@@ -179,7 +179,7 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
             }
             if (visitAddrules) {
                 for (var taclet1 : tacletGoalTemplate.rules()) {
-                    visit((Taclet) taclet1, true);
+                    visit(taclet1, true);
                 }
             }
         }

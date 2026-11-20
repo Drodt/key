@@ -66,6 +66,7 @@ public class FocussedRuleApplicationManager
         delegate.clearCache();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public RuleApplicationManager<Goal> copy() {
         return (RuleApplicationManager<Goal>) clone();

@@ -23,6 +23,7 @@ import org.jspecify.annotations.NonNull;
 
 /// A SuccTaclet represents a taclet whose find part has to match a top level formula in the
 /// succedent of the sequent.
+@SuppressWarnings("unchecked")
 public class SuccTaclet extends FindTaclet {
     /// creates a [Taclet] (old name Schematic Theory Specific Rule) with the given parameters
     /// that works on the succedent.
@@ -76,5 +77,4 @@ public class SuccTaclet extends FindTaclet {
             (Sequent) find,
             prefixMap, choices, tacletAnnotations, noFreeVarIns);
     }
-
 }

@@ -127,7 +127,7 @@ public class NamespaceSet {
 
     /// returns all namespaces in an array
     private Namespace<?>[] asArray() {
-        return new Namespace[] { variables(), programVariables(), sorts(), parametricSorts(),
+        return new Namespace<?>[] { variables(), programVariables(), sorts(), parametricSorts(),
             ruleSets(), functions(), parametricFunctions(), choices()
         };
     }
@@ -177,7 +177,7 @@ public class NamespaceSet {
     /// returns all namespaces with symbols that may occur in a real sequent (this means all
     /// namespaces without variables, choices and ruleSets)
     private Namespace<?>[] logicAsArray() {
-        return new Namespace[] { programVariables(), sorts(), functions() };
+        return new Namespace<?>[] { programVariables(), sorts(), functions() };
     }
 
     public void flushToParent() {

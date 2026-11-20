@@ -161,6 +161,7 @@ public class OpReplacer {
     ///
     /// @param vars the array in which to perform the replacement.
     /// @return the list of transformed variables.
+    @SuppressWarnings("unchecked")
     public ImmutableList<QuantifiableVariable> replaceQuantVars(
             ImmutableList<? extends QuantifiableVariable> vars) {
         QuantifiableVariable[] result = new QuantifiableVariable[vars.size()];

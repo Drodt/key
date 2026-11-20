@@ -34,6 +34,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
         return accept(ctx.decls());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object visitDecls(KeYRustyParser.DeclsContext ctx) {
         mapMapOf(ctx.pred_decls(), ctx.func_decls(), ctx.transform_decls(), ctx.datatype_decls());

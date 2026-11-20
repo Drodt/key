@@ -453,6 +453,7 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public TacletIndex copy() {
         return new TacletIndex(
             rwList.copy(), antecList.copy(), succList.copy(), noFindList,

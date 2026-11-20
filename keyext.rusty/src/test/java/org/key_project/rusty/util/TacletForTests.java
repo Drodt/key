@@ -46,6 +46,7 @@ public class TacletForTests {
 
     // private static Namespace<QuantifiableVariable> variables = null;
 
+    @SuppressWarnings("unchecked")
     public static final Profile profile = new RustProfile() {
         // we do not want normal standard rules, but ruleSetsDeclarations is needed for string
         // library (HACK)

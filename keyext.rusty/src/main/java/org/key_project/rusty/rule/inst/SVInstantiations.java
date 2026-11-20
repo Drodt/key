@@ -252,6 +252,7 @@ public class SVInstantiations
     /// @return the InstantiationEntry the SchemaVariable will be instantiated with, `null` if
     /// no
     /// instantiation is stored
+    @SuppressWarnings("unchecked")
     public <T> InstantiationEntry<T> getInstantiationEntry(SchemaVariable sv) {
         return (InstantiationEntry<T>) map.get(sv);
     }
@@ -418,10 +419,11 @@ public class SVInstantiations
         return e == null ? null : e.key(); // handle this better!
     }
 
-    public @Nullable Object lookupValue(@NonNull Name name) {
+    @SuppressWarnings("unchecked")
+    public <T> T lookupValue(@NonNull Name name) {
         final ImmutableMapEntry<@NonNull SchemaVariable, InstantiationEntry<?>> e =
             lookupEntryForSV(name);
-        return e == null ? null : e.value().getInstantiation();
+        return e == null ? null : (T) e.value().getInstantiation();
     }
 
     /// returns true if the given object and this one have the same mappings
@@ -453,6 +455,16 @@ public class SVInstantiations
             }
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 37 * getUpdateContext().hashCode() + size();
+        for (final var e : map) {
+            final Object instantiation = e.value().getInstantiation();
+            result = 37 * result + instantiation.hashCode() + e.key().hashCode();
+        }
+        return result;
     }
 
     /// replaces the given pair in the instantiations. If the context has been instantiated already,

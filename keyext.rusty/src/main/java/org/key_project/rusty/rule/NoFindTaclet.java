@@ -23,6 +23,7 @@ import org.jspecify.annotations.NonNull;
 
 /// Used to implement a Taclet that has no _find_ part. This kind of taclet is not attached to
 /// term or formula, but to a complete sequent. A typical representant is the <code>cut</code> rule.
+@SuppressWarnings("unchecked")
 public class NoFindTaclet extends Taclet {
     /// creates a [Taclet] (previously Schematic Theory Specific Rule) with the given
     /// parameters.

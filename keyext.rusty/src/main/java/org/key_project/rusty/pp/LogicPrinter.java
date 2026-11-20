@@ -705,6 +705,7 @@ public class LogicPrinter {
     /// line, <code>t2...tn</code> are aligned below <code>t1</code>.
     ///
     /// @param t the term to be printed.
+    @SuppressWarnings("unchecked")
     public void printFunctionTerm(Term t) {
         boolean isKeyword = false;
         if (services != null) {
@@ -981,6 +982,7 @@ public class LogicPrinter {
         layouter.print(";");
     }
 
+    @SuppressWarnings("unchecked")
     public void printIfThenElseTerm(Term t, String keyword) {
         layouter.startTerm(t.arity());
 
@@ -1109,6 +1111,7 @@ public class LogicPrinter {
     /// where <code>psi = phi.sub(0)</code>. No line breaks are inserted, as the program itself is
     /// always broken. In case of a program modality with arity greater than 1, the subformulae are
     /// listed between parens, like <code>&lt;Program&gt;(psi1,psi2)</code>
+    @SuppressWarnings("unchecked")
     public void printModalityTerm(String left, RustyBlock jb, String right, Term phi, int ass) {
         assert jb != null;
         assert jb.program() != null;

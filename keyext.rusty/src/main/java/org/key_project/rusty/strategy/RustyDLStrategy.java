@@ -258,7 +258,7 @@ public final class RustyDLStrategy extends RustAbstractFeatureStrategy
     }
 
     @Override
-    public boolean isResponsibleFor(IBuiltInRule rule) {
+    public boolean isResponsibleFor(IBuiltInRule<Goal> rule) {
         return false;
     }
 }

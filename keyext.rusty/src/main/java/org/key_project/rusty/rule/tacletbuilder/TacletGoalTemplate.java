@@ -55,6 +55,7 @@ public class TacletGoalTemplate
     /// the goal of a Taclet may introduce new rules. Call this method to get them
     ///
     /// @return IList<Taclet> contains new introduced rules
+    @SuppressWarnings("unchecked")
     public ImmutableList<Taclet> rules() {
         return (ImmutableList<@NonNull Taclet>) super.rules();
     }

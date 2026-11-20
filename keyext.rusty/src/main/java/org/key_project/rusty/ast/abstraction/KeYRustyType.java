@@ -81,6 +81,11 @@ public class KeYRustyType implements Type {
     }
 
     @Override
+    public int hashCode() {
+        return name().hashCode();
+    }
+
+    @Override
     public RustType toRustType(Services services) {
         if (rustyType == null) {
             return new SortRustType(this);

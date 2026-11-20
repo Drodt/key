@@ -70,6 +70,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
     /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code>
     /// and
     /// possible renaming
+    @SuppressWarnings("unchecked")
     private static Term applyUpdateOnRigid(Term u, Term phi, Services services) {
         if (phi.boundVars().isEmpty() || u.freeVars().isEmpty()) {
             final TermBuilder tb = services.getTermBuilder();
@@ -97,6 +98,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
     /// @return the term of the update <code>u</code> applied on all subterms of <code>phi</code>
     /// and
     /// possible renaming
+    @SuppressWarnings("unchecked")
     private static Term applyUpdateOnRigidQuantifier(Term u, Term phi, Services services) {
         final TermBuilder tb = services.getTermBuilder();
 
@@ -117,6 +119,7 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
             private final Stack<Object> subStack = new Stack<>(); // of Term (and Boolean)
             private final Boolean newMarker = Boolean.TRUE;
 
+            @SuppressWarnings("unchecked")
             @Override
             public void visit(Term visited) {
                 Operator visitedOp = visited.op();
@@ -168,9 +171,9 @@ public final class ApplyUpdateOnRigidCondition implements VariableCondition {
             MatchResultInfo mc,
             LogicServices services) {
         var svInst = (SVInstantiations) mc.getInstantiations();
-        Term uInst = (Term) svInst.getInstantiation(u);
-        Term phiInst = (Term) svInst.getInstantiation(phi);
-        Term resultInst = (Term) svInst.getInstantiation(result);
+        Term uInst = svInst.getInstantiation(u);
+        Term phiInst = svInst.getInstantiation(phi);
+        Term resultInst = svInst.getInstantiation(result);
         if (uInst == null || phiInst == null) {
             return mc;
         }

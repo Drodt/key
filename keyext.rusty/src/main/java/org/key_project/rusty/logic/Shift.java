@@ -39,6 +39,7 @@ public class Shift {
     /// substitute <code>s</code> for <code>v</code> in every subterm of <code>t</code>, and build a
     /// new term. It is assumed, that one of the subterms contains a free occurrence of
     /// <code>v</code>, and that the case <code>v==t<code> is already handled.
+    @SuppressWarnings("unchecked")
     private Term applyOnSubterms(Term t) {
         final int arity = t.arity();
         final Term[] newSubterms = new Term[arity];

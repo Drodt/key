@@ -197,7 +197,7 @@ public class SymExStrategy extends RustAbstractFeatureStrategy implements Compon
     }
 
     @Override
-    public boolean isResponsibleFor(IBuiltInRule rule) {
+    public boolean isResponsibleFor(IBuiltInRule<Goal> rule) {
         return rule instanceof UseOperationContractRule;
     }
 }

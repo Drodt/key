@@ -124,6 +124,7 @@ public class Substitution {
     /// occurrence is replaced unless it is shadowed, i.e. re-bound by a binder above it (tracked in
     /// `boundAbove`). Subterms in which no substituted variable occurs free are returned
     /// unchanged.
+    @SuppressWarnings("unchecked")
     private Term applyGroundOnePass(Term t, ImmutableList<QuantifiableVariable> boundAbove,
             TermBuilder tb) {
         // Variable leaves (the most common node) are handled directly, without the freeVars

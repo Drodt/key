@@ -71,6 +71,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         return doLookup(n, lookups);
     }
 
+    @SuppressWarnings("unchecked")
     protected <T> T doLookup(Name n, Namespace<?>... lookups) {
         for (Namespace<?> lookup : lookups) {
             Object l;

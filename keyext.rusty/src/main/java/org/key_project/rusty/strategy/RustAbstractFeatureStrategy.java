@@ -21,7 +21,6 @@ import org.key_project.prover.strategy.costbased.feature.Feature;
 import org.key_project.prover.strategy.costbased.feature.RuleSetDispatchFeature;
 import org.key_project.prover.strategy.costbased.feature.instantiator.BackTrackingManager;
 import org.key_project.prover.strategy.costbased.feature.instantiator.ForEachCP;
-import org.key_project.prover.strategy.costbased.feature.instantiator.OneOfCP;
 import org.key_project.prover.strategy.costbased.feature.instantiator.SVInstantiationCP;
 import org.key_project.prover.strategy.costbased.termProjection.ProjectionToTerm;
 import org.key_project.prover.strategy.costbased.termProjection.TermBuffer;
@@ -109,15 +108,6 @@ public abstract class RustAbstractFeatureStrategy extends AbstractFeatureStrateg
 
     protected Feature forEach(TermBuffer x, TermGenerator gen, Feature body) {
         return ForEachCP.create(x, gen, body);
-    }
-
-    protected Feature oneOf(Feature[] features) {
-        return OneOfCP.create(features);
-    }
-
-    protected Feature oneOf(Feature feature0, Feature feature1) {
-        // noinspection unchecked
-        return oneOf(new Feature[] { feature0, feature1 });
     }
 
     private boolean instantiateActive = false;
