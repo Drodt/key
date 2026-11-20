@@ -13,7 +13,6 @@ import org.key_project.logic.Term;
 import org.key_project.util.collection.Pair;
 
 public class AbbrevMap {
-
     /// HashMaps used to store the mappings from Term to String, String to Term and Term to Enabled.
     private final HashMap<AbbrevWrapper, String> termstring;
     private final HashMap<String, AbbrevWrapper> stringterm;
@@ -135,7 +134,6 @@ public class AbbrevMap {
     }
 
     public record AbbrevWrapper(Term t) {
-
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof AbbrevWrapper scw)) {
