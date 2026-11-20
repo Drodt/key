@@ -29,7 +29,7 @@ public class TacletSchemaVariableCollector implements Visitor<@NonNull Term> {
     /// collects all found variables
     protected ImmutableList<SchemaVariable> varList;
     /// the instantiations needed for unwind loop constructs
-    private SVInstantiations instantiations = SVInstantiations.EMPTY_SVINSTANTIATIONS;
+    protected SVInstantiations instantiations = SVInstantiations.EMPTY_SVINSTANTIATIONS;
 
     public TacletSchemaVariableCollector() {
         varList = ImmutableList.nil();

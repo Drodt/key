@@ -31,6 +31,7 @@ import org.key_project.rusty.logic.op.LogicVariable;
 import org.key_project.rusty.logic.op.ProgramVariable;
 import org.key_project.rusty.logic.op.RFunction;
 import org.key_project.rusty.logic.op.sv.*;
+import org.key_project.rusty.logic.sort.GenericSort;
 import org.key_project.rusty.logic.sort.ProgramSVSort;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.VariableNameProposer;
@@ -63,6 +64,8 @@ public abstract class TacletApp implements ITacletApp {
 
     /// the update context given by the current instantiations must not be changed
     protected boolean updateContextFixed = false;
+
+    private volatile ImmutableSet<GenericSort> missingSorts = null;
 
     /// constructs a TacletApp for the given taclet, with an empty instantiation map
     TacletApp(Taclet taclet) {
@@ -433,7 +436,7 @@ public abstract class TacletApp implements ITacletApp {
             }
         }
 
-        if (!app.complete()) {
+        if (!app.completeExceptSkolemConstants()) {
             return null;
         }
         return app;
@@ -501,7 +504,52 @@ public abstract class TacletApp implements ITacletApp {
         return app;
     }
 
+    /**
+     * Whether this application can be applied: like {@link #complete()}, except skolem term
+     * schema variables, whose constants {@link #createSkolemConstants(Goal)} creates when the
+     * rule is applied.
+     */
+    public final boolean completeExceptSkolemConstants() {
+        if (posInOccurrence() == null && !(taclet instanceof NoFindTaclet)) {
+            return false;
+        }
+        if (!uninstantiatedGenericSorts().isEmpty() || !assumesInstantionsComplete()) {
+            return false;
+        }
+        for (final SchemaVariable sv : uninstantiatedVars()) {
+            if (!(sv instanceof SkolemTermSV)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /// returns the generic sorts that have not yet been instantiated and need to be instantiated to
+    /// apply the Taclet. (These are not all sorts like the one that appear only in the
+    /// addrule sections)
     ///
+    /// @return ImmutableSet<GenericSort> with GenericSorts that have not been instantiated yet
+    public @NonNull ImmutableSet<GenericSort> uninstantiatedGenericSorts() {
+        return calculateNonInstantiatedGenericSorts();
+    }
+
+    /**
+     * calculate needed GenericSorts that have not been instantiated yet. This means to ignore
+     * GenericSorts that appear only in addrule-sections of Taclets
+     *
+     * @return ImmutableSet<GenericSort> that need to be instantiated but are not
+     */
+    protected ImmutableSet<GenericSort> calculateNonInstantiatedGenericSorts() {
+        if (missingSorts == null) {
+            var coll =
+                new UninstantiatedGenericSortCollector(instantiations());
+            coll.visitWithoutAddrule(taclet());
+            missingSorts = Immutables.createSetFrom(coll.getSortList());
+        }
+
+        return missingSorts;
+    }
+
     /// Collect names which would result in a clash for a new logical variable.
     ///
     ///

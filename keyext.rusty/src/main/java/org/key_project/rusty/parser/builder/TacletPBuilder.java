@@ -1029,7 +1029,8 @@ public class TacletPBuilder extends ExpressionBuilder {
             if (makeVariableSV) {
                 v = SchemaVariableFactory.createVariableSV(new Name(name), s);
             } else if (makeSkolemTermSV) {
-                v = SchemaVariableFactory.createSkolemTermSV(new Name(name), s, mods.definitional());
+                v = SchemaVariableFactory.createSkolemTermSV(new Name(name), s,
+                    mods.definitional());
                 // } else if (makeTermLabelSV) {
                 // v = SchemaVariableFactory.createTermLabelSV(new Name(name));
             } else {
