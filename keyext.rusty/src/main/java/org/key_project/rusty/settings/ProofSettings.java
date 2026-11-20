@@ -7,6 +7,8 @@ package org.key_project.rusty.settings;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -18,11 +20,21 @@ import org.checkerframework.checker.initialization.qual.UnknownInitialization;
 import org.jspecify.annotations.Nullable;
 
 public class ProofSettings {
-    public static final File PROVER_CONFIG_FILE_NEW =
-        new File(PathConfig.getKeyConfigDir(), "proof-settings.json");
+    public static final Path PROVER_CONFIG_FILE =
+        PathConfig.currentPaths.keyConfigDir.resolve("proof-settings.json");
 
     public static final @Nullable URL PROVER_CONFIG_FILE_TEMPLATE = KeYResourceManager.getManager()
             .getResourceFile(ProofSettings.class, "default-proof-settings.json");
+
+    private static Path getProofSettingsReadPath() {
+        var newPathJson = List.of(
+            PROVER_CONFIG_FILE,
+            PathConfig.previousPaths.keyConfigDir.resolve("proof-settings.json"));
+        return newPathJson.stream()
+                .filter(Files::exists)
+                .findFirst()
+                .orElse(PROVER_CONFIG_FILE);
+    }
 
     private @Nullable Properties lastLoadedProperties = null;
     private @Nullable Configuration lastLoadedConfiguration = null;
@@ -77,8 +89,8 @@ public class ProofSettings {
         if (Boolean.getBoolean(PathConfig.DISREGARD_SETTINGS_PROPERTY)) {
             // LOGGER.warn("The settings in {} are *not* read.", PROVER_CONFIG_FILE);
         } else {
-            try (var in = new BufferedReader(
-                new FileReader(PROVER_CONFIG_FILE_NEW, StandardCharsets.UTF_8))) {
+            var readPath = getProofSettingsReadPath();
+            try (var in = Files.newBufferedReader(readPath, StandardCharsets.UTF_8)) {
                 // LOGGER.info("Load proof dependent settings from file {}", fileToUse);
                 loadDefaultJSONSettings();
                 loadSettingsFromJSONStream(in);

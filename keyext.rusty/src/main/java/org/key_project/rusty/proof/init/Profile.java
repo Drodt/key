@@ -56,4 +56,17 @@ public interface Profile {
     default List<QuantifierTheorySupport> getTheorySupports(boolean classic) {
         return classic ? QuantifierTheorySupports.CLASSIC : QuantifierTheorySupports.RUSTY_DL;
     }
+
+    /// Whether automatic proof search for this profile may run on the multicore (parallel) prover.
+    ///
+    /// Conservatively `false` by default: a profile opts in only once its rules, strategy and
+    /// any side-proof machinery have been confirmed thread-safe under concurrent goal processing.
+    /// The
+    /// standard `JavaProfile` opts in; the specialized profiles (well-definedness, information
+    /// flow, symbolic-execution debugger) keep the safe single-core fallback for now.
+    ///
+    /// @return `true` if the parallel prover may be used for this profile
+    default boolean supportsParallelAutomode() {
+        return false;
+    }
 }

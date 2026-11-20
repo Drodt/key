@@ -248,7 +248,7 @@ public class TestFile {
          * Reload proof and dispose corresponding KeY environment immediately afterwards. If no
          * exception is thrown it is assumed that loading works properly.
          */
-        KeYEnvironment proofLoadEnvironment = null;
+        KeYEnvironment<DefaultUserInterfaceControl> proofLoadEnvironment = null;
         Proof reloadedProof = null;
         try {
             proofLoadEnvironment = KeYEnvironment.load(proofFile);

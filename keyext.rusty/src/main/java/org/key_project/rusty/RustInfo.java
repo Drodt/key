@@ -25,6 +25,14 @@ public final class RustInfo {
     private final Map<Function, ProgramFunction> fnToProgFn;
     private final Services services;
 
+    /// When `true`, registering a new Java type is rejected. The parallel prover seals the
+    /// type model for the duration of a multi-worker run, so a stray lazy type registration on the
+    /// proving path fails fast (a loud [IllegalStateException]) instead of racing the shared
+    /// model. All types are expected to be registered before proving starts -- see the
+    /// `ProblemInitializer` warm-up that pre-creates the default execution context.
+    /// Single-threaded proving never seals, so its behavior is unchanged.
+    private volatile boolean typeRegistrationSealed = false;
+
     public RustInfo(Services services) {
         this.services = services;
         type2KRTCache = new HashMap<>();
@@ -160,5 +168,24 @@ public final class RustInfo {
 
     public Set<ProgramFunction> getAllFunctions() {
         return allFunctions;
+    }
+
+    /**
+     * Seals the Rust type model: any subsequent attempt to register a new type throws. Used by the
+     * parallel
+     * prover to fail fast if a lazy type registration reaches the proving path. Idempotent.
+     */
+    public void sealTypeRegistration() {
+        typeRegistrationSealed = true;
+    }
+
+    /** Lifts a {@link #sealTypeRegistration() seal}; the model accepts new types again. */
+    public void unsealTypeRegistration() {
+        typeRegistrationSealed = false;
+    }
+
+    /** @return whether the type model is currently {@link #sealTypeRegistration() sealed} */
+    public boolean isTypeRegistrationSealed() {
+        return typeRegistrationSealed;
     }
 }

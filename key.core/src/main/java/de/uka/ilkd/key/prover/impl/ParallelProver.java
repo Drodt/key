@@ -29,6 +29,7 @@ import org.key_project.prover.engine.GoalChooser;
 import org.key_project.prover.engine.TaskStartedInfo;
 import org.key_project.prover.engine.impl.ApplyStrategyInfo;
 import org.key_project.prover.engine.impl.DefaultProver;
+import org.key_project.prover.engine.impl.GoalScheduler;
 import org.key_project.prover.proof.ProofObject;
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.util.collection.ImmutableList;

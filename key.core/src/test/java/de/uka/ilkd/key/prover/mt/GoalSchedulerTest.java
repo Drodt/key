@@ -13,8 +13,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.uka.ilkd.key.prover.impl.GoalScheduler;
-
+import org.key_project.prover.engine.impl.GoalScheduler;
 import org.key_project.prover.proof.ProofGoal;
 import org.key_project.prover.proof.ProofObject;
 import org.key_project.prover.rules.RuleApp;

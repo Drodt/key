@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.settings;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.nio.file.Path;
 import java.util.*;
 
 import org.key_project.rusty.parser.ParsingFacade;
@@ -32,10 +32,10 @@ public class Configuration {
 
     /// Loads a configuration using the given file.
     ///
-    /// @param file existsing file path
+    /// @param file existing file path
     /// @return a configuration based on the file contents
-    /// @throws IOException if file does not exists or i/o error
-    public static Configuration load(File file) throws IOException {
+    /// @throws IOException if file does not exist or i/o error
+    public static Configuration load(Path file) throws IOException {
         return ParsingFacade.readConfigurationFile(file);
     }
 
@@ -43,7 +43,7 @@ public class Configuration {
     ///
     /// @param input existing file path
     /// @return a configuration based on the file contents
-    /// @throws IOException i/o error on the steram
+    /// @throws IOException i/o error on the stream
     public static Configuration load(CharStream input) throws IOException {
         return ParsingFacade.readConfigurationFile(input);
     }

@@ -116,4 +116,11 @@ public class RustProfile implements Profile {
     public GoalChooserFactory<@NonNull Proof, @NonNull Goal> getSelectedGoalChooserBuilder() {
         return prototype.copy();
     }
+
+    /// The standard RustyDL profile is the one validated for concurrent goal processing, so it opts
+    /// into the multicore prover. Specialised sub-profiles override this back to `false`.
+    @Override
+    public boolean supportsParallelAutomode() {
+        return true;
+    }
 }

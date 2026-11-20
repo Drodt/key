@@ -6,6 +6,7 @@ package org.key_project.rusty.proof;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
@@ -75,6 +76,16 @@ public class Proof implements ProofObject<Goal>, Named {
     private long autoModeTime = 0;
 
     private @Nullable Strategy<@NonNull Goal> activeStrategy;
+
+    /// Whether closing the proof should emit a [ProofEvent].
+    private boolean mutedProofCloseEvents = false;
+
+    /// Set once an [EssentialProofListener] failed while handling an event: the step that
+    /// fired it may have left the proof or a goal inconsistent, so the running search is stopped
+    /// (the provers poll this), no new search may be started, but the proof object stays intact so
+    /// the user can still attempt to save it. Volatile: written from the (possibly worker) firing
+    /// thread, read by the prover loop(s) and the auto-mode control.
+    private volatile boolean erroneous = false;
 
     /// the proof environment (optional)
     private @Nullable ProofEnvironment env;
@@ -730,5 +741,221 @@ public class Proof implements ProofObject<Goal>, Named {
         return () -> ruleAppIndexMode = openRuleAppIndexModeScopes.decrementAndGet() == 0
                 ? RuleAppIndexMode.INTERACTIVE
                 : previous;
+    }
+
+    /// Notifies every listener of an event, isolating the proof from a listener that throws. The
+    /// caller must hold the monitor of `listeners`.
+    ///
+    /// A failing _non-essential_ listener (a pure observer) is logged and unregistered, and
+    /// the remaining listeners are still notified: its brokenness cannot corrupt the proof, so the
+    /// search continues unaffected.
+    ///
+    /// A failing [EssentialProofListener] is different: it is part of the proving machinery,
+    /// so its failure means the step that just fired this event may already have left the proof or
+    /// a
+    /// goal inconsistent. Continuing to prove would build on a broken state. Such a failure instead
+    /// [marks the proof erroneous][#markErroneous] -- which cooperatively stops the
+    /// running search and blocks any new one -- while leaving the proof intact so it can still be
+    /// saved. The essential listener is _not_ unregistered (dropping it would merely hide the
+    /// problem), and no further listeners are notified for this event.
+    ///
+    /// @param listeners the listeners to notify (a throwing non-essential listener is pruned)
+    /// @param notify the notification to deliver to each listener
+    /// @param <L> the listener type
+    /// @return the pruned (broken, unregistered) listeners; empty if none. Callers that notified a
+    /// snapshot list must drop these from the live registration list themselves.
+    private <L> List<L> notifyListeners(List<L> listeners, Consumer<L> notify) {
+        List<L> broken = null;
+        for (L listener : listeners) {
+            try {
+                notify.accept(listener);
+            } catch (Exception e) {
+                if (listener instanceof EssentialProofListener) {
+                    markErroneous(listener.getClass().getName(), e);
+                    // The proof is now flagged; the prover will stop at its next check and no new
+                    // search can start. Do not touch the remaining listeners for this event.
+                    break;
+                }
+                // LOGGER.error("proof listener {} threw while handling an event and will be "
+                // + "unregistered to keep the proof consistent", listener.getClass().getName(),
+                // e);
+                if (broken == null) {
+                    broken = new ArrayList<>();
+                }
+                broken.add(listener);
+            }
+        }
+        if (broken != null) {
+            listeners.removeAll(broken);
+            return broken;
+        }
+        return List.of();
+    }
+
+    /**
+     * @return whether this proof has been flagged as erroneous because an
+     *         {@link EssentialProofListener} failed (see {@link #notifyListeners}). An erroneous
+     *         proof stops its running search and refuses to start a new one, but may still be
+     *         saved.
+     */
+    @Override
+    public boolean isErroneous() {
+        return erroneous;
+    }
+
+    /// Flags this proof as [erroneous][#isErroneous()] after an essential-listener
+    /// failure. Idempotent; only the first failure is logged.
+    ///
+    /// @param listenerName the failing listener's class name (for the log)
+    /// @param cause the throwable it raised
+    private void markErroneous(String listenerName, Throwable cause) {
+        if (!erroneous) {
+            erroneous = true;
+            // LOGGER.error("essential proof listener {} failed; the proof search is stopped and the
+            // "
+            // + "proof is marked erroneous (no further search possible). The proof can still be "
+            // + "saved for a later reload attempt.", listenerName, cause);
+        }
+    }
+
+    /// Detaches every registered [ProofTreeListener] and [RuleAppListener] that is not
+    /// tagged [EssentialProofListener], and returns a handle that re-attaches them when
+    /// closed.
+    ///
+    /// This is the foundation for safe automatic (and, later, multithreaded) proof search: pure
+    /// observers — caching, slicing, origin labels, GUI tree models, … — are
+    /// suspended for the duration of a run so that nothing unrelated to proving fires on a worker
+    /// thread or mutates shared state concurrently. Essential bookkeeping listeners keep running.
+    /// [ProofDisposedListener]s are untouched, as disposal is not part of a run.
+    ///
+    /// Intended use is a try-with-resources scope around the prover's run:
+    ///
+    /// <pre>
+    /// try (var ignored = proof.suspendNonEssentialListeners()) {
+    /// prover.start(proof, goals, ...);
+    /// } // observers re-attached here; the caller then refreshes them from the final state
+    /// </pre>
+    ///
+    /// Suspended listeners are re-attached on [ListenerSuspension#close()]; their relative
+    /// firing order is not guaranteed to be preserved, which is sound because proof listeners are
+    /// mutually independent.
+    ///
+    /// @return a handle whose [ListenerSuspension#close()] restores the suspended listeners;
+    /// restoration is idempotent
+    public ListenerSuspension suspendNonEssentialListeners() {
+        return new ListenerSuspension();
+    }
+
+    /**
+     * Handle returned by {@link Proof#suspendNonEssentialListeners()}. Closing it (idempotently)
+     * re-attaches the listeners that were suspended.
+     */
+    public final class ListenerSuspension implements AutoCloseable {
+        private final List<ProofTreeListener> suspendedTreeListeners = new ArrayList<>();
+        private final List<RuleAppListener> suspendedRuleAppListeners = new ArrayList<>();
+        /**
+         * Distinct non-essential per-goal listeners (e.g. the GUI proof-tree model's goal listener,
+         * which is attached to every open goal). Unlike the proof-level listener lists, these are
+         * registered per goal and would otherwise fire on the worker threads during a parallel run
+         * -- and touch EDT-only state. They are detached for the run's duration and re-attached on
+         * {@link #close()}, to the <em>current</em> open goals (the goal set changes during the
+         * run).
+         */
+        private final Set<GoalListener> suspendedGoalListeners =
+            Collections.newSetFromMap(new IdentityHashMap<>());
+        private boolean restored = false;
+        /**
+         * Whether the proof was already closed when the listeners were suspended. Used to decide on
+         * {@link #close()} whether a {@code proofClosed} event was missed by the suspended
+         * listeners.
+         */
+        private final boolean closedAtSuspension = closed();
+
+        private ListenerSuspension() {
+            synchronized (listenerList) {
+                for (ProofTreeListener l : listenerList) {
+                    if (!(l instanceof EssentialProofListener)) {
+                        suspendedTreeListeners.add(l);
+                    }
+                }
+                listenerList.removeAll(suspendedTreeListeners);
+            }
+            synchronized (ruleAppListenerList) {
+                for (RuleAppListener l : ruleAppListenerList) {
+                    if (!(l instanceof EssentialProofListener)) {
+                        suspendedRuleAppListeners.add(l);
+                    }
+                }
+                ruleAppListenerList.removeAll(suspendedRuleAppListeners);
+            }
+            // Detach non-essential goal listeners from every open goal. (Construction runs before
+            // any
+            // worker starts, so the open-goal set and the goals' listener lists are stable here.)
+            for (Goal g : openGoals()) {
+                for (GoalListener l : g.getGoalListeners()) {
+                    if (!(l instanceof EssentialProofListener)) {
+                        suspendedGoalListeners.add(l);
+                    }
+                }
+            }
+            for (Goal g : openGoals()) {
+                for (GoalListener l : suspendedGoalListeners) {
+                    g.removeGoalListener(l);
+                }
+            }
+        }
+
+        /** Re-attaches the suspended listeners. Idempotent: a second call does nothing. */
+        @Override
+        public void close() {
+            if (restored) {
+                return;
+            }
+            restored = true;
+            synchronized (listenerList) {
+                listenerList.addAll(suspendedTreeListeners);
+            }
+            synchronized (ruleAppListenerList) {
+                ruleAppListenerList.addAll(suspendedRuleAppListeners);
+            }
+            // Re-attach to the goals that are open now (the run may have closed some and created
+            // others); remove-then-add keeps it idempotent and avoids duplicates. The view itself
+            // is
+            // refreshed from the final state by the caller (the GUI's autoModeStopped handler
+            // rebuilds
+            // the modified subtrees on the EDT).
+            for (Goal g : openGoals()) {
+                for (GoalListener l : suspendedGoalListeners) {
+                    g.removeGoalListener(l);
+                    g.addGoalListener(l);
+                }
+            }
+            // If the proof closed while its non-essential listeners were suspended, the proofClosed
+            // event reached only the essential listeners; the suspended ones (e.g. the GUI's
+            // "proof closed" notification, the task and goal views) missed it. Re-deliver it to
+            // them now. This runs after the parallel run has joined all workers, so it is a single
+            // delivery on one thread -- the same context in which proofClosed fires for the
+            // single-threaded prover.
+            if (!closedAtSuspension && !mutedProofCloseEvents && closed()) {
+                ProofTreeEvent event = new ProofTreeEvent(Proof.this);
+                // go through notifyListeners for the same per-listener exception isolation every
+                // other proofClosed dispatch uses; a throwing GUI listener must not escape here and
+                // abort the parallel run's winddown
+                List<ProofTreeListener> broken =
+                    notifyListeners(suspendedTreeListeners, l -> l.proofClosed(event));
+                if (!broken.isEmpty()) {
+                    // notifyListeners pruned them from the suspension snapshot, which is about to
+                    // be discarded -- but they were already re-attached above, so unregister them
+                    // from the live list as well.
+                    synchronized (listenerList) {
+                        listenerList.removeAll(broken);
+                    }
+                }
+            }
+        }
+    }
+
+    public void setMutedProofCloseEvents(boolean mutedProofCloseEvents) {
+        this.mutedProofCloseEvents = mutedProofCloseEvents;
     }
 }

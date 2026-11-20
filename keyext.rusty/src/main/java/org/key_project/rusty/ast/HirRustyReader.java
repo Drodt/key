@@ -30,11 +30,11 @@ import org.key_project.rusty.parser.hir.Crate;
 import org.key_project.rusty.proof.init.ContractPO;
 import org.key_project.rusty.proof.init.InitConfig;
 import org.key_project.rusty.proof.init.ProofInputException;
-import org.key_project.rusty.prover.impl.PerfScope;
 import org.key_project.rusty.speclang.ContractFactory;
 import org.key_project.rusty.speclang.FunctionalOperationContract;
 import org.key_project.rusty.speclang.ProgramVariableCollection;
 import org.key_project.rusty.util.KeYResourceManager;
+import org.key_project.rusty.util.PerfScope;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;

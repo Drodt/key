@@ -5,11 +5,7 @@
 package org.key_project.rusty.proof;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -183,105 +179,6 @@ public class StatisticsFile {
         }
         writeLine(entries);
     }
-
-    /// Print sum for each column as last line when closing statistics file.
-    public void computeSumsAndAverages() throws IOException {
-        try (BufferedReader br =
-            new BufferedReader(new FileReader(statisticsFile, StandardCharsets.UTF_8))) {
-            // strip first line containing column names
-            br.readLine();
-
-            // Convert statistics table into an array of lists.
-            @SuppressWarnings("unchecked")
-            List<String>[] lists = new List[columns.length];
-            for (int i = 0; i < lists.length; i++) {
-                lists[i] = new LinkedList<>();
-            }
-            for (String row; (row = br.readLine()) != null;) {
-                String[] column = row.split("\\|");
-                if (column.length != columns.length) {
-                    throw new RuntimeException(
-                        "Wrong number of columns after parsing statistics table.");
-                }
-                for (int i = 0; i < lists.length; i++) {
-                    lists[i].add(column[i]);
-                }
-            }
-
-            /*
-             * Compute sums and averages.
-             */
-            List<String> sums = new LinkedList<>();
-            sums.add("---SUM---");
-            List<String> avgs = new LinkedList<>();
-            avgs.add("---AVG---");
-            for (int i = 1 /* Omit first column. */; i < columns.length; i++) {
-                Column<?> column = columns[i];
-                String[] sumAndAverage = column.computeSumAndAverage(lists[i]);
-                assert sumAndAverage.length == 2
-                        : "Expecting exactly 2 strings returned by computeSumAndAverage()";
-                sums.add(sumAndAverage[0]);
-                if (i != 6) {
-                    avgs.add(sumAndAverage[1]);
-                } else {
-                    /*
-                     * Adjust average calculation for "Time per step" so that it is more stable.
-                     * (see bug #1442)
-                     */
-                    int sumNodes = Integer.parseInt(sums.get(1));
-                    int sumAutomodeTime = Integer.parseInt(sums.get(4));
-                    // In case sumNodes equals zero return the sum w/o dividing
-                    if (sumNodes == 0) {
-                        // It may be 0 if all files are "loadable".
-                        avgs.add(Integer.toString(sumAutomodeTime));
-                    } else {
-                        avgs.add(Integer.toString(sumAutomodeTime / sumNodes));
-                    }
-                }
-            }
-            // Append lines of sums and averages to statistics file.
-            writeLine(sums);
-            writeLine(avgs);
-
-            /*
-             * Create *.sum.properties and *.avg.properties files for Jenkins.
-             */
-            String jobName = System.getenv("JOB_NAME");
-            if (jobName == null) {
-                jobName = "local";
-            }
-            String url =
-                "URL=http://hudson.se.informatik.tu-darmstadt.de/userContent/statistics-" + jobName;
-            File statisticsDir = statisticsFile.getParentFile();
-            for (int i = 1 /* Omit first column. */; i < columns.length; i++) {
-
-                // Create *.sum.properties file
-                Path sumFile =
-                    new File(statisticsDir, columns[i].name + ".sum.properties").toPath();
-                String[] lines = { "YVALUE=" + sums.get(i), url };
-                Files.write(sumFile, Arrays.asList(lines), Charset.defaultCharset());
-                // LOGGER.info("{} is written", sumFile);
-
-                // Create *.avg.properties file
-                Path avgFile =
-                    new File(statisticsDir, columns[i].name + ".avg.properties").toPath();
-                lines = new String[] { "YVALUE=" + avgs.get(i), url };
-                Files.write(avgFile, Arrays.asList(lines), Charset.defaultCharset());
-                // LOGGER.info("{} is written", avgFile);
-
-            }
-
-            /*
-             * Create properties file for number of test files.
-             */
-            int countFiles = lists[0].size();
-            Path countFilesPath = new File(statisticsDir, "NumberTestFiles.properties").toPath();
-            String[] lines = { "YVALUE=" + countFiles, url };
-            Files.write(countFilesPath, Arrays.asList(lines), Charset.defaultCharset());
-            // LOGGER.info("{} is written", countFilesPath);
-        }
-    }
-
 
     /// A column in statistics table whose entries are values of type [Long] .
     private abstract static class LongColumn extends Column<Long> {

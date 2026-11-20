@@ -172,12 +172,6 @@ public final class ParsingFacade {
         return readConfigurationFile(CharStreams.fromPath(file));
     }
 
-    /// @see #readConfigurationFile(CharStream)
-    /// @throws IOException if the file is not found or not readable.
-    public static Configuration readConfigurationFile(File file) throws IOException {
-        return readConfigurationFile(file.toPath());
-    }
-
     public static Configuration getConfiguration(KeYRustyParser.TableContext ctx) {
         final var cfg = new ConfigurationBuilder();
         return cfg.visitTable(ctx);

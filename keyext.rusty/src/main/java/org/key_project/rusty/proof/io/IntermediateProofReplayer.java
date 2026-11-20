@@ -35,10 +35,10 @@ import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
 import org.key_project.rusty.proof.io.intermediate.*;
-import org.key_project.rusty.prover.impl.PerfScope;
 import org.key_project.rusty.rule.*;
 import org.key_project.rusty.speclang.Contract;
 import org.key_project.rusty.speclang.OperationContract;
+import org.key_project.rusty.util.PerfScope;
 import org.key_project.util.collection.*;
 
 import org.jspecify.annotations.NonNull;

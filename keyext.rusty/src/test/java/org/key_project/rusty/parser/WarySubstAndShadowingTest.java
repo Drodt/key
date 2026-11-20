@@ -63,8 +63,7 @@ public class WarySubstAndShadowingTest {
         // avoid the empty-modality concrete syntax.
         var services = TacletForTests.services();
         var tb = services.getTermBuilder();
-        ProgramVariable i =
-            (ProgramVariable) services.getNamespaces().programVariables().lookup(new Name("i"));
+        ProgramVariable i = services.getNamespaces().programVariables().lookup(new Name("i"));
         Sort u32 = i.sort();
 
         BoundVariable x = new BoundVariable(new Name("x"), u32);
