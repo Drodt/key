@@ -30,7 +30,7 @@ public class TupleLDT extends ParametricLDT {
 
         var paraFns = services.getNamespaces().parametricFunctions();
         tupleFunction = paraFns.lookup("tpl" + size);
-        fieldFunction = paraFns.lookup("Tuple$" + size);
+        fieldFunction = paraFns.lookup("Tuple$" + (size - 1));
     }
 
     public @NonNull ParametricFunctionDecl getTupleFunction() {

@@ -9,7 +9,6 @@ import org.key_project.logic.Namespace;
 import org.key_project.logic.TermOrdering;
 import org.key_project.prover.rules.IBuiltInRule;
 import org.key_project.prover.rules.RuleSet;
-import org.key_project.prover.strategy.ArithTermFeatures;
 import org.key_project.prover.strategy.ComponentStrategy;
 import org.key_project.prover.strategy.FOLStrategy;
 import org.key_project.prover.strategy.IFormulaTermFeatures;
@@ -37,16 +36,20 @@ public class RFOLStrategy extends FOLStrategy<Goal> implements ComponentStrategy
     public static final Name NAME = new Name("JFOL Strategy");
     protected final StrategyProperties strategyProperties;
 
-    private final ArithTermFeatures tf;
     private final Proof proof;
 
-    public RFOLStrategy(ArithTermFeatures tf, IFormulaTermFeatures ff, Proof proof,
+    public RFOLStrategy(IFormulaTermFeatures ff, Proof proof,
             StrategyProperties strategyProperties) {
         super(ff, new RustFeatureConstants(), CostBand.DEFAULT.cost());
-        this.tf = tf;
         this.proof = proof;
         this.strategyProperties = (StrategyProperties) strategyProperties.clone();
         init();
+    }
+
+    @Override
+    protected void setupCostComputationF(@NonNull RuleSetDispatchFeature d) {
+        super.setupCostComputationF(d);
+        bindRuleSet(d, "apply_auxiliary_eq", inftyConst());
     }
 
     @Override

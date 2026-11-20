@@ -41,7 +41,7 @@ public class FOLStrategyFactory implements StrategyFactory {
     public Strategy<@NonNull Goal> create(Proof proof, StrategyProperties strategyProperties) {
         var tf = new ArithTermFeatures(proof.getServices().getLDTs().getIntLDT(), Equality.EQUALS);
         var ff = new FormulaTermFeatures(tf);
-        return new RFOLStrategy(tf, ff, proof, strategyProperties);
+        return new RFOLStrategy(ff, proof, strategyProperties);
     }
 
     private static OneOfStrategyPropertyDefinition getQuantifierTreatment() {

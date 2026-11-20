@@ -7,7 +7,6 @@ package org.key_project.rusty.strategy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.FormulaChangeInfo;
@@ -36,10 +35,6 @@ import org.jspecify.annotations.Nullable;
 /// [#computeCost(RuleApp,PosInOccurrence, ProofGoal , MutableState)]).
 @NullMarked
 public class QueueRuleApplicationManager implements RuleApplicationManager<Goal> {
-    public static final AtomicLong PERF_QUEUE_OPS = new AtomicLong();
-    public static final AtomicLong PERF_PEEK = new AtomicLong();
-    public static final AtomicLong PERF_CREATE_CONTAINER = new AtomicLong();
-
     /**
      * The goal this manager belongs to.
      */

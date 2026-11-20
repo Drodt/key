@@ -58,6 +58,7 @@ public abstract class FOLStrategy<G extends ProofGoal<G>> extends AbstractFeatur
         bindRuleSet(d, "closure", CostBand.CLOSE.cost());
         bindRuleSet(d, "alpha", CostBand.DECOMPOSE.cost());
         bindRuleSet(d, "delta", CostBand.TYPE.cost());
+        // TODO(DD): this should be "boolean"
         bindRuleSet(d, "simplify_bool", CostBand.PREFER.at(300));
 
         final Feature findDepthFeature =

@@ -10,6 +10,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.sort.*;
+import org.key_project.util.Strings;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -56,8 +57,7 @@ public class ParametricFunctionInstance extends RFunction {
 
     private static Name makeName(ParametricFunctionDecl base,
             ImmutableList<GenericArgument> parameters) {
-        // The [ ] are produced by the list's toString method.
-        return new Name(base.name() + "<" + parameters + ">");
+        return new Name(base.name() + Strings.formatAsList(parameters, "<", ",", ">"));
     }
 
     private static ImmutableList<Sort> instantiate(ParametricFunctionDecl base,
