@@ -42,12 +42,10 @@ public class RPolynomial {
         return new Polynomial(a.constantPart, a.parts);
     }
 
-    /**
-     * Creates a term from this polynomial expression.
-     *
-     * @param services the services object
-     * @return the resulting term
-     */
+    /// Creates a term from this polynomial expression.
+    ///
+    /// @param services the services object
+    /// @return the resulting term
     public static Term toTerm(Polynomial p, Services services) {
         final var intLDT = services.getLDTs().getIntLDT();
         final Operator add = intLDT.getAdd();

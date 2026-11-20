@@ -14,16 +14,12 @@ import org.key_project.rusty.rule.BuiltInRule;
 import org.key_project.rusty.rule.IBuiltInRuleApp;
 import org.key_project.util.collection.ImmutableList;
 
-/**
- * Instances of this class are immutable
- */
+/// Instances of this class are immutable
 public class BuiltInRuleAppContainer extends RuleAppContainer {
-    /**
-     * The position of the rule app in two different representations: <code>positionTag</code>
-     * denotes the concerned formula and survives modifications of the sequent and of parts of the
-     * formula, and <code>applicationPosition</code> is the original position for which the rule app
-     * was created
-     */
+    /// The position of the rule app in two different representations: `positionTag`
+    /// denotes the concerned formula and survives modifications of the sequent and of parts of the
+    /// formula, and `applicationPosition` is the original position for which the rule app
+    /// was created
     private final FormulaTag positionTag;
     private final PosInOccurrence applicationPosition;
 
@@ -51,10 +47,8 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // internal methods
     // -------------------------------------------------------------------------
 
-    /**
-     * @return true iff the stored rule app is applicable for the given sequent, i.e. if the bound
-     *         position does still exist (if-formulas are not considered)
-     */
+    /// @return true iff the stored rule app is applicable for the given sequent, i.e. if the bound
+    /// position does still exist (if-formulas are not considered)
     private boolean isStillApplicable(Goal goal) {
         if (applicationPosition == null) {
             return bir.rule().isApplicable(goal, null);
@@ -71,9 +65,7 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     }
 
 
-    /**
-     * Copied from FindTaclet.
-     */
+    /// Copied from FindTaclet.
     private PosInOccurrence getPosInOccurrence(Goal p_goal) {
         final PosInOccurrence topPos =
             p_goal.getFormulaTagManager().getPosForTag(positionTag);
@@ -89,12 +81,11 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
     // public interface
     // -------------------------------------------------------------------------
 
-    /**
-     * Create container for RuleApp.
-     *
-     * @return container for the currently applicable BuiltInRuleApp, the cost may be an instance of
-     *         <code>TopRuleAppCost</code>.
-     */
+    /// Create container for RuleApp.
+    ///
+    /// @return container for the currently applicable BuiltInRuleApp, the cost may be an instance
+    /// of
+    /// `TopRuleAppCost`.
     static RuleAppContainer createAppContainer(IBuiltInRuleApp bir,
             PosInOccurrence pio,
             Goal goal) {
@@ -103,12 +94,11 @@ public class BuiltInRuleAppContainer extends RuleAppContainer {
         return new BuiltInRuleAppContainer(bir, pio, cost, goal);
     }
 
-    /**
-     * Create container for RuleApp.
-     *
-     * @return container for the currently applicable BuiltInRuleApp, the cost may be an instance of
-     *         <code>TopRuleAppCost</code>.
-     */
+    /// Create container for RuleApp.
+    ///
+    /// @return container for the currently applicable BuiltInRuleApp, the cost may be an instance
+    /// of
+    /// `TopRuleAppCost`.
     static ImmutableList<RuleAppContainer> createInitialAppContainers(
             ImmutableList<IBuiltInRuleApp> birs, PosInOccurrence pio,
             Goal goal) {

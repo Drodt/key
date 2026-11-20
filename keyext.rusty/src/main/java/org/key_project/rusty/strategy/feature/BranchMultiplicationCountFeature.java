@@ -24,15 +24,13 @@ import org.key_project.util.Properties;
 /// autopilot prune heavily.
 ///
 public class BranchMultiplicationCountFeature extends BinaryTacletAppFeature {
-    /**
-     * The count as computed for one node. The serial number records which node that was, so a goal
-     * that has since advanced can account for the steps in between. Serial numbers are used rather
-     * than the nodes themselves so that nothing here keeps a pruned node, and with it a sequent,
-     * reachable.
-     *
-     * @param nodeSerial the node the count was computed for
-     * @param count applications carried by the branch strictly above that node
-     */
+    /// The count as computed for one node. The serial number records which node that was, so a goal
+    /// that has since advanced can account for the steps in between. Serial numbers are used rather
+    /// than the nodes themselves so that nothing here keeps a pruned node, and with it a sequent,
+    /// reachable.
+    ///
+    /// @param nodeSerial the node the count was computed for
+    /// @param count applications carried by the branch strictly above that node
     private record BranchCount(int nodeSerial, int count) {
     }
 
@@ -43,14 +41,12 @@ public class BranchMultiplicationCountFeature extends BinaryTacletAppFeature {
     private final String rulePrefix;
     private final int maxOnBranch;
 
-    /**
-     * Zero iff the branch leading to this goal carries at most {@code maxOnBranch} applications of
-     * a rule whose name starts with {@code rulePrefix}.
-     *
-     * @param rulePrefix the name prefix identifying the rules to count
-     * @param maxOnBranch the largest admitted number of earlier applications
-     * @return the feature
-     */
+    /// Zero iff the branch leading to this goal carries at most `maxOnBranch` applications of
+    /// a rule whose name starts with `rulePrefix`.
+    ///
+    /// @param rulePrefix the name prefix identifying the rules to count
+    /// @param maxOnBranch the largest admitted number of earlier applications
+    /// @return the feature
     public static Feature atMost(String rulePrefix, int maxOnBranch) {
         return new BranchMultiplicationCountFeature(rulePrefix, maxOnBranch);
     }
@@ -65,11 +61,9 @@ public class BranchMultiplicationCountFeature extends BinaryTacletAppFeature {
         return applied != null && applied.rule().name().toString().startsWith(rulePrefix);
     }
 
-    /**
-     * The applications carried by the branch strictly above the goal's node. Only the rules its
-     * proper ancestors applied are counted: a goal has not applied one yet, so counting the node
-     * itself would give a number every later goal on the branch inherits as one too small.
-     */
+    /// The applications carried by the branch strictly above the goal's node. Only the rules its
+    /// proper ancestors applied are counted: a goal has not applied one yet, so counting the node
+    /// itself would give a number every later goal on the branch inherits as one too small.
     private int countFor(Goal goal) {
         final Node node = goal.getNode();
         final BranchCount known = goal.getStrategyInfo(COUNT_ON_BRANCH);

@@ -76,15 +76,13 @@ public class RuleAppIndex {
         setNewRuleListeners();
     }
 
-    /**
-     * returns the set of rule applications for the given heuristics at the given position of the
-     * given sequent.
-     *
-     * @param filter the TacletFiler filtering the taclets of interest
-     * @param pos the PosInOccurrence to focus
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     */
+    /// returns the set of rule applications for the given heuristics at the given position of the
+    /// given sequent.
+    ///
+    /// @param filter the TacletFiler filtering the taclets of interest
+    /// @param pos the PosInOccurrence to focus
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
     public ImmutableList<TacletApp> getTacletAppAt(TacletFilter filter,
             PosInOccurrence pos,
             Services services) {
@@ -136,36 +134,32 @@ public class RuleAppIndex {
         return tacletIndex;
     }
 
-    /**
-     * returns the rule applications at the given PosInOccurrence and at all Positions below this.
-     * The method calls getTacletAppAt for all the Positions below.
-     * The applications are looked up in index currently selected in the proof of the associated
-     * {@link #goal}
-     *
-     * @param filter the TacletFiler filtering the taclets of interest
-     * @param pos the position where to start from
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return the possible rule applications
-     */
+    /// returns the rule applications at the given PosInOccurrence and at all Positions below this.
+    /// The method calls getTacletAppAt for all the Positions below.
+    /// The applications are looked up in index currently selected in the proof of the associated
+    /// [#goal]
+    ///
+    /// @param filter the TacletFiler filtering the taclets of interest
+    /// @param pos the position where to start from
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return the possible rule applications
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(TacletFilter filter,
             PosInOccurrence pos,
             Services services) {
         return getTacletAppAtAndBelow(filter, pos, services, goal.proof().getRuleAppIndexMode());
     }
 
-    /**
-     * returns the rule applications at the given PosInOccurrence and at all Positions below this
-     * for the specified rule app index.
-     * The method calls getTacletAppAt for all the Positions below.
-     *
-     * @param filter the TacletFiler filtering the taclets of interest
-     * @param pos the position where to start from
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @param mode the mode specifying the rule app index to use
-     * @return the possible rule applications
-     */
+    /// returns the rule applications at the given PosInOccurrence and at all Positions below this
+    /// for the specified rule app index.
+    /// The method calls getTacletAppAt for all the Positions below.
+    ///
+    /// @param filter the TacletFiler filtering the taclets of interest
+    /// @param pos the position where to start from
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @param mode the mode specifying the rule app index to use
+    /// @return the possible rule applications
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(TacletFilter filter,
             PosInOccurrence pos, Services services, RuleAppIndexMode mode) {
         ImmutableList<TacletApp> result = ImmutableList.nil();
@@ -274,13 +268,11 @@ public class RuleAppIndex {
         automatedTacletAppIndex.clearIndexes();
     }
 
-    /**
-     * collects all FindTacletInstantiations for the given heuristics and position
-     *
-     * @param filter the TacletFiler filtering the taclets of interest
-     * @param pos the PosInOccurrence to focus
-     * @return list of all possible instantiations
-     */
+    /// collects all FindTacletInstantiations for the given heuristics and position
+    ///
+    /// @param filter the TacletFiler filtering the taclets of interest
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getFindTaclet(TacletFilter filter,
             PosInOccurrence pos) {
         ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
@@ -291,14 +283,12 @@ public class RuleAppIndex {
         return result;
     }
 
-    /**
-     * collects all NoFindTacletInstantiations for the given heuristics
-     *
-     * @param filter the TacletFiler filtering the taclets of interest
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return list of all possible instantiations
-     */
+    /// collects all NoFindTacletInstantiations for the given heuristics
+    ///
+    /// @param filter the TacletFiler filtering the taclets of interest
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(TacletFilter filter, Services services) {
         ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
         if (!isAutomatic()) {
@@ -308,26 +298,22 @@ public class RuleAppIndex {
         return result;
     }
 
-    /**
-     * Returns whether this index is in automatic mode (see {@link RuleAppIndexMode}), determined by
-     * the proof object
-     * of the associated goal.
-     * In automatic mode the interactive taclet app index is not updated.
-     *
-     * @return whether this index is in automatic mode
-     */
+    /// Returns whether this index is in automatic mode (see [RuleAppIndexMode]), determined by
+    /// the proof object
+    /// of the associated goal.
+    /// In automatic mode the interactive taclet app index is not updated.
+    ///
+    /// @return whether this index is in automatic mode
     private boolean isAutomatic() {
         return goal.proof().getRuleAppIndexMode() == RuleAppIndexMode.AUTO;
     }
 
-    /**
-     * collects all RewriteTacletInstantiations for the given heuristics in a subterm of the
-     * constraintformula described by a PosInOccurrence
-     *
-     * @param filter the TacletFiler filtering the taclets of interest
-     * @param pos the PosInOccurrence to focus
-     * @return list of all possible instantiations
-     */
+    /// collects all RewriteTacletInstantiations for the given heuristics in a subterm of the
+    /// constraintformula described by a PosInOccurrence
+    ///
+    /// @param filter the TacletFiler filtering the taclets of interest
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getRewriteTaclet(TacletFilter filter,
             PosInOccurrence pos) {
         ImmutableList<NoPosTacletApp> result = ImmutableList.nil();

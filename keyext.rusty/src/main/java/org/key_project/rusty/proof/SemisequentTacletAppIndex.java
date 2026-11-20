@@ -70,12 +70,10 @@ public class SemisequentTacletAppIndex {
         }
     }
 
-    /**
-     * Create an index that additionally contains the taclets that are selected by
-     * <code>filter</code>
-     *
-     * @param filter The taclets that are supposed to be added
-     */
+    /// Create an index that additionally contains the taclets that are selected by
+    /// `filter`
+    ///
+    /// @param filter The taclets that are supposed to be added
     public SemisequentTacletAppIndex addTaclets(RuleFilter filter, Services services,
             TacletIndex tacletIndex, NewRuleListener listener) {
         final SemisequentTacletAppIndex result = copy();
@@ -89,11 +87,9 @@ public class SemisequentTacletAppIndex {
         return result;
     }
 
-    /**
-     * Update the index for the given formula, which is supposed to be an element of the map
-     * <code>termIndices</code>, by adding the taclets that are selected by <code>filter</code>
-     * Note: destructive, use only when constructing new index
-     */
+    /// Update the index for the given formula, which is supposed to be an element of the map
+    /// `termIndices`, by adding the taclets that are selected by `filter`
+    /// Note: destructive, use only when constructing new index
     private void addTaclets(RuleFilter filter, SequentFormula cfma,
             Services services,
             TacletIndex tacletIndex, NewRuleListener listener) {
@@ -108,12 +104,10 @@ public class SemisequentTacletAppIndex {
     }
 
 
-    /**
-     * Create the map <code>termIndices</code> with an index for every formula of the given
-     * semisequent.
-     *
-     * @return map with an index for each formula in the semisequent
-     */
+    /// Create the map `termIndices` with an index for every formula of the given
+    /// semisequent.
+    ///
+    /// @return map with an index for each formula in the semisequent
     private ImmutableMap<SequentFormula, TermTacletAppIndex> createTermIndices(
             ImmutableList<SequentFormula> cfmas,
             Services services,
@@ -128,10 +122,8 @@ public class SemisequentTacletAppIndex {
         return DefaultImmutableMap.fromMap(indices);
     }
 
-    /**
-     * Add an index for the given formula to the map <code>termIndices</code>. An existing entry is
-     * replaced with the new one. Note: destructive, use only when constructing new index
-     */
+    /// Add an index for the given formula to the map `termIndices`. An existing entry is
+    /// replaced with the new one. Note: destructive, use only when constructing new index
     private void addTermIndex(
             SequentFormula cfma, Services services,
             TacletIndex tacletIndex, NewRuleListener listener) {
@@ -145,9 +137,7 @@ public class SemisequentTacletAppIndex {
         return new SemisequentTacletAppIndex(this);
     }
 
-    /**
-     * @return all taclet apps for the given position
-     */
+    /// @return all taclet apps for the given position
     public ImmutableList<NoPosTacletApp> getTacletAppAt(
             PosInOccurrence pos, RuleFilter filter) {
         TermTacletAppIndex termIndex = getTermIndex(pos);
@@ -159,9 +149,7 @@ public class SemisequentTacletAppIndex {
         return termIndices.get(pos.sequentFormula());
     }
 
-    /**
-     * @return all taclet apps for or below the given position
-     */
+    /// @return all taclet apps for or below the given position
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(
             PosInOccurrence pos, RuleFilter filter,
             Services services) {

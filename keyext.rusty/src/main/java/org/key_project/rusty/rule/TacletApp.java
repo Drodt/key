@@ -504,11 +504,9 @@ public abstract class TacletApp implements ITacletApp {
         return app;
     }
 
-    /**
-     * Whether this application can be applied: like {@link #complete()}, except skolem term
-     * schema variables, whose constants {@link #createSkolemConstants(Goal)} creates when the
-     * rule is applied.
-     */
+    /// Whether this application can be applied: like [#complete()], except skolem term
+    /// schema variables, whose constants [#createSkolemConstants(Goal)] creates when the
+    /// rule is applied.
     public final boolean completeExceptSkolemConstants() {
         if (posInOccurrence() == null && !(taclet instanceof NoFindTaclet)) {
             return false;
@@ -533,12 +531,10 @@ public abstract class TacletApp implements ITacletApp {
         return calculateNonInstantiatedGenericSorts();
     }
 
-    /**
-     * calculate needed GenericSorts that have not been instantiated yet. This means to ignore
-     * GenericSorts that appear only in addrule-sections of Taclets
-     *
-     * @return ImmutableSet<GenericSort> that need to be instantiated but are not
-     */
+    /// calculate needed GenericSorts that have not been instantiated yet. This means to ignore
+    /// GenericSorts that appear only in addrule-sections of Taclets
+    ///
+    /// @return ImmutableSet<genericsort> that need to be instantiated but are not</genericsort>
     protected ImmutableSet<GenericSort> calculateNonInstantiatedGenericSorts() {
         if (missingSorts == null) {
             var coll =
@@ -944,11 +940,9 @@ public abstract class TacletApp implements ITacletApp {
         return !(sv instanceof SkolemTermSV || sv instanceof VariableSV);
     }
 
-    /**
-     * Creates the skolem constants of the still uninstantiated skolem term schema variables.
-     * Called when the rule is applied, on the goal it is applied to, so every constant records
-     * the point of its introduction.
-     */
+    /// Creates the skolem constants of the still uninstantiated skolem term schema variables.
+    /// Called when the rule is applied, on the goal it is applied to, so every constant records
+    /// the point of its introduction.
     public TacletApp createSkolemConstants(Goal goal) {
         TacletApp app = this;
         ImmutableList<String> proposals = ImmutableList.nil();

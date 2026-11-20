@@ -41,11 +41,10 @@ public class TacletAppIndex {
     /// Object to which the appearance of new taclet apps is reported
     private NewRuleListener newRuleListener = NullNewRuleListener.INSTANCE;
 
-    /**
-     * Filter that is used to restrict the set of taclets that are considered as possible members of
-     * this index. This is used to distinguish between <code>TacletAppIndex</code> s exclusively for
-     * automatic or interactive taclets.
-     */
+    /// Filter that is used to restrict the set of taclets that are considered as possible members
+    /// of
+    /// this index. This is used to distinguish between `TacletAppIndex` s exclusively for
+    /// automatic or interactive taclets.
     private RuleFilter ruleFilter;
 
     private final Map<CacheKey, TermTacletAppIndex> cache;
@@ -83,11 +82,9 @@ public class TacletAppIndex {
         return tacletIndex;
     }
 
-    /**
-     * returns the set of rule applications at the given position of the given sequent.
-     *
-     * @param pos the PosInOccurrence to focus
-     */
+    /// returns the set of rule applications at the given position of the given sequent.
+    ///
+    /// @param pos the PosInOccurrence to focus
     public ImmutableList<TacletApp> getTacletAppAt(
             PosInOccurrence pos, TacletFilter filter,
             Services services) {
@@ -103,25 +100,21 @@ public class TacletAppIndex {
         return createTacletApps(tacletInsts, pos, services);
     }
 
-    /**
-     * collects all NoFindTacletInstantiations
-     *
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return list of all possible instantiations
-     */
+    /// collects all NoFindTacletInstantiations
+    ///
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(TacletFilter filter, Services services) {
         RuleFilter effectiveFilter = new AndRuleFilter(filter, ruleFilter);
         return tacletIndex().getNoFindTaclet(effectiveFilter, services);
     }
 
-    /**
-     * collects all RewriteTacletInstantiations in a subterm of the constrainedFormula described by
-     * a PosInOccurrence. RewriteTaclets with wrong prefix are filtered out.
-     *
-     * @param pos the PosInOccurrence to focus
-     * @return list of all possible instantiations
-     */
+    /// collects all RewriteTacletInstantiations in a subterm of the constrainedFormula described by
+    /// a PosInOccurrence. RewriteTaclets with wrong prefix are filtered out.
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getRewriteTaclet(
             PosInOccurrence pos,
             TacletFilter filter) {
@@ -142,12 +135,10 @@ public class TacletAppIndex {
         return result;
     }
 
-    /**
-     * collects all FindTaclets with instantiations and position
-     *
-     * @param pos the PosInOccurrence to focus
-     * @return list of all possible instantiations
-     */
+    /// collects all FindTaclets with instantiations and position
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @return list of all possible instantiations
     public ImmutableList<NoPosTacletApp> getFindTaclet(
             PosInOccurrence pos, TacletFilter filter) {
         return getIndex(pos).getTacletAppAt(pos, filter);
@@ -237,9 +228,7 @@ public class TacletAppIndex {
         return result;
     }
 
-    /**
-     * returns a new TacletAppIndex with a given TacletIndex
-     */
+    /// returns a new TacletAppIndex with a given TacletIndex
     TacletAppIndex copyWith(TacletIndex p_tacletIndex, Goal goal) {
         return new TacletAppIndex(p_tacletIndex, antecIndex, succIndex, goal, getSequent(),
             ruleFilter, indexCaches, cache);
@@ -314,15 +303,13 @@ public class TacletAppIndex {
             succIndex.addTaclets(newTaclets, getServices(), tacletIndex, newRuleListener);
     }
 
-    /**
-     * Like {@link #updateIndices(SetRuleFilter)}, but the freshly added taclets are supplied as a
-     * small dedicated index rather than as a membership filter over the full {@link #tacletIndex}.
-     * The re-index walk then sees only those taclets as match candidates -- avoiding the
-     * per-position scan of the full operator bucket through {@link SetRuleFilter#filter} -- while
-     * reusing the identical {@code getList}/match logic, so the resulting apps are unchanged. Used
-     * for the common single-taclet add; the goal's rule filter is still applied (the candidate
-     * filter passed here is {@link TacletFilter#TRUE}).
-     */
+    /// Like [#updateIndices(SetRuleFilter)], but the freshly added taclets are supplied as a
+    /// small dedicated index rather than as a membership filter over the full [#tacletIndex].
+    /// The re-index walk then sees only those taclets as match candidates -- avoiding the
+    /// per-position scan of the full operator bucket through [SetRuleFilter#filter] -- while
+    /// reusing the identical `getList`/match logic, so the resulting apps are unchanged. Used
+    /// for the common single-taclet add; the goal's rule filter is still applied (the candidate
+    /// filter passed here is [TacletFilter#TRUE]).
     private void updateIndices(final TacletIndex newTacletsIndex) {
         antecIndex = antecIndex.addTaclets(TacletFilter.TRUE, getServices(), newTacletsIndex,
             newRuleListener);
@@ -346,15 +333,13 @@ public class TacletAppIndex {
         }
     }
 
-    /**
-     * returns the rule applications at the given PosInOccurrence and at all Positions below this.
-     * The method calls getTacletAppAt for all the Positions below.
-     *
-     * @param pos the position where to start from
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return the possible rule applications
-     */
+    /// returns the rule applications at the given PosInOccurrence and at all Positions below this.
+    /// The method calls getTacletAppAt for all the Positions below.
+    ///
+    /// @param pos the position where to start from
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return the possible rule applications
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(PosInOccurrence pos, TacletFilter filter,
             Services services) {
         final ImmutableList<TacletApp> findTaclets =
@@ -362,10 +347,8 @@ public class TacletAppIndex {
         return prepend(findTaclets, getNoFindTaclet(filter, services));
     }
 
-    /**
-     * Reports all cached rule apps. Calls ruleAdded on the given NewRuleListener for every cached
-     * taclet app.
-     */
+    /// Reports all cached rule apps. Calls ruleAdded on the given NewRuleListener for every cached
+    /// taclet app.
     public void reportRuleApps(NewRuleListener l, Services services) {
         if (antecIndex != null) {
             antecIndex.reportRuleApps(l);

@@ -94,7 +94,7 @@ final class InstanceTable {
         return query;
     }
 
-    /** The recorded instances, in the order they were first offered. */
+    /// The recorded instances, in the order they were first offered.
     Set<Term> instances() {
         return entries.keySet();
     }

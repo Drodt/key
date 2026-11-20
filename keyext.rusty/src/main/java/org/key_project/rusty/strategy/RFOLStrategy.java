@@ -97,7 +97,7 @@ public class RFOLStrategy extends FOLStrategy<Goal> implements ComponentStrategy
         return proof.getServices();
     }
 
-    /** the value of the trigger option, fixed when this strategy was constructed */
+    /// the value of the trigger option, fixed when this strategy was constructed
     @Override
     protected String triggersOption() {
         return strategyProperties.getProperty(StrategyProperties.TRIGGERS_OPTIONS_KEY);

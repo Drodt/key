@@ -42,21 +42,15 @@ import org.jspecify.annotations.Nullable;
 public class TacletIndex implements RuleIndex<NoPosTacletApp> {
     private static final Object DEFAULT_SV_KEY = new Object();
     private static final Object DEFAULT_PROGSV_KEY = new Object();
-    /**
-     * contains rewrite Taclets
-     */
+    /// contains rewrite Taclets
     protected CopyOnWriteIndexMap<Object, ImmutableList<NoPosTacletApp>> rwList =
         new CopyOnWriteIndexMap<>();
 
-    /**
-     * contains antecedent Taclets
-     */
+    /// contains antecedent Taclets
     protected CopyOnWriteIndexMap<Object, ImmutableList<NoPosTacletApp>> antecList =
         new CopyOnWriteIndexMap<>();
 
-    /**
-     * contains succedent Taclets
-     */
+    /// contains succedent Taclets
     protected CopyOnWriteIndexMap<Object, ImmutableList<NoPosTacletApp>> succList =
         new CopyOnWriteIndexMap<>();
 
@@ -108,13 +102,11 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
         return DefaultImmutableSet.fromImmutableList(result);
     }
 
-    /**
-     * returns a NoPosTacletApp whose Taclet has a name that equals the given name. If more Taclets
-     * have the same name an arbitrary Taclet with that name is returned.
-     *
-     * @param name the name to lookup
-     * @return the found NoPosTacletApp or null if no matching Taclet is there
-     */
+    /// returns a NoPosTacletApp whose Taclet has a name that equals the given name. If more Taclets
+    /// have the same name an arbitrary Taclet with that name is returned.
+    ///
+    /// @param name the name to lookup
+    /// @return the found NoPosTacletApp or null if no matching Taclet is there
     @Override
     public NoPosTacletApp lookup(Name name) {
         return allNoPosTacletAppsStream()
@@ -123,13 +115,11 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
                 .orElse(null);
     }
 
-    /**
-     * returns a NoPosTacletApp whose Taclet has a name that equals the given name. If more Taclets
-     * have the same name an arbitrary Taclet with that name is returned.
-     *
-     * @param name the name to lookup
-     * @return the found NoPosTacletApp or null if no matching Taclet is there
-     */
+    /// returns a NoPosTacletApp whose Taclet has a name that equals the given name. If more Taclets
+    /// have the same name an arbitrary Taclet with that name is returned.
+    ///
+    /// @param name the name to lookup
+    /// @return the found NoPosTacletApp or null if no matching Taclet is there
     @Override
     public @Nullable NoPosTacletApp lookup(String name) {
         return lookup(new Name(name));
@@ -249,15 +239,13 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
         return indexObj;
     }
 
-    /**
-     * get all Taclets having no find expression.
-     *
-     * @param filter Only return taclets the filter selects
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and an empty part for the
-     *         instantiations because no instantiations are necessary.
-     */
+    /// get all Taclets having no find expression.
+    ///
+    /// @param filter Only return taclets the filter selects
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return IList<nopostacletapp> containing all applicable rules and an empty part for the
+    /// instantiations because no instantiations are necessary.</nopostacletapp>
     @Override
     public ImmutableList<NoPosTacletApp> getNoFindTaclet(RuleFilter filter,
             LogicServices services) {
@@ -285,16 +273,15 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
         return result;
     }
 
-    /**
-     * get all Taclets for the antecedent.
-     *
-     * @param pos the PosOfOccurrence describing the formula for which to look for top level taclets
-     * @param filter Only return taclets the filter selects
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
-     *         instantiations to get the rule fit.
-     */
+    /// get all Taclets for the antecedent.
+    ///
+    /// @param pos the PosOfOccurrence describing the formula for which to look for top level
+    /// taclets
+    /// @param filter Only return taclets the filter selects
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return IList<nopostacletapp> containing all applicable rules and the corresponding
+    /// instantiations to get the rule fit.</nopostacletapp>
     @Override
     public ImmutableList<NoPosTacletApp> getAntecedentTaclet(
             PosInOccurrence pos, RuleFilter filter,
@@ -303,16 +290,15 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
     }
 
 
-    /**
-     * get all Taclets for the succedent.
-     *
-     * @param pos the PosOfOccurrence describing the formula for which to look for top level taclets
-     * @param filter Only return taclets the filter selects
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
-     *         instantiations to get the rule fit.
-     */
+    /// get all Taclets for the succedent.
+    ///
+    /// @param pos the PosOfOccurrence describing the formula for which to look for top level
+    /// taclets
+    /// @param filter Only return taclets the filter selects
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return IList<nopostacletapp> containing all applicable rules and the corresponding
+    /// instantiations to get the rule fit.</nopostacletapp>
     @Override
     public ImmutableList<NoPosTacletApp> getSuccedentTaclet(
             PosInOccurrence pos, RuleFilter filter,
@@ -336,28 +322,24 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
                 : seqTaclets.prependReverse(rwTaclets);
     }
 
-    /**
-     * returns a list of Taclets and instantiations from the given list of taclets with respect to
-     * term and the filter object.
-     *
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     */
+    /// returns a list of Taclets and instantiations from the given list of taclets with respect to
+    /// term and the filter object.
+    ///
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
     private ImmutableList<NoPosTacletApp> getFindTaclet(ImmutableList<NoPosTacletApp> taclets,
             RuleFilter filter, PosInOccurrence pos,
             LogicServices services) {
         return matchTaclets(taclets, filter, pos, services);
     }
 
-    /**
-     * get all Rewrite-Taclets.
-     *
-     * @param filter Only return taclets the filter selects
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return IList<NoPosTacletApp> containing all applicable rules and the corresponding
-     *         instantiations to get the rule fit.
-     */
+    /// get all Rewrite-Taclets.
+    ///
+    /// @param filter Only return taclets the filter selects
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return IList<nopostacletapp> containing all applicable rules and the corresponding
+    /// instantiations to get the rule fit.</nopostacletapp>
     @Override
     public ImmutableList<NoPosTacletApp> getRewriteTaclet(PosInOccurrence pos, RuleFilter filter,
             LogicServices services) {
@@ -477,9 +459,7 @@ public class TacletIndex implements RuleIndex<NoPosTacletApp> {
             (HashSet<NoPosTacletApp>) partialInstantiatedRuleApps.clone());
     }
 
-    /**
-     * clones the index
-     */
+    /// clones the index
     @Override
     public Object clone() {
         return this.copy();

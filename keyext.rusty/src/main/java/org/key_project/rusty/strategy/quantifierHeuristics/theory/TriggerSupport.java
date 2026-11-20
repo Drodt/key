@@ -137,10 +137,8 @@ public interface TriggerSupport {
     /// order, and through it the instances chosen, depend on which goal built its trigger set
     /// first. A support must therefore take its metavariables from here rather than name them.
     interface MetavariableFactory {
-        /**
-         * @param sort the sort the metavariable stands for
-         * @return a metavariable distinct from every other one of its trigger set
-         */
+        /// @param sort the sort the metavariable stands for
+        /// @return a metavariable distinct from every other one of its trigger set
         Metavariable fresh(Sort sort);
     }
 }

@@ -244,13 +244,11 @@ public class TriggersSet {
             }
         }
 
-        /**
-         * Finds the uni-triggers and multi-trigger elements in each literal of the clause,
-         * registers the uni-triggers and builds the covering multi-triggers.
-         *
-         * @param services access to the theory operators and term construction
-         * @return what the selection found, per literal
-         */
+        /// Finds the uni-triggers and multi-trigger elements in each literal of the clause,
+        /// registers the uni-triggers and builds the covering multi-triggers.
+        ///
+        /// @param services access to the theory operators and term construction
+        /// @return what the selection found, per literal
         public ClauseTriggers createTriggers(Services services) {
             final ClauseAnalysis analysis = analyse(services);
             final List<LiteralTriggers> perLiteral = new ArrayList<>();
@@ -263,13 +261,11 @@ public class TriggersSet {
             return new ClauseTriggers(analysis, List.copyOf(perLiteral), multiCovered);
         }
 
-        /**
-         * Registers the theories' fallback triggers for this clause. Called only when no clause
-         * of the formula is covered, see {@link TriggersSet#initTriggers}. Which treatments act
-         * on the instances is decided where the instances are recorded, not here: the set is
-         * cached per formula and shared by the non-classic treatments. Fallback triggers are not
-         * part of the selection value they are asked for.
-         */
+        /// Registers the theories' fallback triggers for this clause. Called only when no clause
+        /// of the formula is covered, see [TriggersSet#initTriggers]. Which treatments act
+        /// on the instances is decided where the instances are recorded, not here: the set is
+        /// cached per formula and shared by the non-classic treatments. Fallback triggers are not
+        /// part of the selection value they are asked for.
         private void addFallbackTriggers(ClauseTriggers selection, Services services) {
             final Collected discarded = new Collected();
             for (final TriggerSupport support : supports) {
@@ -280,10 +276,8 @@ public class TriggersSet {
             }
         }
 
-        /**
-         * Reads the clause into the value trigger selection works on: its literals, negations
-         * stripped and if-then-else expanded, and its universal variables.
-         */
+        /// Reads the clause into the value trigger selection works on: its literals, negations
+        /// stripped and if-then-else expanded, and its universal variables.
         private ClauseAnalysis analyse(Services services) {
             final List<Term> literals = new ArrayList<>();
             final var disjuncts = TriggerUtils.iteratorByOperator(clause, Junctor.OR);

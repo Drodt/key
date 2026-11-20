@@ -106,8 +106,7 @@ public interface Constraint {
     @Override
     String toString();
 
-    /// Constraint class for representating the TOP (unsatisfiable) constraint.
-    @Deprecated
+    /// Constraint class for representing the TOP (unsatisfiable) constraint.
     class Top implements Constraint {
         /// creation of TOP
         public Top() {

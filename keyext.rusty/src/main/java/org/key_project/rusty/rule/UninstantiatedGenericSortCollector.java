@@ -17,13 +17,11 @@ import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.jspecify.annotations.NonNull;
 
 public final class UninstantiatedGenericSortCollector extends TacletSchemaVariableCollector {
-    /** collects all found variables */
+    /// collects all found variables
     private final @NonNull Set<GenericSort> sortList = new HashSet<>();
 
-    /**
-     * @param svInsts the SVInstantiations that have been already found (needed by unwind loop
-     *        constructs to determine which labels are needed)
-     */
+    /// @param svInsts the SVInstantiations that have been already found (needed by unwind loop
+    /// constructs to determine which labels are needed)
     public UninstantiatedGenericSortCollector(@NonNull SVInstantiations svInsts) {
         super(svInsts);
     }

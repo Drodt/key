@@ -28,19 +28,13 @@ import org.key_project.util.collection.ImmutableMapEntry;
 
 import org.jspecify.annotations.NonNull;
 
-/**
- * Container for RuleApp instances with cost as determined by a given Strategy. Instances of this
- * class are immutable.
- */
+/// Container for RuleApp instances with cost as determined by a given Strategy. Instances of this
+/// class are immutable.
 public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
-    /**
-     * The stored rule app
-     */
+    /// The stored rule app
     private final RuleApp ruleApp;
 
-    /**
-     * The costs of the stored rule app
-     */
+    /// The costs of the stored rule app
     private final RuleAppCost cost;
 
     protected RuleAppContainer(RuleApp p_app, RuleAppCost p_cost) {
@@ -131,10 +125,8 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         return 0;
     }
 
-    /**
-     * The position a container's rule app is (to be) applied at: the creation-time position of a
-     * find-taclet container, or the rule app's own position for built-in rule apps.
-     */
+    /// The position a container's rule app is (to be) applied at: the creation-time position of a
+    /// find-taclet container, or the rule app's own position for built-in rule apps.
     private static PosInOccurrence applicationPosition(RuleAppContainer c) {
         if (c instanceof FindTacletAppContainer findContainer) {
             return findContainer.getApplicationPosition();
@@ -142,14 +134,12 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         return c.ruleApp == null ? null : c.ruleApp.posInOccurrence();
     }
 
-    /**
-     * Compare the {@code \assumes} instantiations of two taclet apps. These are kept separately
-     * from the schema-variable map, so two apps of the same taclet at the same focus that use
-     * different assumes-formulas (e.g. {@code applyEq} instances rewriting with two different
-     * equations) are still tied after {@link #compareInstantiations}; without this comparison the
-     * queue order of such candidates, and thereby proof search, would depend on the
-     * (history-dependent) order in which they were inserted into the queue.
-     */
+    /// Compare the `\\assumes` instantiations of two taclet apps. These are kept separately
+    /// from the schema-variable map, so two apps of the same taclet at the same focus that use
+    /// different assumes-formulas (e.g. `applyEq` instances rewriting with two different
+    /// equations) are still tied after [#compareInstantiations]; without this comparison the
+    /// queue order of such candidates, and thereby proof search, would depend on the
+    /// (history-dependent) order in which they were inserted into the queue.
     private static int compareAssumesInstantiations(TacletApp a, TacletApp b) {
         final ImmutableList<AssumesFormulaInstantiation> ia = a.assumesFormulaInstantiations();
         final ImmutableList<AssumesFormulaInstantiation> ib = b.assumesFormulaInstantiations();
@@ -259,7 +249,7 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         return 0;
     }
 
-    /** The entries of an instantiation map, sorted by schema-variable name. */
+    /// The entries of an instantiation map, sorted by schema-variable name.
     private static List<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> sortedByName(
             ImmutableMap<SchemaVariable, InstantiationEntry<?>> map) {
         final List<ImmutableMapEntry<SchemaVariable, InstantiationEntry<?>>> entries =
@@ -281,14 +271,12 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         return String.valueOf(va).compareTo(String.valueOf(vb));
     }
 
-    /**
-     * Order on whole sequent formulas: by the cached structural name hash first
-     * ({@link Term#nameHash()}), then by the structural name walk of
-     * {@link #compareByName(Term, Term)}. The hash is a pure function of the operator structure
-     * (so the resulting order is stable across runs, as required for the tie-break) and is cached
-     * on term instances, making it an O(1) discriminator: only hash collisions ever pay the walk,
-     * which then keeps the order total and consistent.
-     */
+    /// Order on whole sequent formulas: by the cached structural name hash first
+    /// ([Term#nameHash()]), then by the structural name walk of
+    /// [#compareByName(Term, Term)]. The hash is a pure function of the operator structure
+    /// (so the resulting order is stable across runs, as required for the tie-break) and is cached
+    /// on term instances, making it an O(1) discriminator: only hash collisions ever pay the walk,
+    /// which then keeps the order total and consistent.
     static int compareFormulasByName(Term a, Term b) {
         if (a == b) {
             return 0;
@@ -300,7 +288,7 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         return compareByName(a, b);
     }
 
-    /** Structural order on terms by operator names only, stable across runs (unlike hashCode). */
+    /// Structural order on terms by operator names only, stable across runs (unlike hashCode).
     static int compareByName(Term a, Term b) {
         // Identical (shared) subterms compare equal without a walk. Terms are structurally shared,
         // so on large focus/instantiation terms (e.g. deep heap sequents) this skips whole
@@ -326,14 +314,10 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         return 0;
     }
 
-    /**
-     * Create a list of new RuleAppContainers that are to be considered for application.
-     */
+    /// Create a list of new RuleAppContainers that are to be considered for application.
     public abstract ImmutableList<RuleAppContainer> createFurtherApps(Goal p_goal);
 
-    /**
-     * Create a <code>RuleApp</code> that is suitable to be applied or <code>null</code>.
-     */
+    /// Create a `RuleApp` that is suitable to be applied or `null`.
     public abstract RuleApp completeRuleApp(Goal p_goal);
 
     protected final RuleApp getRuleApp() {
@@ -345,25 +329,22 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         return cost;
     }
 
-    /**
-     * Add the goal-age term to a strategy-computed cost. Age (the goal time, i.e. number of rules
-     * applied so far) is a single first-class component of every container's cost, contributed here
-     * rather than inside any {@link org.key_project.prover.strategy.Strategy#computeCost}, so a
-     * strategy
-     * (and each of its components) computes only its age-free cost, and age is added exactly once
-     * per queued container regardless of how strategies are composed. {@code Top} stays
-     * {@code Top}.
-     */
+    /// Add the goal-age term to a strategy-computed cost. Age (the goal time, i.e. number of rules
+    /// applied so far) is a single first-class component of every container's cost, contributed
+    /// here
+    /// rather than inside any [org.key_project.prover.strategy.Strategy#computeCost], so a
+    /// strategy
+    /// (and each of its components) computes only its age-free cost, and age is added exactly once
+    /// per queued container regardless of how strategies are composed. `Top` stays
+    /// `Top`.
     protected static RuleAppCost withAge(RuleAppCost ageFreeCost, Goal goal) {
         return ageFreeCost.add(NumberRuleAppCost.create(goal.getTime()));
     }
 
-    /**
-     * Create container for a RuleApp.
-     *
-     * @return container for the currently applicable RuleApp, the cost may be an instance of
-     *         <code>TopRuleAppCost</code>.
-     */
+    /// Create container for a RuleApp.
+    ///
+    /// @return container for the currently applicable RuleApp, the cost may be an instance of
+    /// `TopRuleAppCost`.
     public static @NonNull RuleAppContainer createAppContainer(
             RuleApp p_app,
             PosInOccurrence p_pio,
@@ -381,12 +362,11 @@ public abstract class RuleAppContainer implements Comparable<RuleAppContainer> {
         throw new IllegalArgumentException("Unexpected kind of rule.");
     }
 
-    /**
-     * Create containers for RuleApps.
-     *
-     * @return list of containers for the currently applicable RuleApps, the cost may be an instance
-     *         of <code>TopRuleAppCost</code>.
-     */
+    /// Create containers for RuleApps.
+    ///
+    /// @return list of containers for the currently applicable RuleApps, the cost may be an
+    /// instance
+    /// of `TopRuleAppCost`.
     public static ImmutableList<RuleAppContainer> createAppContainers(
             ImmutableList<? extends RuleApp> rules,
             PosInOccurrence pos, Goal goal) {

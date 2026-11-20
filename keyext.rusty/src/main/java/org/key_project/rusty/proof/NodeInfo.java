@@ -36,14 +36,12 @@ public class NodeInfo {
     /// has the rule app of the node been applied interactively?
     private boolean interactiveApplication = false;
 
-    /** Raw taclet-template label whose {@code #sv} placeholders are substituted lazily. */
+    /// Raw taclet-template label whose `#sv` placeholders are substituted lazily.
     private @Nullable String rawBranchLabel = null;
     private String branchLabel = null;
-    /**
-     * Lazy source for labels that stringify terms; evaluated on first {@link #getBranchLabel()}.
-     */
+    /// Lazy source for labels that stringify terms; evaluated on first [#getBranchLabel()].
     private @Nullable Supplier<String> branchLabelSupplier = null;
-    /** Whether {@link #branchLabel} has already been resolved from the raw label / supplier. */
+    /// Whether [#branchLabel] has already been resolved from the raw label / supplier.
     private boolean branchLabelResolved = false;
     /// the node this info object belongs to
     private final Node node;
@@ -71,12 +69,10 @@ public class NodeInfo {
         return branchLabel;
     }
 
-    /**
-     * sets the branch label of a node. Schema variables occurring in string <tt>s</tt> are replaced
-     * by their instantiations if possible
-     *
-     * @param s the String to be set
-     */
+    /// sets the branch label of a node. Schema variables occurring in string `s` are replaced
+    /// by their instantiations if possible
+    ///
+    /// @param s the String to be set
     public synchronized void setBranchLabel(String s) {
         // Store only the raw label; the #sv substitution / term pretty-printing below is deferred
         // to
@@ -94,14 +90,12 @@ public class NodeInfo {
         branchLabelResolved = false;
     }
 
-    /**
-     * Lazy variant of {@link #setBranchLabel(String)} for labels that stringify terms: the supplier
-     * is evaluated (and its result substituted) only when {@link #getBranchLabel()} is first
-     * called,
-     * i.e. on display/save, never on the proof-search path.
-     *
-     * @param labelSupplier supplies the raw branch label on demand
-     */
+    /// Lazy variant of [#setBranchLabel(String)] for labels that stringify terms: the supplier
+    /// is evaluated (and its result substituted) only when [#getBranchLabel()] is first
+    /// called,
+    /// i.e. on display/save, never on the proof-search path.
+    ///
+    /// @param labelSupplier supplies the raw branch label on demand
     public synchronized void setBranchLabel(Supplier<String> labelSupplier) {
         if (labelSupplier == null) {
             return;
@@ -112,14 +106,12 @@ public class NodeInfo {
         branchLabelResolved = false;
     }
 
-    /**
-     * Resolves a raw branch label: schema variables occurring as {@code #sv} are replaced by their
-     * (pretty-printed) instantiations if the parent rule is a taclet application. Runs lazily from
-     * {@link #getBranchLabel()}, never on the proof-search path.
-     *
-     * @param s the raw label, or {@code null}
-     * @return the resolved label, or {@code null}
-     */
+    /// Resolves a raw branch label: schema variables occurring as `#sv` are replaced by their
+    /// (pretty-printed) instantiations if the parent rule is a taclet application. Runs lazily from
+    /// [#getBranchLabel()], never on the proof-search path.
+    ///
+    /// @param s the raw label, or `null`
+    /// @return the resolved label, or `null`
     private @Nullable String resolveBranchLabel(@Nullable String s) {
         if (s == null || node.parent() == null) {
             return null;

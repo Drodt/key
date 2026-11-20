@@ -27,25 +27,21 @@ public final class GenPolTieBreak extends PolarityOccurrenceTieBreak {
         return inst -> generationValue(gen, inst) * (CAP + 1) + polarityValue(occ, inst);
     }
 
-    /**
-     * The generation rank of an instance: the introduction step of its newest skolem constant, or
-     * {@link #CAP} if the instance is not among the ranked candidates.
-     *
-     * @param ranks the rank per candidate
-     * @param inst the candidate instance
-     * @return the generation rank
-     */
+    /// The generation rank of an instance: the introduction step of its newest skolem constant, or
+    /// [#CAP] if the instance is not among the ranked candidates.
+    ///
+    /// @param ranks the rank per candidate
+    /// @param inst the candidate instance
+    /// @return the generation rank
     private static long generationValue(Map<Term, Integer> ranks, Term inst) {
         final Integer rank = ranks.get(inst);
         return rank == null ? CAP : rank;
     }
 
-    /**
-     * Ranks every candidate instance by the introduction step of its newest skolem constant.
-     *
-     * @param view the instantiation view
-     * @return the rank per candidate
-     */
+    /// Ranks every candidate instance by the introduction step of its newest skolem constant.
+    ///
+    /// @param view the instantiation view
+    /// @return the rank per candidate
     private static Map<Term, Integer> computeGenerationRanks(View view) {
         final Map<Term, Integer> intro = new LinkedHashMap<>();
         final TreeSet<Integer> distinct = new TreeSet<>();

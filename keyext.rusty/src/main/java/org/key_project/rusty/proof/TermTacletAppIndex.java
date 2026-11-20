@@ -39,13 +39,11 @@ public class TermTacletAppIndex {
         this.ruleFilter = ruleFilter;
     }
 
-    /**
-     * Create an index for the given term
-     *
-     * @param pos Pointer to the term/formula for which an index is to be created. <code>pos</code>
-     *        has to be a top-level term position
-     * @return the index object
-     */
+    /// Create an index for the given term
+    ///
+    /// @param pos Pointer to the term/formula for which an index is to be created. `pos`
+    /// has to be a top-level term position
+    /// @return the index object
     public static TermTacletAppIndex create(PosInOccurrence pos,
             Services services,
             TacletIndex tacletIndex, NewRuleListener listener, RuleFilter filter,
@@ -118,15 +116,13 @@ public class TermTacletAppIndex {
         }
     }
 
-    /**
-     * collects all RewriteTacletInstantiations for the given heuristics in a subterm of the
-     * constrainedFormula described by a PosInOccurrence
-     *
-     * @param pos the {@link PosInOccurrence} to focus
-     * @param services the {@link Services} object encapsulating information about the java
-     *        datastructures like (static)types etc.
-     * @return list of all possible instantiations
-     */
+    /// collects all RewriteTacletInstantiations for the given heuristics in a subterm of the
+    /// constrainedFormula described by a PosInOccurrence
+    ///
+    /// @param pos the [PosInOccurrence] to focus
+    /// @param services the [Services] object encapsulating information about the java
+    /// datastructures like (static)types etc.
+    /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> getRewriteTaclet(
             PosInOccurrence pos,
             RuleFilter filter, Services services, TacletIndex tacletIndex) {
@@ -134,14 +130,12 @@ public class TermTacletAppIndex {
         return tacletIndex.getRewriteTaclet(pos, filter, services);
     }
 
-    /**
-     * collects all FindTaclets with instantiations for the given heuristics and position
-     *
-     * @param pos the PosInOccurrence to focus
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return list of all possible instantiations
-     */
+    /// collects all FindTaclets with instantiations for the given heuristics and position
+    ///
+    /// @param pos the PosInOccurrence to focus
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> getFindTaclet(
             PosInOccurrence pos,
             RuleFilter filter, Services services, TacletIndex tacletIndex) {
@@ -158,42 +152,38 @@ public class TermTacletAppIndex {
         return tacletInsts;
     }
 
-    /**
-     * collects all AntecedentTaclet instantiations for the given heuristics and SequentFormula
-     *
-     * @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to (pos
-     *        must point to the top level formula, i.e. <tt>pos.isTopLevel()</tt> must be true)
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return list of all possible instantiations
-     */
+    /// collects all AntecedentTaclet instantiations for the given heuristics and SequentFormula
+    ///
+    /// @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to
+    /// (pos
+    /// must point to the top level formula, i.e. `pos.isTopLevel()` must be true)
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> antecTaclet(
             PosInOccurrence pos, RuleFilter filter,
             Services services, TacletIndex tacletIndex) {
         return tacletIndex.getAntecedentTaclet(pos, filter, services);
     }
 
-    /**
-     * collects all SuccedentTaclet instantiations for the given heuristics and SequentFormula
-     *
-     * @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to (pos
-     *        must point to the top level formula, i.e. <tt>pos.isTopLevel()</tt> must be true)
-     * @param services the Services object encapsulating information about the java datastructures
-     *        like (static)types etc.
-     * @return list of all possible instantiations
-     */
+    /// collects all SuccedentTaclet instantiations for the given heuristics and SequentFormula
+    ///
+    /// @param pos the PosInOccurrence of the SequentFormula the taclets have to be connected to
+    /// (pos
+    /// must point to the top level formula, i.e. `pos.isTopLevel()` must be true)
+    /// @param services the Services object encapsulating information about the java datastructures
+    /// like (static)types etc.
+    /// @return list of all possible instantiations
     private static ImmutableList<NoPosTacletApp> succTaclet(
             PosInOccurrence pos, RuleFilter filter,
             Services services, TacletIndex tacletIndex) {
         return tacletIndex.getSuccedentTaclet(pos, filter, services);
     }
 
-    /**
-     * Descend and create indices for each of the direct subterms of the given term
-     *
-     * @param pos pointer to the term/formula for whose subterms indices are to be created
-     * @return list of the index objects
-     */
+    /// Descend and create indices for each of the direct subterms of the given term
+    ///
+    /// @param pos pointer to the term/formula for whose subterms indices are to be created
+    /// @return list of the index objects
     private static ImmutableList<TermTacletAppIndex> createSubIndices(
             PosInOccurrence pos,
             Services services, TacletIndex tacletIndex, NewRuleListener listener, RuleFilter filter,
@@ -209,20 +199,16 @@ public class TermTacletAppIndex {
         return ImmutableList.fromArray(result);
     }
 
-    /**
-     * @return all taclet apps for the given position
-     */
+    /// @return all taclet apps for the given position
     public ImmutableList<NoPosTacletApp> getTacletAppAt(
             PosInOccurrence pos, RuleFilter p_filter) {
         final TermTacletAppIndex index = descend(pos);
         return filter(p_filter, index.localTacletApps);
     }
 
-    /**
-     * @param p_filter the {@link RuleFilter} to be used
-     * @param taclets the list of {@link Taclet}s to be filtered
-     * @return filtered list
-     */
+    /// @param p_filter the [RuleFilter] to be used
+    /// @param taclets the list of [Taclet]s to be filtered
+    /// @return filtered list
     public static ImmutableList<NoPosTacletApp> filter(RuleFilter p_filter,
             ImmutableList<NoPosTacletApp> taclets) {
         ImmutableList<NoPosTacletApp> result = ImmutableList.nil();
@@ -236,23 +222,19 @@ public class TermTacletAppIndex {
         return result;
     }
 
-    /**
-     * @return all taclet apps for or below the given position
-     */
+    /// @return all taclet apps for or below the given position
     public ImmutableList<TacletApp> getTacletAppAtAndBelow(
             PosInOccurrence pos, RuleFilter filter,
             Services services) {
         return descend(pos).collectTacletApps(pos, filter, services);
     }
 
-    /**
-     * Collect all taclet apps that are stored by <code>this</code> (and by the sub-indices of
-     * <code>this</code>). <code>NoPosTacletApp</code>s are converted to <code>PosTacletApp</code>s
-     * using the parameter <code>pos</code>
-     *
-     * @param pos The position of this index
-     * @return a list of all taclet apps
-     */
+    /// Collect all taclet apps that are stored by `this` (and by the sub-indices of
+    /// `this`). `NoPosTacletApp`s are converted to `PosTacletApp`s
+    /// using the parameter `pos`
+    ///
+    /// @param pos The position of this index
+    /// @return a list of all taclet apps
     private ImmutableList<TacletApp> collectTacletApps(
             PosInOccurrence pos, RuleFilter p_filter,
             Services services) {
@@ -311,15 +293,13 @@ public class TermTacletAppIndex {
         return convertedApps;
     }
 
-    /**
-     * Create a new tree of indices that additionally contain the taclets that are selected by
-     * <code>filter</code>
-     *
-     * @param filter The taclets that are supposed to be added
-     * @param pos Pointer to the term/formula for which an index is to be created. <code>pos</code>
-     *        has to be a top-level term position
-     * @return the index object
-     */
+    /// Create a new tree of indices that additionally contain the taclets that are selected by
+    /// `filter`
+    ///
+    /// @param filter The taclets that are supposed to be added
+    /// @param pos Pointer to the term/formula for which an index is to be created. `pos`
+    /// has to be a top-level term position
+    /// @return the index object
     public TermTacletAppIndex addTaclets(RuleFilter filter,
             PosInOccurrence pos, Services services,
             TacletIndex tacletIndex, NewRuleListener listener) {

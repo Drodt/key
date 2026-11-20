@@ -46,49 +46,30 @@ import static org.key_project.prover.indexing.RuleAppIndexMode.INTERACTIVE;
 
 
 public final class Goal implements ProofGoal<@NonNull Goal> {
-    /**
-     * If an application of a rule added some information for the strategy, then this information is
-     * stored in this map.
-     */
+    /// If an application of a rule added some information for the strategy, then this information
+    /// is
+    /// stored in this map.
     private final Properties strategyInfos;
     private Node node;
-    /**
-     * all possible rule applications at this node are managed with this index
-     */
+    /// all possible rule applications at this node are managed with this index
     private final RuleAppIndex ruleAppIndex;
-    /**
-     * list of all applied rule applications at this branch
-     */
+    /// list of all applied rule applications at this branch
     private ImmutableList<RuleApp> appliedRuleApps =
         ImmutableList.nil();
-    /**
-     * this object manages the tags for all formulas of the sequent
-     */
+    /// this object manages the tags for all formulas of the sequent
     private FormulaTagManager tagManager;
-    /**
-     * the strategy object that determines automated application of rules
-     */
+    /// the strategy object that determines automated application of rules
     private @Nullable Strategy<Goal> goalStrategy = null;
-    /**
-     * This is the object which keeps book about all applicable rules.
-     */
+    /// This is the object which keeps book about all applicable rules.
     private @Nullable RuleApplicationManager<Goal> ruleAppManager;
-    /**
-     * goal listeners
-     */
+    /// goal listeners
     private List<GoalListener> listeners = new ArrayList<>(10);
-    /**
-     * a goal has been excluded from automatic rule application iff automatic == false
-     */
+    /// a goal has been excluded from automatic rule application iff automatic == false
     private boolean automatic = true;
-    /**
-     * The namespaces local to this goal. This may evolve over time.
-     */
+    /// The namespaces local to this goal. This may evolve over time.
     private NamespaceSet localNamespaces;
 
-    /**
-     * copy constructor
-     */
+    /// copy constructor
     private Goal(Node node, RuleAppIndex ruleAppIndex,
             ImmutableList<RuleApp> appliedRuleApps,
             @Nullable FormulaTagManager tagManager, RuleApplicationManager<Goal> ruleAppManager,
@@ -103,9 +84,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         this.localNamespaces = localNamespace;
     }
 
-    /**
-     * creates a new goal referencing the given node
-     */
+    /// creates a new goal referencing the given node
     public Goal(Node node, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
             Services services) {
         this.node = node;
@@ -119,26 +98,20 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
             node.proof().getServices().getNamespaces().copyWithParent().copyWithParent();
     }
 
-    /**
-     * Checks if the {@link Goal} has applicable rules.
-     *
-     * @param goal The {@link Goal} to check.
-     * @return {@code true} has applicable rules, {@code false} no rules are applicable.
-     */
+    /// Checks if the [Goal] has applicable rules.
+    ///
+    /// @param goal The [Goal] to check.
+    /// @return `true` has applicable rules, `false` no rules are applicable.
     public static boolean hasApplicableRules(Goal goal) {
         return goal.getRuleAppManager().peekNext() != null;
     }
 
-    /**
-     * this object manages the tags for all formulas of the sequent
-     */
+    /// this object manages the tags for all formulas of the sequent
     public FormulaTagManager getFormulaTagManager() {
         return tagManager;
     }
 
-    /**
-     * @return the strategy that determines automated rule applications for this goal
-     */
+    /// @return the strategy that determines automated rule applications for this goal
     public Strategy<Goal> getGoalStrategy() {
         if (goalStrategy == null) {
             goalStrategy = proof().getActiveStrategy();
@@ -172,60 +145,49 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
     }
 
-    /**
-     * returns the referenced node
-     */
+    /// returns the referenced node
     public Node getNode() {
         return node;
     }
 
-    /**
-     * returns the namespaces for this goal.
-     *
-     * @return an up-to-date non-null namespaces-set.
-     */
+    /// returns the namespaces for this goal.
+    ///
+    /// @return an up-to-date non-null namespaces-set.
     public NamespaceSet getLocalNamespaces() {
         return localNamespaces;
     }
 
-    /**
-     * adds the listener l to the list of goal listeners. Attention: A listener added to this goal
-     * will be taken over when splitting into subgoals.
-     *
-     * @param l the GoalListener to be added
-     */
+    /// adds the listener l to the list of goal listeners. Attention: A listener added to this goal
+    /// will be taken over when splitting into subgoals.
+    ///
+    /// @param l the GoalListener to be added
     public void addGoalListener(GoalListener l) {
         listeners.add(l);
     }
 
-    /**
-     * removes the listener l from the list of goal listeners. Attention: The listener is just
-     * removed from 'this' goal not from the other goals. (All goals can be accessed via proof
-     * openGoals())
-     *
-     * @param l the GoalListener to be removed
-     */
+    /// removes the listener l from the list of goal listeners. Attention: The listener is just
+    /// removed from 'this' goal not from the other goals. (All goals can be accessed via proof
+    /// openGoals())
+    ///
+    /// @param l the GoalListener to be removed
     public void removeGoalListener(GoalListener l) {
         listeners.remove(l);
     }
 
-    /**
-     * Returns a snapshot of the goal listeners currently registered on this goal. Used by
-     * {@link Proof#suspendNonEssentialListeners()} to detach non-essential (e.g. GUI) goal
-     * listeners
-     * for the duration of a parallel run, so they do not fire on worker threads.
-     *
-     * @return a copy of this goal's registered {@link GoalListener}s
-     */
+    /// Returns a snapshot of the goal listeners currently registered on this goal. Used by
+    /// [Proof#suspendNonEssentialListeners()] to detach non-essential (e.g. GUI) goal
+    /// listeners
+    /// for the duration of a parallel run, so they do not fire on worker threads.
+    ///
+    /// @return a copy of this goal's registered [GoalListener]s
     public List<GoalListener> getGoalListeners() {
         return new ArrayList<>(listeners);
     }
 
-    /**
-     * informs all goal listeners about a change of the sequent to reduce unnecessary object
-     * creation the necessary information is passed to the listener as parameters and not through an
-     * event object.
-     */
+    /// informs all goal listeners about a change of the sequent to reduce unnecessary object
+    /// creation the necessary information is passed to the listener as parameters and not through
+    /// an
+    /// event object.
     private void fireSequentChanged(SequentChangeInfo sci) {
         getFormulaTagManager().sequentChanged(sci, getTime());
         ruleAppIndex.sequentChanged(sci);
@@ -256,11 +218,9 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
     }
 
-    /**
-     * set the node the goal is related to
-     *
-     * @param p_node the Node in the proof tree to which this goal refers to
-     */
+    /// set the node the goal is related to
+    ///
+    /// @param p_node the Node in the proof tree to which this goal refers to
     private void setNode(Node p_node) {
         if (getNode().sequent() != p_node.sequent()) {
             node = p_node;
@@ -270,73 +230,57 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
     }
 
-    /**
-     * returns the index of possible rule applications at this node
-     */
+    /// returns the index of possible rule applications at this node
     public RuleAppIndex ruleAppIndex() {
         return ruleAppIndex;
     }
 
-    /**
-     * returns the Taclet index for this goal. This is just a shortcut to the Taclet index of the
-     * RuleAppIndex
-     *
-     * @return the Taclet index assigned to this goal
-     */
+    /// returns the Taclet index for this goal. This is just a shortcut to the Taclet index of the
+    /// RuleAppIndex
+    ///
+    /// @return the Taclet index assigned to this goal
     public TacletIndex indexOfTaclets() {
         return ruleAppIndex.tacletIndex();
     }
 
-    /**
-     * returns set of rules applied at this branch
-     *
-     * @return IList<RuleApp> applied rule applications
-     */
+    /// returns set of rules applied at this branch
+    ///
+    /// @return IList<ruleapp> applied rule applications</ruleapp>
     public ImmutableList<RuleApp> appliedRuleApps() {
         return appliedRuleApps;
     }
 
-    /**
-     * @return the current time of this goal (which is just the number of applied rules)
-     */
+    /// @return the current time of this goal (which is just the number of applied rules)
     public long getTime() {
         return appliedRuleApps().size();
     }
 
-    /**
-     * returns the proof the goal belongs to
-     *
-     * @return the Proof the goal belongs to
-     */
+    /// returns the proof the goal belongs to
+    ///
+    /// @return the Proof the goal belongs to
     @Override
     public Proof proof() {
         return getNode().proof();
     }
 
-    /**
-     * returns the sequent of the node
-     *
-     * @return the Sequent to be proved
-     */
+    /// returns the sequent of the node
+    ///
+    /// @return the Sequent to be proved
     @Override
     public Sequent sequent() {
         return getNode().sequent();
     }
 
-    /**
-     * Checks if is an automatic goal.
-     *
-     * @return true, if is automatic
-     */
+    /// Checks if is an automatic goal.
+    ///
+    /// @return true, if is automatic
     public boolean isAutomatic() {
         return automatic;
     }
 
-    /**
-     * Sets the automatic status of this goal.
-     *
-     * @param t the new status: true for automatic, false for interactive
-     */
+    /// Sets the automatic status of this goal.
+    ///
+    /// @param t the new status: true for automatic, false for interactive
     public void setEnabled(boolean t) {
         boolean oldAutomatic = automatic;
         automatic = t;
@@ -344,12 +288,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         fireAutomaticStateChanged(oldAutomatic, automatic);
     }
 
-    /**
-     * sets the sequent of the node
-     *
-     * @param sci SequentChangeInfo containing the sequent to be set and describing the applied
-     *        changes to the sequent of the node currently pointed to by this goal
-     */
+    /// sets the sequent of the node
+    ///
+    /// @param sci SequentChangeInfo containing the sequent to be set and describing the applied
+    /// changes to the sequent of the node currently pointed to by this goal
     public void setSequent(SequentChangeInfo sci) {
         assert sci.getOriginalSequent() == getNode().sequent();
         if (!sci.hasChanged()) {
@@ -362,70 +304,58 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         fireSequentChanged(sci);
     }
 
-    /**
-     * adds a formula to the sequent before the given position and informs the rule application
-     * index about this change
-     *
-     * @param cf the SequentFormula to be added
-     * @param p PosInOccurrence encodes the position
-     */
+    /// adds a formula to the sequent before the given position and informs the rule application
+    /// index about this change
+    ///
+    /// @param cf the SequentFormula to be added
+    /// @param p PosInOccurrence encodes the position
     public void addFormula(SequentFormula cf, PosInOccurrence p) {
         setSequent(sequent().addFormula(cf, p));
     }
 
-    /**
-     * adds a formula to the antecedent or succedent of a sequent. Either at its front or back and
-     * informs the rule application index about this change
-     *
-     * @param cf the SequentFormula to be added
-     * @param inAntec boolean true(false) if SequentFormula has to be added to antecedent
-     *        (succedent)
-     * @param first boolean true if at the front, if false then cf is added at the back
-     */
+    /// adds a formula to the antecedent or succedent of a sequent. Either at its front or back and
+    /// informs the rule application index about this change
+    ///
+    /// @param cf the SequentFormula to be added
+    /// @param inAntec boolean true(false) if SequentFormula has to be added to antecedent
+    /// (succedent)
+    /// @param first boolean true if at the front, if false then cf is added at the back
     public void addFormula(SequentFormula cf, boolean inAntec,
             boolean first) {
         setSequent(sequent().addFormula(cf, inAntec, first));
     }
 
-    /**
-     * replaces a formula at the given position and informs the rule application index about this
-     * change
-     *
-     * @param cf the SequentFormula replacing the old one
-     * @param p the PosInOccurrence encoding the position
-     */
+    /// replaces a formula at the given position and informs the rule application index about this
+    /// change
+    ///
+    /// @param cf the SequentFormula replacing the old one
+    /// @param p the PosInOccurrence encoding the position
     public void changeFormula(SequentFormula cf, PosInOccurrence p) {
         setSequent(sequent().changeFormula(cf, p));
     }
 
-    /**
-     * removes a formula at the given position from the sequent and informs the rule appliccation
-     * index about this change
-     *
-     * @param p PosInOccurrence encodes the position
-     */
+    /// removes a formula at the given position from the sequent and informs the rule appliccation
+    /// index about this change
+    ///
+    /// @param p PosInOccurrence encodes the position
     public void removeFormula(PosInOccurrence p) {
         setSequent(sequent().removeFormula(p));
     }
 
-    /**
-     * puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current
-     * RuleAppIndex.
-     *
-     * @param app the ITacletApp
-     */
+    /// puts the NoPosTacletApp to the set of TacletApps at the node of the goal and to the current
+    /// RuleAppIndex.
+    ///
+    /// @param app the ITacletApp
     public void addNoPosTacletApp(NoPosTacletApp app) {
         getNode().addNoPosTacletApp(app);
         ruleAppIndex.addNoPosTacletApp(app);
     }
 
-    /**
-     * creates a new ITacletApp and puts it to the set of TacletApps at the node of the goal and to
-     * the current RuleAppIndex.
-     *
-     * @param rule the Taclet of the ITacletApp to create
-     * @param insts the given instantiations of the ITacletApp to be created
-     */
+    /// creates a new ITacletApp and puts it to the set of TacletApps at the node of the goal and to
+    /// the current RuleAppIndex.
+    ///
+    /// @param rule the Taclet of the ITacletApp to create
+    /// @param insts the given instantiations of the ITacletApp to be created
     public void addTaclet(org.key_project.prover.rules.Taclet rule, SVInstantiations insts,
             boolean isAxiom) {
         NoPosTacletApp tacletApp =
@@ -440,9 +370,7 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
     }
 
-    /**
-     * Rebuild all rule caches
-     */
+    /// Rebuild all rule caches
     public void clearAndDetachRuleAppIndex() {
         getRuleAppManager().clearCache();
         ruleAppIndex.clearAndDetachCache();
@@ -452,14 +380,12 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         localNamespaces.programVariables().addSafely(pv);
     }
 
-    /**
-     * clones the goal (with copy of tacletindex and ruleAppIndex).
-     * <p>
-     * The local symbols are reused. This is taken care of later.
-     *
-     * @param node the new Node to which the goal is attached
-     * @return Object the clone
-     */
+    /// clones the goal (with copy of tacletindex and ruleAppIndex).
+    ///
+    /// The local symbols are reused. This is taken care of later.
+    ///
+    /// @param node the new Node to which the goal is attached
+    /// @return Object the clone
     @SuppressWarnings("unchecked")
     public Goal clone(Node node) {
         Goal clone;
@@ -476,43 +402,36 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return clone;
     }
 
-    /**
-     * like the clone method but returns right type
-     *
-     * @return Goal clone of this Goal
-     * @throws CloneNotSupportedException
-     */
+    /// like the clone method but returns right type
+    ///
+    /// @return Goal clone of this Goal
+    /// @throws CloneNotSupportedException
     public Goal copy() throws CloneNotSupportedException {
         return (Goal) clone();
     }
 
-    /**
-     * puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node of
-     * the goal
-     *
-     * @param app the applied rule app
-     */
+    /// puts a RuleApp to the list of the applied rule apps at this goal and stores it in the node
+    /// of
+    /// the goal
+    ///
+    /// @param app the applied rule app
     public void addAppliedRuleApp(RuleApp app) {
         // Last app first makes inserting and searching faster
         appliedRuleApps = appliedRuleApps.prepend(app);
         getNode().setAppliedRuleApp(app);
     }
 
-    /**
-     * PRECONDITION: appliedRuleApps.size () > 0
-     */
+    /// PRECONDITION: appliedRuleApps.size () > 0
     public void removeLastAppliedRuleApp() {
         appliedRuleApps = appliedRuleApps.tail();
         // node ().setAppliedRuleApp ( null );
     }
 
-    /**
-     * creates n new nodes as children of the referenced node and new n goals that have references
-     * to these new nodes.
-     *
-     * @param n number of goals to create
-     * @return the list of new created goals.
-     */
+    /// creates n new nodes as children of the referenced node and new n goals that have references
+    /// to these new nodes.
+    ///
+    /// @param n number of goals to create
+    /// @return the list of new created goals.
     public ImmutableList<Goal> split(int n) {
         ImmutableList<Goal> goalList = ImmutableList.nil();
 
@@ -567,12 +486,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         node.getNodeInfo().setBranchLabel(s);
     }
 
-    /**
-     * Sets the branch label lazily: {@code labelSupplier} is evaluated only when the label is first
-     * read (display/save), keeping term stringification off the proof-search path.
-     *
-     * @param labelSupplier supplies the branch label on demand
-     */
+    /// Sets the branch label lazily: `labelSupplier` is evaluated only when the label is first
+    /// read (display/save), keeping term stringification off the proof-search path.
+    ///
+    /// @param labelSupplier supplies the branch label on demand
     public void setBranchLabel(Supplier<String> labelSupplier) {
         node.getNodeInfo().setBranchLabel(labelSupplier);
     }
@@ -598,15 +515,13 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         localNamespaces = newNS.copyWithParent();
     }
 
-    /**
-     * Perform the provided rule application on this goal.
-     * Returns the new goal(s), if any.
-     * This will also populate a {@link RuleAppInfo} object and fire the corresponding event.
-     * The state of the proof is also updated.
-     *
-     * @param ruleApp the rule app
-     * @return new goal(s)
-     */
+    /// Perform the provided rule application on this goal.
+    /// Returns the new goal(s), if any.
+    /// This will also populate a [RuleAppInfo] object and fire the corresponding event.
+    /// The state of the proof is also updated.
+    ///
+    /// @param ruleApp the rule app
+    /// @return new goal(s)
     @Override
     public ImmutableList<Goal> apply(final RuleApp ruleApp) {
         final PendingRuleApp pending = computeRuleApp(ruleApp);
@@ -616,12 +531,10 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return commitRuleApp(pending);
     }
 
-    /**
-     * The result of {@link #computeRuleApp(RuleApp)}: everything a rule application produced that
-     * has
-     * not yet been committed to the (shared) proof. Created on the worker thread, consumed by
-     * {@link #commitRuleApp(PendingRuleApp)}.
-     */
+    /// The result of [#computeRuleApp(RuleApp)]: everything a rule application produced that
+    /// has
+    /// not yet been committed to the (shared) proof. Created on the worker thread, consumed by
+    /// [#commitRuleApp(PendingRuleApp)].
     public static final class PendingRuleApp {
         private final RuleApp ruleApp;
         private final NodeChangeJournal journal;
@@ -637,19 +550,17 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         }
     }
 
-    /**
-     * Compute phase of a rule application: run the rule executor (term construction, node
-     * splitting)
-     * without touching shared proof state. Safe to run concurrently for distinct goals &mdash; it
-     * mutates only this goal's own node subtree, the atomic node counter and the thread-safe
-     * strategy caches. The
-     * {@link #commitRuleApp(PendingRuleApp)} step then performs the shared mutation under the
-     * prover's commit lock. The plain {@link #apply(RuleApp)} runs the two back to back, so the
-     * single-threaded behaviour is unchanged.
-     *
-     * @param p_ruleApp the rule application to perform
-     * @return the pending application to be committed, or {@code null} if the rule aborted
-     */
+    /// Compute phase of a rule application: run the rule executor (term construction, node
+    /// splitting)
+    /// without touching shared proof state. Safe to run concurrently for distinct goals — it
+    /// mutates only this goal's own node subtree, the atomic node counter and the thread-safe
+    /// strategy caches. The
+    /// [#commitRuleApp(PendingRuleApp)] step then performs the shared mutation under the
+    /// prover's commit lock. The plain [#apply(RuleApp)] runs the two back to back, so the
+    /// single-threaded behaviour is unchanged.
+    ///
+    /// @param p_ruleApp the rule application to perform
+    /// @return the pending application to be committed, or `null` if the rule aborted
     public @Nullable PendingRuleApp computeRuleApp(final RuleApp p_ruleApp) {
         final RuleApp ruleApp = p_ruleApp instanceof TacletApp tacletApp
                 ? tacletApp.createSkolemConstants(this)
@@ -685,15 +596,13 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         return new PendingRuleApp(ruleApp, journal, n, goalList);
     }
 
-    /**
-     * Commit phase of a rule application: the shared-state mutation (proof-tree update,
-     * name-recorder
-     * stashing and the {@code ruleApplied} event). The parallel prover runs this under its commit
-     * lock; the order of operations is identical to the original monolithic {@code apply}.
-     *
-     * @param pending the result of {@link #computeRuleApp(RuleApp)}
-     * @return the new goals
-     */
+    /// Commit phase of a rule application: the shared-state mutation (proof-tree update,
+    /// name-recorder
+    /// stashing and the `ruleApplied` event). The parallel prover runs this under its commit
+    /// lock; the order of operations is identical to the original monolithic `apply`.
+    ///
+    /// @param pending the result of [#computeRuleApp(RuleApp)]
+    /// @return the new goals
     public ImmutableList<Goal> commitRuleApp(final PendingRuleApp pending) {
         final Proof proof = proof();
         final ImmutableList<Goal> goalList = pending.goalList;
@@ -771,13 +680,11 @@ public final class Goal implements ProofGoal<@NonNull Goal> {
         undoMethod.undo(strategyInfos);
     }
 
-    /**
-     * Update the local namespaces from a namespace set.
-     * <p>
-     * The parameter is copied and stored locally.
-     *
-     * @param ns a non-null set of namesspaces which applies to this goal.
-     */
+    /// Update the local namespaces from a namespace set.
+    ///
+    /// The parameter is copied and stored locally.
+    ///
+    /// @param ns a non-null set of namesspaces which applies to this goal.
     public void makeLocalNamespacesFrom(NamespaceSet ns) {
         this.localNamespaces = ns.copyWithParent().copyWithParent();
     }

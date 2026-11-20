@@ -28,9 +28,7 @@ import org.key_project.util.collection.ImmutableSet;
 
 import org.jspecify.annotations.Nullable;
 
-/**
- * Instances of this class are immutable
- */
+/// Instances of this class are immutable
 public abstract class TacletAppContainer extends RuleAppContainer {
 
     // Implementation note (DB 21/02/2014):
@@ -40,32 +38,27 @@ public abstract class TacletAppContainer extends RuleAppContainer {
     // save any memory (at the moment).
     // This is because Java's memory alingment.
 
-    /**
-     * Creation time of this container ({@code -1} for an initial/just-loaded container). Since age
-     * became a first-class container-level cost term ({@link RuleAppContainer#withAge}) this field
-     * no longer feeds the cost; it is purely the {@link AssumesInstantiator} freshness key (was
-     * this
-     * container built before or after a given if-formula).
-     */
+    /// Creation time of this container (`-1` for an initial/just-loaded container). Since age
+    /// became a first-class container-level cost term ([RuleAppContainer#withAge]) this field
+    /// no longer feeds the cost; it is purely the [AssumesInstantiator] freshness key (was
+    /// this
+    /// container built before or after a given if-formula).
     private final long age;
-    /**
-     * The age-free strategy cost: {@code getCost()} without the goal-age term that
-     * {@link RuleAppContainer#withAge} adds. Stored so cost reuse can carry it forward unchanged
-     * across re-expansion and only re-add the current age, with no reconstruction arithmetic.
-     */
+    /// The age-free strategy cost: `getCost()` without the goal-age term that
+    /// [RuleAppContainer#withAge] adds. Stored so cost reuse can carry it forward unchanged
+    /// across re-expansion and only re-add the current age, with no reconstruction arithmetic.
     private final RuleAppCost ageFreeCost;
-    /**
-     * Whether {@link #ageFreeCost} is the regular strategy cost
-     * ({@link org.key_project.prover.strategy.Strategy#computeCost}) and
-     * so
-     * may be carried forward by cost reuse. It is {@code false} only for containers built from a
-     * strategy-supplied instantiation cost
-     * ({@link org.key_project.prover.strategy.Strategy#instantiateApp}, the
-     * {@link #instantiateApp} collector): for those the stored cost is the instantiation score,
-     * which
-     * differs from a regular re-cost (e.g. an instantiated quantifier app re-costs to infinity), so
-     * reusing it would be unsound. Such containers must always be re-costed normally instead.
-     */
+    /// Whether [#ageFreeCost] is the regular strategy cost
+    /// ([org.key_project.prover.strategy.Strategy#computeCost]) and
+    /// so
+    /// may be carried forward by cost reuse. It is `false` only for containers built from a
+    /// strategy-supplied instantiation cost
+    /// ([org.key_project.prover.strategy.Strategy#instantiateApp], the
+    /// [#instantiateApp] collector): for those the stored cost is the instantiation score,
+    /// which
+    /// differs from a regular re-cost (e.g. an instantiated quantifier app re-costs to infinity),
+    /// so
+    /// reusing it would be unsound. Such containers must always be re-costed normally instead.
     private final boolean ageFreeCostIsRegular;
 
     protected TacletAppContainer(RuleApp p_app, RuleAppCost p_ageFreeCost,
@@ -119,9 +112,7 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         }
     }
 
-    /**
-     * Create a list of new RuleAppContainers that are to be considered for application.
-     */
+    /// Create a list of new RuleAppContainers that are to be considered for application.
     @Override
     public final ImmutableList<RuleAppContainer> createFurtherApps(Goal p_goal) {
         if (!isStillApplicable(p_goal)
@@ -154,10 +145,8 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return res;
     }
 
-    /**
-     * Add all instances of the given taclet app (that are possibly produced using method
-     * <code>instantiateApp</code> of the strategy) to <code>targetList</code>
-     */
+    /// Add all instances of the given taclet app (that are possibly produced using method
+    /// `instantiateApp` of the strategy) to `targetList`
     private ImmutableList<RuleAppContainer> addInstances(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, Goal p_goal) {
         if (app.uninstantiatedVars().size() == 0) {
@@ -166,10 +155,8 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return instantiateApp(app, targetList, p_goal);
     }
 
-    /**
-     * Use the method <code>instantiateApp</code> of the strategy for choosing the values of schema
-     * variables that have not been instantiated so far
-     */
+    /// Use the method `instantiateApp` of the strategy for choosing the values of schema
+    /// variables that have not been instantiated so far
     private ImmutableList<RuleAppContainer> instantiateApp(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, final Goal p_goal) {
         // just for being able to modify the result-list in an
@@ -189,20 +176,16 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return resA[0];
     }
 
-    /**
-     * Create a container object for the given taclet app, provided that the app is
-     * <code>sufficientlyComplete</code>, and add the container to <code>targetList</code>
-     */
+    /// Create a container object for the given taclet app, provided that the app is
+    /// `sufficientlyComplete`, and add the container to `targetList`
     private ImmutableList<RuleAppContainer> addContainer(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, Goal p_goal) {
         return targetList.prepend(
             createContainer(app, getPosInOccurrence(p_goal), p_goal, false));
     }
 
-    /**
-     * Create a container object for the given taclet app, provided that the app is
-     * <code>sufficientlyComplete</code>, and add the container to <code>targetList</code>
-     */
+    /// Create a container object for the given taclet app, provided that the app is
+    /// `sufficientlyComplete`, and add the container to `targetList`
     private ImmutableList<RuleAppContainer> addContainer(NoPosTacletApp app,
             ImmutableList<RuleAppContainer> targetList, Goal p_goal, RuleAppCost cost) {
         if (!sufficientlyCompleteApp(app)) {
@@ -229,19 +212,17 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return createContainer(getTacletApp(), getPosInOccurrence(p_goal), p_goal, false);
     }
 
-    /**
-     * Re-cost the base app for {@link #createFurtherApps}. On the cost-reuse fast path (taclet
-     * classified cost-local by {@link CostReuse}, numeric age-free cost) the full
-     * {@link org.key_project.prover.strategy.Strategy#computeCost} is skipped: the stored age-free
-     * cost is
-     * carried forward verbatim and {@link RuleAppContainer#withAge} re-adds the current goal age
-     * when the new container is built -- no reconstruction arithmetic, and initial containers
-     * (age {@code -1}) reuse soundly too, since age is no longer part of the stored cost. The
-     * {@code NonDuplicateApp}-family vetoes that contribute are re-evaluated first; if one fires
-     * the
-     * full cost would be {@link TopRuleAppCost}, so {@code null} is returned (drop the app).
-     * Otherwise, and whenever reuse is disabled/inapplicable, falls back to the normal recompute.
-     */
+    /// Re-cost the base app for [#createFurtherApps]. On the cost-reuse fast path (taclet
+    /// classified cost-local by [CostReuse], numeric age-free cost) the full
+    /// [org.key_project.prover.strategy.Strategy#computeCost] is skipped: the stored age-free
+    /// cost is
+    /// carried forward verbatim and [RuleAppContainer#withAge] re-adds the current goal age
+    /// when the new container is built -- no reconstruction arithmetic, and initial containers
+    /// (age `-1`) reuse soundly too, since age is no longer part of the stored cost. The
+    /// `NonDuplicateApp`-family vetoes that contribute are re-evaluated first; if one fires
+    /// the
+    /// full cost would be [TopRuleAppCost], so `null` is returned (drop the app).
+    /// Otherwise, and whenever reuse is disabled/inapplicable, falls back to the normal recompute.
     private @Nullable TacletAppContainer costLocalReusedContainerOr(Goal p_goal) {
         // only a regular (computeCost) base may be carried forward; an instantiation-supplied base
         // would re-cost differently, so such containers always fall through to a normal recompute
@@ -276,19 +257,15 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return createContainer(p_goal);
     }
 
-    /**
-     * @return {@code true} iff the find formula this container was created for is still present
-     *         unchanged in the goal -- the precondition for carrying forward a {@code @}
-     *         {@code WeakStableCost} cost. The base container has no find formula and so
-     *         conservatively answers {@code false} (such a cost is never reused for it).
-     */
+    /// @return `true` iff the find formula this container was created for is still present
+    /// unchanged in the goal -- the precondition for carrying forward a `@`
+    /// `WeakStableCost` cost. The base container has no find formula and so
+    /// conservatively answers `false` (such a cost is never reused for it).
     protected boolean findFormulaUnchanged(Goal p_goal) {
         return false;
     }
 
-    /**
-     * Create containers for NoFindTaclets.
-     */
+    /// Create containers for NoFindTaclets.
     static RuleAppContainer createAppContainers(NoPosTacletApp p_app, Goal p_goal) {
         return createAppContainers(p_app, null, p_goal);
     }
@@ -313,15 +290,13 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return result;
     }
 
-    /**
-     * Create containers for FindTaclets or NoFindTaclets.
-     *
-     * @param p_app if <code>p_pio</code> is null, <code>p_app</code> has to be a
-     *        <code>ITacletApp</code> for a <code>NoFindTaclet</code>, otherwise for a
-     *        <code>FindTaclet</code>.
-     * @return list of containers for currently applicable TacletApps, the cost may be an instance
-     *         of <code>TopRuleAppCost</code>.
-     */
+    /// Create containers for FindTaclets or NoFindTaclets.
+    ///
+    /// @param p_app if `p\_pio` is null, `p\_app` has to be a
+    /// `ITacletApp` for a `NoFindTaclet`, otherwise for a
+    /// `FindTaclet`.
+    /// @return list of containers for currently applicable TacletApps, the cost may be an instance
+    /// of `TopRuleAppCost`.
     static RuleAppContainer createAppContainers(NoPosTacletApp p_app,
             PosInOccurrence p_pio,
             Goal p_goal) {
@@ -337,10 +312,9 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return createContainer(p_app, p_pio, p_goal, true);
     }
 
-    /**
-     * @return true iff instantiation of the assumes-formulas of the stored taclet app exist and are
-     *         valid are still valid, i.e. the referenced formulas still exist
-     */
+    /// @return true iff instantiation of the assumes-formulas of the stored taclet app exist and
+    /// are
+    /// valid are still valid, i.e. the referenced formulas still exist
     protected boolean assumesFormulasStillValid(Goal p_goal) {
         if (getTacletApp().taclet().assumesSequent().isEmpty()) {
             return true;
@@ -371,19 +345,15 @@ public abstract class TacletAppContainer extends RuleAppContainer {
         return true;
     }
 
-    /**
-     * @return true iff the stored rule app is applicable for the given sequent, i.e. if the
-     *         find-position does still exist (assumes-formulas are not considered)
-     */
+    /// @return true iff the stored rule app is applicable for the given sequent, i.e. if the
+    /// find-position does still exist (assumes-formulas are not considered)
     protected abstract boolean isStillApplicable(Goal p_goal);
 
     protected PosInOccurrence getPosInOccurrence(Goal p_goal) {
         return null;
     }
 
-    /**
-     * Create a <code>RuleApp</code> that is suitable to be applied or <code>null</code>.
-     */
+    /// Create a `RuleApp` that is suitable to be applied or `null`.
     @Override
     public TacletApp completeRuleApp(Goal p_goal) {
         if (!(isStillApplicable(p_goal) && assumesFormulasStillValid(p_goal))) {

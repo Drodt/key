@@ -157,7 +157,7 @@ public class Substitution {
             (ImmutableList<QuantifiableVariable>) t.boundVars());
     }
 
-    /** Whether any variable of {@link #varMap} occurs free in {@code t}. */
+    /// Whether any variable of [#varMap] occurs free in `t`.
     private boolean containsSubstVar(Term t) {
         final var free = t.freeVars();
         if (free.isEmpty()) {

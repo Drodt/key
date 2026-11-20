@@ -48,10 +48,10 @@ class Instantiation {
     /// Equality reasoning over the sequent's assumed equalities, shared across cost predictions.
     private final Congruence congruence;
 
-    /** The sequent, kept for the tie-break view. */
+    /// The sequent, kept for the tie-break view.
     private final Sequent sequent;
 
-    /** How much this instantiation is told about the theories. */
+    /// How much this instantiation is told about the theories.
     private final TriggerTreatment treatment;
 
     private Instantiation(Term allterm, Sequent seq, Services services,
@@ -217,14 +217,14 @@ class Instantiation {
         };
     }
 
-    /** Surcharge of {@link Origin#THEORY_MATCHED} instances, see {@link #surcharge}. */
+    /// Surcharge of [Origin#THEORY_MATCHED] instances, see [#surcharge].
     private static final long THEORY_TRIGGER_SURCHARGE = 10000L;
 
-    /** Surcharge of {@link Origin#SOLVED_POSITION} instances, see {@link #surcharge}. */
+    /// Surcharge of [Origin#SOLVED_POSITION] instances, see [#surcharge].
     private static final long SOLVED_POSITION_SURCHARGE = 10000L;
 
 
-    /** Normalizes every literal by the congruence, so equal atoms coincide. */
+    /// Normalizes every literal by the congruence, so equal atoms coincide.
     private ImmutableSet<Term> normalizeAll(ImmutableSet<Term> lits, Services services) {
         if (congruence.isTrivial()) {
             return lits;
@@ -294,11 +294,9 @@ class Instantiation {
         return create(form, seq, services, treatment).tieBreak(inst, goal, services, strategy);
     }
 
-    /**
-     * The tie-break cost of an instance, delegating to {@code strategy}. The strategy's per-formula
-     * facts are prepared once on the first request and reused; a change of strategy re-prepares
-     * them.
-     */
+    /// The tie-break cost of an instance, delegating to `strategy`. The strategy's per-formula
+    /// facts are prepared once on the first request and reused; a change of strategy re-prepares
+    /// them.
     private RuleAppCost tieBreak(Term inst, Goal goal, Services services,
             QuantifierInstantiationTieBreak strategy) {
         if (scorer == null || scorerStrategy != strategy) {
@@ -309,7 +307,7 @@ class Instantiation {
         return NumberRuleAppCost.create(scorer.tieBreak(instances.normalize(inst, services)));
     }
 
-    /** get all instances from instancesCostCache subsCache */
+    /// get all instances from instancesCostCache subsCache
     ImmutableSet<Term> getSubstitution() {
         ImmutableSet<Term> res = DefaultImmutableSet.nil();
         for (final Term inst : instances.instances()) {

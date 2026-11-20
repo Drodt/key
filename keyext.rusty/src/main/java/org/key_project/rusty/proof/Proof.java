@@ -56,15 +56,11 @@ public class Proof implements ProofObject<Goal>, Named {
     /// "--no-pruning-closed". In this case the list will not be filled.
     private ImmutableList<Goal> closedGoals = ImmutableList.nil();
 
-    /**
-     * Mode specifying the rule app index to use. The field is read by the prover threads, hence,
-     * volatile.
-     */
+    /// Mode specifying the rule app index to use. The field is read by the prover threads, hence,
+    /// volatile.
     private volatile RuleAppIndexMode ruleAppIndexMode = RuleAppIndexMode.INTERACTIVE;
 
-    /**
-     * the number of open scopes of the rule app index mode
-     */
+    /// the number of open scopes of the rule app index mode
     private final AtomicInteger openRuleAppIndexModeScopes = new AtomicInteger();
 
     /// the logic configuration for this proof, i.e., logic signature, rules etc.
@@ -716,19 +712,17 @@ public class Proof implements ProofObject<Goal>, Named {
         return ruleAppIndexMode;
     }
 
-    /**
-     * Sets the mode of the rule app indices of the proof.
-     * It returns a closeable that restores the previous mode, hence, this method should
-     * only be called using the pattern {@code try(var mode = setRuleAppIndexMode())  ... }
-     * Closing the last open scope resets <strong>always</strong> to the interactive mode.
-     *
-     * Precaution to enable always all rules in the GUI, no matter in which order
-     * threads close the scope. In general it should never happen that two provers using a different
-     * rule application index run at the same time.
-     *
-     * @param mode the mode of the rule app indices
-     * @return the mode's scope
-     */
+    /// Sets the mode of the rule app indices of the proof.
+    /// It returns a closeable that restores the previous mode, hence, this method should
+    /// only be called using the pattern `try(var mode = setRuleAppIndexMode()) ...`
+    /// Closing the last open scope resets **always** to the interactive mode.
+    /// Precaution to enable always all rules in the GUI, no matter in which order
+    /// threads close the scope. In general it should never happen that two provers using a
+    /// different
+    /// rule application index run at the same time.
+    ///
+    /// @param mode the mode of the rule app indices
+    /// @return the mode's scope
     public AutoCloseable setRuleAppIndexMode(RuleAppIndexMode mode) {
         final RuleAppIndexMode previous = ruleAppIndexMode;
         openRuleAppIndexModeScopes.incrementAndGet();

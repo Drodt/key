@@ -44,14 +44,12 @@ final class EqualityTheorySupport implements QuantifierTheorySupport {
                 : CandidateVerdict.ACCEPTABLE;
     }
 
-    /**
-     * Provides no derived triggers.
-     *
-     * @param term an accepted trigger term
-     * @param clauseVariables the quantified variables of the clause the trigger belongs to
-     * @param services access to the theory operators
-     * @return the empty list
-     */
+    /// Provides no derived triggers.
+    ///
+    /// @param term an accepted trigger term
+    /// @param clauseVariables the quantified variables of the clause the trigger belongs to
+    /// @param services access to the theory operators
+    /// @return the empty list
     @Override
     public List<Term> provideTriggers(Term term,
             ImmutableSet<LogicVariable> clauseVariables, Services services,
@@ -59,14 +57,12 @@ final class EqualityTheorySupport implements QuantifierTheorySupport {
         return List.of();
     }
 
-    /**
-     * Checks whether the literal is an equality or equivalence whose two sides are equal up to
-     * renaming.
-     *
-     * @param strippedLiteral a literal without leading negations
-     * @param services access to the theory operators
-     * @return {@code PROVED} if the two sides are equal up to renaming, otherwise {@code UNKNOWN}
-     */
+    /// Checks whether the literal is an equality or equivalence whose two sides are equal up to
+    /// renaming.
+    ///
+    /// @param strippedLiteral a literal without leading negations
+    /// @param services access to the theory operators
+    /// @return `PROVED` if the two sides are equal up to renaming, otherwise `UNKNOWN`
     @Override
     public LiteralDecision decideStrippedSelf(Term strippedLiteral, Services services) {
         final Operator op = strippedLiteral.op();
@@ -79,16 +75,14 @@ final class EqualityTheorySupport implements QuantifierTheorySupport {
         return LiteralDecision.UNKNOWN;
     }
 
-    /**
-     * Checks whether the literal follows from the axiom by equality up to renaming. Leading
-     * negations of both are tracked, so an axiom equal to the negated literal refutes it.
-     *
-     * @param literal a literal to decide
-     * @param axiom a literal assumed to be true
-     * @param services access to the theory operators
-     * @return {@code PROVED} if the axiom equals the literal, {@code REFUTED} if it equals its
-     *         negation, otherwise {@code UNKNOWN}
-     */
+    /// Checks whether the literal follows from the axiom by equality up to renaming. Leading
+    /// negations of both are tracked, so an axiom equal to the negated literal refutes it.
+    ///
+    /// @param literal a literal to decide
+    /// @param axiom a literal assumed to be true
+    /// @param services access to the theory operators
+    /// @return `PROVED` if the axiom equals the literal, `REFUTED` if it equals its
+    /// negation, otherwise `UNKNOWN`
     @Override
     public LiteralDecision decideFromAxiom(Term literal, Term axiom, Services services) {
         boolean negated = false;
