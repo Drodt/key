@@ -18,7 +18,7 @@ public record TermArg(Term term) implements GenericArgument {
 
     @Override
     public String toString() {
-        return "const " + term.toString();
+        return "const (" + term.toString() + ")";
     }
 
     @Override
