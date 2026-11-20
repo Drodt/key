@@ -4,6 +4,8 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.macro;
 
+import java.util.List;
+
 import org.key_project.prover.engine.ProofSearchInformation;
 import org.key_project.prover.engine.ProverCore;
 import org.key_project.prover.engine.ProverTaskListener;
@@ -12,7 +14,8 @@ import org.key_project.rusty.control.UserInterfaceControl;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.prover.impl.ApplyStrategy;
+import org.key_project.rusty.proof.init.Profile;
+import org.key_project.rusty.prover.impl.AutoProvers;
 import org.key_project.util.collection.ImmutableList;
 
 /// The Class TryCloseMacro tries to close goals. Goals are either closed or left untouched.
@@ -23,6 +26,9 @@ import org.key_project.util.collection.ImmutableList;
 ///
 /// @author mattias ulbrich
 public class TryCloseMacro extends AbstractProofMacro {
+    /// Number of goals per parallel batch (bound due to memory reasons with too many open goals)
+    private static final int GOALS_PER_RUN = 100;
+
     private static class TryCloseProgressBarListener extends ProgressBarListener {
         private int notClosedGoals = 0;
 
@@ -110,16 +116,19 @@ public class TryCloseMacro extends AbstractProofMacro {
             return null;
         }
 
-        //
         // create the rule application engine
-        final ProverCore<Proof, Goal> applyStrategy = new ApplyStrategy(
-            proof.getServices().getProfile().<Proof, Goal>getSelectedGoalChooserBuilder().create());
+        final Profile profile = proof.getServices().getProfile();
+        final ProverCore<Proof, Goal> applyStrategy = AutoProvers.create(
+            proof.getServices().getProfile().<Proof, Goal>getSelectedGoalChooserBuilder().create(),
+            profile);
         // assert: all goals have the same proof
 
-        //
+        int maxSteps = numberSteps > 0 ? numberSteps
+                : proof.getSettings().getStrategySettings().getMaxSteps();
+
         // The observer to handle the progress bar
         final TryCloseProgressBarListener pml =
-            new TryCloseProgressBarListener(goals.size(), numberSteps, listener);
+            new TryCloseProgressBarListener(goals.size(), maxSteps, listener);
         final ImmutableList<Goal> ignoredOpenGoals = setDifference(proof.openGoals(), goals);
         applyStrategy.addProverTaskObserver(pml);
 
@@ -128,39 +137,28 @@ public class TryCloseMacro extends AbstractProofMacro {
         ProofMacroFinishedInfo info =
             new ProofMacroFinishedInfo(this, goals, proof, 0, 0, 0);
 
-        //
         // start actual autoprove
         try {
-            for (final Goal goal : goals) {
-                Node node = goal.getNode();
-                int maxSteps = numberSteps > 0 ? numberSteps
-                        : proof.getSettings().getStrategySettings().getMaxSteps();
-                final ProofSearchInformation<Proof, Goal> result = applyStrategy.start(proof,
-                    ImmutableList.singleton(goal), maxSteps, -1, false);
-                // final Goal closedGoal;
-
-                // retreat if not closed
-                if (!node.isClosed()) {
-                    proof.pruneProof(node);
-                    pml.incrementNotClosedGoals();
-                    // closedGoal = null;
-                } else {
-                    // closedGoal = goal;
+            for (ImmutableList<Goal> batch = goals; !batch.isEmpty();) {
+                final int size = Math.min(GOALS_PER_RUN, batch.size());
+                final ImmutableList<Goal> current = batch.take(size);
+                batch = batch.skip(size);
+                final List<Node> initialGoalNodes = current.map(Goal::getNode).toList();
+                final ProofSearchInformation<Proof, Goal> result =
+                    applyStrategy.startEach(proof, current, maxSteps, -1);
+                if (result.isError()) {
+                    throw new RuntimeException("Proof search failed: " + result.getException(),
+                        result.getException());
                 }
-
-                synchronized (applyStrategy) { // wait for applyStrategy to finish its last rule
-                                               // application
-                    // update statistics
-                    /*
-                     * if (closedGoal == null) { TODO: This incremental approach would be nicer, but
-                     * therefore the comparison of Goal needs to be fixed. info = new
-                     * ProofMacroFinishedInfo(info, result); } else { info = new
-                     * ProofMacroFinishedInfo(info, result,
-                     * info.getGoals().removeFirst(closedGoal)); }
-                     */
+                for (final Node node : initialGoalNodes) {
+                    if (!node.isClosed()) {
+                        proof.pruneProof(node);
+                        pml.incrementNotClosedGoals();
+                    }
+                }
+                synchronized (applyStrategy) {
                     info = new ProofMacroFinishedInfo(info, result);
-                    if (applyStrategy.hasBeenInterrupted()) { // only now reraise the interruption
-                                                              // exception
+                    if (applyStrategy.hasBeenInterrupted()) {
                         throw new InterruptedException();
                     }
                 }

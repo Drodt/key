@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.key_project.prover.engine.GoalChooser;
+import org.key_project.prover.engine.ProofSearchInformation;
 import org.key_project.prover.engine.ProverCore;
 import org.key_project.prover.engine.ProverTaskListener;
 import org.key_project.prover.sequent.PosInOccurrence;
@@ -17,7 +18,7 @@ import org.key_project.rusty.control.UserInterfaceControl;
 import org.key_project.rusty.proof.Goal;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.proof.Proof;
-import org.key_project.rusty.prover.impl.ApplyStrategy;
+import org.key_project.rusty.prover.impl.AutoProvers;
 import org.key_project.rusty.strategy.FocussedRuleApplicationManager;
 import org.key_project.util.collection.ImmutableList;
 
@@ -25,6 +26,19 @@ import org.jspecify.annotations.NonNull;
 
 public abstract class StrategyProofMacro extends AbstractProofMacro {
     protected abstract Strategy<Goal> createStrategy(Proof proof, PosInOccurrence posInOcc);
+
+    /// Whether this macro's run may use the multicore prover.
+    ///
+    /// The strategy returned by [#createStrategy] is installed proof-wide, so under the
+    /// multicore prover all workers share the one instance and call it concurrently. Macros whose
+    /// strategy keeps cross-goal mutable state (a step counter, a breakpoint flag, discovered merge
+    /// points) have inherently sequential semantics: with several workers the outcome would depend
+    /// on scheduling, breaking the requirement that the multi-core prover produce the same proof as
+    /// the single-threaded one. Such macros override this to return `false` and run on the
+    /// single-threaded prover.
+    protected boolean allowParallel() {
+        return true;
+    }
 
     /// {@inheritDoc}
     /// This macro can always be applied (does not change anything perhaps)
@@ -59,9 +73,11 @@ public abstract class StrategyProofMacro extends AbstractProofMacro {
         }
         List<Node> nodes = goals.stream().map(Goal::getNode).collect(Collectors.toList());
 
-        final GoalChooser goalChooser =
-            proof.getInitConfig().getProfile().getSelectedGoalChooserBuilder().create();
-        final ProverCore applyStrategy = new ApplyStrategy(goalChooser);
+        final GoalChooser<Proof, Goal> goalChooser =
+            proof.getInitConfig().getProfile().<Proof, Goal>getSelectedGoalChooserBuilder()
+                    .create();
+        final ProverCore<Proof, Goal> applyStrategy =
+            AutoProvers.create(goalChooser, proof.getInitConfig().getProfile(), allowParallel());
         final ImmutableList<Goal> ignoredOpenGoals = setDifference(proof.openGoals(), goals);
 
         //
@@ -71,7 +87,7 @@ public abstract class StrategyProofMacro extends AbstractProofMacro {
         applyStrategy.addProverTaskObserver(pml);
         // add a focus manager if there is a focus
         if (posInOcc != null) {
-            RuleApplicationManager realManager;
+            RuleApplicationManager<Goal> realManager;
             FocussedRuleApplicationManager manager;
             for (Goal goal : goals) {
                 realManager = goal.getRuleAppManager();
@@ -89,11 +105,15 @@ public abstract class StrategyProofMacro extends AbstractProofMacro {
         try {
             // find the relevant goals
             // and start
-            applyStrategy.start(proof, goals);
+            final ProofSearchInformation<Proof, Goal> result = applyStrategy.start(proof, goals);
+            if (result.isError()) {
+                throw new RuntimeException("Proof search failed: " + result.getException(),
+                    result.getException());
+            }
             synchronized (applyStrategy) { // wait for applyStrategy to finish its last rule
-                                           // application
+                // application
                 if (applyStrategy.hasBeenInterrupted()) { // reraise interrupted exception if
-                                                          // necessary
+                    // necessary
                     throw new InterruptedException();
                 }
             }

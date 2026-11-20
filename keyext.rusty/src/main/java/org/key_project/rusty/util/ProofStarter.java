@@ -22,7 +22,7 @@ import org.key_project.rusty.proof.init.ProofInputException;
 import org.key_project.rusty.proof.init.ProofOblInput;
 import org.key_project.rusty.proof.io.ProofSaver;
 import org.key_project.rusty.proof.mgt.ProofEnvironment;
-import org.key_project.rusty.prover.impl.ApplyStrategy;
+import org.key_project.rusty.prover.impl.AutoProvers;
 import org.key_project.rusty.strategy.StrategyFactory;
 import org.key_project.rusty.strategy.StrategyProperties;
 import org.key_project.util.collection.ImmutableList;
@@ -49,6 +49,10 @@ public class ProofStarter {
     // private @Nullable AutoSaver autoSaver;
 
     private @Nullable Strategy<@NonNull Goal> strategy;
+
+    /// whether the parallel prover may be used for this run; `false` pins the run to the
+    /// single-threaded [org.key_project.rusty.prover.impl.ApplyStrategy].
+    private boolean allowParallel = true;
 
     /// creates an instance of the ProofStarter
     ///
@@ -108,6 +112,15 @@ public class ProofStarter {
         this.strategy = strategy;
     }
 
+    /// Controls whether the parallel prover may be used for this proof attempt. Pass `false`
+    /// for tight-budget side proofs so their outcome is deterministic regardless of thread
+    /// schedule.
+    ///
+    /// @param allowParallel whether the parallel prover may be used at all for this run
+    public void setAllowParallel(boolean allowParallel) {
+        this.allowParallel = allowParallel;
+    }
+
     /// Starts proof attempt. The proof object must be created at that point.
     ///
     /// @return the proof after the attempt terminated
@@ -135,7 +148,8 @@ public class ProofStarter {
             proof.setActiveStrategy(strategy);
 
             var goalChooser = profile.<Proof, Goal>getSelectedGoalChooserBuilder().create();
-            ProverCore<@NonNull Proof, Goal> prover = new ApplyStrategy(goalChooser);
+            ProverCore<@NonNull Proof, Goal> prover =
+                AutoProvers.create(goalChooser, profile, allowParallel);
             if (ptl != null) {
                 prover.addProverTaskObserver(ptl);
             }
