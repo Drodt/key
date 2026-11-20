@@ -77,7 +77,7 @@ public class TacletPrefixBuilder {
             if (sv instanceof TermSV || sv instanceof FormulaSV || sv instanceof UpdateSV) {
                 int numberOfBoundVars = removeNoFreeVarIn(sv);
                 TacletPrefix prefix = (TacletPrefix) prefixMap.get(sv);
-                if (prefix == null || prefix.prefixLength() == numberOfBoundVars) {
+                if (prefix == null || prefix.prefixLength() <= numberOfBoundVars) {
                     setPrefixOfOccurrence(sv, numberOfBoundVars);
                 } else {
                     throw new TacletPrefixBuilder.InvalidPrefixException(

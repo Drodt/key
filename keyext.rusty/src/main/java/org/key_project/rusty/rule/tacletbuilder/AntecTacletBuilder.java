@@ -60,7 +60,7 @@ public class AntecTacletBuilder extends FindTacletBuilder<@NonNull AntecTaclet> 
             throw new TacletBuilder.TacletBuilderException(this, "No find part specified");
 
         }
-        checkBoundInIfAndFind();
+        checkBoundInAssumesAndFind();
 
         TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this, services);
 

@@ -33,7 +33,7 @@ public abstract class FindTacletBuilder<T extends FindTaclet> extends TacletBuil
     /// checks that a SchemaVariable that is used to match pure variables (this means bound
     /// variables) occurs at most once in a quantifier of the assumes and finds and throws an
     /// exception otherwise
-    protected void checkBoundInIfAndFind() {
+    protected void checkBoundInAssumesAndFind() {
         final BoundUniquenessChecker ch = new BoundUniquenessChecker(getFind(), ifSequent());
         if (!ch.correct()) {
             throw new TacletBuilder.TacletBuilderException(this,

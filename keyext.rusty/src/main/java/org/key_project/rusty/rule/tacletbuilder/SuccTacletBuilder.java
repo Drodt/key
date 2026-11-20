@@ -47,7 +47,7 @@ public class SuccTacletBuilder extends FindTacletBuilder<SuccTaclet> {
             throw new TacletBuilder.TacletBuilderException(this, "No find part specified");
 
         }
-        checkBoundInIfAndFind();
+        checkBoundInAssumesAndFind();
         final TacletPrefixBuilder prefixBuilder = new TacletPrefixBuilder(this, services);
         prefixBuilder.build();
         SuccTaclet t = new SuccTaclet(name,
