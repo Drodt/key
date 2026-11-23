@@ -51,7 +51,8 @@ public class RustyDLTheory extends LDT {
         if (castFunction == null) {
             throw new IllegalStateException("No 'cast' function found for any type.");
         }
-        return ParametricFunctionInstance.get(castFunction, ImmutableList.of(new SortArg(sort)));
+        return ParametricFunctionInstance.get(castFunction, ImmutableList.of(new SortArg(sort)),
+            services);
     }
 
 

@@ -35,7 +35,7 @@ public abstract class PrefixTermTacletAppIndexCacheImpl extends PrefixTermTaclet
 
     @Override
     public TermTacletAppIndex getIndexForTerm(Term t) {
-        return cache.get(getQueryKey(t));
+        return cache.get(new CacheKey(this, t));
     }
 
     private int hits = 0;
@@ -55,27 +55,11 @@ public abstract class PrefixTermTacletAppIndexCacheImpl extends PrefixTermTaclet
 
     @Override
     public void putIndexForTerm(Term t, TermTacletAppIndex index) {
-        cache.put(getNewKey(t), index);
+        cache.put(new CacheKey(this, t), index);
     }
 
     /// Only used for debugging purposes
     protected abstract String name();
-
-    /// @return a freshly created key for the term `t` that can be stored in the
-    /// `cache`
-    private CacheKey getNewKey(Term t) {
-        return new CacheKey(this, t);
-    }
-
-    /// @return a key for the term `t` that can be used for cache queries. Calling this
-    /// method twice will return the same object (with different attribute values), i.e., the
-    /// result is not supposed to be stored anywhere
-    private CacheKey getQueryKey(Term t) {
-        queryCacheKey.analysedTerm = t;
-        return queryCacheKey;
-    }
-
-    private final CacheKey queryCacheKey = new CacheKey(this, null);
 
     public static final class CacheKey {
         private final PrefixTermTacletAppIndexCacheImpl parent;

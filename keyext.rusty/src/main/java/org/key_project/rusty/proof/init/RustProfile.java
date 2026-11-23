@@ -49,7 +49,7 @@ public class RustProfile implements Profile {
         this("standardRustRules.key");
     }
 
-    public static RustProfile getDefaultInstance() {
+    public synchronized static RustProfile getDefaultInstance() {
         if (defaultInstance == null) {
             defaultInstance = new RustProfile();
         }

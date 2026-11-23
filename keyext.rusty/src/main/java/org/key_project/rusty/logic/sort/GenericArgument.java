@@ -27,7 +27,8 @@ public interface GenericArgument extends SyntaxElement {
                 }
 
                 return new SortArg(
-                    ParametricSortInstance.get(psi.getBase(), ImmutableList.fromList(args)));
+                    ParametricSortInstance.get(psi.getBase(), ImmutableList.fromList(args),
+                        services));
             } else {
                 return sa;
             }

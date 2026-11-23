@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.logic.op;
 
-import java.lang.ref.WeakReference;
-import java.util.WeakHashMap;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
@@ -14,13 +12,17 @@ import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.UpdateableOperator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.RustyDLTheory;
+import org.key_project.util.collection.WeakValueInterner;
 
 import org.jspecify.annotations.NonNull;
 
 public class ElementaryUpdate extends AbstractSortedOperator {
-
-    private static final WeakHashMap<UpdateableOperator, WeakReference<ElementaryUpdate>> instances =
-        new WeakHashMap<>();
+    /// Interns elementary updates so that the same left-hand side yields the same operator object
+    /// (the rest of the system relies on this identity). Thread-safe: two concurrent workers must
+    /// not
+    /// end up with two distinct operators for the same left-hand side.
+    private static final WeakValueInterner<UpdateableOperator, ElementaryUpdate> instances =
+        new WeakValueInterner<>();
 
     private final UpdateableOperator lhs;
 
@@ -31,22 +33,10 @@ public class ElementaryUpdate extends AbstractSortedOperator {
         assert lhs.arity() == 0;
     }
 
-
     /// Returns the elementary update operator for the passed left hand side.
     public static ElementaryUpdate getInstance(UpdateableOperator lhs) {
-        WeakReference<ElementaryUpdate> ref = instances.get(lhs);
-        ElementaryUpdate result = null;
-        if (ref != null) {
-            result = ref.get();
-        }
-        if (result == null) {
-            result = new ElementaryUpdate(lhs);
-            ref = new WeakReference<>(result);
-            instances.put(lhs, ref);
-        }
-        return result;
+        return instances.intern(lhs, ElementaryUpdate::new);
     }
-
 
     /// Returns the left hand side of this elementary update operator.
     public UpdateableOperator lhs() {

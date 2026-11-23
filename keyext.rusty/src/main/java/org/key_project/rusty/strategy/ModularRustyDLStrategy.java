@@ -42,29 +42,13 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
     private final Feature reduceCostTillMaxF;
     private final Feature reduceInstTillMaxF;
     private final ArithTermFeatures tf;
+    /// the conflict-resolution cost dispatcher; kept for {@link #costRuleSetDispatchers}
     private final RuleSetDispatchFeature conflictCostDispatcher;
     private final Feature totalCost;
     /// the feature evaluated by [#instantiateApp]; built once, see constructor
     private final Feature totalInstCost;
 
-    // map rulesets to the strategies that participate in their cost computations, instantiation or
-    // approval decisions
-    private final Map<RuleSet, List<ComponentStrategy<Goal>>> costResponsibilityMap =
-        new LinkedHashMap<>();
-    private final Map<RuleSet, List<ComponentStrategy<Goal>>> instantiationResponsibilityMap =
-        new LinkedHashMap<>();
-    private final Map<RuleSet, List<ComponentStrategy<Goal>>> approvalResponsibilityMap =
-        new LinkedHashMap<>();
-
-    // map rules to the strategies that participate in their cost computations, instantiation or
-    // approval decisions
-    private final Map<Rule, LinkedHashSet<ComponentStrategy<Goal>>> costRuleToStrategyMap =
-        new LinkedHashMap<>();
-    private final Map<Rule, LinkedHashSet<ComponentStrategy<Goal>>> instantiationRuleToStrategyMap =
-        new LinkedHashMap<>();
-    private final Map<Rule, LinkedHashSet<ComponentStrategy<Goal>>> approvalRuleToStrategyMap =
-        new LinkedHashMap<>();
-    private final Map<Name, ComponentStrategy<Goal>> nameToStrategyMap = new HashMap<>();
+    private final ResponsibleStrategyCache responsibleStrategyCache;
 
     public ModularRustyDLStrategy(Proof proof, List<ComponentStrategy<Goal>> componentStrategies,
             StrategyProperties properties) {
@@ -73,9 +57,7 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
         this.strategyProperties = (StrategyProperties) properties.clone();
         this.tf = new ArithTermFeatures(getServices().getLDTs().getIntLDT(), Equality.EQUALS);
 
-        initializeResponsibilityMap(StrategyAspect.Cost, costResponsibilityMap);
-        initializeResponsibilityMap(StrategyAspect.Instantiation, instantiationResponsibilityMap);
-        initializeResponsibilityMap(StrategyAspect.Approval, approvalResponsibilityMap);
+        responsibleStrategyCache = new ResponsibleStrategyCache(strategies);
 
         // if more than one strategy is responsible for a _ruleset_ we need to determine how to
         // resolve the
@@ -84,11 +66,12 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
 
         final Feature ifMatchedF = ifZero(MatchedAssumesFeature.create(), longConst(+1));
         reduceCostTillMaxF = new ReduceTillMaxFeature(Feature::computeCost,
-            (rule) -> getResponsibleStrategies(rule, costResponsibilityMap, costRuleToStrategyMap));
+            (rule) -> responsibleStrategyCache.getResponsibleStrategies(rule, strategies,
+                StrategyAspect.Cost));
 
         reduceInstTillMaxF = new ReduceTillMaxFeature(ComponentStrategy::instantiateApp,
-            (rule) -> getResponsibleStrategies(rule, instantiationResponsibilityMap,
-                instantiationRuleToStrategyMap));
+            (rule) -> responsibleStrategyCache.getResponsibleStrategies(rule, strategies,
+                StrategyAspect.Instantiation));
 
         // the feature for the cost computation
         totalCost =
@@ -105,21 +88,6 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
             add(AutomatedRuleFeature.getInstance(), ifMatchedF, NonDuplicateAppFeature.INSTANCE,
                 reduceInstTillMaxF);
         disableInstantiate();
-    }
-
-    /// Caches the information which strategies are responsible for which ruleset
-    ///
-    /// @param aspect the StrategyAspect for which the cache is created
-    /// @param responsibilityMap the map used as cache for the specified aspect
-    private void initializeResponsibilityMap(StrategyAspect aspect,
-            Map<RuleSet, List<ComponentStrategy<Goal>>> responsibilityMap) {
-        for (ComponentStrategy<Goal> strategy : strategies) {
-            nameToStrategyMap.put(strategy.name(), strategy);
-            var res = strategy.getResponsibilities(aspect);
-            for (var rs : res) {
-                responsibilityMap.computeIfAbsent(rs, k -> new ArrayList<>()).add(strategy);
-            }
-        }
     }
 
     /// The [RuleSetDispatchFeature]s that contribute to a rule's COST (the conflict-resolution
@@ -170,26 +138,22 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
     }
 
     private void resolveConflict(RuleSetDispatchFeature d, RuleSet rs) {
+        var folStrat = responsibleStrategyCache.getStrategyByName(RFOLStrategy.NAME);
+        var intStrat = responsibleStrategyCache.getStrategyByName(RustIntegerStrategy.NAME);
         switch (rs.name().toString()) {
             case "order_terms" -> {
-                var folStrat = nameToStrategyMap.get(RFOLStrategy.NAME);
-                var intStrat = nameToStrategyMap.get(RustIntegerStrategy.NAME);
                 bindRuleSet(d, "order_terms",
                     ifZero(applyTF("commEqLeft", tf.intF),
                         intStrat.getDispatcher(StrategyAspect.Cost).remove(rs),
                         folStrat.getDispatcher(StrategyAspect.Cost).remove(rs)));
             }
             case "apply_equations" -> {
-                var folStrat = nameToStrategyMap.get(RFOLStrategy.NAME);
-                var intStrat = nameToStrategyMap.get(RustIntegerStrategy.NAME);
                 bindRuleSet(d, "apply_equations",
                     ifZero(applyTF(FocusProjection.create(0), tf.intF),
                         intStrat.getDispatcher(StrategyAspect.Cost).remove(rs),
                         folStrat.getDispatcher(StrategyAspect.Cost).remove(rs)));
             }
             case "apply_equations_andOr" -> {
-                var folStrat = nameToStrategyMap.get(RFOLStrategy.NAME);
-                var intStrat = nameToStrategyMap.get(RustIntegerStrategy.NAME);
                 if (quantifierInstantiatedEnabled()) {
                     bindRuleSet(d, "apply_equations_andOr",
                         ifZero(applyTF(FocusProjection.create(0), tf.intF),
@@ -224,8 +188,9 @@ public class ModularRustyDLStrategy extends RustAbstractFeatureStrategy {
             return false;
         }
         return reduceTillMax(isApproved, false, Boolean::logicalAnd,
-            s -> s.isApprovedApp(app, pio, goal), getResponsibleStrategies(app.rule(),
-                approvalResponsibilityMap, approvalRuleToStrategyMap));
+            s -> s.isApprovedApp(app, pio, goal),
+            responsibleStrategyCache.getResponsibleStrategies(app.rule(),
+                strategies, StrategyAspect.Approval));
     }
 
     @Override

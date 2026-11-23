@@ -38,7 +38,7 @@ public class FieldLDT extends ParametricLDT {
     public RFunction createField(String prefix, Name fieldName, Type type, Services services) {
         var argSort = type.getSort(services);
         ParametricSortInstance sort =
-            ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)));
+            ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)), services);
         Name name = new Name(prefix + fieldName.toString());
         var fn = new RFunction(name, sort, ImmutableList.of(), null, true);
         services.getNamespaces().functions().addSafely(fn);
@@ -57,7 +57,7 @@ public class FieldLDT extends ParametricLDT {
             ImmutableList<GenericParameter> generics, Services services) {
         var argSort = type.getSort(services);
         ParametricSortInstance sort =
-            ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)));
+            ParametricSortInstance.get(fieldSort, ImmutableList.of(new SortArg(argSort)), services);
         Name name = new Name(prefix + fieldName.toString());
         var fn = new ParametricFunctionDecl(name, generics, ImmutableList.nil(), sort, null,
             true, true, false);

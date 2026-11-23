@@ -43,8 +43,23 @@ public final class UseOperationContractRule implements BuiltInRule {
 
     private static final Name NAME = new Name("Use Operation Contract");
 
-    private static Term lastFocusTerm;
-    private static Instantiation lastInstantiation;
+    /// Immutable snapshot pairing a focus term with its computed instantiation (which may be
+    /// `null` for a non-applicable focus). See [#lastInstantiation].
+    private record InstantiationResult(Term focusTerm, @Nullable Instantiation instantiation) {
+    }
+
+    /// Single-entry memo to avoid recomputing the instantiation between the applicability check and
+    /// the application of the same focus term. `instantiate` is reached from
+    /// `isApplicable` (which runs off the commit lock, on any worker thread) and the rule
+    /// INSTANCE lives in the shared taclet base, so this field is read and written by several
+    /// threads. It holds an _immutable_ [InstantiationResult] behind a `volatile`
+    /// reference: a reader takes the reference once and then reads focus term and instantiation
+    /// together from that one snapshot, so it can never pair one focus term with another's
+    /// instantiation (the torn read a two-field pair would risk). This replaces a pair of
+    /// per-thread
+    /// [ThreadLocal]s, which pinned the last focus term (and thus its proof's term graph) and
+    /// its [Instantiation] onto the long-lived worker-pool threads.
+    private static volatile @Nullable InstantiationResult lastInstantiation;
 
     // -------------------------------------------------------------------------
     // constructors
@@ -99,17 +114,17 @@ public final class UseOperationContractRule implements BuiltInRule {
     }
 
     private static Instantiation instantiate(Term focusTerm, Services services) {
-        // result cached?
-        if (focusTerm == lastFocusTerm) {
-            return lastInstantiation;
+        // result cached (single-entry, shared across workers)?
+        final InstantiationResult last = lastInstantiation;
+        if (last != null && last.focusTerm() == focusTerm) {
+            return last.instantiation();
         }
 
         // compute
         final Instantiation result = computeInstantiation(focusTerm, services);
 
         // cache and return
-        lastFocusTerm = focusTerm;
-        lastInstantiation = result;
+        lastInstantiation = new InstantiationResult(focusTerm, result);
         return result;
     }
 

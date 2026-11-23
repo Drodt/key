@@ -33,7 +33,7 @@ public record GenericEnum(Name name, ImmutableList<GenericVariant> variants,
             vars[i] = variants.get(i).instantiate(instMap, services);
         }
         return new Enum(name, ImmutableList.fromArray(vars),
-            ParametricSortInstance.get(sortDecl, ImmutableList.fromList(sortArgs)));
+            ParametricSortInstance.get(sortDecl, ImmutableList.fromList(sortArgs), services));
     }
 
     @Override

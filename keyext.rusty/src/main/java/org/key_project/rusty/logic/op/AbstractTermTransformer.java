@@ -154,7 +154,8 @@ public abstract class AbstractTermTransformer extends AbstractSortedOperator
                 var pSort = services.getNamespaces().parametricSorts().lookup("Place");
                 assert pSort != null;
                 var sort =
-                    ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(innerSort)));
+                    ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(innerSort)),
+                        services);
                 c = new RFunction(new Name("[[" + name + "]]"), sort);
                 services.getNamespaces().functions().add(c);
             }

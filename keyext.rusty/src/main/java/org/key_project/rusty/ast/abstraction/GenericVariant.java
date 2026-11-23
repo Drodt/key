@@ -35,6 +35,6 @@ public record GenericVariant(Name name, ImmutableList<GenericParam> genericParam
             args.add(arg);
         }
         return new Variant(name, ImmutableList.fromArray(fields),
-            ParametricFunctionInstance.get(ctor, ImmutableList.fromList(args)));
+            ParametricFunctionInstance.get(ctor, ImmutableList.fromList(args), services));
     }
 }

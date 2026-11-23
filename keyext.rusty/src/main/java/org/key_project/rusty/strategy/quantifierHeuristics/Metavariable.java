@@ -5,6 +5,7 @@
 package org.key_project.rusty.strategy.quantifierHeuristics;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
@@ -18,17 +19,13 @@ import org.jspecify.annotations.NonNull;
 
 public final class Metavariable extends AbstractSortedOperator
         implements Comparable<Metavariable>, TerminalSyntaxElement, Named {
-
-    // Used to define an alternative order of all existing
-    // metavariables
-    private static int maxSerial = 0;
-    private int serial;
+    // Used to define an alternative order of all existing metavariables. Atomic so that serials
+    // stay unique when metavariables are created concurrently (the previous `synchronized` method
+    // guarded only the per-instance monitor, not this shared static counter).
+    private static final AtomicInteger maxSerial = new AtomicInteger(0);
+    private final int serial;
 
     private final boolean isTemporaryVariable;
-
-    private synchronized void setSerial() {
-        serial = maxSerial++;
-    }
 
     private Metavariable(Name name, Sort sort, boolean isTemporaryVariable) {
         super(name, sort, Modifier.RIGID);
@@ -36,7 +33,7 @@ public final class Metavariable extends AbstractSortedOperator
             throw new RuntimeException("Attempt to create metavariable of type formula");
         }
         this.isTemporaryVariable = isTemporaryVariable;
-        setSerial();
+        this.serial = maxSerial.getAndIncrement();
         // assert false : "metavariables are disabled";
     }
 

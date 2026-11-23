@@ -68,7 +68,7 @@ public class TermBuilder {
         }
         List<GenericArgument> args = List.of(new SortArg(sort));
         ParametricFunctionInstance castFn =
-            ParametricFunctionInstance.get(decl, ImmutableList.fromList(args));
+            ParametricFunctionInstance.get(decl, ImmutableList.fromList(args), services);
         return tf.createTerm(castFn, term);
     }
 
@@ -715,13 +715,14 @@ public class TermBuilder {
         if (pfd == null) {
             throw new UnsupportedOperationException("Unsupported tuple length: " + terms.length);
         }
-        return func(ParametricFunctionInstance.get(pfd, ImmutableList.fromList(args)), terms);
+        return func(ParametricFunctionInstance.get(pfd, ImmutableList.fromList(args), services),
+            terms);
     }
 
     public Term array(Term initialArray, Term[] terms) {
         var sort = (ParametricSortInstance) initialArray.sort();
         var pfd = services.getLDTs().getArrayLDT().getSet();
-        var set = ParametricFunctionInstance.get(pfd, sort.getArgs());
+        var set = ParametricFunctionInstance.get(pfd, sort.getArgs(), services);
 
         var res = initialArray;
         for (var i = terms.length - 1; i >= 0; i--) {
@@ -734,7 +735,7 @@ public class TermBuilder {
     public Term arrayGet(Term array, Term idx) {
         var sort = (ParametricSortInstance) array.sort();
         var pfd = services.getLDTs().getArrayLDT().getGet();
-        var get = ParametricFunctionInstance.get(pfd, sort.getArgs());
+        var get = ParametricFunctionInstance.get(pfd, sort.getArgs(), services);
         return func(get, array, idx);
     }
 

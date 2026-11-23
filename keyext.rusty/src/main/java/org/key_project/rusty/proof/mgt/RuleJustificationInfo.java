@@ -15,14 +15,19 @@ import org.key_project.rusty.rule.RuleKey;
 import org.jspecify.annotations.Nullable;
 
 public class RuleJustificationInfo {
+    /// Maps rules to their justifications. All access is `synchronized` on this object: the
+    /// rule executor registers justifications (via `Goal.addTaclet` ->
+    /// `InitConfig.registerRuleIntroducedAtNode`) whenever a rule introduces a taclet, which
+    /// happens concurrently under the goal-level parallel prover; a
+    /// plain [LinkedHashMap] would corrupt under concurrent `addJustification`. The
+    /// `addJustification` compound (contains-then-iterate-then-put) must also stay atomic.
     private final Map<RuleKey, RuleJustification> rule2Justification = new LinkedHashMap<>();
 
-    public void addJustification(Rule r, RuleJustification j) {
+    public synchronized void addJustification(Rule r, RuleJustification j) {
         final RuleKey ruleKey = new RuleKey(r);
         if (rule2Justification.containsKey(ruleKey)) {
             // TODO: avoid double registration of certain class axioms and remove then the below
-            // check so that
-            // always an exception will be thrown
+            // check so that always an exception will be thrown
             for (RuleKey key : rule2Justification.keySet()) {
                 if (key.equals(ruleKey) && r != key.r) {
                     throw new IllegalArgumentException(
@@ -34,11 +39,11 @@ public class RuleJustificationInfo {
         }
     }
 
-    public @Nullable RuleJustification getJustification(Rule r) {
+    public synchronized @Nullable RuleJustification getJustification(Rule r) {
         return rule2Justification.get(new RuleKey(r));
     }
 
-    public @Nullable RuleJustification getJustification(RuleApp r, Services services) {
+    public synchronized @Nullable RuleJustification getJustification(RuleApp r, Services services) {
         RuleJustification just = getJustification(r.rule());
         if (just instanceof ComplexRuleJustification crj) {
             return crj.getSpecificJustification(r, services);
@@ -47,11 +52,11 @@ public class RuleJustificationInfo {
         }
     }
 
-    public void removeJustificationFor(Rule rule) {
+    public synchronized void removeJustificationFor(Rule rule) {
         rule2Justification.remove(new RuleKey(rule));
     }
 
-    public RuleJustificationInfo copy() {
+    public synchronized RuleJustificationInfo copy() {
         RuleJustificationInfo info = new RuleJustificationInfo();
         info.rule2Justification.putAll(rule2Justification);
         return info;

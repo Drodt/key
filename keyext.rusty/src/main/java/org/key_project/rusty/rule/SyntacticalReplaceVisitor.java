@@ -307,7 +307,8 @@ public class SyntacticalReplaceVisitor implements Visitor<Term> {
             args.add(pfi.getArgs().get(i).instantiateParamArg(svInst, services));
         }
 
-        return ParametricFunctionInstance.get(pfi.getBase(), ImmutableList.fromList(args));
+        return ParametricFunctionInstance.get(pfi.getBase(), ImmutableList.fromList(args),
+            services);
     }
 
     private ElementaryUpdate instantiateElementaryUpdate(ElementaryUpdate op) {

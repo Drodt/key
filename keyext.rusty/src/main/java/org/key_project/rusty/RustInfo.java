@@ -5,6 +5,7 @@
 package org.key_project.rusty;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.Namespace;
@@ -19,7 +20,7 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public final class RustInfo {
-    private final Map<Type, KeYRustyType> type2KRTCache;
+    private final ConcurrentHashMap<Type, KeYRustyType> type2KRTCache;
     private final Set<KeYRustyType> allTypes = new LinkedHashSet<>();
     private final Set<ProgramFunction> allFunctions = new HashSet<>();
     private final Map<Function, ProgramFunction> fnToProgFn;
@@ -35,7 +36,7 @@ public final class RustInfo {
 
     public RustInfo(Services services) {
         this.services = services;
-        type2KRTCache = new HashMap<>();
+        type2KRTCache = new ConcurrentHashMap<>();
         fnToProgFn = new HashMap<>();
     }
 
@@ -48,52 +49,77 @@ public final class RustInfo {
     public KeYRustyType getKeYRustyType(Type type) {
         if (type2KRTCache.containsKey(type)) {
             return type2KRTCache.get(type);
-        } else if (type instanceof PrimitiveType pt) {
-            return getPrimitiveKeYRustyType(pt);
-        } else if (type instanceof TupleType tt) {
-            var sort = tt.getSort(services);
-            var krt = new KeYRustyType(type, sort);
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof ReferenceType rt) {
-            var sort = rt.getSort(services);
-            var krt = new KeYRustyType(type, sort);
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof FnDefType ft) {
-            var krt = new KeYRustyType(ft);
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof Never nt) {
-            var krt = new KeYRustyType(nt);
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof Closure ct) {
-            var krt = new KeYRustyType(ct);
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof ArrayType at) {
-            var krt = new KeYRustyType(at, at.getSort(services));
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof Enum e) {
-            var krt = new KeYRustyType(e, e.getSort(services));
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof GenericTyParam p) {
-            var krt = new KeYRustyType(p);
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof ForeignFnType f) {
-            var krt = new KeYRustyType(f);
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else if (type instanceof GhostType g) {
-            var krt = new KeYRustyType(g, g.getSort(services));
-            type2KRTCache.put(type, krt);
-            return krt;
-        } else {
-            throw new IllegalArgumentException("Unsupported type: " + type);
+        } else
+            return computeKeYRustyType(type);
+    }
+
+    private synchronized KeYRustyType computeKeYRustyType(Type type) {
+        if (isTypeRegistrationSealed()) {
+            // The type model is sealed for the duration of a (parallel) proof run; registering a
+            // new type here would be a lazy registration on the proving path, racing the shared
+            // model. Fail fast rather than corrupt it. All types must be registered before proving
+            // starts -- see the ProblemInitializer warm-up of the default execution context.
+            throw new IllegalStateException(
+                "Rust type registration attempted while the type model is sealed (during a proof "
+                    + "run): " + type);
+        }
+        switch (type) {
+            case PrimitiveType pt -> {
+                return getPrimitiveKeYRustyType(pt);
+            }
+            case TupleType tt -> {
+                var sort = tt.getSort(services);
+                var krt = new KeYRustyType(type, sort);
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case ReferenceType rt -> {
+                var sort = rt.getSort(services);
+                var krt = new KeYRustyType(type, sort);
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case FnDefType ft -> {
+                var krt = new KeYRustyType(ft);
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case Never nt -> {
+                var krt = new KeYRustyType(nt);
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case Closure ct -> {
+                var krt = new KeYRustyType(ct);
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case ArrayType at -> {
+                var krt = new KeYRustyType(at, at.getSort(services));
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case Enum e -> {
+                var krt = new KeYRustyType(e, e.getSort(services));
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case GenericTyParam p -> {
+                var krt = new KeYRustyType(p);
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case ForeignFnType f -> {
+                var krt = new KeYRustyType(f);
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case GhostType g -> {
+                var krt = new KeYRustyType(g, g.getSort(services));
+                type2KRTCache.put(type, krt);
+                return krt;
+            }
+            case null, default -> throw new IllegalArgumentException("Unsupported type: " + type);
         }
     }
 

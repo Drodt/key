@@ -262,7 +262,7 @@ public class TacletPBuilder extends ExpressionBuilder {
                     consts.add(f);
                 }
             }
-            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args));
+            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args), services);
         } else {
             sort = sorts().lookup(ctx.name.getText());
         }
@@ -328,7 +328,8 @@ public class TacletPBuilder extends ExpressionBuilder {
                 var pfd = namespaces().parametricFunctions().lookup(context.name.getText());
                 assert pfd != null;
                 func =
-                    ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) sort).getArgs());
+                    ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) sort).getArgs(),
+                        services);
             }
             Term[] args = new Term[context.argName.size()];
             for (int i = 0; i < args.length; i++) {
@@ -371,14 +372,16 @@ public class TacletPBuilder extends ExpressionBuilder {
             // Is parametric
             var pfd = namespaces().parametricFunctions().lookup(argName);
             assert pfd != null;
-            function = ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dt).getArgs());
+            function = ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dt).getArgs(),
+                services);
         }
         var consFn = namespaces().functions().lookup(constructor.name.getText());
         if (consFn == null) {
             // Is parametric
             var pfd = namespaces().parametricFunctions().lookup(constructor.name.getText());
             assert pfd != null;
-            consFn = ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dt).getArgs());
+            consFn = ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dt).getArgs(),
+                services);
         }
 
         // Find, e.g, tail(Cons(head_sv, tail_sv))
@@ -420,7 +423,8 @@ public class TacletPBuilder extends ExpressionBuilder {
             var pfd = namespaces().parametricFunctions().lookup(argName);
             assert pfd != null;
             function =
-                ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dtSort).getArgs());
+                ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dtSort).getArgs(),
+                    services);
         }
         var consFn = namespaces().functions().lookup(constructor.name.getText());
         if (consFn == null) {
@@ -428,7 +432,8 @@ public class TacletPBuilder extends ExpressionBuilder {
             var pfd = namespaces().parametricFunctions().lookup(constructor.name.getText());
             assert pfd != null;
             consFn =
-                ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dtSort).getArgs());
+                ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dtSort).getArgs(),
+                    services);
         }
 
         var x = declareSchemaVariable(constructor, argName + "_x", dtSort, false, false, false,
@@ -523,7 +528,8 @@ public class TacletPBuilder extends ExpressionBuilder {
             // Is parametric
             var pfd = namespaces().parametricFunctions().lookup(context.name.getText());
             assert pfd != null;
-            fn = ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dt).getArgs());
+            fn = ParametricFunctionInstance.get(pfd, ((ParametricSortInstance) dt).getArgs(),
+                services);
         }
         if (context.argName.isEmpty())
             return tb.subst(SubstOp.SUBST, qvX, tb.func(fn), phi);

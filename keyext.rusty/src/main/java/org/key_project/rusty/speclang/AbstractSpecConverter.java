@@ -214,7 +214,7 @@ public abstract class AbstractSpecConverter {
             }
             if (psi.getBase() == services.getLDTs().getsRefLDT().targetSort()) {
                 var base = services.getLDTs().getsRefLDT().getDerefS();
-                var deref = ParametricFunctionInstance.get(base, psi.getArgs());
+                var deref = ParametricFunctionInstance.get(base, psi.getArgs(), services);
                 return constructIndexTerm(tb.func(deref, indexed), idx);
             }
         }

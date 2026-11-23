@@ -943,7 +943,8 @@ public class HirConverter {
                     }
                     genArgs.add(arg);
                 }
-                var sort = ParametricSortInstance.get(sortDecl, ImmutableList.fromList(genArgs));
+                var sort =
+                    ParametricSortInstance.get(sortDecl, ImmutableList.fromList(genArgs), services);
                 var variants = new GenericVariant[def.variants().size()];
                 for (var e : def.variants().entrySet()) {
                     VariantDef value = e.getValue();

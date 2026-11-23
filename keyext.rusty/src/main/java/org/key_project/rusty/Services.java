@@ -38,7 +38,17 @@ public class Services implements LogicServices, ProofServices {
     private NamespaceSet namespaces = new NamespaceSet();
     private LDTs ldts;
     private RustInfo rustInfo;
-    private NameRecorder nameRecorder;
+    /// Records the fresh-name proposals made while a rule is applied, so they can be stored on the
+    /// node for reproducible reload. It is _per thread_: the proposals are recorded during
+    /// the rule's compute phase, which -- under the multi-core prover -- runs concurrently on the
+    /// workers, so each proving thread (the single single-core thread, or each worker) gets its own
+    /// recorder. This makes the recorder prover-agnostic and free of races on a shared field,
+    /// without [Services] having to know which prover is running. It is an _instance_
+    /// [ThreadLocal] (not static), so a nested side proof, which runs on its own
+    /// [Services], keeps its own recorder. Lazily created; reset by
+    /// [#saveNameRecorder(Node)] after each rule application.
+    private ThreadLocal<NameRecorder> nameRecorder =
+        ThreadLocal.withInitial(NameRecorder::new);
 
     private final TermFactory tf;
     private final TermBuilder tb;
@@ -68,7 +78,7 @@ public class Services implements LogicServices, ProofServices {
         this.caches = new ServiceCaches();
         counters = new LinkedHashMap<>();
         rustInfo = new RustInfo(this);
-        nameRecorder = new NameRecorder();
+        nameRecorder.set(new NameRecorder());
     }
 
     public Services(Profile profile) {
@@ -173,7 +183,7 @@ public class Services implements LogicServices, ProofServices {
     }
 
     public void addNameProposal(Name name) {
-        nameRecorder.addProposal(name);
+        getNameRecorder().addProposal(name);
     }
 
     public RustInfo getRustInfo() {
@@ -238,7 +248,7 @@ public class Services implements LogicServices, ProofServices {
             } else {
                 throw new UnsupportedOperationException("TODO: generics for non-foreign functions");
             }
-            var fn = ParametricFunctionInstance.get(pfn, ImmutableList.fromList(args));
+            var fn = ParametricFunctionInstance.get(pfn, ImmutableList.fromList(args), services);
             return tb.func(fn, subs);
         }
         if (pe instanceof PathExpr p && p.path().res() instanceof ResDef(Def def)
@@ -249,7 +259,7 @@ public class Services implements LogicServices, ProofServices {
                 && def instanceof GenericVariantConstructor(ParametricFunctionDecl pfn)) {
             var sort = (ParametricSortInstance) ((Enum) p.type()).sort();
             ImmutableList<GenericArgument> args = sort.getArgs();
-            var fn = ParametricFunctionInstance.get(pfn, args);
+            var fn = ParametricFunctionInstance.get(pfn, args, services);
             return tb.func(fn);
         }
         throw new IllegalArgumentException(
@@ -302,7 +312,7 @@ public class Services implements LogicServices, ProofServices {
     }
 
     public NameRecorder getNameRecorder() {
-        return nameRecorder;
+        return nameRecorder.get();
     }
 
     public Services copy() {
@@ -315,7 +325,13 @@ public class Services implements LogicServices, ProofServices {
         s.setLDTs(getLDTs());
         s.setNamespaces(namespaces.copy());
         s.setRustModel(getRustModel());
-        nameRecorder = nameRecorder.copy();
+        // Detach this instance's recorder from earlier overlays/aliases, keeping the calling
+        // thread's current contents (mirrors the pre-ThreadLocal `nameRecorder =
+        // nameRecorder.copy()`): the copy is the basis of a NEW proof, whose recordings must not
+        // leak into recorders already stored on this services' nodes.
+        NameRecorder detached = nameRecorder.get().copy();
+        nameRecorder = ThreadLocal.withInitial(NameRecorder::new);
+        nameRecorder.set(detached);
         return s;
     }
 
@@ -328,7 +344,7 @@ public class Services implements LogicServices, ProofServices {
     }
 
     public void saveNameRecorder(Node n) {
-        n.setNameRecorder(nameRecorder);
-        nameRecorder = new NameRecorder();
+        n.setNameRecorder(nameRecorder.get());
+        nameRecorder.set(new NameRecorder());
     }
 }

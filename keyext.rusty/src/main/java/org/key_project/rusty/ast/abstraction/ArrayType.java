@@ -33,7 +33,8 @@ public class ArrayType implements Type {
         var psd = services.getNamespaces().parametricSorts().lookup("Array");
         sort = ParametricSortInstance.get(psd,
             ImmutableList.of(new SortArg(elementType.getSort(services)),
-                new TermArg(length.toTerm(services))));
+                new TermArg(length.toTerm(services))),
+            services);
         name = new Name("[" + elementType + "; " + length + "]");
     }
 

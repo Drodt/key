@@ -191,7 +191,8 @@ public final class GenericSortInstantiations {
                     args.add(oa);
                 }
             }
-            var inst = ParametricSortInstance.get(psi.getBase(), ImmutableList.fromList(args));
+            var inst =
+                ParametricSortInstance.get(psi.getBase(), ImmutableList.fromList(args), services);
             if (inst.containsGenericSort())
                 throw new GenericSortException("Generic sort is not yet instantiated", null);
             p_s = inst;

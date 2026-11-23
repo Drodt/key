@@ -67,7 +67,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
                     consts.add(f);
                 }
             }
-            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args));
+            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args), services);
         } else {
             sort = sorts().lookup(ctx.name.getText());
             genericParameters = null;

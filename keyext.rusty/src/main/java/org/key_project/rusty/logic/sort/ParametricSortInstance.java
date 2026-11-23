@@ -12,34 +12,40 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.logic.sort.AbstractSort;
 import org.key_project.logic.sort.Sort;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.RustyDLTheory;
 import org.key_project.rusty.rule.inst.SVInstantiations;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
+import org.key_project.util.collection.WeakValueInterner;
 
 import org.jspecify.annotations.NonNull;
 
 public class ParametricSortInstance extends AbstractSort implements SyntaxElement {
-    private static final Map<ParametricSortInstance, ParametricSortInstance> CACHE =
-        new WeakHashMap<>();
+    /// Thread-safe Interning of parametric sort instances so that equal instances are the same
+    /// object.
+    /// The miss action, registering a genuinely new sort in the namespace, runs inside
+    /// [WeakValueInterner#intern], so it happens exactly once per new sort and is
+    /// serialized with the interning.
+    private static final WeakValueInterner<ParametricSortInstance, ParametricSortInstance> CACHE =
+        new WeakValueInterner<>();
 
     private final ImmutableList<GenericArgument> args;
     private final ParametricSortDecl base;
     private final ImmutableSet<Sort> extendsSorts;
 
     public static ParametricSortInstance get(ParametricSortDecl base,
-            ImmutableList<GenericArgument> args) {
+            ImmutableList<GenericArgument> args, Services services) {
         assert args.size() == base.getParameters().size();
         ParametricSortInstance sort =
             new ParametricSortInstance(base, args);
-        ParametricSortInstance cached = CACHE.get(sort);
-        if (cached != null) {
-            return cached;
-        } else {
-            CACHE.put(sort, sort);
-            return sort;
-        }
+        return CACHE.intern(sort, candidate -> {
+            if (!candidate.containsGenericSort()) {
+                services.getNamespaces().sorts().addSafely(candidate);
+            }
+            return candidate;
+        });
     }
 
     /// This must only be called in [ParametricSortInstance#get], which ensures that the cache is
@@ -93,22 +99,22 @@ public class ParametricSortInstance extends AbstractSort implements SyntaxElemen
     }
 
     public static Sort instantiate(GenericSort genericSort, Sort instantiation,
-            Sort toInstantiate) {
+            Sort toInstantiate, Services services) {
         if (genericSort == toInstantiate) {
             return instantiation;
         } else if (toInstantiate instanceof ParametricSortInstance psort) {
-            return psort.instantiate(genericSort, instantiation);
+            return psort.instantiate(genericSort, instantiation, services);
         } else {
             return toInstantiate;
         }
     }
 
-    public Sort instantiate(GenericSort template, Sort instantiation) {
+    public Sort instantiate(GenericSort template, Sort instantiation, Services services) {
         ImmutableList<GenericArgument> newParameters =
             args.map(s -> s instanceof SortArg(Sort sort)
-                    ? new SortArg(instantiate(template, instantiation, sort))
+                    ? new SortArg(instantiate(template, instantiation, sort, services))
                     : s);
-        return get(base, newParameters);
+        return get(base, newParameters, services);
     }
 
     public boolean isComplete(SVInstantiations instMap) {
@@ -131,13 +137,13 @@ public class ParametricSortInstance extends AbstractSort implements SyntaxElemen
     }
 
     public Sort resolveSort(SchemaVariable sv, SyntaxElement instCandidate,
-            SVInstantiations instMap) {
+            SVInstantiations instMap, Services services) {
         List<GenericArgument> newArgs = new LinkedList<>();
         for (int i = 0; i < args.size(); i++) {
             GenericArgument arg = args.get(i);
             if (arg instanceof SortArg sa) {
                 if (sa.sort() instanceof ParametricSortInstance psi) {
-                    newArgs.add(new SortArg(psi.resolveSort(sv, instCandidate, instMap)));
+                    newArgs.add(new SortArg(psi.resolveSort(sv, instCandidate, instMap, services)));
                 } else if (sa.sort() instanceof GenericSort gs) {
                     newArgs.add(
                         new SortArg(instMap.getGenericSortInstantiations().getInstantiation(gs)));
@@ -156,7 +162,7 @@ public class ParametricSortInstance extends AbstractSort implements SyntaxElemen
                 throw new RuntimeException("Unrecognized argument type: " + arg.getClass());
             }
         }
-        return get(base, ImmutableList.fromList(newArgs));
+        return get(base, ImmutableList.fromList(newArgs), services);
     }
 
     @Override

@@ -162,7 +162,7 @@ public abstract class TypeResolver {
         @Override
         public Sort resolveSort(SchemaVariable sv, SyntaxElement instCandidate,
                 SVInstantiations instMap, Services services) {
-            return psi.resolveSort(sv, instCandidate, instMap);
+            return psi.resolveSort(sv, instCandidate, instMap, services);
         }
 
         @Override

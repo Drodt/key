@@ -12,7 +12,7 @@ import org.key_project.prover.rules.RuleApp;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.rusty.proof.Node;
 import org.key_project.rusty.util.AssertionFailure;
-import org.key_project.util.ConcurrentLruCache;
+import org.key_project.util.GenerationalCache;
 
 import org.jspecify.annotations.NonNull;
 
@@ -34,9 +34,12 @@ import org.jspecify.annotations.NonNull;
 ///
 /// @author Julian Wiesler
 public class AppliedRuleAppsNameCache {
-    /// cache of all applied rules of a node, by rule name and then by application fingerprint
-    private final ConcurrentLruCache<Node, HashMap<Name, HashMap<Integer, List<RuleApp>>>> cache =
-        new ConcurrentLruCache<>(32);
+    /// The applied rules of a leaf node, by rule name and then by application fingerprint. A leaf
+    /// is queried only by the worker that owns its goal, and a parent's entry is read only by its
+    /// children after the split, so the entries need no lock; [GenerationalCache] reads
+    /// without one and keeps the entries in use.
+    private final GenerationalCache<Node, HashMap<Name, HashMap<Integer, List<RuleApp>>>> cache =
+        new GenerationalCache<>(256);
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
@@ -116,7 +119,7 @@ public class AppliedRuleAppsNameCache {
                     }
                 }
 
-                cache.put(node, nodeCache);
+                cache.putIfAbsent(node, nodeCache);
             }
         } finally {
             writeLock.unlock();

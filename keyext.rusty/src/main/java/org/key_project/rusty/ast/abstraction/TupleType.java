@@ -54,7 +54,8 @@ public class TupleType implements Type {
             }
             ImmutableList<GenericArgument> args =
                 ImmutableList.of(new SortArg(type.getSort(services)));
-            fields[i] = new Field(new Name("" + i), type, ParametricFunctionInstance.get(fn, args));
+            fields[i] = new Field(new Name("" + i), type,
+                ParametricFunctionInstance.get(fn, args, services));
         }
         this.fields = ImmutableList.fromArray(fields);
         this.name = new Name(name.append(')').toString());
@@ -93,7 +94,7 @@ public class TupleType implements Type {
                 throw new UnsupportedOperationException(
                     "We do not (yet) support tuples of length " + types.size());
             }
-            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args));
+            sort = ParametricSortInstance.get(psd, ImmutableList.fromList(args), services);
         }
         return sort;
     }

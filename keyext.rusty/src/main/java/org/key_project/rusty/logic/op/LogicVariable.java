@@ -4,8 +4,6 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.logic.op;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 import org.key_project.logic.Name;
@@ -16,6 +14,7 @@ import org.key_project.logic.op.ParsableVariable;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.rusty.logic.RustyDLTheory;
+import org.key_project.util.collection.WeakValueInterner;
 
 import org.jspecify.annotations.NonNull;
 
@@ -27,19 +26,14 @@ import org.jspecify.annotations.NonNull;
 /// for definition of logical variables {@see BoundVariable}.
 public final class LogicVariable extends AbstractSortedOperator
         implements QuantifiableVariable, ParsableVariable {
-    private static final Map<LogicVariable, LogicVariable> CACHE =
-        new HashMap<LogicVariable, LogicVariable>();
+    private static final WeakValueInterner<LogicVariable, LogicVariable> CACHE =
+        new WeakValueInterner<>();
 
     private final int index;
 
     public static LogicVariable create(int index, Sort sort) {
         var lv = new LogicVariable(index, sort);
-        if (CACHE.containsKey(lv)) {
-            return CACHE.get(lv);
-        } else {
-            CACHE.put(lv, lv);
-        }
-        return lv;
+        return CACHE.intern(lv, l -> l);
     }
 
     private LogicVariable(int index, Sort sort) {

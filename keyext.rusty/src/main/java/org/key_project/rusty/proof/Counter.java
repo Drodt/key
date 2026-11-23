@@ -4,33 +4,35 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.proof;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /// Proof-specific counter object: taclet names, var names, node numbers, etc
 public final class Counter {
     private final String name;
-    private int count;
+    private final AtomicInteger count;
 
     public Counter(String name) {
-        this.name = name;
+        this(name, 0);
     }
 
     private Counter(String name, int count) {
-        this(name);
-        this.count = count;
+        this.name = name;
+        this.count = new AtomicInteger(count);
     }
 
     public int getCount() {
-        return count;
+        return count.get();
     }
 
     public int getCountPlusPlus() {
-        return count++;
+        return count.getAndIncrement();
     }
 
     public String toString() {
-        return "Counter " + name + ": " + count;
+        return "Counter " + name + ": " + count.get();
     }
 
     public Counter copy() {
-        return new Counter(name, count);
+        return new Counter(name, count.get());
     }
 }

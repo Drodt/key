@@ -9,33 +9,33 @@ import java.util.*;
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.sort.Sort;
+import org.key_project.rusty.Services;
 import org.key_project.rusty.logic.sort.*;
 import org.key_project.util.Strings;
 import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.WeakValueInterner;
 
 import org.jspecify.annotations.NonNull;
 
 public class ParametricFunctionInstance extends RFunction {
-    private static final Map<ParametricFunctionInstance, ParametricFunctionInstance> CACHE =
-        new WeakHashMap<>();
+    /// Interns parametric function instances so that equal instances are the same object.
+    /// Thread-safe (the previous `WeakHashMap` + check-then-put could hand two distinct-but-equal
+    /// instances to concurrent workers, breaking that identity).
+    private static final WeakValueInterner<ParametricFunctionInstance, ParametricFunctionInstance> CACHE =
+        new WeakValueInterner<>();
 
     private final ImmutableList<GenericArgument> args;
     private final ParametricFunctionDecl base;
 
     public static ParametricFunctionInstance get(ParametricFunctionDecl decl,
-            ImmutableList<GenericArgument> args) {
+            ImmutableList<GenericArgument> args, Services services) {
         assert args.size() == decl.getParameters().size()
                 : args.size() + " != " + decl.getParameters().size();
         var instMap = getInstMap(decl, args);
-        var argSorts = instantiate(decl, instMap);
-        var sort = instantiate(decl.sort(), instMap);
+        var argSorts = instantiate(decl, instMap, services);
+        var sort = instantiate(decl.sort(), instMap, services);
         var fn = new ParametricFunctionInstance(decl, args, argSorts, sort);
-        var cached = CACHE.get(fn);
-        if (cached != null) {
-            return cached;
-        }
-        CACHE.put(fn, fn);
-        return fn;
+        return CACHE.intern(fn, candidate -> candidate);
     }
 
     private ParametricFunctionInstance(ParametricFunctionDecl base,
@@ -61,13 +61,13 @@ public class ParametricFunctionInstance extends RFunction {
     }
 
     private static ImmutableList<Sort> instantiate(ParametricFunctionDecl base,
-            HashMap<GenericParameter, GenericArgument> instMap) {
+            HashMap<GenericParameter, GenericArgument> instMap, Services services) {
         var baseArgSorts = base.argSorts();
         var argSorts = new Sort[baseArgSorts.size()];
 
         for (int i = 0; i < baseArgSorts.size(); i++) {
             var sort = baseArgSorts.get(i);
-            argSorts[i] = instantiate(sort, instMap);
+            argSorts[i] = instantiate(sort, instMap, services);
         }
 
         return ImmutableList.of(argSorts);
@@ -86,7 +86,8 @@ public class ParametricFunctionInstance extends RFunction {
         return map;
     }
 
-    private static Sort instantiate(Sort sort, Map<GenericParameter, GenericArgument> map) {
+    private static Sort instantiate(Sort sort, Map<GenericParameter, GenericArgument> map,
+            Services services) {
         if (sort instanceof GenericSort gs) {
             var param = new GenericSortParam(gs);
             var arg = map.get(param);
@@ -97,7 +98,7 @@ public class ParametricFunctionInstance extends RFunction {
             for (int i = 0; i < psi.getArgs().size(); i++) {
                 var psiArg = psi.getArgs().get(i);
                 if (psiArg instanceof SortArg(Sort s)) {
-                    args.add(new SortArg(instantiate(s, map)));
+                    args.add(new SortArg(instantiate(s, map, services)));
                 } else if (psiArg instanceof TermArg ta) {
                     if (ta.term().op() instanceof RFunction rf) {
                         var t = map.get(new ConstParam(rf.name(), rf.sort()));
@@ -106,7 +107,7 @@ public class ParametricFunctionInstance extends RFunction {
                     }
                 }
             }
-            return ParametricSortInstance.get(base, ImmutableList.fromList(args));
+            return ParametricSortInstance.get(base, ImmutableList.fromList(args), services);
         } else {
             return sort;
         }

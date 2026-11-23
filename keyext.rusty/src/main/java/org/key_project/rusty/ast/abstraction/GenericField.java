@@ -17,6 +17,6 @@ public record GenericField(Name name, Type type, ParametricFunctionDecl fieldCon
     public Field instantiate(Map<GenericParam, GenericTyArg> instMap, Services services) {
         Type instantiated = type.instantiate(instMap, services);
         return new Field(name, instantiated, ParametricFunctionInstance.get(fieldConst,
-            ImmutableList.of(new SortArg(instantiated.getSort(services)))));
+            ImmutableList.of(new SortArg(instantiated.getSort(services))), services));
     }
 }

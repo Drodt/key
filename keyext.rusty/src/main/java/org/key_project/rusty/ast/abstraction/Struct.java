@@ -33,7 +33,8 @@ public record Struct(Name name, ImmutableList<Field> fields,
         for (int i = 0; i < this.args.size(); i++) {
             args.add(this.args.get(i).sortArg(services));
         }
-        return ParametricSortInstance.get(parametricSortDecl, ImmutableList.fromList(args));
+        return ParametricSortInstance.get(parametricSortDecl, ImmutableList.fromList(args),
+            services);
     }
 
     @Override

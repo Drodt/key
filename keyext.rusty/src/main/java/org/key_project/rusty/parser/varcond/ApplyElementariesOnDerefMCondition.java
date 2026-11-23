@@ -103,7 +103,8 @@ public class ApplyElementariesOnDerefMCondition implements VariableCondition {
             return null;
         var base = services.getLDTs().getmRefLDT().getDerefM();
         var sort = (ParametricSortInstance) mr.sort();
-        var derefM = ParametricFunctionInstance.get(base, ImmutableList.of(sort.getArgs().get(0)));
+        var derefM =
+            ParametricFunctionInstance.get(base, ImmutableList.of(sort.getArgs().get(0)), services);
         TermBuilder tb = services.getTermBuilder();
         var elems = su.elems() == null ? tb.skip() : su.elems();
         var muts = su.muts() == null ? tb.skip() : su.muts();

@@ -30,9 +30,6 @@ public class PrintFeature implements Feature {
         this("", f);
     }
 
-
-    private static long COUNT = 0;
-
     @Override
     public RuleAppCost computeCost(RuleApp app,
             PosInOccurrence pos, ProofGoal<?> goal,

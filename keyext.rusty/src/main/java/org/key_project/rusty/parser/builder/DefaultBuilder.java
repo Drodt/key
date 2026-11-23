@@ -177,7 +177,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
                 return null;
             }
             var args = getParamSortArgs(genericArgsCtxt, d.getParameters());
-            return ParametricFunctionInstance.get(d, args);
+            return ParametricFunctionInstance.get(d, args, services);
         }
         semanticError(ctx, "Could not find (program) variable or constant %s", varfuncName);
         return null;
@@ -254,7 +254,7 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
             }
             ImmutableList<GenericArgument> parameters =
                 getParamSortArgs(ctx.formal_sort_args(), sortDecl.getParameters());
-            s = ParametricSortInstance.get(sortDecl, parameters);
+            s = ParametricSortInstance.get(sortDecl, parameters, services);
         } else {
             s = lookupSort(name);
             if (s == null) {

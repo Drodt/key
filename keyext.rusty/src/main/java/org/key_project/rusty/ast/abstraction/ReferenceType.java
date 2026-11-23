@@ -51,7 +51,7 @@ public final class ReferenceType implements Type {
             pSort = services.getNamespaces().parametricSorts().lookup("SRef");
         }
         assert pSort != null;
-        return ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(inner)));
+        return ParametricSortInstance.get(pSort, ImmutableList.of(new SortArg(inner)), services);
     }
 
     @Override

@@ -80,7 +80,7 @@ public final class ProblemInitializer {
         this.fileRepo = fileRepo;
     }
 
-    public InitConfig prepare(EnvInput envInput) throws ProofInputException {
+    public synchronized InitConfig prepare(EnvInput envInput) throws ProofInputException {
         InitConfig currentBaseConfig = baseConfig != null ? baseConfig.copy() : null;
 
         alreadyParsed.clear();

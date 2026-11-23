@@ -17,8 +17,26 @@ import org.key_project.rusty.logic.op.RFunction;
 import org.jspecify.annotations.Nullable;
 
 public class LexPathOrdering implements TermOrdering {
+    /// Per-comparison memo, scoped to one top-level [#compare(Term, Term)] call. The
+    /// recursion of [#compareHelp] visits the pair-DAG of the two terms; on large terms
+    /// with structural sharing that DAG holds far more distinct pairs than a bounded table could
+    /// retain, and an unbounded per-call map gives one comparison its true DAG complexity,
+    /// measured 2000M compareHelp calls (960M recomputations, 134s) against 92M calls (7.8s,
+    /// byte-identical results) for 1.68M comparisons on an ips4o goal at 6000 proof steps.
+    /// ThreadLocal because a LexPathOrdering instance is shared across parallel-prover workers;
+    /// the map is reused (cleared) per call, so small comparisons pay only an empty-map lookup.
+    private final ThreadLocal<HashMap<CacheKey, CompRes>> callMemo =
+        ThreadLocal.withInitial(java.util.HashMap::new);
+
     public int compare(Term p_a, Term p_b) {
-        final CompRes res = compareHelp(p_a, p_b);
+        final HashMap<CacheKey, CompRes> memo = callMemo.get();
+        memo.clear(); // scope the memo to this top-level comparison
+        final CompRes res;
+        try {
+            res = compareHelp(p_a, p_b);
+        } finally {
+            memo.clear();
+        }
         if (res.lt()) {
             return -1;
         } else if (res.gt()) {
@@ -62,18 +80,18 @@ public class LexPathOrdering implements TermOrdering {
     private record CacheKey(Term left, Term right) {
     }
 
-    private final HashMap<CacheKey, CompRes> cache = new LinkedHashMap<>();
-
     private CompRes compareHelp(Term p_a, Term p_b) {
-        final CacheKey key = new CacheKey(p_a, p_b);
-        CompRes res = cache.get(key);
-        if (res == null) {
-            res = compareHelp2(p_a, p_b);
-            if (cache.size() > 100000) {
-                cache.clear();
-            }
-            cache.put(key, res);
+        if (p_a == p_b) {
+            return EQUALS;
         }
+        final CacheKey key = new CacheKey(p_a, p_b);
+        final HashMap<CacheKey, CompRes> memo = callMemo.get();
+        final CompRes local = memo.get(key);
+        if (local != null) {
+            return local;
+        }
+        final CompRes res = compareHelp2(p_a, p_b);
+        memo.put(key, res);
         return res;
     }
 
