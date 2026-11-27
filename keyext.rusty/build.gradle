@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-test-fixtures'
     id 'application'
 
     id 'com.gradleup.shadow' version "9.2.2"
@@ -31,6 +32,8 @@ dependencies {
 
     // logging implementation used by the slf4j
     implementation("ch.qos.logback:logback-classic:1.5.28")
+
+    testFixturesApi(testFixtures(project(":key.util")))
 }
 
 shadowJar {

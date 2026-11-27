@@ -25,7 +25,6 @@ import org.key_project.prover.strategy.costbased.termgenerator.TermGenerator;
 import org.key_project.rusty.Services;
 import org.key_project.rusty.ldt.IntLDT;
 import org.key_project.rusty.logic.RustyDLTheory;
-import org.key_project.rusty.proof.Goal;
 import org.key_project.util.collection.ImmutableList;
 
 import org.jspecify.annotations.NonNull;
@@ -36,76 +35,47 @@ import org.jspecify.annotations.NonNull;
 ///
 /// As it only looks upwards, the computed cost is weak stable
 @WeakStableCost
-public abstract class SuperTermGenerator implements TermGenerator {
+public class SuperTermGenerator implements TermGenerator {
     private final TermFeature cond;
+    protected final Services services;
 
-    protected SuperTermGenerator(TermFeature cond) {
+    protected SuperTermGenerator(TermFeature cond, Services services) {
         this.cond = cond;
+        this.services = services;
     }
 
     public static TermGenerator upwards(TermFeature cond, final Services services) {
-        return new SuperTermGenerator(cond) {
-            @Override
-            protected Iterator<Term> createIterator(
-                    PosInOccurrence focus, MutableState mState) {
-                return new UpwardsIterator(focus, mState, services);
-            }
-        };
+        return new SuperTermGenerator(cond, services);
     }
 
     public static TermGenerator upwardsWithIndex(TermFeature cond, final Services services) {
-        return new SuperTermWithIndexGenerator(cond) {
-            @Override
-            protected Iterator<Term> createIterator(
-                    PosInOccurrence focus, MutableState mState) {
-                return new UpwardsIterator(focus, mState, services);
-            }
-        };
+        return new SuperTermWithIndexGenerator(cond, services);
     }
 
     @Override
     public Iterator<Term> generate(RuleApp app, PosInOccurrence pos,
             ProofGoal<?> goal,
             MutableState mState) {
-        return createIterator(pos, mState);
+        return new UpwardsIterator(pos, mState);
     }
-
-    protected abstract Iterator<Term> createIterator(
-            PosInOccurrence focus, MutableState mState);
 
     protected Term generateOneTerm(Term superterm, int child) {
         return superterm;
     }
 
-    private boolean generateFurther(Term t, MutableState mState, Services services) {
+    private boolean generateFurther(Term t, MutableState mState) {
         return !(cond.compute(t, mState, services) instanceof TopRuleAppCost);
     }
 
     @WeakStableCost
-    public abstract static class SuperTermWithIndexGenerator extends SuperTermGenerator {
-        private Services services;
-        private Operator binFunc;
+    public static class SuperTermWithIndexGenerator extends SuperTermGenerator {
+        private final Operator binFunc;
 
-        protected SuperTermWithIndexGenerator(TermFeature cond) {
-            super(cond);
-        }
+        protected SuperTermWithIndexGenerator(TermFeature cond, Services services) {
+            super(cond, services);
+            final IntLDT numbers = services.getLDTs().getIntLDT();
 
-        @Override
-        public Iterator<Term> generate(RuleApp app,
-                PosInOccurrence pos, ProofGoal<?> goal,
-                MutableState mState) {
-            if (services == null) {
-                services = ((Goal) goal).proof().getServices();
-                final IntLDT numbers = services.getLDTs().getIntLDT();
-
-                binFunc = new SuperTermWithIndexGenerator.SuperTermGeneratedOp(numbers);
-
-                // binFunc = new Function
-                // ( new Name ( "SuperTermGenerated" ), Sort.ANY,
-                // new Sort[] { Sort.ANY, numbers.getNumberSymbol ().sort () } );
-            }
-
-            return createIterator(pos, mState);
+            binFunc = new SuperTermWithIndexGenerator.SuperTermGeneratedOp(numbers);
         }
 
         @Override
@@ -184,12 +154,10 @@ public abstract class SuperTermGenerator implements TermGenerator {
     class UpwardsIterator implements Iterator<Term> {
         private PosInOccurrence currentPos;
         private final MutableState mState;
-        private final Services services;
 
-        private UpwardsIterator(PosInOccurrence startPos, MutableState mState, Services services) {
+        private UpwardsIterator(PosInOccurrence startPos, MutableState mState) {
             this.currentPos = startPos;
             this.mState = mState;
-            this.services = services;
         }
 
         @Override
@@ -202,7 +170,7 @@ public abstract class SuperTermGenerator implements TermGenerator {
             final int child = currentPos.getIndex();
             currentPos = currentPos.up();
             final Term res = generateOneTerm(currentPos.subTerm(), child);
-            if (!generateFurther(res, mState, services)) {
+            if (!generateFurther(res, mState)) {
                 currentPos = null;
             }
             return res;

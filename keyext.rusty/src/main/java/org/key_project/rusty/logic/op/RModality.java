@@ -4,16 +4,16 @@
  * SPDX-License-Identifier: GPL-2.0-or-later */
 package org.key_project.rusty.logic.op;
 
-import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.key_project.logic.Name;
 import org.key_project.logic.TermCreationException;
 import org.key_project.rusty.ast.RustyProgramElement;
 import org.key_project.rusty.logic.RustyBlock;
 import org.key_project.rusty.logic.RustyDLTheory;
+import org.key_project.util.collection.Pair;
+import org.key_project.util.collection.WeakValueLinkedHashMap;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -22,8 +22,8 @@ import org.jspecify.annotations.Nullable;
 /// extensions of DL like preserves and throughout are possible in the future).
 public class RModality extends org.key_project.logic.op.Modality {
     /// keeps track of created modalities
-    private static final Map<RustyProgramElement, WeakHashMap<RustyModalityKind, WeakReference<RModality>>> modalities =
-        new WeakHashMap<>();
+    private static final WeakValueLinkedHashMap<Pair<RustyModalityKind, RustyProgramElement>, RModality> modalities =
+        new WeakValueLinkedHashMap<>();
 
     /// Retrieves the modality of the given useKind and program.
     ///
@@ -31,26 +31,11 @@ public class RModality extends org.key_project.logic.op.Modality {
     /// @param rb the program of this modality
     /// @return the modality of the given useKind and program.
     public static synchronized RModality getModality(RustyModalityKind kind, RustyBlock rb) {
-        var kind2mod = modalities.get(rb.program());
-        final RModality mod;
-        WeakReference<RModality> modRef;
-        if (kind2mod == null) {
-            kind2mod = new WeakHashMap<>();
+        var pair = new Pair<>(kind, rb.program());
+        var mod = modalities.get(pair);
+        if (mod == null) {
             mod = new RModality(rb, kind);
-            modRef = new WeakReference<>(mod);
-            kind2mod.put(kind, modRef);
-            modalities.put(rb.program(), kind2mod);
-        } else {
-            modRef = kind2mod.get(kind);
-            if (modRef == null || modRef.get() == null) {
-                mod = new RModality(rb, kind);
-                modRef = new WeakReference<>(mod);
-                kind2mod.put(kind, modRef);
-                modalities.put(rb.program(), kind2mod);
-            } else {
-                mod = modRef.get();
-                assert mod != null;
-            }
+            modalities.put(pair, mod);
         }
         return mod;
     }
@@ -90,7 +75,7 @@ public class RModality extends org.key_project.logic.op.Modality {
     }
 
     public static class RustyModalityKind extends Kind {
-        private static final Map<String, RustyModalityKind> kinds = new HashMap<>();
+        private static final Map<String, RustyModalityKind> kinds = new ConcurrentHashMap<>();
         /// The diamond operator of dynamic logic. A formula <alpha;>Phi can be read as after
         /// processing
         /// the program alpha there exists a state such that Phi holds.

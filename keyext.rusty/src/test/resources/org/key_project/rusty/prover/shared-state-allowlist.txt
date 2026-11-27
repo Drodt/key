@@ -1,0 +1,17 @@
+# Fields the SharedStateLintTest flags but that are safe by design.
+# Format: fully.qualified.Class#field   # one-line justification
+# Every entry needs a justification; remove entries whose field disappears (the
+# test fails on stale entries). Before adding an entry, read the fix table in
+# key.core/src/main/java/de/uka/ilkd/key/prover/README.md -- most findings are
+# better fixed than allowlisted.
+
+org.key_project.rusty.logic.VariableNamer#suggestiveOff
+org.key_project.rusty.logic.op.AbstractTermTransformer#NAME_TO_META_OP
+org.key_project.rusty.logic.sort.ProgramSVSort#NAME2SORT
+
+org.key_project.rusty.proof.calculus.RustySequentKit#INSTANCE
+org.key_project.rusty.proof.init.ProblemInitializer#baseConfig # only if equal 2 baseInputConfig
+org.key_project.rusty.proof.init.RustProfile#defaultInstance
+org.key_project.rusty.rule.UseOperationContractRule#lastInstantiation
+org.key_project.rusty.strategy.definition.StrategySettingsDefinition#STD_FURTHER_DEFAULTS
+org.key_project.rusty.proof.Statistics#symbolicExecNames
